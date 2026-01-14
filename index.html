@@ -124,6 +124,12 @@
       flash("rgba(255,255,255,1)", 180, 0.22, 400);
     };
   </script>
-
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
