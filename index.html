@@ -125,6 +125,112 @@
     };
   </script>
   <script>
+  const overlay = document.getElementById("overlay");
+
+  // --- FEEDBACK LAYER (vibration + micro sound) ---
+
+  // Android/Chrome: vibration; iPhone/Safari çoğu zaman kısıtlar
+  function haptic(pattern) {
+    try {
+      if ("vibrate" in navigator) navigator.vibrate(pattern);
+    } catch (_) {}
+  }
+
+  // iPhone için "tok" his: mikro ses (çok kısa)
+  // iOS'ta ses sadece kullanıcı etkileşimi sonrası çalar; tıklama zaten var.
+  let audioCtx;
+  function clickTone(freq = 160, durationMs = 18, volume = 0.07, type = "sine") {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+
+      // Bazı iOS sürümlerinde context askıda kalabilir
+      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+
+      o.type = type;              // "sine" daha yumuşak, "triangle" daha tok
+      o.frequency.value = freq;
+
+      // Gain envelope: klik hissi
+      const now = audioCtx.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(volume, now + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000);
+
+      o.connect(g);
+      g.connect(audioCtx.destination);
+
+      o.start(now);
+      o.stop(now + durationMs / 1000);
+    } catch (_) {}
+  }
+
+  // --- VISUAL LAYER (overlay close-feel + row highlight) ---
+
+  function flash(color, inMs, peakOpacity, outMs) {
+    overlay.style.background = color;
+    overlay.style.transition = `opacity ${inMs}ms ease-out`;
+    overlay.style.opacity = peakOpacity;
+    overlay.classList.add("on");
+
+    setTimeout(() => {
+      overlay.style.transition = `opacity ${outMs}ms ease-in`;
+      overlay.style.opacity = 0;
+      setTimeout(() => overlay.classList.remove("on"), outMs);
+    }, inMs);
+  }
+
+  function highlight(el, cssVar) {
+    el.style.background = `var(${cssVar})`;
+    setTimeout(() => { el.style.background = "transparent"; }, 600);
+  }
+
+  // --- CHOICES ---
+
+  // 1) Bir şey oldu ama adı yok → yumuşak + gecikmeli his + yavaş kararma
+  document.getElementById("unnamed").onclick = (e) => {
+    const el = e.currentTarget;
+    highlight(el, "--softShadow");
+
+    // vibration: uzun-kısa pattern (android)
+    haptic([20, 60, 20, 120]);
+
+    // micro sound: derin ve biraz uzun (iPhone'da "içeriden" his)
+    clickTone(95, 38, 0.065, "sine");
+
+    flash("rgba(0,0,0,1)", 350, 0.28, 550);
+  };
+
+  // 2) Netti → tok + keskin + hard kapanış
+  document.getElementById("clear").onclick = (e) => {
+    const el = e.currentTarget;
+    highlight(el, "--hardShadow");
+
+    // vibration: tek, net darbeli
+    haptic([45]);
+
+    // micro sound: kısa, tok (triangle daha "tık" gibi)
+    clickTone(175, 16, 0.085, "triangle");
+
+    flash("rgba(0,0,0,1)", 120, 0.35, 250);
+  };
+
+  // 3) Hiçbir şey olmadı → neredeyse yok + beyazlaşma
+  document.getElementById("nothing").onclick = (e) => {
+    const el = e.currentTarget;
+    highlight(el, "--lighten");
+
+    // vibration: çok hafif
+    haptic([12]);
+
+    // micro sound: çok hafif, kısa (istersen tamamen kapatabiliriz)
+    clickTone(220, 12, 0.035, "sine");
+
+    flash("rgba(255,255,255,1)", 180, 0.22, 400);
+  };
+</script>
+  <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./sw.js").catch(() => {});
