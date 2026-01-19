@@ -72,10 +72,19 @@
       transition: opacity 160ms ease-out;
     }
     .overlay.on{ opacity:1; }
+.status{
+  margin: 10px 0 14px;
+  font-size: 14px;
+  opacity: .8;
+}
+.selected{
+  outline: 2px solid rgba(0,0,0,.65);
+  border-radius: 12px;
+}
   </style>
 </head>
 <body>
-
+<div id="status" class="status" aria-live="polite"></div>
   <div class="wrap">
     <div class="card">
       <h1>TODAY</h1>
@@ -93,7 +102,49 @@
 
   <script>
     const overlay = document.getElementById("overlay");
+const STORAGE_KEY = "today-choice-v1";
 
+function todayKey(){
+  // yerel tarihe göre YYYY-MM-DD
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function setStatus(msg){
+  const s = document.getElementById("status");
+  if (s) s.textContent = msg || "";
+}
+
+function clearSelectedUI(){
+  ["unnamed","clear","nothing"].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("selected");
+  });
+}
+
+function saveChoice(choiceId){
+  const payload = { date: todayKey(), choiceId };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+function loadChoice(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (data && data.date === todayKey() && data.choiceId) return data;
+  }catch(_){}
+  return null;
+}
+
+function applyChoiceUI(choiceId){
+  clearSelectedUI();
+  const el = document.getElementById(choiceId);
+  if (el) el.classList.add("selected");
+}
     function flash(color, inMs, peakOpacity, outMs){
       overlay.style.background = color;
       overlay.style.transition = `opacity ${inMs}ms ease-out`;
@@ -110,19 +161,52 @@
       el.style.background = style;
       setTimeout(()=>{ el.style.background = "transparent"; }, 600);
     }
-
+const existing = loadChoice();
+if (existing){
+  applyChoiceUI(existing.choiceId);
+  setStatus("Bugün seçimini yaptın.");
+} else {
+  setStatus("");
+}
     document.getElementById("unnamed").onclick = e => {
       highlight(e.target, "var(--softShadow)");
       flash("rgba(0,0,0,1)", 350, 0.28, 550);
     };
+    document.getElementById("unnamed").onclick = (e) => {
+  saveChoice("unnamed");
+  applyChoiceUI("unnamed");
+  setStatus("Bugün seçimini yaptın.");
+
+  // senin mevcut highlight/flash kodların aşağıda kalsın
+  // highlight(...)
+  // flash(...)
+};
     document.getElementById("clear").onclick = e => {
       highlight(e.target, "var(--hardShadow)");
       flash("rgba(0,0,0,1)", 120, 0.35, 250);
     };
+    document.getElementById("clear").onclick = (e) => {
+  saveChoice("clear");
+  applyChoiceUI("clear");
+  setStatus("Bugün seçimini yaptın.");
+
+  // senin mevcut highlight/flash kodların aşağıda kalsın
+  // highlight(...)
+  // flash(...)
+};
     document.getElementById("nothing").onclick = e => {
       highlight(e.target, "var(--lighten)");
       flash("rgba(255,255,255,1)", 180, 0.22, 400);
     };
+    document.getElementById("nothing").onclick = (e) => {
+  saveChoice("nothing");
+  applyChoiceUI("nothing");
+  setStatus("Bugün seçimini yaptın.");
+
+  // senin mevcut highlight/flash kodların aşağıda kalsın
+  // highlight(...)
+  // flash(...)
+};
   </script>
   <script>
     // iOS audio wake-up (first user interaction)
