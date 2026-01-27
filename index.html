@@ -1,340 +1,554 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#F4F5F6" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#ffffff" />
   <title>TODAY</title>
 
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon-192.png" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="TODAY" />
+
+  <!-- Icons (dosya adlarını senin repodaki isimlere göre düzenle) -->
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" />
+  <link rel="icon" href="icons/icon-512.png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
   <style>
     :root{
-      --bg:#F4F5F6;
-      --ink:#1C1F24;
-      --softShadow: rgba(0,0,0,.06);
-      --hardShadow: rgba(0,0,0,.10);
-      --lighten: rgba(255,255,255,.22);
+      --bg:#ffffff;
+      --fg:#0b0b0b;
+      --muted: rgba(0,0,0,.60);
+      --soft: rgba(0,0,0,.06);
+      --border: rgba(0,0,0,.14);
+      --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --radius: 18px;
     }
-    *{box-sizing:border-box;}
+
+    html,body{ height:100%; }
     body{
       margin:0;
-      background:var(--bg);
-      color:var(--ink);
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui;
-    }
-    .wrap{
-      min-height:100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:28px 16px;
+      padding: 18px;
+      box-sizing:border-box;
     }
+
+    .wrap{
+      width: 100%;
+      max-width: 420px;
+    }
+
     .card{
-      width:min(520px, 100%);
-      text-align:center;
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px 16px;
+      backdrop-filter: blur(6px);
     }
+
     h1{
-      margin:0;
-      font-size:28px;
-      font-weight:600;
-      letter-spacing:.5px;
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: .06em;
+      font-weight: 700;
     }
+
+    .status{
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+
     .q{
-      margin:28px 0 22px;
-      font-size:20px;
+      font-size: 18px;
+      font-weight: 650;
+      margin: 6px 0 14px;
     }
+
+    .q.big{
+      font-size: 20px;
+      margin-top: 2px;
+    }
+
+    .sub{
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
     .list{
       display:flex;
       flex-direction:column;
-      gap:14px;
+      gap: 10px;
+      margin-top: 10px;
     }
+
     .row{
-      text-align:left;
-      padding:12px 16px;
-      border-radius:14px;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+      font-size: 16px;
+      line-height: 1.2;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      cursor:pointer;
     }
-    .dot::before{
-      content:"●";
-      margin-right:10px;
+
+    .row.dot::after{
+      content:"";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.25);
+      background: rgba(0,0,0,.10);
+      flex: 0 0 auto;
+      margin-left: 12px;
     }
-    .overlay{
-      position:fixed;
-      inset:0;
+
+    .row:active{ transform: scale(0.993); }
+
+    .row[aria-disabled="true"]{
+      opacity: .45;
       pointer-events:none;
-      opacity:0;
-      transition: opacity 160ms ease-out;
+      filter: grayscale(.2);
     }
-    .overlay.on{ opacity:1; }
-.status{
-  margin: 10px 0 14px;
-  font-size: 14px;
-  opacity: .8;
-}
-.selected{
-  outline: 2px solid rgba(0,0,0,.65);
-  border-radius: 12px;
-}
+
+    .selected{
+      outline: 2px solid rgba(0,0,0,.60);
+      border-radius: 14px;
+    }
+
+    .primary{
+      margin-top: 16px;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.06);
+      font-size: 16px;
+      font-weight: 600;
+      cursor:pointer;
+    }
+    .primary:active{ transform: scale(0.99); }
+
+    .reset{
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.18);
+      background: transparent;
+      font-size: 14px;
+      opacity: .85;
+      cursor:pointer;
+      display:none; /* kilitliyken JS açacak */
+    }
+    .reset:active{ transform: scale(0.99); }
+
+    .closing{
+      margin-top: 14px;
+      font-size: 14px;
+      color: rgba(0,0,0,.72);
+      text-align:center;
+    }
+
+    .screen{ display:block; }
+    .hidden{ display:none; }
+
+    .history{
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(0,0,0,.18);
+    }
+    .historyTitle{
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .historyList{
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .historyItem{
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .historyDate{ color: rgba(0,0,0,.55); }
+    .historyChoice{ color: rgba(0,0,0,.85); }
+
+    /* Overlay animasyonları */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      background: transparent;
+    }
+    .overlay.show{ opacity: 1; }
+
+    .overlay.fade-black{
+      background: #000;
+      transition: opacity 800ms ease;
+    }
+    .overlay.hard-black{
+      background: #000;
+      transition: opacity 150ms ease;
+    }
+    .overlay.whiteout{
+      background: #fff;
+      transition: opacity 700ms ease;
+    }
+
+    /* küçük “update” bildirimi (isteğe bağlı) */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.85);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      display:none;
+      gap: 10px;
+      align-items:center;
+    }
+    .toast.show{ display:flex; }
+    .toast button{
+      border: 1px solid rgba(255,255,255,.35);
+      background: transparent;
+      color:#fff;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor:pointer;
+    }
   </style>
 </head>
+
 <body>
-<div id="status" class="status" aria-live="polite"></div>
   <div class="wrap">
     <div class="card">
       <h1>TODAY</h1>
-      <div class="q">Bugün sende ne oldu?</div>
+      <div id="status" class="status" aria-live="polite"></div>
 
-      <div class="list">
-        <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
-        <div class="row dot" id="clear">Netti</div>
-        <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
+      <!-- Onboarding -->
+      <div id="screenIntro" class="screen">
+        <div class="q big">Sadece fark et.</div>
+        <div class="sub">
+          <div>10 saniye.</div>
+          <div>Cevap arama.</div>
+          <div>Dur ve bak.</div>
+        </div>
+        <button id="startBtn" class="primary" type="button">Başla</button>
+      </div>
+
+      <!-- Soru + Seçimler -->
+      <div id="screenQuestion" class="screen hidden">
+        <div class="q">Bugün sende ne oldu?</div>
+
+        <div class="list">
+          <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
+          <div class="row dot" id="clear">Netti</div>
+          <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
+        </div>
+
+        <button id="reset" class="reset" type="button">Sıfırla</button>
+        <div id="closing" class="closing hidden">Tamam, gördüm.</div>
+
+        <div class="history">
+          <div class="historyTitle">Son 7 gün</div>
+          <div id="historyList" class="historyList"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="overlay"></div>
 
+  <div class="toast" id="toast">
+    <span>Yeni sürüm hazır.</span>
+    <button id="reloadBtn" type="button">Yenile</button>
+  </div>
+
   <script>
+    // --------------------------
+    // Helpers
+    // --------------------------
+    const STORAGE_KEY = "today-choice-v1";
+    const HISTORY_KEY = "today-history-v1";
+    const CHOICE_IDS = ["unnamed","clear","nothing"];
+
+    const CHOICE_LABELS = {
+      unnamed: "Bir şey oldu ama adı yok",
+      clear: "Netti",
+      nothing: "Hiçbir şey olmadı"
+    };
+
     const overlay = document.getElementById("overlay");
-const STORAGE_KEY = "today-choice-v1";
+    const toast = document.getElementById("toast");
+    const reloadBtn = document.getElementById("reloadBtn");
 
-function todayKey(){
-  // yerel tarihe göre YYYY-MM-DD
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function setStatus(msg){
-  const s = document.getElementById("status");
-  if (s) s.textContent = msg || "";
-}
-
-function clearSelectedUI(){
-  ["unnamed","clear","nothing"].forEach(id=>{
-    const el = document.getElementById(id);
-    if (el) el.classList.remove("selected");
-  });
-}
-
-function saveChoice(choiceId){
-  const payload = { date: todayKey(), choiceId };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-}
-
-function loadChoice(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (data && data.date === todayKey() && data.choiceId) return data;
-  }catch(_){}
-  return null;
-}
-
-function applyChoiceUI(choiceId){
-  clearSelectedUI();
-  const el = document.getElementById(choiceId);
-  if (el) el.classList.add("selected");
-}
-    function flash(color, inMs, peakOpacity, outMs){
-      overlay.style.background = color;
-      overlay.style.transition = `opacity ${inMs}ms ease-out`;
-      overlay.style.opacity = peakOpacity;
-      overlay.classList.add("on");
-      setTimeout(()=>{
-        overlay.style.transition = `opacity ${outMs}ms ease-in`;
-        overlay.style.opacity = 0;
-        setTimeout(()=> overlay.classList.remove("on"), outMs);
-      }, inMs);
+    function todayKey(){
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
     }
 
-    function highlight(el, style){
-      el.style.background = style;
-      setTimeout(()=>{ el.style.background = "transparent"; }, 600);
+    function setStatus(msg){
+      const s = document.getElementById("status");
+      if (s) s.textContent = msg || "";
     }
-const existing = loadChoice();
-if (existing){
-  applyChoiceUI(existing.choiceId);
-  setStatus("Bugün seçimini yaptın.");
-} else {
-  setStatus("");
-}
-    document.getElementById("unnamed").onclick = e => {
-      highlight(e.target, "var(--softShadow)");
-      flash("rgba(0,0,0,1)", 350, 0.28, 550);
-    };
-    document.getElementById("unnamed").onclick = (e) => {
-  saveChoice("unnamed");
-  applyChoiceUI("unnamed");
-  setStatus("Bugün seçimini yaptın.");
 
-  // senin mevcut highlight/flash kodların aşağıda kalsın
-  // highlight(...)
-  // flash(...)
-};
-    document.getElementById("clear").onclick = e => {
-      highlight(e.target, "var(--hardShadow)");
-      flash("rgba(0,0,0,1)", 120, 0.35, 250);
-    };
-    document.getElementById("clear").onclick = (e) => {
-  saveChoice("clear");
-  applyChoiceUI("clear");
-  setStatus("Bugün seçimini yaptın.");
+    function showScreen(name){
+      const intro = document.getElementById("screenIntro");
+      const q = document.getElementById("screenQuestion");
+      if (!intro || !q) return;
+      if (name === "intro"){
+        intro.classList.remove("hidden");
+        q.classList.add("hidden");
+      } else {
+        intro.classList.add("hidden");
+        q.classList.remove("hidden");
+      }
+    }
 
-  // senin mevcut highlight/flash kodların aşağıda kalsın
-  // highlight(...)
-  // flash(...)
-};
-    document.getElementById("nothing").onclick = e => {
-      highlight(e.target, "var(--lighten)");
-      flash("rgba(255,255,255,1)", 180, 0.22, 400);
-    };
-    document.getElementById("nothing").onclick = (e) => {
-  saveChoice("nothing");
-  applyChoiceUI("nothing");
-  setStatus("Bugün seçimini yaptın.");
-
-  // senin mevcut highlight/flash kodların aşağıda kalsın
-  // highlight(...)
-  // flash(...)
-};
-  </script>
-  <script>
-    // iOS audio wake-up (first user interaction)
-let audioUnlocked = false;
-document.addEventListener("touchend", () => {
-  if (audioUnlocked) return;
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    g.gain.value = 0.0001;
-    o.connect(g);
-    g.connect(ctx.destination);
-    o.start(0);
-    o.stop(0.01);
-    audioUnlocked = true;
-  } catch (_) {}
-}, { once: true });
-  const overlay = document.getElementById("overlay");
-
-  // --- FEEDBACK LAYER (vibration + micro sound) ---
-
-  // Android/Chrome: vibration; iPhone/Safari çoğu zaman kısıtlar
-  function haptic(pattern) {
-    try {
-      if ("vibrate" in navigator) navigator.vibrate(pattern);
-    } catch (_) {}
-  }
-
-  // iPhone için "tok" his: mikro ses (çok kısa)
-  // iOS'ta ses sadece kullanıcı etkileşimi sonrası çalar; tıklama zaten var.
-  let audioCtx;
-  function clickTone(freq = 160, durationMs = 18, volume = 0.07, type = "sine") {
-    try {
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-
-      // Bazı iOS sürümlerinde context askıda kalabilir
-      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
-
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-
-      o.type = type;              // "sine" daha yumuşak, "triangle" daha tok
-      o.frequency.value = freq;
-
-      // Gain envelope: klik hissi
-      const now = audioCtx.currentTime;
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(volume, now + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000);
-
-      o.connect(g);
-      g.connect(audioCtx.destination);
-
-      o.start(now);
-      o.stop(now + durationMs / 1000);
-    } catch (_) {}
-  }
-
-  // --- VISUAL LAYER (overlay close-feel + row highlight) ---
-
-  function flash(color, inMs, peakOpacity, outMs) {
-    overlay.style.background = color;
-    overlay.style.transition = `opacity ${inMs}ms ease-out`;
-    overlay.style.opacity = peakOpacity;
-    overlay.classList.add("on");
-
-    setTimeout(() => {
-      overlay.style.transition = `opacity ${outMs}ms ease-in`;
-      overlay.style.opacity = 0;
-      setTimeout(() => overlay.classList.remove("on"), outMs);
-    }, inMs);
-  }
-
-  function highlight(el, cssVar) {
-    el.style.background = `var(${cssVar})`;
-    setTimeout(() => { el.style.background = "transparent"; }, 600);
-  }
-
-  // --- CHOICES ---
-
-  // 1) Bir şey oldu ama adı yok → yumuşak + gecikmeli his + yavaş kararma
-  document.getElementById("unnamed").onclick = (e) => {
-    const el = e.currentTarget;
-    highlight(el, "--softShadow");
-
-    // vibration: uzun-kısa pattern (android)
-    haptic([20, 60, 20, 120]);
-
-    // micro sound: derin ve biraz uzun (iPhone'da "içeriden" his)
-    clickTone(95, 38, 0.065, "sine");
-
-    flash("rgba(0,0,0,1)", 350, 0.28, 550);
-  };
-
-  // 2) Netti → tok + keskin + hard kapanış
-  document.getElementById("clear").onclick = (e) => {
-    const el = e.currentTarget;
-    highlight(el, "--hardShadow");
-
-    // vibration: tek, net darbeli
-    haptic([45]);
-
-    // micro sound: kısa, tok (triangle daha "tık" gibi)
-    clickTone(175, 16, 0.085, "triangle");
-
-    flash("rgba(0,0,0,1)", 120, 0.35, 250);
-  };
-
-  // 3) Hiçbir şey olmadı → neredeyse yok + beyazlaşma
-  document.getElementById("nothing").onclick = (e) => {
-    const el = e.currentTarget;
-    highlight(el, "--lighten");
-
-    // vibration: çok hafif
-    haptic([12]);
-
-    // micro sound: çok hafif, kısa (istersen tamamen kapatabiliriz)
-    clickTone(220, 12, 0.035, "sine");
-
-    flash("rgba(255,255,255,1)", 180, 0.22, 400);
-  };
-</script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
+    function clearSelectedUI(){
+      CHOICE_IDS.forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("selected");
       });
+    }
+
+    function applyChoiceUI(choiceId){
+      clearSelectedUI();
+      const el = document.getElementById(choiceId);
+      if (el) el.classList.add("selected");
+    }
+
+    function setChoicesLocked(locked){
+      CHOICE_IDS.forEach(id=>{
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute("aria-disabled", locked ? "true" : "false");
+      });
+
+      const r = document.getElementById("reset");
+      if (r) r.style.display = locked ? "inline-block" : "none";
+    }
+
+    function loadChoice(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data && data.date === todayKey() && data.choiceId) return data;
+      }catch(_){}
+      return null;
+    }
+
+    function loadHistory(){
+      try{
+        return JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
+      }catch(_){
+        return {};
+      }
+    }
+
+    function saveToHistory(dateStr, choiceId){
+      const hist = loadHistory();
+      hist[dateStr] = choiceId;
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+    }
+
+    function saveChoice(choiceId){
+      const date = todayKey();
+      const payload = { date, choiceId };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      saveToHistory(date, choiceId);
+    }
+
+    function lastNDates(n){
+      const out = [];
+      const d = new Date();
+      for (let i=0;i<n;i++){
+        const dd = new Date(d);
+        dd.setDate(d.getDate() - i);
+        const yyyy = dd.getFullYear();
+        const mm = String(dd.getMonth()+1).padStart(2,"0");
+        const day = String(dd.getDate()).padStart(2,"0");
+        out.push(`${yyyy}-${mm}-${day}`);
+      }
+      return out;
+    }
+
+    function renderHistory(){
+      const box = document.getElementById("historyList");
+      if (!box) return;
+
+      const hist = loadHistory();
+      const days = lastNDates(7);
+
+      box.innerHTML = days.map(dateStr=>{
+        const choiceId = hist[dateStr];
+        const label = choiceId ? (CHOICE_LABELS[choiceId] || choiceId) : "—";
+        return `
+          <div class="historyItem">
+            <span class="historyDate">${dateStr}</span>
+            <span class="historyChoice">${label}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showClosing(){
+      const c = document.getElementById("closing");
+      if (!c) return;
+      c.classList.remove("hidden");
+      setTimeout(()=> c.classList.add("hidden"), 1200);
+    }
+
+    // --------------------------
+    // Effects
+    // --------------------------
+    function vibrate(pattern){
+      // Android/Chrome çalışır; iOS Safari çoğu zaman desteklemez
+      if (navigator.vibrate) navigator.vibrate(pattern);
+    }
+
+    function playCloseEffect(choiceId){
+      // Her seçim için farklı kapanış hissi:
+      // unnamed -> yavaş kararma
+      // clear   -> sert kararma
+      // nothing -> beyazlaşma
+      overlay.className = "overlay"; // reset classes
+
+      if (choiceId === "unnamed"){
+        overlay.classList.add("fade-black","show");
+        vibrate([20,30,20,40,20]);
+      } else if (choiceId === "clear"){
+        overlay.classList.add("hard-black","show");
+        vibrate([60]);
+      } else {
+        overlay.classList.add("whiteout","show");
+        vibrate([15,20,15]);
+      }
+
+      // kısa süre sonra overlay’i geri al
+      setTimeout(()=>{
+        overlay.classList.remove("show");
+        setTimeout(()=> overlay.className = "overlay", 250);
+      }, 650);
+    }
+
+    // --------------------------
+    // Reset
+    // --------------------------
+    function resetToday(){
+      localStorage.removeItem(STORAGE_KEY);
+      clearSelectedUI();
+      setStatus("");
+      setChoicesLocked(false);
+
+      const c = document.getElementById("closing");
+      if (c) c.classList.add("hidden");
+
+      showScreen("intro");
+      renderHistory();
+    }
+
+    // --------------------------
+    // Init
+    // --------------------------
+    document.getElementById("startBtn").onclick = () => {
+      showScreen("question");
+    };
+
+    document.getElementById("reset").onclick = () => {
+      resetToday();
+    };
+
+    function handleChoice(choiceId){
+      saveChoice(choiceId);
+      applyChoiceUI(choiceId);
+      setStatus("Bugün seçimini yaptın.");
+      setChoicesLocked(true);
+      showClosing();
+      renderHistory();
+      playCloseEffect(choiceId);
+    }
+
+    document.getElementById("unnamed").onclick = () => handleChoice("unnamed");
+    document.getElementById("clear").onclick   = () => handleChoice("clear");
+    document.getElementById("nothing").onclick = () => handleChoice("nothing");
+
+    // Açılış davranışı
+    const existing = loadChoice();
+    if (existing){
+      showScreen("question");
+      applyChoiceUI(existing.choiceId);
+      setStatus("Bugün seçimini yaptın.");
+      setChoicesLocked(true);
+    } else {
+      showScreen("intro");
+      setStatus("");
+      setChoicesLocked(false);
+    }
+    renderHistory();
+
+    // --------------------------
+    // Service Worker (güncelleme kolaylığı)
+    // --------------------------
+    if ("serviceWorker" in navigator){
+      navigator.serviceWorker.register("./sw.js").then(reg=>{
+        // yeni SW bulunduğunda toast göster
+        function showUpdateToast(){
+          if (!toast) return;
+          toast.classList.add("show");
+        }
+
+        if (reg.waiting) showUpdateToast();
+
+        reg.addEventListener("updatefound", ()=>{
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener("statechange", ()=>{
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller){
+              showUpdateToast();
+            }
+          });
+        });
+
+        if (reloadBtn){
+          reloadBtn.onclick = async () => {
+            if (!reg.waiting) return location.reload();
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          };
+        }
+
+        navigator.serviceWorker.addEventListener("controllerchange", ()=>{
+          location.reload();
+        });
+      }).catch(()=>{});
     }
   </script>
 </body>
