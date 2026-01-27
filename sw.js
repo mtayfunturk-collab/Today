@@ -1,49 +1,96 @@
-const CACHE_NAME = "today-v1";
+/* sw.js - TODAY PWA
+   Goal: keep it simple, update-friendly, and avoid "stuck icon/manifest" issues.
+*/
+
+const CACHE_VERSION = "today-v7"; // BUNU her büyük değişiklikte +1 yap (v8, v9...)
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./apple-touch-icon.png",
+  "./sw.js"
 ];
 
-// Install: temel dosyaları cache'e al
+// Install: cache core assets
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_VERSION).then((cache) => cache.addAll(ASSETS))
+  );
 });
 
-// Activate: eski cache'leri temizle
+// Activate: delete old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((k) => k !== CACHE_NAME)
-          .map((k) => caches.delete(k))
-      )
-    )
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(
+        keys.map((key) => (key === CACHE_VERSION ? null : caches.delete(key)))
+      );
+      await self.clients.claim();
+    })()
   );
-  self.clients.claim();
 });
 
-// Fetch: cache-first, yoksa ağdan getir
+// Allow page to tell SW to update immediately
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+// Fetch strategy:
+// - For HTML: network-first (always try to get latest)
+// - For others: cache-first (fast), fallback to network
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((resp) => {
-        // Aynı origin ve GET ise cache’e yaz
+  const req = event.request;
+
+  // Only handle GET
+  if (req.method !== "GET") return;
+
+  const url = new URL(req.url);
+
+  // Same-origin only
+  if (url.origin !== self.location.origin) return;
+
+  // HTML (including navigation)
+  const isHTML =
+    req.mode === "navigate" ||
+    (req.headers.get("accept") || "").includes("text/html");
+
+  if (isHTML) {
+    event.respondWith(
+      (async () => {
         try {
-          if (event.request.method === "GET") {
-            const copy = resp.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-        } catch (_) {}
-        return resp;
-      });
-    })
+          const fresh = await fetch(req, { cache: "no-store" });
+          const cache = await caches.open(CACHE_VERSION);
+          cache.put(req, fresh.clone());
+          return fresh;
+        } catch (e) {
+          const cached = await caches.match(req);
+          return cached || caches.match("./index.html");
+        }
+      })()
+    );
+    return;
+  }
+
+  // Other assets
+  event.respondWith(
+    (async () => {
+      const cached = await caches.match(req);
+      if (cached) return cached;
+
+      try {
+        const fresh = await fetch(req);
+        const cache = await caches.open(CACHE_VERSION);
+        cache.put(req, fresh.clone());
+        return fresh;
+      } catch (e) {
+        return cached;
+      }
+    })()
   );
 });
