@@ -60,6 +60,7 @@
       box-shadow:var(--shadow);
       padding:26px 22px;
       text-align:center;
+      .card{ overflow:hidden; }
     }
 
     /* Status */
@@ -115,16 +116,19 @@
       font-size: 16px;
       line-height: 1.55;
     }
-    .btn{
-      width: min(420px, 92vw);
-      border:0;
-      border-radius:14px;
-      padding:14px 14px;
-      font-size:16px;
-      font-weight:650;
-      background:#111;
-      color:#fff;
-      cursor:pointer;
+  .btn{
+  width: 100%;
+  max-width: 420px;
+  display: block;
+  margin: 0 auto;
+  border:0;
+  border-radius:14px;
+  padding:14px 14px;
+  font-size:16px;
+  font-weight:650;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
     }
     .btn:active{transform:scale(.99);}
 
