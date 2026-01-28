@@ -8,10 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>Today</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="./manifest.json?v=10" />
-
-  <!-- Icons -->
   <link rel="apple-touch-icon" href="./apple-touch-icon-v2.png?v=10" />
   <link rel="icon" href="./icon-192-v2.png?v=10" sizes="192x192" />
   <link rel="icon" href="./icon-512-v2.png?v=10" sizes="512x512" />
@@ -183,9 +180,14 @@
       white-space:nowrap;
     }
 
-    .reset{
-      margin-top: 14px;
-      width: min(380px, 90vw);
+    .actions{
+      width: min(460px, 92vw);
+      margin: 14px auto 0 auto;
+      display:flex;
+      gap: 10px;
+    }
+    .ghost{
+      flex:1;
       border:1px solid var(--line);
       background: rgba(255,255,255,.9);
       border-radius: 14px;
@@ -193,7 +195,7 @@
       font-size: 15px;
       cursor:pointer;
     }
-    .reset:active{transform:scale(.99);}
+    .ghost:active{transform:scale(.99);}
 
     /* views */
     .view{display:none;}
@@ -204,7 +206,7 @@
 <body>
   <div id="status" class="status" aria-live="polite"></div>
 
-  <!-- VIEW 1: Onboarding (single screen, no overlay modal) -->
+  <!-- HOME -->
   <div id="viewHome" class="view on">
     <div class="wrap">
       <div class="card">
@@ -218,7 +220,7 @@
     </div>
   </div>
 
-  <!-- VIEW 2: Choices + weekly -->
+  <!-- PICK -->
   <div id="viewPick" class="view">
     <div class="wrap">
       <div class="card">
@@ -234,7 +236,12 @@
         <div class="weekly">
           <div class="weeklyTitle">Son 7 gün</div>
           <div id="weekGrid" class="weekGrid"></div>
-          <button id="reset" class="reset" type="button">Sıfırla</button>
+        </div>
+
+        <!-- Actions: user chooses when to go back -->
+        <div class="actions">
+          <button id="btnHome" class="ghost" type="button">Ana ekrana dön</button>
+          <button id="reset" class="ghost" type="button">Sıfırla</button>
         </div>
       </div>
     </div>
@@ -243,7 +250,6 @@
   <div class="overlay" id="overlay"></div>
 
   <script>
-    // ===== Helpers =====
     const $ = (id) => document.getElementById(id);
 
     const statusEl = $("status");
@@ -251,12 +257,14 @@
 
     const viewHome = $("viewHome");
     const viewPick = $("viewPick");
+
     const btnStart = $("btnStart");
+    const btnHome = $("btnHome");
     const resetBtn = $("reset");
 
     const weekGrid = $("weekGrid");
 
-    const KEY_PREFIX = "today_choice_"; // per-day key
+    const KEY_PREFIX = "today_choice_";
     const KEY_LAST_DATE = "today_last_date";
     const KEY_LAST_CHOICE = "today_last_choice";
 
@@ -298,17 +306,15 @@
     }
 
     function setView(which){
-      // which: "home" | "pick"
       viewHome.classList.toggle("on", which==="home");
       viewPick.classList.toggle("on", which==="pick");
     }
 
-    // ===== Data =====
     function saveChoice(choiceId){
       const d = todayKey();
       localStorage.setItem(KEY_LAST_DATE, d);
       localStorage.setItem(KEY_LAST_CHOICE, choiceId);
-      localStorage.setItem(KEY_PREFIX + d, choiceId); // for weekly list
+      localStorage.setItem(KEY_PREFIX + d, choiceId);
     }
 
     function alreadyChosenToday(){
@@ -323,7 +329,6 @@
     }
 
     function formatDayLabel(dateStr){
-      // dateStr: YYYY-MM-DD
       const d = new Date(dateStr + "T00:00:00");
       const days = ["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
       const dd = String(d.getDate()).padStart(2,"0");
@@ -353,7 +358,6 @@
       }
     }
 
-    // ===== Actions =====
     btnStart.addEventListener("click", () => {
       haptic("soft");
       setView("pick");
@@ -363,17 +367,16 @@
       }
     });
 
-    function goHomeAfterAction(){
-      // Her eylemden sonra ana ekrana dön
-      setTimeout(()=> setView("home"), 420);
-    }
+    btnHome.addEventListener("click", () => {
+      haptic("soft");
+      setView("home");
+    });
 
     function handleChoice(choiceId){
       if(alreadyChosenToday()){
         haptic("soft");
         showStatus("Bugün seçimini yaptın.");
-        goHomeAfterAction();
-        return;
+        return; // kullanıcı isterse Ana ekrana dön butonuna basar
       }
 
       saveChoice(choiceId);
@@ -393,8 +396,7 @@
         closeEffect("nothing");
       }
 
-      // seçimden sonra ana ekrana dön
-      goHomeAfterAction();
+      // otomatik dönmüyor: kullanıcı düşünmek için burada kalır
     }
 
     $("unnamed").addEventListener("click", ()=> handleChoice("unnamed"));
@@ -402,7 +404,6 @@
     $("nothing").addEventListener("click", ()=> handleChoice("nothing"));
 
     resetBtn.addEventListener("click", () => {
-      // tüm seçim geçmişini temizle (son 7 gün dahil)
       const keys = Object.keys(localStorage);
       keys.forEach(k => {
         if(k.startsWith(KEY_PREFIX) || k===KEY_LAST_DATE || k===KEY_LAST_CHOICE){
@@ -412,10 +413,10 @@
       haptic("soft");
       showStatus("Sıfırlandı.");
       renderWeekly();
-      goHomeAfterAction();
+      // reset sonrası da kullanıcı isterse Ana ekrana döner
     });
 
-    // ===== SW Register (same approach) =====
+    // SW register
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try{
