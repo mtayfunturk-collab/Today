@@ -1,19 +1,15 @@
-/* sw.js - TODAY PWA
-   Goal: keep it simple, update-friendly, and avoid "stuck icon/manifest" issues.
-*/
+const CACHE_VERSION = "today-v10";
 
-const CACHE_VERSION = "today-v9"; // BUNU her büyük değişiklikte +1 yap (v8, v9...)
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
+  "./sw.js",
   "./icon-192-v2.png",
   "./icon-512-v2.png",
-  "./apple-touch-icon.png",
-  "./sw.js"
+  "./apple-touch-icon-v2.png"
 ];
 
-// Install: cache core assets
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -21,63 +17,50 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate: delete old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
       await Promise.all(
-        keys.map((key) => (key === CACHE_VERSION ? null : caches.delete(key)))
+        keys.map((k) => (k === CACHE_VERSION ? null : caches.delete(k)))
       );
       await self.clients.claim();
     })()
   );
 });
 
-// Allow page to tell SW to update immediately
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
-// Fetch strategy:
-// - For HTML: network-first (always try to get latest)
-// - For others: cache-first (fast), fallback to network
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-
-  // Only handle GET
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
-
-  // Same-origin only
   if (url.origin !== self.location.origin) return;
 
-  // HTML (including navigation)
-  const isHTML =
-    req.mode === "navigate" ||
-    (req.headers.get("accept") || "").includes("text/html");
+  const accept = req.headers.get("accept") || "";
+  const isHTML = req.mode === "navigate" || accept.includes("text/html");
 
+  // HTML: network-first so updates land quickly
   if (isHTML) {
     event.respondWith(
       (async () => {
         try {
           const fresh = await fetch(req, { cache: "no-store" });
           const cache = await caches.open(CACHE_VERSION);
-          cache.put(req, fresh.clone());
+          cache.put("./index.html", fresh.clone());
           return fresh;
         } catch (e) {
-          const cached = await caches.match(req);
-          return cached || caches.match("./index.html");
+          return (await caches.match("./index.html")) || Response.error();
         }
       })()
     );
     return;
   }
 
-  // Other assets
+  // Other files: cache-first
   event.respondWith(
     (async () => {
       const cached = await caches.match(req);
@@ -89,7 +72,7 @@ self.addEventListener("fetch", (event) => {
         cache.put(req, fresh.clone());
         return fresh;
       } catch (e) {
-        return cached;
+        return cached || Response.error();
       }
     })()
   );
