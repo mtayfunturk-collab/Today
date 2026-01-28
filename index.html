@@ -8,7 +8,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>Today</title>
 
+  <!-- PWA -->
   <link rel="manifest" href="./manifest.json?v=10" />
+
+  <!-- Icons -->
   <link rel="apple-touch-icon" href="./apple-touch-icon-v2.png?v=10" />
   <link rel="icon" href="./icon-192-v2.png?v=10" sizes="192x192" />
   <link rel="icon" href="./icon-512-v2.png?v=10" sizes="512x512" />
@@ -31,6 +34,11 @@
       color:var(--text);
       -webkit-tap-highlight-color:transparent;
     }
+
+    /* views */
+    .view{display:none;}
+    .view.on{display:block;}
+
     .wrap{
       min-height:100%;
       display:flex;
@@ -39,7 +47,7 @@
       padding:22px;
     }
     .card{
-      width:min(540px, 92vw);
+      width:min(560px, 92vw);
       background:var(--card);
       border:1px solid var(--line);
       border-radius:20px;
@@ -53,26 +61,8 @@
       font-size:28px;
       font-weight:700;
     }
-    .q{
-      font-size:20px;
-      margin:8px 0 18px 0;
-    }
-
-    .centerBlock{
-      margin: 14px 0 16px 0;
+    .muted{
       color: var(--muted);
-      line-height: 1.55;
-      font-size: 16px;
-    }
-    .hint{
-      display:inline-block;
-      padding: 8px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(0,0,0,.02);
-      margin: 6px 6px 0 6px;
-      color: #333;
-      font-size: 14px;
     }
 
     .btn{
@@ -88,32 +78,7 @@
     }
     .btn:active{transform:scale(.99);}
 
-    .list{
-      text-align:left;
-      margin: 12px auto 6px auto;
-      width: min(380px, 90vw);
-    }
-    .row{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:14px 14px;
-      border-radius:14px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-user-select:none;
-      border:1px solid transparent;
-      transition:transform .12s ease, background .12s ease, border-color .12s ease;
-      font-size:18px;
-    }
-    .row:hover{background:rgba(0,0,0,.03)}
-    .row:active{transform:scale(.99)}
-    .dot::before{
-      content:"";
-      width:10px;height:10px;border-radius:999px;
-      background:#111;flex:0 0 10px;
-    }
-
+    /* Status */
     .status{
       position:fixed;
       left:0;right:0;
@@ -126,15 +91,95 @@
       transform:translateY(-6px);
       transition:opacity .2s ease, transform .2s ease;
       pointer-events:none;
+      z-index: 50;
     }
     .status.on{opacity:1;transform:translateY(0)}
 
+    /* Countdown */
+    .countBox{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 14px;
+    }
+    .countNum{
+      font-weight:800;
+      letter-spacing: .02em;
+      line-height:1;
+      transform: translateY(0);
+      opacity: 1;
+      transition: opacity 240ms ease, transform 240ms ease;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    .countNum.fade{
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    /* Home identity */
+    .identity{
+      margin: 10px 0 18px 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    /* Choice list */
+    .q{
+      font-size:20px;
+      margin:8px 0 18px 0;
+    }
+    .list{
+      text-align:left;
+      margin: 12px auto 6px auto;
+      width: min(420px, 90vw);
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .row{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px 14px;
+      border-radius:16px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.01);
+      transition: transform .12s ease, background .12s ease;
+    }
+    .row:hover{ background: rgba(0,0,0,.03); }
+    .row:active{ transform: scale(.99); }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background:#111;
+      margin-top: 6px;
+      flex: 0 0 10px;
+    }
+    .rowTitle{
+      font-size:18px;
+      font-weight:700;
+      margin:0;
+    }
+    .rowHint{
+      margin:6px 0 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    /* Overlay close effects */
     .overlay{
       position:fixed;
       inset:0;
       pointer-events:none;
       opacity:0;
       transition:opacity 420ms ease;
+      z-index: 40;
     }
     .overlay.on{opacity:1}
     .overlay.fadeBlack{background:#000}
@@ -144,16 +189,29 @@
     /* Weekly section */
     .weekly{
       margin: 18px auto 0 auto;
-      width: min(460px, 92vw);
+      width: min(520px, 92vw);
       text-align:left;
       border-top: 1px solid var(--line);
       padding-top: 14px;
     }
+    .weeklyTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
     .weeklyTitle{
       font-size: 14px;
       color: var(--muted);
-      margin: 0 0 10px 0;
+      margin: 0;
       letter-spacing: .02em;
+    }
+    .weeklySummary{
+      font-size: 14px;
+      color: #111;
+      margin: 0;
+      white-space:nowrap;
     }
     .weekGrid{
       display:flex;
@@ -170,6 +228,11 @@
       border-radius: 14px;
       background: rgba(0,0,0,.02);
     }
+    .weekRight{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
     .badge{
       font-size: 12px;
       padding: 6px 10px;
@@ -179,15 +242,25 @@
       color:#111;
       white-space:nowrap;
     }
+    .colorDot{
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.18);
+      background: transparent;
+    }
 
+    /* Actions */
     .actions{
-      width: min(460px, 92vw);
+      width: min(520px, 92vw);
       margin: 14px auto 0 auto;
       display:flex;
       gap: 10px;
+      flex-wrap: wrap;
     }
     .ghost{
       flex:1;
+      min-width: 160px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.9);
       border-radius: 14px;
@@ -197,30 +270,85 @@
     }
     .ghost:active{transform:scale(.99);}
 
-    /* views */
-    .view{display:none;}
-    .view.on{display:block;}
+    /* Color prompt */
+    .colorBox{
+      width: min(520px, 92vw);
+      margin: 12px auto 0 auto;
+      text-align:left;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0,0,0,.015);
+      padding: 12px;
+      display:none;
+    }
+    .colorBox.on{display:block;}
+    .colorTitle{
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0 0 10px 0;
+    }
+    .colorBtns{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .cbtn{
+      flex: 1;
+      min-width: 120px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-size: 14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+    }
+    .cbtn:active{transform:scale(.99);}
+    .swatch{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.18);
+    }
+    .note{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
   </style>
 </head>
 
 <body>
   <div id="status" class="status" aria-live="polite"></div>
 
-  <!-- HOME -->
-  <div id="viewHome" class="view on">
+  <!-- VIEW: Countdown -->
+  <div id="viewCount" class="view on">
+    <div class="wrap">
+      <div class="card">
+        <div class="countBox">
+          <div id="countNum" class="countNum">9</div>
+          <div class="muted" style="font-size:14px;">...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: Home -->
+  <div id="viewHome" class="view">
     <div class="wrap">
       <div class="card">
         <h1>TODAY</h1>
-        <div class="centerBlock">
-          <span class="hint">10 sn bekle.</span>
-          <span class="hint">Fark et.</span>
-        </div>
+        <div class="identity">Sadece fark et. Hepsi bu.</div>
         <button id="btnStart" class="btn" type="button">Başla</button>
       </div>
     </div>
   </div>
 
-  <!-- PICK -->
+  <!-- VIEW: Pick -->
   <div id="viewPick" class="view">
     <div class="wrap">
       <div class="card">
@@ -228,17 +356,65 @@
         <div class="q">Bugün sende ne oldu?</div>
 
         <div class="list">
-          <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
-          <div class="row dot" id="clear">Netti</div>
-          <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
+          <div class="row" id="unnamed">
+            <div class="dot"></div>
+            <div>
+              <div class="rowTitle">Bir şey var ama adı yok</div>
+              <div class="rowHint">Adını koyma. Sadece fark et.</div>
+            </div>
+          </div>
+
+          <div class="row" id="clear">
+            <div class="dot"></div>
+            <div>
+              <div class="rowTitle">Netti</div>
+              <div class="rowHint">Bir cümleyle söyleyebiliyorsan tamam.</div>
+            </div>
+          </div>
+
+          <div class="row" id="nothing">
+            <div class="dot"></div>
+            <div>
+              <div class="rowTitle">Boşluk vardı</div>
+              <div class="rowHint">Boşluk da bir bilgi.</div>
+            </div>
+          </div>
         </div>
 
+        <!-- Color (toggle) -->
+        <div class="actions" style="margin-top: 10px;">
+          <button id="btnColor" class="ghost" type="button">Seçime bir renk ver</button>
+        </div>
+
+        <div id="colorBox" class="colorBox">
+          <div class="colorTitle">Yaptığın seçime bir renk ver</div>
+          <div class="colorBtns">
+            <button class="cbtn" data-color="red" type="button">
+              <span class="swatch" style="background:#d92d20;"></span> Kırmızı
+            </button>
+            <button class="cbtn" data-color="blue" type="button">
+              <span class="swatch" style="background:#2563eb;"></span> Mavi
+            </button>
+            <button class="cbtn" data-color="yellow" type="button">
+              <span class="swatch" style="background:#f59e0b;"></span> Sarı
+            </button>
+            <button class="cbtn" data-color="green" type="button">
+              <span class="swatch" style="background:#16a34a;"></span> Yeşil
+            </button>
+          </div>
+          <div id="colorNote" class="note"></div>
+        </div>
+
+        <!-- Weekly -->
         <div class="weekly">
-          <div class="weeklyTitle">Son 7 gün</div>
+          <div class="weeklyTop">
+            <div class="weeklyTitle">Son 7 gün</div>
+            <div id="weeklySummary" class="weeklySummary"></div>
+          </div>
           <div id="weekGrid" class="weekGrid"></div>
         </div>
 
-        <!-- Actions: user chooses when to go back -->
+        <!-- Actions -->
         <div class="actions">
           <button id="btnHome" class="ghost" type="button">Ana ekrana dön</button>
           <button id="reset" class="ghost" type="button">Sıfırla</button>
@@ -255,16 +431,24 @@
     const statusEl = $("status");
     const overlay = $("overlay");
 
-    const viewHome = $("viewHome");
-    const viewPick = $("viewPick");
+    const viewCount = $("viewCount");
+    const viewHome  = $("viewHome");
+    const viewPick  = $("viewPick");
 
+    const countNum = $("countNum");
     const btnStart = $("btnStart");
-    const btnHome = $("btnHome");
+    const btnHome  = $("btnHome");
     const resetBtn = $("reset");
 
-    const weekGrid = $("weekGrid");
+    const btnColor = $("btnColor");
+    const colorBox = $("colorBox");
+    const colorNote = $("colorNote");
 
-    const KEY_PREFIX = "today_choice_";
+    const weekGrid = $("weekGrid");
+    const weeklySummary = $("weeklySummary");
+
+    const KEY_PREFIX = "today_choice_"; // per-day
+    const KEY_COLOR_PREFIX = "today_color_"; // per-day
     const KEY_LAST_DATE = "today_last_date";
     const KEY_LAST_CHOICE = "today_last_choice";
 
@@ -306,8 +490,13 @@
     }
 
     function setView(which){
+      viewCount.classList.toggle("on", which==="count");
       viewHome.classList.toggle("on", which==="home");
       viewPick.classList.toggle("on", which==="pick");
+    }
+
+    function alreadyChosenToday(){
+      return localStorage.getItem(KEY_LAST_DATE) === todayKey();
     }
 
     function saveChoice(choiceId){
@@ -317,15 +506,38 @@
       localStorage.setItem(KEY_PREFIX + d, choiceId);
     }
 
-    function alreadyChosenToday(){
-      return localStorage.getItem(KEY_LAST_DATE) === todayKey();
+    function getTodayChoice(){
+      return localStorage.getItem(KEY_PREFIX + todayKey());
+    }
+
+    function setTodayColor(color){
+      localStorage.setItem(KEY_COLOR_PREFIX + todayKey(), color);
+    }
+
+    function getTodayColor(){
+      return localStorage.getItem(KEY_COLOR_PREFIX + todayKey());
     }
 
     function label(choiceId){
+      if(choiceId==="unnamed") return "Bir şey var ama adı yok";
+      if(choiceId==="clear") return "Netti";
+      if(choiceId==="nothing") return "Boşluk vardı";
+      return "—";
+    }
+
+    function shortLabel(choiceId){
       if(choiceId==="unnamed") return "Adı yok";
       if(choiceId==="clear") return "Netti";
-      if(choiceId==="nothing") return "Hiçbir şey";
+      if(choiceId==="nothing") return "Boşluk";
       return "—";
+    }
+
+    function colorToHex(c){
+      if(c==="red") return "#d92d20";
+      if(c==="blue") return "#2563eb";
+      if(c==="yellow") return "#f59e0b";
+      if(c==="green") return "#16a34a";
+      return "transparent";
     }
 
     function formatDayLabel(dateStr){
@@ -338,7 +550,12 @@
 
     function renderWeekly(){
       weekGrid.innerHTML = "";
+
+      // collect last 7
       const base = new Date();
+      const counts = {unnamed:0, clear:0, nothing:0};
+      const present = [];
+
       for(let i=0;i<7;i++){
         const d = new Date(base);
         d.setDate(base.getDate() - i);
@@ -348,23 +565,102 @@
         const key = `${yyyy}-${mm}-${dd}`;
 
         const val = localStorage.getItem(KEY_PREFIX + key);
+        const col = localStorage.getItem(KEY_COLOR_PREFIX + key);
+
+        if(val && counts[val] !== undefined) counts[val] += 1;
+        present.push({key, val, col});
+
         const item = document.createElement("div");
         item.className = "weekItem";
+
+        const dotStyle = `background:${colorToHex(col)};`;
+        const right = `
+          <div class="weekRight">
+            <div class="colorDot" style="${dotStyle}"></div>
+            <div class="badge">${val ? shortLabel(val) : "—"}</div>
+          </div>
+        `;
+
         item.innerHTML = `
           <div>${formatDayLabel(key)}</div>
-          <div class="badge">${val ? label(val) : "—"}</div>
+          ${right}
         `;
         weekGrid.appendChild(item);
       }
+
+      // weekly summary (most frequent)
+      const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+      const top = entries[0];
+      if(!top || top[1] === 0){
+        weeklySummary.textContent = "Bu hafta: —";
+      } else {
+        weeklySummary.textContent = `Bu hafta en çok: ${shortLabel(top[0])}`;
+      }
     }
 
+    function updateColorNote(){
+      const tChoice = getTodayChoice();
+      const tColor = getTodayColor();
+
+      if(!tChoice){
+        colorNote.textContent = "Önce bir seçim yap. Sonra istersen renklendir.";
+        return;
+      }
+      if(!tColor){
+        colorNote.textContent = `Bugün: ${shortLabel(tChoice)} — istersen bir renk seç.`;
+        return;
+      }
+      colorNote.textContent = `Bugün: ${shortLabel(tChoice)} — renk seçtin.`;
+    }
+
+    // ===== Countdown (9 -> 1, shrinking) =====
+    function fontSizeFor(n){
+      // 9 biggest, 1 smallest
+      // 9 -> 110px, 1 -> 62px (smooth)
+      const max = 110, min = 62;
+      const t = (n - 1) / 8; // n=1 =>0, n=9 =>1
+      return Math.round(min + (max - min) * t);
+    }
+
+    function startCountdown(){
+      let n = 9;
+      setView("count");
+
+      const tick = () => {
+        countNum.classList.remove("fade");
+        countNum.textContent = String(n);
+        countNum.style.fontSize = fontSizeFor(n) + "px";
+
+        // fade out a bit before next
+        setTimeout(()=> countNum.classList.add("fade"), 540);
+
+        if(n === 1){
+          setTimeout(()=> {
+            setView("home");
+          }, 760);
+          return;
+        }
+
+        n -= 1;
+        setTimeout(tick, 780);
+      };
+
+      tick();
+    }
+
+    // ===== UI actions =====
     btnStart.addEventListener("click", () => {
       haptic("soft");
       setView("pick");
       renderWeekly();
+
       if(alreadyChosenToday()){
         showStatus("Bugün seçimini yaptın.");
       }
+
+      // Color prompt stays available but guidance depends on whether chosen today
+      colorBox.classList.remove("on");
+      updateColorNote();
     });
 
     btnHome.addEventListener("click", () => {
@@ -372,19 +668,28 @@
       setView("home");
     });
 
+    btnColor.addEventListener("click", () => {
+      haptic("soft");
+      colorBox.classList.toggle("on");
+      updateColorNote();
+    });
+
     function handleChoice(choiceId){
       if(alreadyChosenToday()){
         haptic("soft");
         showStatus("Bugün seçimini yaptın.");
-        return; // kullanıcı isterse Ana ekrana dön butonuna basar
+        // allow color feature even if already chosen
+        updateColorNote();
+        return;
       }
 
       saveChoice(choiceId);
       renderWeekly();
+      updateColorNote();
 
       if(choiceId==="unnamed"){
         haptic("medium");
-        showStatus("Tamam. Biraz sessiz kalabilir.");
+        showStatus("Tamam. Sessiz kalsın.");
         closeEffect("unnamed");
       } else if(choiceId==="clear"){
         haptic("hard");
@@ -392,31 +697,58 @@
         closeEffect("clear");
       } else if(choiceId==="nothing"){
         haptic("soft");
-        showStatus("Tamam. Boşluk da bir şeydir.");
+        showStatus("Tamam. Boşluk da bilgi.");
         closeEffect("nothing");
       }
 
-      // otomatik dönmüyor: kullanıcı düşünmek için burada kalır
+      // user stays on screen
     }
 
     $("unnamed").addEventListener("click", ()=> handleChoice("unnamed"));
     $("clear").addEventListener("click", ()=> handleChoice("clear"));
     $("nothing").addEventListener("click", ()=> handleChoice("nothing"));
 
+    // Color buttons
+    document.querySelectorAll(".cbtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const color = btn.getAttribute("data-color");
+        const tChoice = getTodayChoice();
+
+        if(!tChoice){
+          haptic("soft");
+          showStatus("Önce bir seçim yap.");
+          updateColorNote();
+          return;
+        }
+
+        setTodayColor(color);
+        haptic("medium");
+        showStatus("Renk kaydedildi.");
+        renderWeekly();
+        updateColorNote();
+      });
+    });
+
     resetBtn.addEventListener("click", () => {
       const keys = Object.keys(localStorage);
       keys.forEach(k => {
-        if(k.startsWith(KEY_PREFIX) || k===KEY_LAST_DATE || k===KEY_LAST_CHOICE){
+        if(
+          k.startsWith(KEY_PREFIX) ||
+          k.startsWith(KEY_COLOR_PREFIX) ||
+          k===KEY_LAST_DATE ||
+          k===KEY_LAST_CHOICE
+        ){
           localStorage.removeItem(k);
         }
       });
       haptic("soft");
       showStatus("Sıfırlandı.");
       renderWeekly();
-      // reset sonrası da kullanıcı isterse Ana ekrana döner
+      updateColorNote();
+      // stay on screen
     });
 
-    // SW register
+    // ===== SW register =====
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try{
@@ -425,6 +757,9 @@
         }catch(e){}
       });
     }
+
+    // Boot
+    startCountdown();
   </script>
 </body>
 </html>
