@@ -6,13 +6,12 @@
   <meta name="theme-color" content="#F4F5F6" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
   <title>Today</title>
 
   <!-- PWA -->
   <link rel="manifest" href="./manifest.json?v=10" />
 
-  <!-- Icons (cache-busting) -->
+  <!-- Icons -->
   <link rel="apple-touch-icon" href="./apple-touch-icon-v2.png?v=10" />
   <link rel="icon" href="./icon-192-v2.png?v=10" sizes="192x192" />
   <link rel="icon" href="./icon-512-v2.png?v=10" sizes="512x512" />
@@ -30,189 +29,218 @@
     html,body{height:100%}
     body{
       margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      -webkit-tap-highlight-color: transparent;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-tap-highlight-color:transparent;
     }
     .wrap{
       min-height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 22px;
+      padding:22px;
     }
     .card{
-      width:min(520px, 92vw);
-      background: var(--card);
+      width:min(540px, 92vw);
+      background:var(--card);
       border:1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      padding: 26px 22px;
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:26px 22px;
       text-align:center;
     }
     h1{
-      margin: 0 0 10px 0;
-      letter-spacing: .18em;
-      font-size: 28px;
-      font-weight: 700;
+      margin:0 0 10px 0;
+      letter-spacing:.18em;
+      font-size:28px;
+      font-weight:700;
     }
     .q{
-      font-size: 20px;
-      margin: 8px 0 18px 0;
-    }
-    .list{
-      text-align:left;
-      margin: 12px auto 6px auto;
-      width: min(360px, 86vw);
-    }
-    .row{
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      padding: 14px 14px;
-      border-radius: 14px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-user-select:none;
-      border:1px solid transparent;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      font-size:18px;
-    }
-    .row:hover{ background: rgba(0,0,0,.03); }
-    .row:active{ transform: scale(.99); }
-    .dot::before{
-      content:"";
-      width: 10px;
-      height:10px;
-      border-radius:999px;
-      background:#111;
-      flex: 0 0 10px;
+      font-size:20px;
+      margin:8px 0 18px 0;
     }
 
-    /* Status message */
-    .status{
-      position: fixed;
-      left: 0;
-      right: 0;
-      top: env(safe-area-inset-top);
-      padding: 10px 14px;
-      text-align:center;
-      font-size: 14px;
-      color: #111;
-      opacity: 0;
-      transform: translateY(-6px);
-      transition: opacity .2s ease, transform .2s ease;
-      pointer-events:none;
-    }
-    .status.on{
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Onboarding modal */
-    .modalBack{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.35);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
-    }
-    .modalBack.on{ display:flex; }
-    .modal{
-      width:min(520px, 92vw);
-      background:#fff;
-      border-radius: 18px;
-      border:1px solid var(--line);
-      box-shadow: var(--shadow);
-      padding: 22px;
-      text-align:left;
-    }
-    .modalTitle{
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0 0 10px 0;
-    }
-    .modalText{
-      margin: 0 0 16px 0;
+    .centerBlock{
+      margin: 14px 0 16px 0;
       color: var(--muted);
-      line-height: 1.45;
+      line-height: 1.55;
+      font-size: 16px;
     }
+    .hint{
+      display:inline-block;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(0,0,0,.02);
+      margin: 6px 6px 0 6px;
+      color: #333;
+      font-size: 14px;
+    }
+
     .btn{
       width:100%;
       border:0;
-      border-radius: 14px;
-      padding: 14px 14px;
-      font-size: 16px;
-      font-weight: 650;
+      border-radius:14px;
+      padding:14px 14px;
+      font-size:16px;
+      font-weight:650;
       background:#111;
       color:#fff;
       cursor:pointer;
     }
-    .btn:active{ transform: scale(.99); }
+    .btn:active{transform:scale(.99);}
 
-    /* Closing overlay effects */
-    .overlay{
-      position: fixed;
-      inset: 0;
-      pointer-events:none;
-      opacity: 0;
-      transition: opacity 420ms ease;
+    .list{
+      text-align:left;
+      margin: 12px auto 6px auto;
+      width: min(380px, 90vw);
     }
-    .overlay.on{ opacity: 1; }
-    .overlay.fadeBlack{ background:#000; }
-    .overlay.fadeWhite{ background:#fff; }
-    .overlay.hardBlack{ background:#000; transition: opacity 120ms linear; }
+    .row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      border:1px solid transparent;
+      transition:transform .12s ease, background .12s ease, border-color .12s ease;
+      font-size:18px;
+    }
+    .row:hover{background:rgba(0,0,0,.03)}
+    .row:active{transform:scale(.99)}
+    .dot::before{
+      content:"";
+      width:10px;height:10px;border-radius:999px;
+      background:#111;flex:0 0 10px;
+    }
 
-    /* Reset button */
+    .status{
+      position:fixed;
+      left:0;right:0;
+      top:env(safe-area-inset-top);
+      padding:10px 14px;
+      text-align:center;
+      font-size:14px;
+      color:#111;
+      opacity:0;
+      transform:translateY(-6px);
+      transition:opacity .2s ease, transform .2s ease;
+      pointer-events:none;
+    }
+    .status.on{opacity:1;transform:translateY(0)}
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 420ms ease;
+    }
+    .overlay.on{opacity:1}
+    .overlay.fadeBlack{background:#000}
+    .overlay.fadeWhite{background:#fff}
+    .overlay.hardBlack{background:#000; transition:opacity 120ms linear;}
+
+    /* Weekly section */
+    .weekly{
+      margin: 18px auto 0 auto;
+      width: min(460px, 92vw);
+      text-align:left;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+    .weeklyTitle{
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0 0 10px 0;
+      letter-spacing: .02em;
+    }
+    .weekGrid{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      font-size: 15px;
+    }
+    .weekItem{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0,0,0,.02);
+    }
+    .badge{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color:#111;
+      white-space:nowrap;
+    }
+
     .reset{
-      position: fixed;
-      left: 16px;
-      right: 16px;
-      bottom: calc(16px + env(safe-area-inset-bottom));
+      margin-top: 14px;
+      width: min(380px, 90vw);
       border:1px solid var(--line);
       background: rgba(255,255,255,.9);
-      backdrop-filter: blur(8px);
       border-radius: 14px;
       padding: 12px 12px;
       font-size: 15px;
       cursor:pointer;
     }
+    .reset:active{transform:scale(.99);}
+
+    /* views */
+    .view{display:none;}
+    .view.on{display:block;}
   </style>
 </head>
 
 <body>
   <div id="status" class="status" aria-live="polite"></div>
 
-  <!-- Onboarding -->
-  <div id="modalBack" class="modalBack" role="dialog" aria-modal="true" aria-label="Onboarding">
-    <div class="modal">
-      <div class="modalTitle">Sadece fark et.</div>
-      <p class="modalText">
-        Bugün sende olanı tek bir cümleyle çözmek zorunda değilsin.
-        Sadece fark etmen yeter.
-      </p>
-      <button id="btnOk" class="btn" type="button">Tamam, gördüm</button>
+  <!-- VIEW 1: Onboarding (single screen, no overlay modal) -->
+  <div id="viewHome" class="view on">
+    <div class="wrap">
+      <div class="card">
+        <h1>TODAY</h1>
+        <div class="centerBlock">
+          <span class="hint">10 sn bekle.</span>
+          <span class="hint">Fark et.</span>
+        </div>
+        <button id="btnStart" class="btn" type="button">Başla</button>
+      </div>
     </div>
   </div>
 
-  <div class="wrap">
-    <div class="card">
-      <h1>TODAY</h1>
-      <div class="q">Bugün sende ne oldu?</div>
+  <!-- VIEW 2: Choices + weekly -->
+  <div id="viewPick" class="view">
+    <div class="wrap">
+      <div class="card">
+        <h1>TODAY</h1>
+        <div class="q">Bugün sende ne oldu?</div>
 
-      <div class="list">
-        <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
-        <div class="row dot" id="clear">Netti</div>
-        <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
+        <div class="list">
+          <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
+          <div class="row dot" id="clear">Netti</div>
+          <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
+        </div>
+
+        <div class="weekly">
+          <div class="weeklyTitle">Son 7 gün</div>
+          <div id="weekGrid" class="weekGrid"></div>
+          <button id="reset" class="reset" type="button">Sıfırla</button>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="overlay"></div>
-  <button id="reset" class="reset" type="button">Sıfırla</button>
 
   <script>
     // ===== Helpers =====
@@ -220,133 +248,178 @@
 
     const statusEl = $("status");
     const overlay = $("overlay");
-    const modalBack = $("modalBack");
-    const btnOk = $("btnOk");
+
+    const viewHome = $("viewHome");
+    const viewPick = $("viewPick");
+    const btnStart = $("btnStart");
     const resetBtn = $("reset");
 
+    const weekGrid = $("weekGrid");
+
+    const KEY_PREFIX = "today_choice_"; // per-day key
     const KEY_LAST_DATE = "today_last_date";
     const KEY_LAST_CHOICE = "today_last_choice";
-    const KEY_ONBOARDING = "today_onboarding_done";
 
-    const todayKey = () => {
-      // local date key: YYYY-MM-DD
+    function todayKey(){
       const d = new Date();
       const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
       return `${yyyy}-${mm}-${dd}`;
-    };
-
-    function showStatus(msg, ms=1800){
-      statusEl.textContent = msg;
-      statusEl.classList.add("on");
-      window.clearTimeout(showStatus._t);
-      showStatus._t = window.setTimeout(() => statusEl.classList.remove("on"), ms);
     }
 
-    // Try "stronger" haptics where supported (iOS Safari: limited)
+    function showStatus(msg, ms=1700){
+      statusEl.textContent = msg;
+      statusEl.classList.add("on");
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(()=>statusEl.classList.remove("on"), ms);
+    }
+
     function haptic(type="medium"){
       try{
-        if (navigator.vibrate) {
-          if(type==="hard") navigator.vibrate([20, 20, 30]);
+        if(navigator.vibrate){
+          if(type==="hard") navigator.vibrate([20,20,30]);
           else if(type==="soft") navigator.vibrate(12);
           else navigator.vibrate(18);
         }
       }catch(e){}
     }
 
-    // iOS Safari generally blocks sound without prior gesture.
-    // We'll keep it silent for now; haptic + animation is the feedback.
     function closeEffect(kind){
-      overlay.className = "overlay"; // reset
+      overlay.className = "overlay";
       if(kind==="unnamed"){ overlay.classList.add("fadeBlack"); }
       if(kind==="clear"){ overlay.classList.add("hardBlack"); }
       if(kind==="nothing"){ overlay.classList.add("fadeWhite"); }
 
-      // show
-      requestAnimationFrame(() => overlay.classList.add("on"));
+      requestAnimationFrame(()=> overlay.classList.add("on"));
 
-      // hide after a short pause (gives "thinking" space)
       const hold = (kind==="clear") ? 380 : 700;
-      setTimeout(() => {
-        overlay.classList.remove("on");
-      }, hold);
+      setTimeout(()=> overlay.classList.remove("on"), hold);
     }
 
+    function setView(which){
+      // which: "home" | "pick"
+      viewHome.classList.toggle("on", which==="home");
+      viewPick.classList.toggle("on", which==="pick");
+    }
+
+    // ===== Data =====
     function saveChoice(choiceId){
       const d = todayKey();
       localStorage.setItem(KEY_LAST_DATE, d);
       localStorage.setItem(KEY_LAST_CHOICE, choiceId);
+      localStorage.setItem(KEY_PREFIX + d, choiceId); // for weekly list
     }
 
     function alreadyChosenToday(){
       return localStorage.getItem(KEY_LAST_DATE) === todayKey();
     }
 
-    // ===== Onboarding =====
-    function showOnboardingIfNeeded(){
-      const done = localStorage.getItem(KEY_ONBOARDING) === "1";
-      if(!done){
-        modalBack.classList.add("on");
+    function label(choiceId){
+      if(choiceId==="unnamed") return "Adı yok";
+      if(choiceId==="clear") return "Netti";
+      if(choiceId==="nothing") return "Hiçbir şey";
+      return "—";
+    }
+
+    function formatDayLabel(dateStr){
+      // dateStr: YYYY-MM-DD
+      const d = new Date(dateStr + "T00:00:00");
+      const days = ["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      return `${days[d.getDay()]} ${dd}.${mm}`;
+    }
+
+    function renderWeekly(){
+      weekGrid.innerHTML = "";
+      const base = new Date();
+      for(let i=0;i<7;i++){
+        const d = new Date(base);
+        d.setDate(base.getDate() - i);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+        const key = `${yyyy}-${mm}-${dd}`;
+
+        const val = localStorage.getItem(KEY_PREFIX + key);
+        const item = document.createElement("div");
+        item.className = "weekItem";
+        item.innerHTML = `
+          <div>${formatDayLabel(key)}</div>
+          <div class="badge">${val ? label(val) : "—"}</div>
+        `;
+        weekGrid.appendChild(item);
       }
     }
 
-    btnOk.addEventListener("click", () => {
+    // ===== Actions =====
+    btnStart.addEventListener("click", () => {
       haptic("soft");
-      localStorage.setItem(KEY_ONBOARDING, "1");
-      modalBack.classList.remove("on");
+      setView("pick");
+      renderWeekly();
+      if(alreadyChosenToday()){
+        showStatus("Bugün seçimini yaptın.");
+      }
     });
 
-    // ===== Choice clicks =====
+    function goHomeAfterAction(){
+      // Her eylemden sonra ana ekrana dön
+      setTimeout(()=> setView("home"), 420);
+    }
+
     function handleChoice(choiceId){
       if(alreadyChosenToday()){
         haptic("soft");
         showStatus("Bugün seçimini yaptın.");
+        goHomeAfterAction();
         return;
       }
 
       saveChoice(choiceId);
+      renderWeekly();
 
-      if(choiceId === "unnamed"){
+      if(choiceId==="unnamed"){
         haptic("medium");
         showStatus("Tamam. Biraz sessiz kalabilir.");
         closeEffect("unnamed");
-      } else if(choiceId === "clear"){
+      } else if(choiceId==="clear"){
         haptic("hard");
         showStatus("Tamam. Net.");
         closeEffect("clear");
-      } else if(choiceId === "nothing"){
+      } else if(choiceId==="nothing"){
         haptic("soft");
         showStatus("Tamam. Boşluk da bir şeydir.");
         closeEffect("nothing");
       }
+
+      // seçimden sonra ana ekrana dön
+      goHomeAfterAction();
     }
 
-    $("unnamed").addEventListener("click", () => handleChoice("unnamed"));
-    $("clear").addEventListener("click", () => handleChoice("clear"));
-    $("nothing").addEventListener("click", () => handleChoice("nothing"));
+    $("unnamed").addEventListener("click", ()=> handleChoice("unnamed"));
+    $("clear").addEventListener("click", ()=> handleChoice("clear"));
+    $("nothing").addEventListener("click", ()=> handleChoice("nothing"));
 
-    // ===== Reset =====
     resetBtn.addEventListener("click", () => {
-      localStorage.removeItem(KEY_LAST_DATE);
-      localStorage.removeItem(KEY_LAST_CHOICE);
+      // tüm seçim geçmişini temizle (son 7 gün dahil)
+      const keys = Object.keys(localStorage);
+      keys.forEach(k => {
+        if(k.startsWith(KEY_PREFIX) || k===KEY_LAST_DATE || k===KEY_LAST_CHOICE){
+          localStorage.removeItem(k);
+        }
+      });
       haptic("soft");
       showStatus("Sıfırlandı.");
+      renderWeekly();
+      goHomeAfterAction();
     });
 
-    // ===== Initial state =====
-    if(alreadyChosenToday()){
-      showStatus("Bugün seçimini yaptın.");
-    }
-
-    showOnboardingIfNeeded();
-
-    // ===== Service Worker register (cache-busting) =====
+    // ===== SW Register (same approach) =====
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try{
           const reg = await navigator.serviceWorker.register("./sw.js?v=10");
-          // Ask waiting SW to activate immediately
           if (reg && reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
         }catch(e){}
       });
