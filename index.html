@@ -33,19 +33,23 @@
       background:var(--bg);
       color:var(--text);
       -webkit-tap-highlight-color:transparent;
+      transition: background 240ms ease;
     }
 
     /* views */
     .view{display:none;}
     .view.on{display:block;}
 
-    .wrap{
-      min-height:100%;
+    /* Fullscreen center */
+    .centerScreen{
+      height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:22px;
+      padding: 22px;
+      text-align:center;
     }
+
     .card{
       width:min(560px, 92vw);
       background:var(--card);
@@ -55,28 +59,6 @@
       padding:26px 22px;
       text-align:center;
     }
-    h1{
-      margin:0 0 10px 0;
-      letter-spacing:.18em;
-      font-size:28px;
-      font-weight:700;
-    }
-    .muted{
-      color: var(--muted);
-    }
-
-    .btn{
-      width:100%;
-      border:0;
-      border-radius:14px;
-      padding:14px 14px;
-      font-size:16px;
-      font-weight:650;
-      background:#111;
-      color:#fff;
-      cursor:pointer;
-    }
-    .btn:active{transform:scale(.99);}
 
     /* Status */
     .status{
@@ -96,37 +78,63 @@
     .status.on{opacity:1;transform:translateY(0)}
 
     /* Countdown */
-    .countBox{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap: 14px;
-    }
     .countNum{
-      font-weight:800;
+      font-weight: 900;
+      line-height: 1;
       letter-spacing: .02em;
-      line-height:1;
-      transform: translateY(0);
-      opacity: 1;
-      transition: opacity 240ms ease, transform 240ms ease;
       user-select:none;
       -webkit-user-select:none;
+      transition: opacity 220ms ease, transform 220ms ease;
     }
     .countNum.fade{
-      opacity: 0;
+      opacity:0;
       transform: translateY(6px);
     }
+    /* Sizes: 9 biggest -> 1 smallest */
+    .count-9{font-size: 128px;}
+    .count-8{font-size: 116px;}
+    .count-7{font-size: 104px;}
+    .count-6{font-size: 94px;}
+    .count-5{font-size: 86px;}
+    .count-4{font-size: 78px;}
+    .count-3{font-size: 70px;}
+    .count-2{font-size: 62px;}
+    .count-1{font-size: 54px;}
 
-    /* Home identity */
+    /* Home */
+    h1{
+      margin:0 0 10px 0;
+      letter-spacing:.18em;
+      font-size:28px;
+      font-weight:700;
+    }
     .identity{
       margin: 10px 0 18px 0;
       color: var(--muted);
       font-size: 16px;
       line-height: 1.55;
     }
+    .btn{
+      width: min(420px, 92vw);
+      border:0;
+      border-radius:14px;
+      padding:14px 14px;
+      font-size:16px;
+      font-weight:650;
+      background:#111;
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{transform:scale(.99);}
 
-    /* Choice list */
+    /* Pick */
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
     .q{
       font-size:20px;
       margin:8px 0 18px 0;
@@ -325,21 +333,16 @@
 <body>
   <div id="status" class="status" aria-live="polite"></div>
 
-  <!-- VIEW: Countdown -->
+  <!-- VIEW: Countdown (pure center) -->
   <div id="viewCount" class="view on">
-    <div class="wrap">
-      <div class="card">
-        <div class="countBox">
-          <div id="countNum" class="countNum">9</div>
-          <div class="muted" style="font-size:14px;">...</div>
-        </div>
-      </div>
+    <div class="centerScreen">
+      <div id="countNum" class="countNum count-9">9</div>
     </div>
   </div>
 
-  <!-- VIEW: Home -->
+  <!-- VIEW: Home (pure center) -->
   <div id="viewHome" class="view">
-    <div class="wrap">
+    <div class="centerScreen">
       <div class="card">
         <h1>TODAY</h1>
         <div class="identity">Sadece fark et. Hepsi bu.</div>
@@ -381,7 +384,7 @@
           </div>
         </div>
 
-        <!-- Color (toggle) -->
+        <!-- Color toggle -->
         <div class="actions" style="margin-top: 10px;">
           <button id="btnColor" class="ghost" type="button">Seçime bir renk ver</button>
         </div>
@@ -435,7 +438,7 @@
     const viewHome  = $("viewHome");
     const viewPick  = $("viewPick");
 
-    const countNum = $("countNum");
+    const countNumEl = $("countNum");
     const btnStart = $("btnStart");
     const btnHome  = $("btnHome");
     const resetBtn = $("reset");
@@ -447,8 +450,8 @@
     const weekGrid = $("weekGrid");
     const weeklySummary = $("weeklySummary");
 
-    const KEY_PREFIX = "today_choice_"; // per-day
-    const KEY_COLOR_PREFIX = "today_color_"; // per-day
+    const KEY_PREFIX = "today_choice_";
+    const KEY_COLOR_PREFIX = "today_color_";
     const KEY_LAST_DATE = "today_last_date";
     const KEY_LAST_CHOICE = "today_last_choice";
 
@@ -482,9 +485,7 @@
       if(kind==="unnamed"){ overlay.classList.add("fadeBlack"); }
       if(kind==="clear"){ overlay.classList.add("hardBlack"); }
       if(kind==="nothing"){ overlay.classList.add("fadeWhite"); }
-
       requestAnimationFrame(()=> overlay.classList.add("on"));
-
       const hold = (kind==="clear") ? 380 : 700;
       setTimeout(()=> overlay.classList.remove("on"), hold);
     }
@@ -518,13 +519,6 @@
       return localStorage.getItem(KEY_COLOR_PREFIX + todayKey());
     }
 
-    function label(choiceId){
-      if(choiceId==="unnamed") return "Bir şey var ama adı yok";
-      if(choiceId==="clear") return "Netti";
-      if(choiceId==="nothing") return "Boşluk vardı";
-      return "—";
-    }
-
     function shortLabel(choiceId){
       if(choiceId==="unnamed") return "Adı yok";
       if(choiceId==="clear") return "Netti";
@@ -550,11 +544,8 @@
 
     function renderWeekly(){
       weekGrid.innerHTML = "";
-
-      // collect last 7
       const base = new Date();
       const counts = {unnamed:0, clear:0, nothing:0};
-      const present = [];
 
       for(let i=0;i<7;i++){
         const d = new Date(base);
@@ -568,30 +559,24 @@
         const col = localStorage.getItem(KEY_COLOR_PREFIX + key);
 
         if(val && counts[val] !== undefined) counts[val] += 1;
-        present.push({key, val, col});
 
         const item = document.createElement("div");
         item.className = "weekItem";
 
         const dotStyle = `background:${colorToHex(col)};`;
-        const right = `
+        item.innerHTML = `
+          <div>${formatDayLabel(key)}</div>
           <div class="weekRight">
             <div class="colorDot" style="${dotStyle}"></div>
             <div class="badge">${val ? shortLabel(val) : "—"}</div>
           </div>
         `;
-
-        item.innerHTML = `
-          <div>${formatDayLabel(key)}</div>
-          ${right}
-        `;
         weekGrid.appendChild(item);
       }
 
-      // weekly summary (most frequent)
       const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
       const top = entries[0];
-      if(!top || top[1] === 0){
+      if(!top || top[1]===0){
         weeklySummary.textContent = "Bu hafta: —";
       } else {
         weeklySummary.textContent = `Bu hafta en çok: ${shortLabel(top[0])}`;
@@ -601,7 +586,6 @@
     function updateColorNote(){
       const tChoice = getTodayChoice();
       const tColor = getTodayColor();
-
       if(!tChoice){
         colorNote.textContent = "Önce bir seçim yap. Sonra istersen renklendir.";
         return;
@@ -613,13 +597,26 @@
       colorNote.textContent = `Bugün: ${shortLabel(tChoice)} — renk seçtin.`;
     }
 
-    // ===== Countdown (9 -> 1, shrinking) =====
-    function fontSizeFor(n){
-      // 9 biggest, 1 smallest
-      // 9 -> 110px, 1 -> 62px (smooth)
-      const max = 110, min = 62;
-      const t = (n - 1) / 8; // n=1 =>0, n=9 =>1
-      return Math.round(min + (max - min) * t);
+    // ===== Countdown (centered) + subtle background darken =====
+    function bgFor(n){
+      // n: 9 -> 1 ; 9 = lightest, 1 = slightly darker
+      // We'll use a tiny dark overlay effect via background color.
+      // #F4F5F6 -> #ECEDEF (very subtle)
+      const start = {r:244,g:245,b:246};
+      const end   = {r:236,g:237,b:239};
+      const t = (9 - n) / 8; // n=9 ->0, n=1 ->1
+      const r = Math.round(start.r + (end.r - start.r) * t);
+      const g = Math.round(start.g + (end.g - start.g) * t);
+      const b = Math.round(start.b + (end.b - start.b) * t);
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function setCountClass(n){
+      // remove any count-* class
+      for(let i=1;i<=9;i++){
+        countNumEl.classList.remove("count-" + i);
+      }
+      countNumEl.classList.add("count-" + n);
     }
 
     function startCountdown(){
@@ -627,17 +624,23 @@
       setView("count");
 
       const tick = () => {
-        countNum.classList.remove("fade");
-        countNum.textContent = String(n);
-        countNum.style.fontSize = fontSizeFor(n) + "px";
+        // background shade
+        document.body.style.background = bgFor(n);
 
-        // fade out a bit before next
-        setTimeout(()=> countNum.classList.add("fade"), 540);
+        // update number + size class
+        countNumEl.classList.remove("fade");
+        countNumEl.textContent = String(n);
+        setCountClass(n);
+
+        // fade out before next
+        setTimeout(()=> countNumEl.classList.add("fade"), 520);
 
         if(n === 1){
           setTimeout(()=> {
+            // restore base bg for home
+            document.body.style.background = "var(--bg)";
             setView("home");
-          }, 760);
+          }, 740);
           return;
         }
 
@@ -658,7 +661,6 @@
         showStatus("Bugün seçimini yaptın.");
       }
 
-      // Color prompt stays available but guidance depends on whether chosen today
       colorBox.classList.remove("on");
       updateColorNote();
     });
@@ -678,7 +680,6 @@
       if(alreadyChosenToday()){
         haptic("soft");
         showStatus("Bugün seçimini yaptın.");
-        // allow color feature even if already chosen
         updateColorNote();
         return;
       }
@@ -700,27 +701,22 @@
         showStatus("Tamam. Boşluk da bilgi.");
         closeEffect("nothing");
       }
-
-      // user stays on screen
     }
 
     $("unnamed").addEventListener("click", ()=> handleChoice("unnamed"));
     $("clear").addEventListener("click", ()=> handleChoice("clear"));
     $("nothing").addEventListener("click", ()=> handleChoice("nothing"));
 
-    // Color buttons
     document.querySelectorAll(".cbtn").forEach(btn => {
       btn.addEventListener("click", () => {
         const color = btn.getAttribute("data-color");
         const tChoice = getTodayChoice();
-
         if(!tChoice){
           haptic("soft");
           showStatus("Önce bir seçim yap.");
           updateColorNote();
           return;
         }
-
         setTodayColor(color);
         haptic("medium");
         showStatus("Renk kaydedildi.");
@@ -745,7 +741,6 @@
       showStatus("Sıfırlandı.");
       renderWeekly();
       updateColorNote();
-      // stay on screen
     });
 
     // ===== SW register =====
