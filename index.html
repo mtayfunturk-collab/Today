@@ -8,13 +8,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>Today</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json?v=10" />
+  <link rel="manifest" href="./manifest.json?v=11" />
 
-  <!-- Icons -->
-  <link rel="apple-touch-icon" href="./apple-touch-icon-v2.png?v=10" />
-  <link rel="icon" href="./icon-192-v2.png?v=10" sizes="192x192" />
-  <link rel="icon" href="./icon-512-v2.png?v=10" sizes="512x512" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon-v2.png?v=11" />
+  <link rel="icon" href="./icon-192-v2.png?v=11" sizes="192x192" />
+  <link rel="icon" href="./icon-512-v2.png?v=11" sizes="512x512" />
 
   <style>
     :root{
@@ -40,18 +38,22 @@
     .view{display:none;}
     .view.on{display:block;}
 
-    /* Fullscreen center */
-    .centerScreen{
-      height:100%;
+    /* FULLSCREEN CENTER (guaranteed) */
+    .full{
+      position: fixed;
+      inset: 0;
       display:flex;
       align-items:center;
       justify-content:center;
       padding: 22px;
       text-align:center;
     }
+    .fullInner{
+      width: min(560px, 92vw);
+    }
 
     .card{
-      width:min(560px, 92vw);
+      width:100%;
       background:var(--card);
       border:1px solid var(--line);
       border-radius:20px;
@@ -90,7 +92,6 @@
       opacity:0;
       transform: translateY(6px);
     }
-    /* Sizes: 9 biggest -> 1 smallest */
     .count-9{font-size: 128px;}
     .count-8{font-size: 116px;}
     .count-7{font-size: 104px;}
@@ -127,13 +128,14 @@
     }
     .btn:active{transform:scale(.99);}
 
-    /* Pick */
+    /* Pick view (same as before) */
     .wrap{
-      min-height:100%;
+      min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:22px;
+      text-align:center;
     }
     .q{
       font-size:20px;
@@ -168,22 +170,11 @@
       margin-top: 6px;
       flex: 0 0 10px;
     }
-    .rowTitle{
-      font-size:18px;
-      font-weight:700;
-      margin:0;
-    }
-    .rowHint{
-      margin:6px 0 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.45;
-    }
+    .rowTitle{ font-size:18px; font-weight:700; margin:0; }
+    .rowHint{ margin:6px 0 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
 
-    /* Overlay close effects */
     .overlay{
-      position:fixed;
-      inset:0;
+      position:fixed; inset:0;
       pointer-events:none;
       opacity:0;
       transition:opacity 420ms ease;
@@ -194,7 +185,6 @@
     .overlay.fadeWhite{background:#fff}
     .overlay.hardBlack{background:#000; transition:opacity 120ms linear;}
 
-    /* Weekly section */
     .weekly{
       margin: 18px auto 0 auto;
       width: min(520px, 92vw);
@@ -209,56 +199,31 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    .weeklyTitle{
-      font-size: 14px;
-      color: var(--muted);
-      margin: 0;
-      letter-spacing: .02em;
-    }
-    .weeklySummary{
-      font-size: 14px;
-      color: #111;
-      margin: 0;
-      white-space:nowrap;
-    }
-    .weekGrid{
-      display:flex;
-      flex-direction:column;
-      gap: 8px;
-      font-size: 15px;
-    }
+    .weeklyTitle{ font-size: 14px; color: var(--muted); margin: 0; }
+    .weeklySummary{ font-size: 14px; color:#111; margin:0; white-space:nowrap; }
+    .weekGrid{ display:flex; flex-direction:column; gap:8px; font-size:15px; }
     .weekItem{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+      display:flex; justify-content:space-between; align-items:center;
       padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
       background: rgba(0,0,0,.02);
     }
-    .weekRight{
-      display:flex;
-      align-items:center;
-      gap: 8px;
-    }
+    .weekRight{ display:flex; align-items:center; gap:8px; }
     .badge{
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #fff;
-      color:#111;
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
       white-space:nowrap;
     }
     .colorDot{
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.18);
-      background: transparent;
+      width:12px;height:12px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.18);
+      background:transparent;
     }
 
-    /* Actions */
     .actions{
       width: min(520px, 92vw);
       margin: 14px auto 0 auto;
@@ -267,8 +232,7 @@
       flex-wrap: wrap;
     }
     .ghost{
-      flex:1;
-      min-width: 160px;
+      flex:1; min-width:160px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.9);
       border-radius: 14px;
@@ -278,7 +242,6 @@
     }
     .ghost:active{transform:scale(.99);}
 
-    /* Color prompt */
     .colorBox{
       width: min(520px, 92vw);
       margin: 12px auto 0 auto;
@@ -290,19 +253,10 @@
       display:none;
     }
     .colorBox.on{display:block;}
-    .colorTitle{
-      font-size: 14px;
-      color: var(--muted);
-      margin: 0 0 10px 0;
-    }
-    .colorBtns{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .colorTitle{ font-size:14px; color:var(--muted); margin:0 0 10px 0; }
+    .colorBtns{ display:flex; gap:10px; flex-wrap:wrap; }
     .cbtn{
-      flex: 1;
-      min-width: 120px;
+      flex: 1; min-width:120px;
       border: 1px solid var(--line);
       background: #fff;
       border-radius: 14px;
@@ -316,42 +270,39 @@
     }
     .cbtn:active{transform:scale(.99);}
     .swatch{
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
+      width: 14px; height: 14px; border-radius: 999px;
       border: 1px solid rgba(0,0,0,.18);
     }
-    .note{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
+    .note{ margin-top:10px; color:var(--muted); font-size:13px; line-height:1.45; }
   </style>
 </head>
 
 <body>
   <div id="status" class="status" aria-live="polite"></div>
 
-  <!-- VIEW: Countdown (pure center) -->
+  <!-- COUNTDOWN (FULL CENTER) -->
   <div id="viewCount" class="view on">
-    <div class="centerScreen">
-      <div id="countNum" class="countNum count-9">9</div>
-    </div>
-  </div>
-
-  <!-- VIEW: Home (pure center) -->
-  <div id="viewHome" class="view">
-    <div class="centerScreen">
-      <div class="card">
-        <h1>TODAY</h1>
-        <div class="identity">Sadece fark et. Hepsi bu.</div>
-        <button id="btnStart" class="btn" type="button">Başla</button>
+    <div class="full">
+      <div class="fullInner">
+        <div id="countNum" class="countNum count-9">9</div>
       </div>
     </div>
   </div>
 
-  <!-- VIEW: Pick -->
+  <!-- HOME (FULL CENTER) -->
+  <div id="viewHome" class="view">
+    <div class="full">
+      <div class="fullInner">
+        <div class="card">
+          <h1>TODAY</h1>
+          <div class="identity">Sadece fark et. Hepsi bu.</div>
+          <button id="btnStart" class="btn" type="button">Başla</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PICK -->
   <div id="viewPick" class="view">
     <div class="wrap">
       <div class="card">
@@ -384,7 +335,6 @@
           </div>
         </div>
 
-        <!-- Color toggle -->
         <div class="actions" style="margin-top: 10px;">
           <button id="btnColor" class="ghost" type="button">Seçime bir renk ver</button>
         </div>
@@ -408,7 +358,6 @@
           <div id="colorNote" class="note"></div>
         </div>
 
-        <!-- Weekly -->
         <div class="weekly">
           <div class="weeklyTop">
             <div class="weeklyTitle">Son 7 gün</div>
@@ -417,7 +366,6 @@
           <div id="weekGrid" class="weekGrid"></div>
         </div>
 
-        <!-- Actions -->
         <div class="actions">
           <button id="btnHome" class="ghost" type="button">Ana ekrana dön</button>
           <button id="reset" class="ghost" type="button">Sıfırla</button>
@@ -562,12 +510,10 @@
 
         const item = document.createElement("div");
         item.className = "weekItem";
-
-        const dotStyle = `background:${colorToHex(col)};`;
         item.innerHTML = `
           <div>${formatDayLabel(key)}</div>
           <div class="weekRight">
-            <div class="colorDot" style="${dotStyle}"></div>
+            <div class="colorDot" style="background:${colorToHex(col)};"></div>
             <div class="badge">${val ? shortLabel(val) : "—"}</div>
           </div>
         `;
@@ -576,11 +522,7 @@
 
       const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
       const top = entries[0];
-      if(!top || top[1]===0){
-        weeklySummary.textContent = "Bu hafta: —";
-      } else {
-        weeklySummary.textContent = `Bu hafta en çok: ${shortLabel(top[0])}`;
-      }
+      weeklySummary.textContent = (!top || top[1]===0) ? "Bu hafta: —" : `Bu hafta en çok: ${shortLabel(top[0])}`;
     }
 
     function updateColorNote(){
@@ -597,14 +539,11 @@
       colorNote.textContent = `Bugün: ${shortLabel(tChoice)} — renk seçtin.`;
     }
 
-    // ===== Countdown (centered) + subtle background darken =====
+    // Background darken during countdown (very subtle)
     function bgFor(n){
-      // n: 9 -> 1 ; 9 = lightest, 1 = slightly darker
-      // We'll use a tiny dark overlay effect via background color.
-      // #F4F5F6 -> #ECEDEF (very subtle)
       const start = {r:244,g:245,b:246};
       const end   = {r:236,g:237,b:239};
-      const t = (9 - n) / 8; // n=9 ->0, n=1 ->1
+      const t = (9 - n) / 8;
       const r = Math.round(start.r + (end.r - start.r) * t);
       const g = Math.round(start.g + (end.g - start.g) * t);
       const b = Math.round(start.b + (end.b - start.b) * t);
@@ -612,10 +551,7 @@
     }
 
     function setCountClass(n){
-      // remove any count-* class
-      for(let i=1;i<=9;i++){
-        countNumEl.classList.remove("count-" + i);
-      }
+      for(let i=1;i<=9;i++) countNumEl.classList.remove("count-" + i);
       countNumEl.classList.add("count-" + n);
     }
 
@@ -624,20 +560,16 @@
       setView("count");
 
       const tick = () => {
-        // background shade
         document.body.style.background = bgFor(n);
 
-        // update number + size class
         countNumEl.classList.remove("fade");
         countNumEl.textContent = String(n);
         setCountClass(n);
 
-        // fade out before next
         setTimeout(()=> countNumEl.classList.add("fade"), 520);
 
         if(n === 1){
           setTimeout(()=> {
-            // restore base bg for home
             document.body.style.background = "var(--bg)";
             setView("home");
           }, 740);
@@ -651,16 +583,12 @@
       tick();
     }
 
-    // ===== UI actions =====
+    // Actions
     btnStart.addEventListener("click", () => {
       haptic("soft");
       setView("pick");
       renderWeekly();
-
-      if(alreadyChosenToday()){
-        showStatus("Bugün seçimini yaptın.");
-      }
-
+      if(alreadyChosenToday()) showStatus("Bugün seçimini yaptın.");
       colorBox.classList.remove("on");
       updateColorNote();
     });
@@ -683,24 +611,13 @@
         updateColorNote();
         return;
       }
-
       saveChoice(choiceId);
       renderWeekly();
       updateColorNote();
 
-      if(choiceId==="unnamed"){
-        haptic("medium");
-        showStatus("Tamam. Sessiz kalsın.");
-        closeEffect("unnamed");
-      } else if(choiceId==="clear"){
-        haptic("hard");
-        showStatus("Tamam. Net.");
-        closeEffect("clear");
-      } else if(choiceId==="nothing"){
-        haptic("soft");
-        showStatus("Tamam. Boşluk da bilgi.");
-        closeEffect("nothing");
-      }
+      if(choiceId==="unnamed"){ haptic("medium"); showStatus("Tamam. Sessiz kalsın."); closeEffect("unnamed"); }
+      if(choiceId==="clear"){ haptic("hard"); showStatus("Tamam. Net."); closeEffect("clear"); }
+      if(choiceId==="nothing"){ haptic("soft"); showStatus("Tamam. Boşluk da bilgi."); closeEffect("nothing"); }
     }
 
     $("unnamed").addEventListener("click", ()=> handleChoice("unnamed"));
@@ -728,12 +645,7 @@
     resetBtn.addEventListener("click", () => {
       const keys = Object.keys(localStorage);
       keys.forEach(k => {
-        if(
-          k.startsWith(KEY_PREFIX) ||
-          k.startsWith(KEY_COLOR_PREFIX) ||
-          k===KEY_LAST_DATE ||
-          k===KEY_LAST_CHOICE
-        ){
+        if(k.startsWith(KEY_PREFIX) || k.startsWith(KEY_COLOR_PREFIX) || k===KEY_LAST_DATE || k===KEY_LAST_CHOICE){
           localStorage.removeItem(k);
         }
       });
@@ -743,11 +655,11 @@
       updateColorNote();
     });
 
-    // ===== SW register =====
+    // SW register
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try{
-          const reg = await navigator.serviceWorker.register("./sw.js?v=10");
+          const reg = await navigator.serviceWorker.register("./sw.js?v=11");
           if (reg && reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
         }catch(e){}
       });
