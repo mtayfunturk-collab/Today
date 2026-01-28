@@ -1,555 +1,355 @@
 <!doctype html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <<link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <title>TODAY</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F4F5F6" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="TODAY" />
 
-  <!-- Icons (dosya adlarını senin repodaki isimlere göre düzenle) -->
-  <link rel="icon" href="icons/icon-192-v2.png" sizes="192x192" />
-  <link rel="icon" href="icons/icon-512-v2.png" sizes="512x512" />
-  <<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <title>Today</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json?v=10" />
+
+  <!-- Icons (cache-busting) -->
+  <link rel="apple-touch-icon" href="./apple-touch-icon-v2.png?v=10" />
+  <link rel="icon" href="./icon-192-v2.png?v=10" sizes="192x192" />
+  <link rel="icon" href="./icon-512-v2.png?v=10" sizes="512x512" />
 
   <style>
     :root{
-      --bg:#ffffff;
-      --fg:#0b0b0b;
-      --muted: rgba(0,0,0,.60);
-      --soft: rgba(0,0,0,.06);
-      --border: rgba(0,0,0,.14);
-      --shadow: 0 10px 30px rgba(0,0,0,.10);
-      --radius: 18px;
+      --bg:#F4F5F6;
+      --text:#111;
+      --muted:#666;
+      --card:#fff;
+      --line:#e6e6e6;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
     }
-
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       background: var(--bg);
-      color: var(--fg);
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wrap{
+      min-height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 18px;
-      box-sizing:border-box;
+      padding: 22px;
     }
-
-    .wrap{
-      width: 100%;
-      max-width: 420px;
-    }
-
     .card{
-      background: rgba(255,255,255,.92);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      width:min(520px, 92vw);
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: 20px;
       box-shadow: var(--shadow);
-      padding: 18px 16px 16px;
-      backdrop-filter: blur(6px);
-    }
-
-    h1{
-      margin: 0 0 10px;
-      font-size: 20px;
-      letter-spacing: .06em;
-      font-weight: 700;
-    }
-
-    .status{
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: var(--muted);
-      min-height: 18px;
-    }
-
-    .q{
-      font-size: 18px;
-      font-weight: 650;
-      margin: 6px 0 14px;
-    }
-
-    .q.big{
-      font-size: 20px;
-      margin-top: 2px;
-    }
-
-    .sub{
-      margin-top: 10px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .row{
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: var(--soft);
-      font-size: 16px;
-      line-height: 1.2;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      cursor:pointer;
-    }
-
-    .row.dot::after{
-      content:"";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      border: 1px solid rgba(0,0,0,.25);
-      background: rgba(0,0,0,.10);
-      flex: 0 0 auto;
-      margin-left: 12px;
-    }
-
-    .row:active{ transform: scale(0.993); }
-
-    .row[aria-disabled="true"]{
-      opacity: .45;
-      pointer-events:none;
-      filter: grayscale(.2);
-    }
-
-    .selected{
-      outline: 2px solid rgba(0,0,0,.60);
-      border-radius: 14px;
-    }
-
-    .primary{
-      margin-top: 16px;
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.06);
-      font-size: 16px;
-      font-weight: 600;
-      cursor:pointer;
-    }
-    .primary:active{ transform: scale(0.99); }
-
-    .reset{
-      margin-top: 12px;
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(0,0,0,.18);
-      background: transparent;
-      font-size: 14px;
-      opacity: .85;
-      cursor:pointer;
-      display:none; /* kilitliyken JS açacak */
-    }
-    .reset:active{ transform: scale(0.99); }
-
-    .closing{
-      margin-top: 14px;
-      font-size: 14px;
-      color: rgba(0,0,0,.72);
+      padding: 26px 22px;
       text-align:center;
     }
-
-    .screen{ display:block; }
-    .hidden{ display:none; }
-
-    .history{
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(0,0,0,.18);
+    h1{
+      margin: 0 0 10px 0;
+      letter-spacing: .18em;
+      font-size: 28px;
+      font-weight: 700;
     }
-    .historyTitle{
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 8px;
+    .q{
+      font-size: 20px;
+      margin: 8px 0 18px 0;
     }
-    .historyList{
-      font-size: 14px;
-      line-height: 1.6;
+    .list{
+      text-align:left;
+      margin: 12px auto 6px auto;
+      width: min(360px, 86vw);
     }
-    .historyItem{
+    .row{
       display:flex;
-      justify-content:space-between;
+      align-items:center;
       gap: 12px;
+      padding: 14px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      border:1px solid transparent;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-size:18px;
     }
-    .historyDate{ color: rgba(0,0,0,.55); }
-    .historyChoice{ color: rgba(0,0,0,.85); }
+    .row:hover{ background: rgba(0,0,0,.03); }
+    .row:active{ transform: scale(.99); }
+    .dot::before{
+      content:"";
+      width: 10px;
+      height:10px;
+      border-radius:999px;
+      background:#111;
+      flex: 0 0 10px;
+    }
 
-    /* Overlay animasyonları */
+    /* Status message */
+    .status{
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: env(safe-area-inset-top);
+      padding: 10px 14px;
+      text-align:center;
+      font-size: 14px;
+      color: #111;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity .2s ease, transform .2s ease;
+      pointer-events:none;
+    }
+    .status.on{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Onboarding modal */
+    .modalBack{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 22px;
+    }
+    .modalBack.on{ display:flex; }
+    .modal{
+      width:min(520px, 92vw);
+      background:#fff;
+      border-radius: 18px;
+      border:1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      text-align:left;
+    }
+    .modalTitle{
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+    }
+    .modalText{
+      margin: 0 0 16px 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .btn{
+      width:100%;
+      border:0;
+      border-radius: 14px;
+      padding: 14px 14px;
+      font-size: 16px;
+      font-weight: 650;
+      background:#111;
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{ transform: scale(.99); }
+
+    /* Closing overlay effects */
     .overlay{
       position: fixed;
       inset: 0;
       pointer-events:none;
       opacity: 0;
-      transition: opacity 220ms ease;
-      background: transparent;
+      transition: opacity 420ms ease;
     }
-    .overlay.show{ opacity: 1; }
+    .overlay.on{ opacity: 1; }
+    .overlay.fadeBlack{ background:#000; }
+    .overlay.fadeWhite{ background:#fff; }
+    .overlay.hardBlack{ background:#000; transition: opacity 120ms linear; }
 
-    .overlay.fade-black{
-      background: #000;
-      transition: opacity 800ms ease;
-    }
-    .overlay.hard-black{
-      background: #000;
-      transition: opacity 150ms ease;
-    }
-    .overlay.whiteout{
-      background: #fff;
-      transition: opacity 700ms ease;
-    }
-
-    /* küçük “update” bildirimi (isteğe bağlı) */
-    .toast{
+    /* Reset button */
+    .reset{
       position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.85);
-      color: #fff;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      display:none;
-      gap: 10px;
-      align-items:center;
-    }
-    .toast.show{ display:flex; }
-    .toast button{
-      border: 1px solid rgba(255,255,255,.35);
-      background: transparent;
-      color:#fff;
-      border-radius: 10px;
-      padding: 6px 10px;
+      left: 16px;
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(8px);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 15px;
       cursor:pointer;
     }
   </style>
 </head>
 
 <body>
+  <div id="status" class="status" aria-live="polite"></div>
+
+  <!-- Onboarding -->
+  <div id="modalBack" class="modalBack" role="dialog" aria-modal="true" aria-label="Onboarding">
+    <div class="modal">
+      <div class="modalTitle">Sadece fark et.</div>
+      <p class="modalText">
+        Bugün sende olanı tek bir cümleyle çözmek zorunda değilsin.
+        Sadece fark etmen yeter.
+      </p>
+      <button id="btnOk" class="btn" type="button">Tamam, gördüm</button>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="card">
       <h1>TODAY</h1>
-      <div id="status" class="status" aria-live="polite"></div>
+      <div class="q">Bugün sende ne oldu?</div>
 
-      <!-- Onboarding -->
-      <div id="screenIntro" class="screen">
-        <div class="q big">Sadece fark et.</div>
-        <div class="sub">
-          <div>10 saniye.</div>
-          <div>Cevap arama.</div>
-          <div>Dur ve bak.</div>
-        </div>
-        <button id="startBtn" class="primary" type="button">Başla</button>
-      </div>
-
-      <!-- Soru + Seçimler -->
-      <div id="screenQuestion" class="screen hidden">
-        <div class="q">Bugün sende ne oldu?</div>
-
-        <div class="list">
-          <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
-          <div class="row dot" id="clear">Netti</div>
-          <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
-        </div>
-
-        <button id="reset" class="reset" type="button">Sıfırla</button>
-        <div id="closing" class="closing hidden">Tamam, gördüm.</div>
-
-        <div class="history">
-          <div class="historyTitle">Son 7 gün</div>
-          <div id="historyList" class="historyList"></div>
-        </div>
+      <div class="list">
+        <div class="row dot" id="unnamed">Bir şey oldu ama adı yok</div>
+        <div class="row dot" id="clear">Netti</div>
+        <div class="row dot" id="nothing">Hiçbir şey olmadı</div>
       </div>
     </div>
   </div>
 
   <div class="overlay" id="overlay"></div>
-
-  <div class="toast" id="toast">
-    <span>Yeni sürüm hazır.</span>
-    <button id="reloadBtn" type="button">Yenile</button>
-  </div>
+  <button id="reset" class="reset" type="button">Sıfırla</button>
 
   <script>
-    // --------------------------
-    // Helpers
-    // --------------------------
-    const STORAGE_KEY = "today-choice-v1";
-    const HISTORY_KEY = "today-history-v1";
-    const CHOICE_IDS = ["unnamed","clear","nothing"];
+    // ===== Helpers =====
+    const $ = (id) => document.getElementById(id);
 
-    const CHOICE_LABELS = {
-      unnamed: "Bir şey oldu ama adı yok",
-      clear: "Netti",
-      nothing: "Hiçbir şey olmadı"
-    };
+    const statusEl = $("status");
+    const overlay = $("overlay");
+    const modalBack = $("modalBack");
+    const btnOk = $("btnOk");
+    const resetBtn = $("reset");
 
-    const overlay = document.getElementById("overlay");
-    const toast = document.getElementById("toast");
-    const reloadBtn = document.getElementById("reloadBtn");
+    const KEY_LAST_DATE = "today_last_date";
+    const KEY_LAST_CHOICE = "today_last_choice";
+    const KEY_ONBOARDING = "today_onboarding_done";
 
-    function todayKey(){
+    const todayKey = () => {
+      // local date key: YYYY-MM-DD
       const d = new Date();
       const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
       return `${yyyy}-${mm}-${dd}`;
+    };
+
+    function showStatus(msg, ms=1800){
+      statusEl.textContent = msg;
+      statusEl.classList.add("on");
+      window.clearTimeout(showStatus._t);
+      showStatus._t = window.setTimeout(() => statusEl.classList.remove("on"), ms);
     }
 
-    function setStatus(msg){
-      const s = document.getElementById("status");
-      if (s) s.textContent = msg || "";
-    }
-
-    function showScreen(name){
-      const intro = document.getElementById("screenIntro");
-      const q = document.getElementById("screenQuestion");
-      if (!intro || !q) return;
-      if (name === "intro"){
-        intro.classList.remove("hidden");
-        q.classList.add("hidden");
-      } else {
-        intro.classList.add("hidden");
-        q.classList.remove("hidden");
-      }
-    }
-
-    function clearSelectedUI(){
-      CHOICE_IDS.forEach(id=>{
-        const el = document.getElementById(id);
-        if (el) el.classList.remove("selected");
-      });
-    }
-
-    function applyChoiceUI(choiceId){
-      clearSelectedUI();
-      const el = document.getElementById(choiceId);
-      if (el) el.classList.add("selected");
-    }
-
-    function setChoicesLocked(locked){
-      CHOICE_IDS.forEach(id=>{
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.setAttribute("aria-disabled", locked ? "true" : "false");
-      });
-
-      const r = document.getElementById("reset");
-      if (r) r.style.display = locked ? "inline-block" : "none";
-    }
-
-    function loadChoice(){
+    // Try "stronger" haptics where supported (iOS Safari: limited)
+    function haptic(type="medium"){
       try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        const data = JSON.parse(raw);
-        if (data && data.date === todayKey() && data.choiceId) return data;
-      }catch(_){}
-      return null;
+        if (navigator.vibrate) {
+          if(type==="hard") navigator.vibrate([20, 20, 30]);
+          else if(type==="soft") navigator.vibrate(12);
+          else navigator.vibrate(18);
+        }
+      }catch(e){}
     }
 
-    function loadHistory(){
-      try{
-        return JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
-      }catch(_){
-        return {};
-      }
-    }
+    // iOS Safari generally blocks sound without prior gesture.
+    // We'll keep it silent for now; haptic + animation is the feedback.
+    function closeEffect(kind){
+      overlay.className = "overlay"; // reset
+      if(kind==="unnamed"){ overlay.classList.add("fadeBlack"); }
+      if(kind==="clear"){ overlay.classList.add("hardBlack"); }
+      if(kind==="nothing"){ overlay.classList.add("fadeWhite"); }
 
-    function saveToHistory(dateStr, choiceId){
-      const hist = loadHistory();
-      hist[dateStr] = choiceId;
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+      // show
+      requestAnimationFrame(() => overlay.classList.add("on"));
+
+      // hide after a short pause (gives "thinking" space)
+      const hold = (kind==="clear") ? 380 : 700;
+      setTimeout(() => {
+        overlay.classList.remove("on");
+      }, hold);
     }
 
     function saveChoice(choiceId){
-      const date = todayKey();
-      const payload = { date, choiceId };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      saveToHistory(date, choiceId);
+      const d = todayKey();
+      localStorage.setItem(KEY_LAST_DATE, d);
+      localStorage.setItem(KEY_LAST_CHOICE, choiceId);
     }
 
-    function lastNDates(n){
-      const out = [];
-      const d = new Date();
-      for (let i=0;i<n;i++){
-        const dd = new Date(d);
-        dd.setDate(d.getDate() - i);
-        const yyyy = dd.getFullYear();
-        const mm = String(dd.getMonth()+1).padStart(2,"0");
-        const day = String(dd.getDate()).padStart(2,"0");
-        out.push(`${yyyy}-${mm}-${day}`);
+    function alreadyChosenToday(){
+      return localStorage.getItem(KEY_LAST_DATE) === todayKey();
+    }
+
+    // ===== Onboarding =====
+    function showOnboardingIfNeeded(){
+      const done = localStorage.getItem(KEY_ONBOARDING) === "1";
+      if(!done){
+        modalBack.classList.add("on");
       }
-      return out;
     }
 
-    function renderHistory(){
-      const box = document.getElementById("historyList");
-      if (!box) return;
+    btnOk.addEventListener("click", () => {
+      haptic("soft");
+      localStorage.setItem(KEY_ONBOARDING, "1");
+      modalBack.classList.remove("on");
+    });
 
-      const hist = loadHistory();
-      const days = lastNDates(7);
-
-      box.innerHTML = days.map(dateStr=>{
-        const choiceId = hist[dateStr];
-        const label = choiceId ? (CHOICE_LABELS[choiceId] || choiceId) : "—";
-        return `
-          <div class="historyItem">
-            <span class="historyDate">${dateStr}</span>
-            <span class="historyChoice">${label}</span>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function showClosing(){
-      const c = document.getElementById("closing");
-      if (!c) return;
-      c.classList.remove("hidden");
-      setTimeout(()=> c.classList.add("hidden"), 1200);
-    }
-
-    // --------------------------
-    // Effects
-    // --------------------------
-    function vibrate(pattern){
-      // Android/Chrome çalışır; iOS Safari çoğu zaman desteklemez
-      if (navigator.vibrate) navigator.vibrate(pattern);
-    }
-
-    function playCloseEffect(choiceId){
-      // Her seçim için farklı kapanış hissi:
-      // unnamed -> yavaş kararma
-      // clear   -> sert kararma
-      // nothing -> beyazlaşma
-      overlay.className = "overlay"; // reset classes
-
-      if (choiceId === "unnamed"){
-        overlay.classList.add("fade-black","show");
-        vibrate([20,30,20,40,20]);
-      } else if (choiceId === "clear"){
-        overlay.classList.add("hard-black","show");
-        vibrate([60]);
-      } else {
-        overlay.classList.add("whiteout","show");
-        vibrate([15,20,15]);
-      }
-
-      // kısa süre sonra overlay’i geri al
-      setTimeout(()=>{
-        overlay.classList.remove("show");
-        setTimeout(()=> overlay.className = "overlay", 250);
-      }, 650);
-    }
-
-    // --------------------------
-    // Reset
-    // --------------------------
-    function resetToday(){
-      localStorage.removeItem(STORAGE_KEY);
-      clearSelectedUI();
-      setStatus("");
-      setChoicesLocked(false);
-
-      const c = document.getElementById("closing");
-      if (c) c.classList.add("hidden");
-
-      showScreen("intro");
-      renderHistory();
-    }
-
-    // --------------------------
-    // Init
-    // --------------------------
-    document.getElementById("startBtn").onclick = () => {
-      showScreen("question");
-    };
-
-    document.getElementById("reset").onclick = () => {
-      resetToday();
-    };
-
+    // ===== Choice clicks =====
     function handleChoice(choiceId){
+      if(alreadyChosenToday()){
+        haptic("soft");
+        showStatus("Bugün seçimini yaptın.");
+        return;
+      }
+
       saveChoice(choiceId);
-      applyChoiceUI(choiceId);
-      setStatus("Bugün seçimini yaptın.");
-      setChoicesLocked(true);
-      showClosing();
-      renderHistory();
-      playCloseEffect(choiceId);
+
+      if(choiceId === "unnamed"){
+        haptic("medium");
+        showStatus("Tamam. Biraz sessiz kalabilir.");
+        closeEffect("unnamed");
+      } else if(choiceId === "clear"){
+        haptic("hard");
+        showStatus("Tamam. Net.");
+        closeEffect("clear");
+      } else if(choiceId === "nothing"){
+        haptic("soft");
+        showStatus("Tamam. Boşluk da bir şeydir.");
+        closeEffect("nothing");
+      }
     }
 
-    document.getElementById("unnamed").onclick = () => handleChoice("unnamed");
-    document.getElementById("clear").onclick   = () => handleChoice("clear");
-    document.getElementById("nothing").onclick = () => handleChoice("nothing");
+    $("unnamed").addEventListener("click", () => handleChoice("unnamed"));
+    $("clear").addEventListener("click", () => handleChoice("clear"));
+    $("nothing").addEventListener("click", () => handleChoice("nothing"));
 
-    // Açılış davranışı
-    const existing = loadChoice();
-    if (existing){
-      showScreen("question");
-      applyChoiceUI(existing.choiceId);
-      setStatus("Bugün seçimini yaptın.");
-      setChoicesLocked(true);
-    } else {
-      showScreen("intro");
-      setStatus("");
-      setChoicesLocked(false);
+    // ===== Reset =====
+    resetBtn.addEventListener("click", () => {
+      localStorage.removeItem(KEY_LAST_DATE);
+      localStorage.removeItem(KEY_LAST_CHOICE);
+      haptic("soft");
+      showStatus("Sıfırlandı.");
+    });
+
+    // ===== Initial state =====
+    if(alreadyChosenToday()){
+      showStatus("Bugün seçimini yaptın.");
     }
-    renderHistory();
 
-    // --------------------------
-    // Service Worker (güncelleme kolaylığı)
-    // --------------------------
-    if ("serviceWorker" in navigator){
-      navigator.serviceWorker.register("./sw.js").then(reg=>{
-        // yeni SW bulunduğunda toast göster
-        function showUpdateToast(){
-          if (!toast) return;
-          toast.classList.add("show");
-        }
+    showOnboardingIfNeeded();
 
-        if (reg.waiting) showUpdateToast();
-
-        reg.addEventListener("updatefound", ()=>{
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener("statechange", ()=>{
-            if (newWorker.state === "installed" && navigator.serviceWorker.controller){
-              showUpdateToast();
-            }
-          });
-        });
-
-        if (reloadBtn){
-          reloadBtn.onclick = async () => {
-            if (!reg.waiting) return location.reload();
-            reg.waiting.postMessage({ type: "SKIP_WAITING" });
-          };
-        }
-
-        navigator.serviceWorker.addEventListener("controllerchange", ()=>{
-          location.reload();
-        });
-      }).catch(()=>{});
+    // ===== Service Worker register (cache-busting) =====
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try{
+          const reg = await navigator.serviceWorker.register("./sw.js?v=10");
+          // Ask waiting SW to activate immediately
+          if (reg && reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        }catch(e){}
+      });
     }
   </script>
 </body>
