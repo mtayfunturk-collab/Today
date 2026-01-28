@@ -2,13 +2,13 @@
    Goal: keep it simple, update-friendly, and avoid "stuck icon/manifest" issues.
 */
 
-const CACHE_VERSION = "today-v7"; // BUNU her büyük değişiklikte +1 yap (v8, v9...)
+const CACHE_VERSION = "today-v9"; // BUNU her büyük değişiklikte +1 yap (v8, v9...)
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
+  "./icon-192.v2.png",
+  "./icon-512.v2.png",
   "./apple-touch-icon.png",
   "./sw.js"
 ];
