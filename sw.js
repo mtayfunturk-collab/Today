@@ -1,20 +1,20 @@
-const CACHE_VERSION = "today-v10";
-
+/* TODAY Service Worker */
+const CACHE_NAME = "today-v7";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./sw.js",
-  "./icon-192-v2.png",
-  "./icon-512-v2.png",
-  "./apple-touch-icon-v2.png"
+  "./icon-192.png",
+  "./icon-512.png",
+  "./apple-touch-icon.png"
 ];
 
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -22,53 +22,41 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const keys = await caches.keys();
       await Promise.all(
-        keys.map((k) => (k === CACHE_VERSION ? null : caches.delete(k)))
+        keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : Promise.resolve()))
       );
       await self.clients.claim();
     })()
   );
 });
 
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
-});
-
 self.addEventListener("fetch", (event) => {
   const req = event.request;
+
+  // Only handle GET
   if (req.method !== "GET") return;
 
-  const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
-
-  const accept = req.headers.get("accept") || "";
-  const isHTML = req.mode === "navigate" || accept.includes("text/html");
-
-  // HTML: network-first so updates land quickly
-  if (isHTML) {
-    event.respondWith(
-      (async () => {
-        try {
-          const fresh = await fetch(req, { cache: "no-store" });
-          const cache = await caches.open(CACHE_VERSION);
-          cache.put("./index.html", fresh.clone());
-          return fresh;
-        } catch (e) {
-          return (await caches.match("./index.html")) || Response.error();
-        }
-      })()
-    );
-    return;
-  }
-
-  // Other files: cache-first
   event.respondWith(
     (async () => {
-      const cached = await caches.match(req);
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(req, { ignoreSearch: true });
+
+      // Network-first for HTML (always try fresh)
+      const isHTML = req.headers.get("accept")?.includes("text/html");
+      if (isHTML) {
+        try {
+          const fresh = await fetch(req);
+          cache.put(req, fresh.clone());
+          return fresh;
+        } catch (e) {
+          return cached || caches.match("./index.html");
+        }
+      }
+
+      // Cache-first for assets
       if (cached) return cached;
 
       try {
         const fresh = await fetch(req);
-        const cache = await caches.open(CACHE_VERSION);
         cache.put(req, fresh.clone());
         return fresh;
       } catch (e) {
