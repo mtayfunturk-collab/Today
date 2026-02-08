@@ -1,1045 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Today</title>
 
-  <meta name="theme-color" content="#0b0f1a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#F4F5F6">
 
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-  <link rel="icon" sizes="192x192" href="./icon-192.png" />
-  <link rel="icon" sizes="512x512" href="./icon-512.png" />
+  <!-- iOS -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v9.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <style>
-    :root{
-      --bg1:#0b0f1a;
-      --bg2:#111a3a;
-      --bg3:#1b2a66;
-
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.62);
-
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f4f5f6;
+      color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      color: var(--text);
-      background: radial-gradient(1000px 700px at 20% 10%, rgba(124,92,255,.22), transparent 60%),
-                  radial-gradient(900px 600px at 80% 20%, rgba(40,182,255,.18), transparent 55%),
-                  linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
-      -webkit-tap-highlight-color: transparent;
-      overflow-x:hidden;
-    }
-
-    /* Views */
-    .view{ display:none; }
-    .view.on{ display:block; }
-
-    /* Fullscreen center */
-    .full{
-      position:fixed; inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
-      text-align:center;
-    }
-    .inner{ width:min(560px, 92vw); }
-
-    .card{
-      width:100%;
-      border:1px solid var(--stroke);
-      background: var(--card);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 22px 18px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .status{
-      position:fixed;
-      left:0; right:0;
-      top: env(safe-area-inset-top);
-      padding: 10px 14px;
-      text-align:center;
-      font-size: 14px;
-      color: var(--text);
-      opacity:0;
-      transform: translateY(-6px);
-      transition: opacity .18s ease, transform .18s ease;
-      pointer-events:none;
-      z-index: 50;
-    }
-    .status.on{ opacity:1; transform: translateY(0); }
-
-    /* Countdown */
-    .count{
-      font-weight: 900;
-      letter-spacing: .02em;
-      line-height: 1;
-      user-select:none;
-      -webkit-user-select:none;
-      transition: opacity .22s ease, transform .22s ease;
-    }
-    .count.fade{ opacity:0; transform: translateY(6px); }
-    .c9{font-size:128px} .c8{font-size:116px} .c7{font-size:104px}
-    .c6{font-size:94px}  .c5{font-size:86px}  .c4{font-size:78px}
-    .c3{font-size:70px}  .c2{font-size:62px}  .c1{font-size:54px}
-
-    /* Onboarding */
-    .logo{
-      width: 84px;
-      height: 84px;
-      border-radius: 22px;
-      display:block;
-      margin: 6px auto 10px auto;
-    }
-    h1{
-      margin: 0 0 10px 0;
-      letter-spacing: .18em;
-      font-size: 26px;
-      font-weight: 800;
-    }
-    .motto{
-      margin: 8px 0 16px 0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
-    }
-    .smallnote{
-      margin-top: 12px;
-      color: rgba(255,255,255,.38);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    .btn{
+    .screen {
       width: 100%;
       max-width: 420px;
-      display:block;
-      margin: 0 auto;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.10);
-      color: var(--text);
-      border-radius: 16px;
-      padding: 14px 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor:pointer;
-    }
-    .btn:active{ transform: scale(.99); }
-
-    /* Selection screen layout */
-    .wrap{
-      min-height: 100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
+      padding: 24px;
+      text-align: center;
+      display: none;
     }
 
-    .q{
-      font-size: 19px;
-      margin: 6px 0 14px 0;
-      color: rgba(255,255,255,.92);
+    .screen.active {
+      display: block;
     }
 
-    .list{
-      width: min(480px, 92vw);
-      margin: 8px auto 0 auto;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      text-align:left;
+    .logo {
+      width: 96px;
+      margin: 0 auto 24px;
     }
 
-    .row{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      border-radius: 18px;
-      padding: 14px 14px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-user-select:none;
-      transition: transform .12s ease, background .12s ease, opacity .12s ease;
-      display:flex;
-      gap: 12px;
-      align-items:flex-start;
-    }
-    .row:hover{ background: rgba(255,255,255,.07); }
-    .row:active{ transform: scale(.99); }
-    .row.disabled{
-      opacity: .45;
-      cursor: default;
-    }
-
-    .dot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.9);
-      margin-top: 7px;
-      flex: 0 0 10px;
-    }
-    .title{ font-size: 17px; font-weight: 800; margin:0; }
-    .hint{ margin: 6px 0 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
-
-    /* Colors (optional) */
-    .colors{
-      width: min(480px, 92vw);
-      margin: 12px auto 0 auto;
-      text-align:left;
-      display:none;
-      border: 1px solid var(--stroke);
-      border-radius: 18px;
-      padding: 12px;
-      background: rgba(255,255,255,.04);
-    }
-    .colors.on{ display:block; }
-    .colorsLabel{
-      font-size: 13px;
-      color: rgba(255,255,255,.72);
-      margin: 0 0 10px 0;
-    }
-    .colorBtns{ display:flex; gap:10px; flex-wrap:wrap; }
-    .cbtn{
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.08);
-      color: rgba(255,255,255,.9);
-      border-radius: 16px;
-      padding: 12px 12px;
-      cursor:pointer;
-      flex: 1;
-      min-width: 140px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      font-weight: 700;
+    .subtitle {
+      opacity: 0.7;
       font-size: 14px;
-    }
-    .cbtn:active{ transform: scale(.99); }
-    .swatch{
-      width: 14px; height: 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.25);
-      display:inline-block;
+      margin-top: 8px;
     }
 
-    /* Floating calendar arrow button */
-    .fab{
-      position: fixed;
-      right: 18px;
-      bottom: calc(18px + env(safe-area-inset-bottom));
-      width: 52px;
-      height: 52px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.10);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: rgba(255,255,255,.92);
-      font-size: 22px;
-      font-weight: 900;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      box-shadow: 0 16px 40px rgba(0,0,0,.35);
-      z-index: 40;
-    }
-    .fab:active{ transform: scale(.98); }
-
-    /* Calendar view */
-    .topbar{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .topLeft{
-      text-align:left;
-    }
-    .thisMonth{
-      font-size: 18px;
-      font-weight: 900;
-      margin: 0;
-    }
-    .monthLine{
-      margin: 4px 0 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .summary{
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: 18px;
-      padding: 12px 12px;
-      color: rgba(255,255,255,.88);
-      font-size: 14px;
-      line-height: 1.45;
-      margin: 10px 0 12px 0;
-      text-align:left;
-    }
-
-    .cal{
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-      border-radius: 18px;
-      padding: 10px;
-    }
-    .dow{
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-bottom: 6px;
-      color: rgba(255,255,255,.55);
-      font-size: 11px;
-      text-align:center;
-      padding: 0 2px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-    .day{
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
+    .btn {
+      margin-top: 24px;
+      padding: 16px;
       border-radius: 14px;
-      min-height: 54px;
-      padding: 8px 8px;
-      cursor:pointer;
-      position: relative;
-      overflow:hidden;
-      text-align:left;
-    }
-    .day.empty{
-      background: transparent;
-      border: 1px solid rgba(255,255,255,.06);
-      cursor: default;
-      opacity: .55;
-    }
-    .day.today{
-      border-color: rgba(255,255,255,.28);
-      background: rgba(255,255,255,.07);
-    }
-    .dnum{
-      font-size: 12px;
-      color: rgba(255,255,255,.78);
-      font-weight: 800;
-    }
-    .mark{
-      position:absolute;
-      left: 8px;
-      bottom: 8px;
-      display:flex;
-      align-items:center;
-      gap: 6px;
-      font-size: 14px;
-      color: rgba(255,255,255,.92);
-      font-weight: 900;
-    }
-    .colDot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.25);
-      background: transparent;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+      background: #111;
+      color: #fff;
     }
 
-    .footer{
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
+    .countdown {
+      font-size: 72px;
+      font-weight: 600;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .choice {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
       margin-top: 12px;
-    }
-    .ghost{
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.9);
-      border-radius: 16px;
-      padding: 12px 12px;
-      cursor:pointer;
-      font-weight: 800;
-      flex: 1;
-    }
-    .ghost:active{ transform: scale(.99); }
-
-    /* Bottom sheet */
-    .sheetBack{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.40);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .18s ease;
-      z-index: 80;
-    }
-    .sheetBack.on{
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .sheet{
-      position: fixed;
-      left: 0; right: 0;
-      bottom: -420px;
-      transition: bottom .2s ease;
-      z-index: 90;
-      padding: 12px 12px calc(12px + env(safe-area-inset-bottom)) 12px;
-    }
-    .sheet.on{ bottom: 0; }
-    .sheetCard{
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(10,12,22,.70);
-      border-radius: 20px;
-      padding: 14px 14px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 24px 80px rgba(0,0,0,.55);
-    }
-    .sheetTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .sheetTitle{
-      margin:0;
-      font-size: 15px;
-      font-weight: 900;
-    }
-    .xbtn{
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.9);
-      border-radius: 12px;
-      width: 38px;
-      height: 34px;
-      cursor:pointer;
-      font-weight: 900;
-    }
-    .sheetLine{
-      color: rgba(255,255,255,.78);
-      font-size: 14px;
-      margin: 8px 0 0 0;
-      line-height: 1.45;
-    }
-    .sheetActions{
-      display:flex;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .sheetBtn{
-      flex:1;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.9);
-      border-radius: 16px;
-      padding: 12px 12px;
-      cursor:pointer;
-      font-weight: 900;
-    }
-    .sheetBtn.danger{
-      border-color: rgba(255,120,120,.35);
-      background: rgba(255,80,80,.10);
+      text-align: left;
     }
 
-    /* Utility */
-    .sp{ height: 8px; }
+    .choice-title {
+      font-weight: 600;
+    }
 
+    .choice-desc {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .calendar-btn {
+      margin-top: 24px;
+      font-size: 20px;
+      background: none;
+      border: none;
+    }
   </style>
 </head>
 
 <body>
-  <div id="status" class="status" aria-live="polite"></div>
 
-  <!-- COUNTDOWN -->
-  <div id="vCount" class="view on">
-    <div class="full">
-      <div class="inner">
-        <div id="countNum" class="count c9">9</div>
-      </div>
-    </div>
+<!-- ONBOARDING -->
+<div class="screen active" id="onboarding">
+  <img src="icons/today-icon-v9-512.png" class="logo" alt="Today">
+  <h1>TODAY</h1>
+  <div class="subtitle">Verileriniz sadece bu cihazda kaydedilmektedir.</div>
+  <button class="btn" onclick="startCountdown()">Başla</button>
+</div>
+
+<!-- COUNTDOWN -->
+<div class="screen" id="countdownScreen">
+  <div class="countdown" id="countdown">5</div>
+</div>
+
+<!-- CHOICES -->
+<div class="screen" id="choiceScreen">
+  <h2>Bugün sende ne oldu?</h2>
+
+  <div class="choice" onclick="saveChoice('adı yok')">
+    <div class="choice-title">Bir şey oldu ama adı yok</div>
+    <div class="choice-desc">Adını koyma. Sadece fark et.</div>
   </div>
 
-  <!-- ONBOARDING -->
-  <div id="vOnboard" class="view">
-    <div class="full">
-      <div class="inner">
-        <div class="card">
-          <!-- Logo only here -->
-          <img class="logo" src="./icon-512.png" alt="Today logo" />
-          <h1>TODAY</h1>
-          <div class="motto">Sadece fark et. Hepsi bu.</div>
-          <button id="btnStart" class="btn" type="button">Başla</button>
-          <div class="smallnote">Verileriniz sadece bu cihazda kaydedilmektedir.</div>
-        </div>
-      </div>
-    </div>
+  <div class="choice" onclick="saveChoice('netti')">
+    <div class="choice-title">Her şey çok net</div>
+    <div class="choice-desc">Bir cümleyle söyleyebiliyorsan tamam.</div>
   </div>
 
-  <!-- SELECTION -->
-  <div id="vPick" class="view">
-    <div class="wrap">
-      <div class="inner">
-        <div class="card">
-          <h1 style="margin-bottom:6px;">TODAY</h1>
-          <div class="q">Bugün sende ne oldu?</div>
-
-          <div class="list">
-            <div id="optA" class="row">
-              <div class="dot"></div>
-              <div>
-                <div class="title">Bir şey var ama adı yok</div>
-                <div class="hint">Adını koyma. Sadece fark et.</div>
-              </div>
-            </div>
-
-            <div id="optB" class="row">
-              <div class="dot"></div>
-              <div>
-                <div class="title">Her şey çok net</div>
-                <div class="hint">Bir cümleyle söyleyebiliyorsan tamam.</div>
-              </div>
-            </div>
-
-            <div id="optC" class="row">
-              <div class="dot"></div>
-              <div>
-                <div class="title">Zordu bugün</div>
-                <div class="hint">Zorluklar olgunlaşma için gereklidir.</div>
-              </div>
-            </div>
-          </div>
-
-          <div id="colorsBox" class="colors">
-            <div class="colorsLabel">İstersen bir renk seç.</div>
-            <div class="colorBtns">
-              <button class="cbtn" data-color="red" type="button">
-                <span class="swatch" style="background:#d92d20;"></span> Kırmızı
-              </button>
-              <button class="cbtn" data-color="blue" type="button">
-                <span class="swatch" style="background:#2563eb;"></span> Mavi
-              </button>
-              <button class="cbtn" data-color="yellow" type="button">
-                <span class="swatch" style="background:#f59e0b;"></span> Sarı
-              </button>
-              <button class="cbtn" data-color="green" type="button">
-                <span class="swatch" style="background:#16a34a;"></span> Yeşil
-              </button>
-              <button class="cbtn" data-color="coal" type="button">
-                <span class="swatch" style="background:#111827;"></span> Kömür
-              </button>
-            </div>
-          </div>
-
-          <div class="sp"></div>
-          <div style="color:rgba(255,255,255,.55); font-size:12px; text-align:left;">
-            Bugün seçimini yaptıysan, değiştirmek için takvimden düzenle.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Calendar nav button -->
-    <button id="btnToCal" class="fab" type="button" aria-label="Takvime git">→</button>
+  <div class="choice" onclick="saveChoice('zordu')">
+    <div class="choice-title">Zordu bugün</div>
+    <div class="choice-desc">Zorluklar olgunlaşma için gereklidir.</div>
   </div>
 
-  <!-- CALENDAR -->
-  <div id="vCal" class="view">
-    <div class="wrap">
-      <div class="inner">
-        <div class="card">
-          <div class="topbar">
-            <div class="topLeft">
-              <div class="thisMonth">Bu ay</div>
-              <div id="monthLine" class="monthLine"></div>
-            </div>
-          </div>
+  <button class="calendar-btn" onclick="goCalendar()">→</button>
+</div>
 
-          <div id="summary" class="summary"></div>
+<!-- CALENDAR -->
+<div class="screen" id="calendarScreen">
+  <h2>Bu Ay</h2>
+  <div id="calendar"></div>
+  <button class="btn" onclick="goHome()">Ana ekrana dön</button>
+</div>
 
-          <div class="cal">
-            <div class="dow">
-              <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
-            </div>
-            <div id="grid" class="grid"></div>
-          </div>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
 
-          <div class="footer">
-            <button id="btnBack" class="ghost" type="button">← Seçim</button>
-            <button id="btnResetToday" class="ghost" type="button">Bugünü Sıfırla</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  let count = 5;
+  const countdownEl = document.getElementById('countdown');
 
-  <!-- Sheet -->
-  <div id="sheetBack" class="sheetBack"></div>
-  <div id="sheet" class="sheet" aria-hidden="true">
-    <div class="sheetCard">
-      <div class="sheetTop">
-        <p id="sheetTitle" class="sheetTitle">—</p>
-        <button id="sheetClose" class="xbtn" type="button">×</button>
-      </div>
-      <p id="sheetBody" class="sheetLine">—</p>
-      <div class="sheetActions">
-        <button id="sheetEdit" class="sheetBtn" type="button">Düzenle</button>
-        <button id="sheetDelete" class="sheetBtn danger" type="button">Sil</button>
-      </div>
-    </div>
-  </div>
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
 
-  <script>
-    const $ = (id) => document.getElementById(id);
+  function startCountdown() {
+    show('countdownScreen');
+    count = 5;
+    countdownEl.textContent = count;
 
-    // Views
-    const vCount = $("vCount");
-    const vOnboard = $("vOnboard");
-    const vPick = $("vPick");
-    const vCal = $("vCal");
+    const interval = setInterval(() => {
+      count--;
+      countdownEl.textContent = count;
+      countdownEl.style.transform = `scale(${1 + count * 0.05})`;
 
-    const statusEl = $("status");
-
-    // Countdown
-    const countNum = $("countNum");
-
-    // Buttons
-    const btnStart = $("btnStart");
-    const btnToCal = $("btnToCal");
-    const btnBack = $("btnBack");
-    const btnResetToday = $("btnResetToday");
-
-    // Options
-    const optA = $("optA");
-    const optB = $("optB");
-    const optC = $("optC");
-    const colorsBox = $("colorsBox");
-
-    // Calendar
-    const monthLine = $("monthLine");
-    const gridEl = $("grid");
-    const summaryEl = $("summary");
-
-    // Sheet
-    const sheetBack = $("sheetBack");
-    const sheet = $("sheet");
-    const sheetTitle = $("sheetTitle");
-    const sheetBody = $("sheetBody");
-    const sheetClose = $("sheetClose");
-    const sheetEdit = $("sheetEdit");
-    const sheetDelete = $("sheetDelete");
-
-    // Storage keys
-    const KEY_PREFIX = "today_choice_";
-    const KEY_COLOR_PREFIX = "today_color_";
-
-    // Edit mode target date (YYYY-MM-DD) or null
-    let editDate = null;
-    let sheetDate = null;
-
-    function setView(which){
-      vCount.classList.toggle("on", which === "count");
-      vOnboard.classList.toggle("on", which === "onboard");
-      vPick.classList.toggle("on", which === "pick");
-      vCal.classList.toggle("on", which === "cal");
-    }
-
-    function showStatus(msg, ms=1600){
-      statusEl.textContent = msg;
-      statusEl.classList.add("on");
-      clearTimeout(showStatus._t);
-      showStatus._t = setTimeout(()=> statusEl.classList.remove("on"), ms);
-    }
-
-    function pad(n){ return String(n).padStart(2,"0"); }
-    function todayStr(){
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
-
-    function dateLabelTR(yyyyMMdd){
-      const [y,m,d] = yyyyMMdd.split("-").map(Number);
-      const months = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-      return `${d} ${months[m-1]}`;
-    }
-
-    function monthYearTR(year, monthIndex){
-      const months = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-      return `${months[monthIndex]} ${year}`;
-    }
-
-    function getChoice(dateStr){
-      return localStorage.getItem(KEY_PREFIX + dateStr);
-    }
-    function setChoice(dateStr, val){
-      localStorage.setItem(KEY_PREFIX + dateStr, val);
-    }
-    function delChoice(dateStr){
-      localStorage.removeItem(KEY_PREFIX + dateStr);
-      localStorage.removeItem(KEY_COLOR_PREFIX + dateStr);
-    }
-    function getColor(dateStr){
-      return localStorage.getItem(KEY_COLOR_PREFIX + dateStr);
-    }
-    function setColor(dateStr, color){
-      localStorage.setItem(KEY_COLOR_PREFIX + dateStr, color);
-    }
-
-    function choiceText(val){
-      if(val === "A") return "Bir şey var ama adı yok";
-      if(val === "B") return "Her şey çok net";
-      if(val === "C") return "Zordu bugün";
-      return "—";
-    }
-    function choiceMark(val){
-      if(val === "A") return "~";
-      if(val === "B") return "▪︎";
-      if(val === "C") return "/";
-      return "";
-    }
-    function colorHex(c){
-      if(c === "red") return "#d92d20";
-      if(c === "blue") return "#2563eb";
-      if(c === "yellow") return "#f59e0b";
-      if(c === "green") return "#16a34a";
-      if(c === "coal") return "#111827";
-      return "transparent";
-    }
-
-    // Haptic (best-effort)
-    function haptic(kind="soft"){
-      try{
-        if(navigator.vibrate){
-          if(kind==="hard") navigator.vibrate([20,20,30]);
-          else if(kind==="medium") navigator.vibrate(18);
-          else navigator.vibrate(12);
-        }
-      }catch(e){}
-    }
-
-    // Countdown sound (best-effort)
-    let audioCtx = null;
-    function ensureAudio(){
-      if(!audioCtx){
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if(AC) audioCtx = new AC();
+      if (count === 0) {
+        clearInterval(interval);
+        show('choiceScreen');
       }
-      // try resume
-      if(audioCtx && audioCtx.state === "suspended"){
-        audioCtx.resume().catch(()=>{});
-      }
+    }, 1000);
+  }
+
+  function saveChoice(value) {
+    const today = new Date().toISOString().slice(0,10);
+    localStorage.setItem(today, value);
+    show('calendarScreen');
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    const cal = document.getElementById('calendar');
+    cal.innerHTML = '';
+    const now = new Date();
+    const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+
+    for (let d=1; d<=days; d++) {
+      const date = new Date(now.getFullYear(), now.getMonth(), d)
+        .toISOString().slice(0,10);
+      const val = localStorage.getItem(date) || '—';
+      const div = document.createElement('div');
+      div.textContent = `${d}: ${val}`;
+      cal.appendChild(div);
     }
-    function tickSound(){
-      if(!audioCtx || audioCtx.state !== "running") return;
-      const t = audioCtx.currentTime;
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = "sine";
-      o.frequency.setValueAtTime(880, t);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.08, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
-      o.connect(g);
-      g.connect(audioCtx.destination);
-      o.start(t);
-      o.stop(t + 0.09);
-    }
+  }
 
-    // Unlock audio on first gesture
-    window.addEventListener("pointerdown", () => ensureAudio(), { once:true });
+  function goCalendar() {
+    show('calendarScreen');
+    renderCalendar();
+  }
 
-    // Countdown sizes
-    function setCountClass(n){
-      countNum.className = "count";
-      countNum.classList.add("c"+n);
-    }
+  function goHome() {
+    show('onboarding');
+  }
+</script>
 
-    function startCountdown(){
-      let n = 9;
-      setView("count");
-
-      const step = () => {
-        setCountClass(n);
-        countNum.classList.remove("fade");
-        countNum.textContent = String(n);
-
-        // Best-effort tick sound (may be blocked until user gesture on iOS)
-        try{ tickSound(); }catch(e){}
-
-        setTimeout(()=> countNum.classList.add("fade"), 520);
-
-        if(n === 1){
-          setTimeout(()=> setView("onboard"), 740);
-          return;
-        }
-        n -= 1;
-        setTimeout(step, 780);
-      };
-
-      step();
-    }
-
-    function todayLocked(){
-      return !!getChoice(todayStr());
-    }
-
-    function setPickEnabled(enabled){
-      [optA,optB,optC].forEach(el => {
-        el.classList.toggle("disabled", !enabled);
-      });
-    }
-
-    function showColorsBox(on){
-      colorsBox.classList.toggle("on", !!on);
-    }
-
-    // Selection handling
-    function savePick(val){
-      const d = editDate || todayStr();
-      setChoice(d, val);
-      showColorsBox(true);
-
-      // Lock only affects "today" selection screen (unless editing)
-      if(!editDate && todayLocked()){
-        setPickEnabled(false);
-        showStatus("Bugün seçimini yaptın.");
-      }
-    }
-
-    function onPick(val){
-      if(!editDate && todayLocked()){
-        haptic("soft");
-        showStatus("Bugün seçimini yaptın. Düzenlemek için takvimden seç.");
-        return;
-      }
-      haptic("hard");
-      savePick(val);
-    }
-
-    optA.addEventListener("click", ()=> onPick("A"));
-    optB.addEventListener("click", ()=> onPick("B"));
-    optC.addEventListener("click", ()=> onPick("C"));
-
-    // Color clicks
-    document.querySelectorAll(".cbtn").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const color = btn.getAttribute("data-color");
-        const d = editDate || todayStr();
-        if(!getChoice(d)){
-          haptic("soft");
-          showStatus("Önce bir seçim yap.");
-          return;
-        }
-        setColor(d, color);
-        haptic("medium");
-        showStatus("Renk kaydedildi.");
-        // update calendar if open later
-      });
-    });
-
-    // Navigation
-    btnStart.addEventListener("click", ()=>{
-      ensureAudio(); // tries to enable audio for future countdowns
-      editDate = null;
-      setView("pick");
-      showColorsBox(!!getChoice(todayStr()));
-      setPickEnabled(!todayLocked());
-      if(todayLocked()) showStatus("Bugün seçimini yaptın.");
-    });
-
-    btnToCal.addEventListener("click", ()=>{
-      ensureAudio();
-      renderCalendar();
-      setView("cal");
-    });
-
-    btnBack.addEventListener("click", ()=>{
-      editDate = null;
-      setView("pick");
-      showColorsBox(!!getChoice(todayStr()));
-      setPickEnabled(!todayLocked());
-      if(todayLocked()) showStatus("Bugün seçimini yaptın.");
-    });
-
-    // Reset today only
-    btnResetToday.addEventListener("click", ()=>{
-      const t = todayStr();
-      if(!getChoice(t)){
-        showStatus("Bugün için kayıt yok.");
-        return;
-      }
-      const ok = confirm("Bugünün kaydı silinsin mi?");
-      if(!ok) return;
-      delChoice(t);
-      haptic("soft");
-      showStatus("Bugün sıfırlandı.");
-      renderCalendar();
-    });
-
-    // Calendar rendering (current month only)
-    function renderCalendar(){
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth(); // 0-based
-
-      monthLine.textContent = monthYearTR(year, month);
-
-      const first = new Date(year, month, 1);
-      const last = new Date(year, month+1, 0);
-      const daysInMonth = last.getDate();
-
-      // Convert JS Sunday=0 to Monday=0
-      const dow = (d) => (d.getDay() + 6) % 7;
-      const startOffset = dow(first);
-
-      // Build summary (counts in current month)
-      const counts = {A:0,B:0,C:0};
-      for(let day=1; day<=daysInMonth; day++){
-        const ds = `${year}-${pad(month+1)}-${pad(day)}`;
-        const v = getChoice(ds);
-        if(v && counts[v] !== undefined) counts[v] += 1;
-      }
-      const total = counts.A + counts.B + counts.C;
-      let top = null;
-      [["A",counts.A],["B",counts.B],["C",counts.C]].sort((a,b)=>b[1]-a[1]).some(([k,v])=>{
-        if(v>0){ top = k; return true; }
-        return false;
-      });
-
-      if(total === 0){
-        summaryEl.textContent = "Bu ay henüz bir seçim yok.";
-      }else{
-        const topText = top ? choiceText(top) : "—";
-        summaryEl.textContent = `Bu ay ${total} gün fark edildi. En çok: ${topText}`;
-      }
-
-      // Grid
-      gridEl.innerHTML = "";
-
-      // Empty cells before 1st
-      for(let i=0;i<startOffset;i++){
-        const cell = document.createElement("div");
-        cell.className = "day empty";
-        gridEl.appendChild(cell);
-      }
-
-      const today = todayStr();
-
-      for(let day=1; day<=daysInMonth; day++){
-        const ds = `${year}-${pad(month+1)}-${pad(day)}`;
-        const v = getChoice(ds);
-        const c = getColor(ds);
-
-        const cell = document.createElement("div");
-        cell.className = "day" + (ds===today ? " today" : "");
-        cell.setAttribute("data-date", ds);
-
-        cell.innerHTML = `
-          <div class="dnum">${day}</div>
-          ${v ? `<div class="mark">
-                  <span>${choiceMark(v)}</span>
-                  <span class="colDot" style="background:${colorHex(c)};"></span>
-                </div>` : ""}
-        `;
-
-        cell.addEventListener("click", ()=>{
-          openSheet(ds);
-        });
-
-        gridEl.appendChild(cell);
-      }
-    }
-
-    // Bottom sheet
-    function openSheet(dateStr){
-      sheetDate = dateStr;
-      const v = getChoice(dateStr);
-      const c = getColor(dateStr);
-
-      sheetTitle.textContent = dateLabelTR(dateStr);
-      if(!v){
-        sheetBody.textContent = "Bu gün için kayıt yok.";
-        sheetEdit.textContent = "Ekle";
-        sheetDelete.textContent = "Sil";
-        sheetDelete.disabled = true;
-        sheetDelete.style.opacity = ".45";
-      }else{
-        const colorInfo = c ? ` • Renk: ${c === "coal" ? "Kömür" : (c.charAt(0).toUpperCase()+c.slice(1))}` : "";
-        sheetBody.textContent = `${choiceText(v)}${colorInfo}`;
-        sheetEdit.textContent = "Düzenle";
-        sheetDelete.disabled = false;
-        sheetDelete.style.opacity = "1";
-      }
-
-      sheetBack.classList.add("on");
-      sheet.classList.add("on");
-      sheet.setAttribute("aria-hidden","false");
-    }
-
-    function closeSheet(){
-      sheetBack.classList.remove("on");
-      sheet.classList.remove("on");
-      sheet.setAttribute("aria-hidden","true");
-      sheetDate = null;
-    }
-
-    sheetBack.addEventListener("click", closeSheet);
-    sheetClose.addEventListener("click", closeSheet);
-
-    sheetEdit.addEventListener("click", ()=>{
-      if(!sheetDate) return;
-      // Go to selection screen in edit mode for that date
-      editDate = sheetDate;
-      closeSheet();
-      setView("pick");
-      setPickEnabled(true); // editing always enabled
-      const existing = getChoice(editDate);
-      showColorsBox(!!existing);
-      showStatus(`${dateLabelTR(editDate)} düzenleniyor.`);
-    });
-
-    sheetDelete.addEventListener("click", ()=>{
-      if(!sheetDate) return;
-      const v = getChoice(sheetDate);
-      if(!v) return;
-
-      const ok = confirm("Bu günün kaydı silinsin mi?");
-      if(!ok) return;
-      delChoice(sheetDate);
-      haptic("soft");
-      closeSheet();
-      renderCalendar();
-      showStatus("Silindi.");
-    });
-
-    // Register SW
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", async () => {
-        try{
-          await navigator.serviceWorker.register("./sw.js");
-        }catch(e){}
-      });
-    }
-
-    // Boot
-    startCountdown();
-  </script>
 </body>
 </html>
