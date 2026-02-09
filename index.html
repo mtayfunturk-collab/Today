@@ -7,431 +7,153 @@
   <title>Today</title>
 
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/today-icon-v9-192.png" />
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v9.png" />
+
+  <!-- iOS ikon/cache inadı için: birden fazla aday yol (hangisi varsa o kullanılır) -->
+  <link rel="apple-touch-icon" href="apple-touch-icon-v9.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v9.png">
+  <link rel="apple-touch-icon" href="Icons/apple-touch-icon-v9.png">
 
   <style>
     :root{
-      --bg: #F4F5F6;
-      --card: #ffffff;
-      --text: #111111;
-      --muted: rgba(0,0,0,.55);
-      --shadow: 0 18px 60px rgba(0,0,0,.12);
-      --border: rgba(0,0,0,.08);
-      --btn: #111111;
-      --btnText: #ffffff;
-      --accentA1: #F4F5F6;
-      --accentA2: #EDEFF2;
-      --dot: rgba(17,17,17,.85);
-      --danger: #c62828;
-      --ok: #1b5e20;
-      --focus: rgba(0,0,0,.12);
+      --bg:#F4F5F6; --card:#fff; --text:#111; --muted:rgba(0,0,0,.55);
+      --border:rgba(0,0,0,.10); --shadow:0 18px 60px rgba(0,0,0,.12);
+      --btn:#111; --btnText:#fff; --focus:rgba(0,0,0,.12);
     }
+    body[data-theme="light"]{ --bg:#fff; --card:#fff; --text:#111; --muted:rgba(0,0,0,.55); --border:rgba(0,0,0,.10); --shadow:0 18px 60px rgba(0,0,0,.10); --btn:#111; --btnText:#fff; --focus:rgba(0,0,0,.12); }
+    body[data-theme="dark"]{ --bg:#0f1115; --card:#151822; --text:#f2f5ff; --muted:rgba(242,245,255,.55); --border:rgba(242,245,255,.12); --shadow:0 18px 60px rgba(0,0,0,.45); --btn:#f2f5ff; --btnText:#0f1115; --focus:rgba(242,245,255,.14); }
+    body[data-theme="contrast"]{ --bg:#000; --card:#0b0b0b; --text:#fff; --muted:rgba(255,255,255,.70); --border:rgba(255,255,255,.20); --shadow:0 18px 60px rgba(0,0,0,.55); --btn:#fff; --btnText:#000; --focus:rgba(255,255,255,.22); }
 
-    body[data-theme="light"]{
-      --bg:#ffffff;
-      --card:#ffffff;
-      --text:#111111;
-      --muted: rgba(0,0,0,.55);
-      --border: rgba(0,0,0,.10);
-      --shadow: 0 18px 60px rgba(0,0,0,.10);
-      --dot: rgba(17,17,17,.85);
-    }
-
-    body[data-theme="dark"]{
-      --bg:#0f1115;
-      --card:#151822;
-      --text:#f2f5ff;
-      --muted: rgba(242,245,255,.55);
-      --border: rgba(242,245,255,.10);
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --btn:#f2f5ff;
-      --btnText:#0f1115;
-      --dot: rgba(242,245,255,.85);
-      --focus: rgba(242,245,255,.14);
-      --accentA1:#11131a;
-      --accentA2:#0f1115;
-    }
-
-    body[data-theme="contrast"]{
-      --bg:#000000;
-      --card:#0b0b0b;
-      --text:#ffffff;
-      --muted: rgba(255,255,255,.70);
-      --border: rgba(255,255,255,.18);
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --btn:#ffffff;
-      --btnText:#000000;
-      --dot: rgba(255,255,255,.95);
-      --focus: rgba(255,255,255,.22);
-      --accentA1:#000000;
-      --accentA2:#000000;
-    }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 50% 30%, var(--accentA2), var(--bg));
-      color: var(--text);
-      -webkit-tap-highlight-color: transparent;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+      background:radial-gradient(1200px 800px at 50% 30%, #EDEFF2, var(--bg));
+      color:var(--text);
+      -webkit-tap-highlight-color:transparent;
     }
-
-    .screen{
-      position:fixed; inset:0;
-      display:none;
-      padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
-    }
-    .screen.active{ display:flex; align-items:center; justify-content:center; }
-
+    .screen{position:fixed; inset:0; display:none; padding:22px 18px calc(22px + env(safe-area-inset-bottom));}
+    .screen.active{display:flex; align-items:center; justify-content:center;}
     .card{
-      width:min(520px, 92vw);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      padding: 28px 22px;
+      width:min(520px,92vw);
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:28px 22px;
     }
-
-    .center{
-      text-align:center;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap: 14px;
-    }
-
-    .logo{
-      width: 128px;
-      height: 128px;
-      border-radius: 28px;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: transparent;
-    }
-    .logo img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-    h1{
-      margin:0;
-      font-size: 40px;
-      letter-spacing: 0.22em;
-      font-weight: 800;
-    }
-    .tagline{
-      margin:0;
-      font-size: 18px;
-      color: var(--muted);
-    }
-    .note{
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
-      opacity: .75;
-    }
-
+    .center{text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;}
+    .logoBox{width:128px; height:128px; border-radius:28px; overflow:hidden;}
+    .logoBox img{width:100%; height:100%; object-fit:cover; display:block;}
+    h1{margin:0; font-size:40px; letter-spacing:.22em; font-weight:900;}
+    .tagline{margin:0; font-size:18px; color:var(--muted);}
+    .note{margin-top:6px; font-size:12px; color:var(--muted); opacity:.75;}
     .btn{
-      width: 100%;
-      border:0;
-      border-radius: 18px;
-      background: var(--btn);
-      color: var(--btnText);
-      padding: 18px 18px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor:pointer;
+      width:100%; border:0; border-radius:18px;
+      background:var(--btn); color:var(--btnText);
+      padding:18px; font-size:18px; font-weight:800; cursor:pointer;
     }
-    .btn:active{ transform: scale(.99); }
+    .btn:active{transform:scale(.99)}
+    .countNum{font-weight:900; line-height:1; user-select:none;}
 
-    /* Countdown */
-    .countNum{
-      font-weight: 900;
-      line-height: 1;
-      user-select:none;
-    }
-
-    /* Choice */
-    .qTitle{
-      margin:0;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: .02em;
-      text-align:center;
-    }
-    .choices{
-      margin-top: 18px;
-      display:flex;
-      flex-direction:column;
-      gap: 12px;
-    }
+    .qTitle{margin:0; font-size:22px; font-weight:900; text-align:center;}
+    .choices{margin-top:18px; display:flex; flex-direction:column; gap:12px;}
     .choice{
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 14px 14px;
-      background: rgba(0,0,0,.02);
-      cursor:pointer;
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-      position:relative;
-      outline:none;
+      border:1px solid var(--border); border-radius:18px; padding:14px;
+      background:rgba(0,0,0,.02); cursor:pointer;
+      display:flex; flex-direction:column; gap:6px;
     }
-    body[data-theme="dark"] .choice,
-    body[data-theme="contrast"] .choice{
-      background: rgba(255,255,255,.04);
-    }
-    .choice strong{ font-size: 17px; }
-    .choice small{ color: var(--muted); font-size: 13px; }
-    .choice.selected{
-      border-color: rgba(0,0,0,.0);
-      box-shadow: 0 0 0 4px var(--focus);
-      background: rgba(0,0,0,.04);
-    }
-    body[data-theme="dark"] .choice.selected,
-    body[data-theme="contrast"] .choice.selected{
-      background: rgba(255,255,255,.06);
-    }
+    body[data-theme="dark"] .choice, body[data-theme="contrast"] .choice{background:rgba(255,255,255,.04)}
+    .choice strong{font-size:17px}
+    .choice small{color:var(--muted); font-size:13px}
+    .choice.selected{box-shadow:0 0 0 4px var(--focus);}
 
-    /* Colors */
-    .colorRow{
-      margin-top: 14px;
-      display:flex;
-      justify-content:center;
-      gap: 10px;
-      flex-wrap:wrap;
-    }
-    .cbtn{
-      width: 44px; height:44px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      cursor:pointer;
-      position:relative;
-      background: transparent;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .cbtn i{
-      width: 22px; height:22px;
-      border-radius: 999px;
-      display:block;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
-    }
-    .cbtn.selected{
-      box-shadow: 0 0 0 4px var(--focus);
-    }
+    .panel{margin-top:16px; border:1px solid var(--border); border-radius:18px; padding:14px; background:rgba(0,0,0,.02);}
+    body[data-theme="dark"] .panel, body[data-theme="contrast"] .panel{background:rgba(255,255,255,.04)}
+    .panel h3{margin:0 0 8px 0; font-size:13px; color:var(--muted); letter-spacing:.02em; text-transform:uppercase;}
+    .colorRow{display:flex; justify-content:center; gap:10px; flex-wrap:wrap;}
+    .cbtn{width:44px; height:44px; border-radius:14px; border:1px solid var(--border); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+    .cbtn i{width:22px; height:22px; border-radius:999px; display:block; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);}
+    .cbtn.selected{box-shadow:0 0 0 4px var(--focus);}
 
-    /* Arrow to calendar */
-    .goCal{
-      margin-top: 16px;
-      display:flex;
-      justify-content:flex-end;
-    }
+    .goCal{margin-top:16px; display:flex; justify-content:flex-end;}
     .fab{
-      width: 56px; height:56px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.06);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 22px;
-      font-weight: 900;
-      user-select:none;
+      width:56px; height:56px; border-radius:18px;
+      border:1px solid var(--border); background:rgba(0,0,0,.06);
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      font-size:22px; font-weight:900; user-select:none;
     }
-    body[data-theme="dark"] .fab,
-    body[data-theme="contrast"] .fab{
-      background: rgba(255,255,255,.08);
-    }
+    body[data-theme="dark"] .fab, body[data-theme="contrast"] .fab{background:rgba(255,255,255,.08)}
 
-    /* Calendar */
-    .topBar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 14px;
-    }
-    .monthTitle{
-      font-weight: 900;
-      font-size: 18px;
-      letter-spacing:.02em;
-    }
-    .iconBtn{
-      border:1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 12px;
-      cursor:pointer;
-      font-weight: 700;
-    }
+    .topBar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;}
+    .monthTitle{font-weight:900; font-size:18px;}
+    .iconBtn{border:1px solid var(--border); background:transparent; color:var(--text); border-radius:14px; padding:10px 12px; cursor:pointer; font-weight:800;}
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 10px;
-    }
-    .dow{
-      text-align:center;
-      font-size: 12px;
-      color: var(--muted);
-      padding-bottom: 4px;
-      user-select:none;
-    }
+    .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:10px;}
+    .dow{text-align:center; font-size:12px; color:var(--muted); padding-bottom:4px; user-select:none;}
     .day{
-      height: 44px;
-      border-radius: 14px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.02);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      cursor:pointer;
-      user-select:none;
+      height:44px; border-radius:14px; border:1px solid var(--border);
+      background:rgba(0,0,0,.02); display:flex; align-items:center; justify-content:center;
+      position:relative; cursor:pointer; user-select:none;
     }
-    body[data-theme="dark"] .day,
-    body[data-theme="contrast"] .day{
-      background: rgba(255,255,255,.04);
-    }
-    .day.disabled{ opacity:.45; cursor:not-allowed; }
-    .day.today{ box-shadow: 0 0 0 4px var(--focus); }
+    body[data-theme="dark"] .day, body[data-theme="contrast"] .day{background:rgba(255,255,255,.04)}
+    .day.disabled{opacity:.45; cursor:not-allowed;}
+    .day.today{box-shadow:0 0 0 4px var(--focus);}
+
+    /* ikon işareti: küçük nokta + şekil */
     .mark{
       position:absolute;
-      bottom: 6px;
-      width: 18px; height: 4px;
-      border-radius: 999px;
-      background: var(--dot);
-      opacity: .9;
+      bottom:6px;
+      width:14px; height:14px;
+      border-radius:999px;
+      background:rgba(17,17,17,.85);
+      display:flex; align-items:center; justify-content:center;
+      font-size:10px; font-weight:900; color:#fff;
     }
-    .mark.color-red{ background:#e53935; }
-    .mark.color-blue{ background:#1e88e5; }
-    .mark.color-yellow{ background:#fdd835; }
-    .mark.color-green{ background:#43a047; }
-    .mark.color-black{ background:#111111; }
-    body[data-theme="dark"] .mark.color-black,
-    body[data-theme="contrast"] .mark.color-black{ background:#ffffff; }
+    body[data-theme="dark"] .mark, body[data-theme="contrast"] .mark{background:rgba(255,255,255,.85); color:#000;}
 
-    .panel{
-      margin-top: 14px;
-      border:1px solid var(--border);
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(0,0,0,.02);
-    }
-    body[data-theme="dark"] .panel,
-    body[data-theme="contrast"] .panel{
-      background: rgba(255,255,255,.04);
-    }
-    .panel h3{
-      margin:0 0 8px 0;
-      font-size: 14px;
-      color: var(--muted);
-      letter-spacing:.02em;
-      text-transform: uppercase;
-    }
-    .panel .row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 10px 0;
-      border-top: 1px solid var(--border);
-    }
-    .panel .row:first-of-type{ border-top:0; }
-    .pill{
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid var(--border);
-      font-weight: 800;
-      font-size: 12px;
-      white-space:nowrap;
-    }
-    .actions{
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      margin-top: 10px;
-    }
-    .btn2{
-      border:1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 12px;
-      cursor:pointer;
-      font-weight: 800;
-    }
-    .btn2.danger{ border-color: rgba(198,40,40,.45); color: var(--danger); }
-    .btn2.ok{ border-color: rgba(27,94,32,.45); color: var(--ok); }
+    .mark.color-red{background:#e53935; color:#fff;}
+    .mark.color-blue{background:#1e88e5; color:#fff;}
+    .mark.color-yellow{background:#fdd835; color:#111;}
+    .mark.color-green{background:#43a047; color:#fff;}
+    .mark.color-black{background:#111; color:#fff;}
+    body[data-theme="dark"] .mark.color-black, body[data-theme="contrast"] .mark.color-black{background:#fff; color:#000;}
+
+    .panelRow{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--border);}
+    .panelRow:first-of-type{border-top:0;}
+    .pill{padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-weight:900; font-size:12px; white-space:nowrap;}
+    .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:10px;}
+    .btn2{border:1px solid var(--border); background:transparent; color:var(--text); border-radius:14px; padding:10px 12px; cursor:pointer; font-weight:900;}
+    .btn2.danger{border-color:rgba(198,40,40,.45); color:#c62828;}
+    .btn2.ok{border-color:rgba(27,94,32,.45); color:#1b5e20;}
 
     .toast{
-      position:fixed;
-      left:50%;
-      bottom: calc(18px + env(safe-area-inset-bottom));
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.78);
-      color:#fff;
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .18s ease;
-      max-width: 86vw;
-      text-align:center;
+      position:fixed; left:50%;
+      bottom:calc(18px + env(safe-area-inset-bottom));
+      transform:translateX(-50%);
+      background:rgba(0,0,0,.78); color:#fff;
+      padding:10px 12px; border-radius:999px; font-size:13px;
+      opacity:0; pointer-events:none; transition:opacity .18s ease;
+      max-width:86vw; text-align:center;
     }
-    .toast.show{ opacity:1; }
+    .toast.show{opacity:1;}
 
-    /* Modal (Settings) */
-    .modalBackdrop{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.35);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-    }
-    .modalBackdrop.show{ display:flex; }
-    .modal{
-      width:min(520px, 92vw);
-      background: var(--card);
-      border:1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 16px;
-    }
-    .modalHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 8px;
-    }
-    .modalHead strong{ font-size: 16px; }
-    .modalBody{ display:flex; flex-direction:column; gap:10px; }
-    .select{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      background: transparent;
-      color: var(--text);
-      font-weight: 700;
-    }
-    .divider{ height:1px; background: var(--border); margin: 4px 0; }
+    .modalBackdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; padding:18px;}
+    .modalBackdrop.show{display:flex;}
+    .modal{width:min(520px,92vw); background:var(--card); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); padding:16px;}
+    .modalHead{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
+    .modalHead strong{font-size:16px;}
+    .select{width:100%; border:1px solid var(--border); border-radius:14px; padding:12px; background:transparent; color:var(--text); font-weight:800;}
+    .divider{height:1px; background:var(--border); margin:4px 0;}
   </style>
 </head>
 
 <body>
   <!-- ONBOARD -->
-  <section class="screen active" id="screenOnboard" aria-label="Onboarding">
+  <section class="screen active" id="screenOnboard">
     <div class="card center">
-      <div class="logo" aria-hidden="true">
-        <img src="icons/today-icon-v9-512.png" alt="">
+      <div class="logoBox" aria-hidden="true">
+        <img id="logoImg" alt="">
       </div>
       <h1>TODAY</h1>
       <p class="tagline">Sadece fark et. Hepsi bu.</p>
@@ -441,19 +163,19 @@
   </section>
 
   <!-- COUNTDOWN -->
-  <section class="screen" id="screenCount" aria-label="Sayaç">
+  <section class="screen" id="screenCount">
     <div class="card center" style="padding:36px 22px">
       <div id="countNum" class="countNum" style="font-size:96px;">5</div>
       <div class="note" style="margin-top:6px">5 saniye.</div>
     </div>
   </section>
 
-  <!-- CHOICE -->
-  <section class="screen" id="screenPick" aria-label="Seçim">
+  <!-- PICK -->
+  <section class="screen" id="screenPick">
     <div class="card">
       <div class="qTitle">Bugün sende ne oldu?</div>
 
-      <div class="choices" role="listbox" aria-label="Seçenekler">
+      <div class="choices">
         <div class="choice" data-choice="A" tabindex="0">
           <strong>Bir şey oldu ama adı yok</strong>
           <small>Adını koyma. Sadece fark et.</small>
@@ -468,14 +190,14 @@
         </div>
       </div>
 
-      <div class="panel" style="margin-top:16px">
+      <div class="panel">
         <h3>Renk (opsiyonel)</h3>
-        <div class="colorRow" aria-label="Renk seçimi">
+        <div class="colorRow">
           <button class="cbtn" type="button" data-color="red" aria-label="Kırmızı"><i style="background:#e53935"></i></button>
           <button class="cbtn" type="button" data-color="blue" aria-label="Mavi"><i style="background:#1e88e5"></i></button>
           <button class="cbtn" type="button" data-color="yellow" aria-label="Sarı"><i style="background:#fdd835"></i></button>
           <button class="cbtn" type="button" data-color="green" aria-label="Yeşil"><i style="background:#43a047"></i></button>
-          <button class="cbtn" type="button" data-color="black" aria-label="Siyah (istikrar)"><i style="background:#111111"></i></button>
+          <button class="cbtn" type="button" data-color="black" aria-label="İstikrar"><i style="background:#111"></i></button>
         </div>
         <div class="note" style="text-align:center; margin-top:10px">Renk seçmeden de takvime geçebilirsin.</div>
       </div>
@@ -487,7 +209,7 @@
   </section>
 
   <!-- CALENDAR -->
-  <section class="screen" id="screenCal" aria-label="Takvim">
+  <section class="screen" id="screenCal">
     <div class="card">
       <div class="topBar">
         <div class="monthTitle" id="monthTitle">Ay</div>
@@ -498,29 +220,28 @@
       </div>
 
       <div class="grid" id="dowRow" aria-hidden="true"></div>
-      <div class="grid" id="calGrid" aria-label="Takvim günleri"></div>
+      <div class="grid" id="calGrid"></div>
 
       <div class="panel" id="dayPanel" aria-live="polite">
         <h3 id="panelTitle">Seçim</h3>
-        <div class="row">
+        <div class="panelRow">
           <div id="panelText">Bir gün seç.</div>
           <div id="panelPill" class="pill" style="display:none;">—</div>
         </div>
-
         <div class="actions" id="panelActions" style="display:none;">
           <button class="btn2 ok" id="btnEditToday" type="button">Düzenle</button>
           <button class="btn2 danger" id="btnDeleteToday" type="button">Sil</button>
         </div>
       </div>
 
-      <div class="panel" id="historyPanel">
+      <div class="panel">
         <h3>Son yapılanlar</h3>
         <div id="historyList" class="note" style="margin:0;">Henüz yok.</div>
       </div>
     </div>
   </section>
 
-  <!-- SETTINGS MODAL -->
+  <!-- SETTINGS -->
   <div class="modalBackdrop" id="settingsBackdrop" role="dialog" aria-modal="true" aria-label="Ayarlar">
     <div class="modal">
       <div class="modalHead">
@@ -528,24 +249,22 @@
         <button class="iconBtn" id="btnCloseSettings" type="button">Kapat</button>
       </div>
 
-      <div class="modalBody">
-        <div class="divider"></div>
+      <div class="divider"></div>
 
-        <label style="font-weight:800; font-size:13px; color:var(--muted)">🎨 Tema</label>
-        <select class="select" id="themeSelect">
-          <option value="default">Varsayılan</option>
-          <option value="light">Açık</option>
-          <option value="dark">Koyu</option>
-          <option value="contrast">Kontrastlı</option>
-        </select>
+      <label style="font-weight:900; font-size:13px; color:var(--muted)">🎨 Tema</label>
+      <select class="select" id="themeSelect">
+        <option value="default">Varsayılan</option>
+        <option value="light">Açık</option>
+        <option value="dark">Koyu</option>
+        <option value="contrast">Kontrastlı</option>
+      </select>
 
-        <div class="divider"></div>
+      <div class="divider"></div>
 
-        <label style="font-weight:800; font-size:13px; color:var(--muted)">📦 Export</label>
-        <button class="btn2" id="btnExportCSV" type="button">CSV indir</button>
+      <label style="font-weight:900; font-size:13px; color:var(--muted)">📦 Export</label>
+      <button class="btn2" id="btnExportCSV" type="button">CSV indir</button>
 
-        <div class="note">CSV sütunları: Tarih, Seçim, Renk</div>
-      </div>
+      <div class="note">CSV sütunları: Tarih, Seçim, Renk</div>
     </div>
   </div>
 
@@ -553,423 +272,409 @@
 
   <script>
     /*********************
-     * STORAGE + MIGRATION
-     *********************/
-    const STORAGE_KEY = "today_data_v1";
-    const THEME_KEY = "today_theme_v1";
-
-    const DEFAULT_STATE = {
-      version: 1,
-      days: {},     // "YYYY-MM-DD": { choice:"A|B|C", color:"red|...", updatedAt:number }
-      history: []   // { ts:number, date:"YYYY-MM-DD", action:"set|edit|delete", choice?, color? }
-    };
-
-    function safeJSONParse(str){
-      try { return JSON.parse(str); } catch { return null; }
-    }
-
-    function loadState(){
-      // 1) current
-      const cur = safeJSONParse(localStorage.getItem(STORAGE_KEY));
-      if(cur && cur.days && cur.history) return cur;
-
-      // 2) migrate from older keys (best-effort)
-      const candidates = [
-        "today_data", "today_v1", "todaySelections", "today_selection_v1"
-      ];
-
-      for(const k of candidates){
-        const v = safeJSONParse(localStorage.getItem(k));
-        if(!v) continue;
-
-        // Possible shapes:
-        // a) { days: {...} }
-        // b) { "YYYY-MM-DD": {choice,color} }  (direct map)
-        // c) { selected: "...", date: "..." }  (single day)
-        const next = structuredClone(DEFAULT_STATE);
-
-        if(v.days && typeof v.days === "object"){
-          next.days = v.days;
-          next.history = v.history || [];
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-          return next;
-        }
-
-        const looksLikeMap = Object.keys(v).some(x => /^\d{4}-\d{2}-\d{2}$/.test(x));
-        if(looksLikeMap){
-          next.days = v;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-          return next;
-        }
-
-        if(v.date && v.choice){
-          next.days[v.date] = { choice: v.choice, color: v.color || null, updatedAt: Date.now() };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-          return next;
-        }
-      }
-
-      // 3) fresh
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_STATE));
-      return structuredClone(DEFAULT_STATE);
-    }
-
-    function saveState(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    let state = loadState();
-
-    /*********************
-     * DATE HELPERS
-     *********************/
-    function pad(n){ return String(n).padStart(2,"0"); }
-    function todayKey(){
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
-    function monthKey(d){
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
-    }
-    function monthNameTR(date){
-      const months = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-      return `${months[date.getMonth()]} ${date.getFullYear()}`;
-    }
-    function isSameDateKey(a,b){ return a===b; }
-
-    /*********************
-     * UI HELPERS
-     *********************/
-    const $ = (s)=>document.querySelector(s);
-    const screenOnboard = $("#screenOnboard");
-    const screenCount = $("#screenCount");
-    const screenPick = $("#screenPick");
-    const screenCal = $("#screenCal");
-
-    function showScreen(which){
-      [screenOnboard, screenCount, screenPick, screenCal].forEach(el=>el.classList.remove("active"));
-      which.classList.add("active");
-    }
-
-    const toast = $("#toast");
-    let toastTimer = null;
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=>toast.classList.remove("show"), 1600);
-    }
-
-    /*********************
      * THEME
      *********************/
-    function loadTheme(){
-      const t = localStorage.getItem(THEME_KEY) || "default";
-      applyTheme(t);
-      $("#themeSelect").value = t;
-    }
+    const THEME_KEY = "today_theme_v1";
     function applyTheme(t){
       if(t==="default") document.body.removeAttribute("data-theme");
       else document.body.setAttribute("data-theme", t);
       localStorage.setItem(THEME_KEY, t);
     }
-    $("#themeSelect").addEventListener("change", (e)=>applyTheme(e.target.value));
-    loadTheme();
+    (function initTheme(){
+      const t = localStorage.getItem(THEME_KEY) || "default";
+      applyTheme(t);
+      document.getElementById("themeSelect").value = t;
+    })();
+    document.getElementById("themeSelect").addEventListener("change", e => applyTheme(e.target.value));
 
     /*********************
-     * AUDIO "TIK" (WebAudio)
+     * LOGO LOADER (path-safe)
      *********************/
-    let audioCtx = null;
-    function ensureAudio(){
-      if(!audioCtx){
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const logoCandidates = [
+      "icons/today-icon-v9-512.png",
+      "Icons/today-icon-v9-512.png",
+      "today-icon-v9-512.png",
+      "icons/today-icon-v9-192.png",
+      "Icons/today-icon-v9-192.png",
+      "today-icon-v9-192.png"
+    ];
+    (async function setLogo(){
+      const img = document.getElementById("logoImg");
+      for(const src of logoCandidates){
+        const ok = await new Promise(res=>{
+          const t = new Image();
+          t.onload = ()=>res(true);
+          t.onerror = ()=>res(false);
+          t.src = src + "?v=" + Date.now(); // cache-bust for iOS stubbornness
+        });
+        if(ok){
+          img.src = src;
+          return;
+        }
       }
-      if(audioCtx.state === "suspended") audioCtx.resume();
+      // fallback: invisible but no crash
+      img.alt = "Today";
+    })();
+
+    /*********************
+     * STORAGE + MIGRATION
+     *********************/
+    const STORAGE_KEY = "today_data_v1";
+    const DEFAULT_STATE = { version:1, days:{}, history:[] };
+
+    function safeParse(s){ try{return JSON.parse(s)}catch{return null} }
+    function isDateKey(k){ return /^\d{4}-\d{2}-\d{2}$/.test(k); }
+
+    function normalizeEntry(v){
+      // Accept older shapes:
+      // "A" -> {choice:"A"}
+      // {choice:"A", color:"red"} -> keep
+      if(typeof v === "string" && ["A","B","C"].includes(v)) return { choice:v, color:null, updatedAt:Date.now() };
+      if(v && typeof v === "object" && ["A","B","C"].includes(v.choice)) return {
+        choice: v.choice,
+        color: v.color || null,
+        updatedAt: v.updatedAt || Date.now()
+      };
+      return null;
+    }
+
+    function mergeIntoState(target, map){
+      for(const [k,v] of Object.entries(map)){
+        if(!isDateKey(k)) continue;
+        const entry = normalizeEntry(v);
+        if(!entry) continue;
+        // target wins? we keep existing if present, else import
+        if(!target.days[k]) target.days[k] = entry;
+      }
+    }
+
+    function loadStateWithMigration(){
+      // 1) if already exists and valid
+      const cur = safeParse(localStorage.getItem(STORAGE_KEY));
+      if(cur && cur.days && typeof cur.days === "object") return cur;
+
+      const next = structuredClone(DEFAULT_STATE);
+
+      // 2) scan ALL keys in localStorage for date maps
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i);
+        if(!key || key===STORAGE_KEY) continue;
+
+        const val = safeParse(localStorage.getItem(key));
+        if(!val) continue;
+
+        // case: {days:{...}}
+        if(val.days && typeof val.days==="object"){
+          mergeIntoState(next, val.days);
+          continue;
+        }
+
+        // case: direct date map { "YYYY-MM-DD": "A" } or { "YYYY-MM-DD": {choice,...} }
+        const hasAnyDate = Object.keys(val).some(isDateKey);
+        if(hasAnyDate){
+          mergeIntoState(next, val);
+          continue;
+        }
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    }
+
+    let state = loadStateWithMigration();
+    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    /*********************
+     * DATE HELPERS
+     *********************/
+    const pad = n => String(n).padStart(2,"0");
+    const todayKey = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    };
+    const monthNameTR = (date) => {
+      const months=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+      return `${months[date.getMonth()]} ${date.getFullYear()}`;
+    };
+
+    /*********************
+     * TOAST
+     *********************/
+    const toast = document.getElementById("toast");
+    let toastT=null;
+    function showToast(msg){
+      toast.textContent=msg;
+      toast.classList.add("show");
+      clearTimeout(toastT);
+      toastT=setTimeout(()=>toast.classList.remove("show"), 1600);
+    }
+
+    /*********************
+     * SCREENS
+     *********************/
+    const screenOnboard = document.getElementById("screenOnboard");
+    const screenCount = document.getElementById("screenCount");
+    const screenPick = document.getElementById("screenPick");
+    const screenCal = document.getElementById("screenCal");
+    function showScreen(which){
+      [screenOnboard,screenCount,screenPick,screenCal].forEach(s=>s.classList.remove("active"));
+      which.classList.add("active");
+    }
+
+    /*********************
+     * AUDIO TICK (WebAudio)
+     *********************/
+    let audioCtx=null;
+    function ensureAudio(){
+      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==="suspended") audioCtx.resume();
     }
     function tick(){
       if(!audioCtx) return;
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = "square";
-      o.frequency.value = 1200;
-      g.gain.value = 0.0001;
+      const o=audioCtx.createOscillator();
+      const g=audioCtx.createGain();
+      o.type="square";
+      o.frequency.value=1200;
+      g.gain.value=0.0001;
       o.connect(g); g.connect(audioCtx.destination);
       o.start();
-
-      // short tick envelope
-      const now = audioCtx.currentTime;
+      const now=audioCtx.currentTime;
       g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
-      o.stop(now + 0.07);
+      g.gain.exponentialRampToValueAtTime(0.12, now+0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.06);
+      o.stop(now+0.07);
     }
 
     /*********************
-     * COUNTDOWN
+     * COUNTDOWN 5->1 (size decreases)
      *********************/
-    const countEl = $("#countNum");
-    function countFontSize(n){
-      // bigger at 5, smaller at 1
-      const sizes = {5:96,4:86,3:76,2:66,1:58};
-      return (sizes[n] || 72) + "px";
-    }
-
-    async function runCountdown(){
+    const countEl=document.getElementById("countNum");
+    const sizeMap={5:96,4:86,3:76,2:66,1:58};
+    function runCountdown(){
       showScreen(screenCount);
-      let n = 5;
-      countEl.textContent = n;
-      countEl.style.fontSize = countFontSize(n);
-
-      // first tick immediately
+      let n=5;
+      countEl.textContent=n;
+      countEl.style.fontSize=(sizeMap[n]||72)+"px";
       tick();
-
-      const iv = setInterval(()=>{
+      const iv=setInterval(()=>{
         n--;
         if(n<=0){
           clearInterval(iv);
           showScreen(screenPick);
           return;
         }
-        countEl.textContent = n;
-        countEl.style.fontSize = countFontSize(n);
+        countEl.textContent=n;
+        countEl.style.fontSize=(sizeMap[n]||72)+"px";
         tick();
-      }, 1000);
+      },1000);
     }
 
     /*********************
-     * PICK (choices + color)
+     * PICK
      *********************/
-    let selectedChoice = null;
-    let selectedColor = null;
+    let selectedChoice=null;
+    let selectedColor=null;
 
-    const choiceEls = Array.from(document.querySelectorAll(".choice"));
+    const choiceEls=[...document.querySelectorAll(".choice")];
     choiceEls.forEach(el=>{
       el.addEventListener("click", ()=>selectChoice(el.dataset.choice));
       el.addEventListener("keydown", (e)=>{
-        if(e.key==="Enter" || e.key===" ") { e.preventDefault(); selectChoice(el.dataset.choice); }
+        if(e.key==="Enter"||e.key===" "){ e.preventDefault(); selectChoice(el.dataset.choice); }
       });
     });
-
     function selectChoice(c){
-      selectedChoice = c;
+      selectedChoice=c;
       choiceEls.forEach(x=>x.classList.toggle("selected", x.dataset.choice===c));
     }
 
-    const colorBtns = Array.from(document.querySelectorAll(".cbtn"));
+    const colorBtns=[...document.querySelectorAll(".cbtn")];
     colorBtns.forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const c = btn.dataset.color;
-        if(selectedColor === c){
-          selectedColor = null;
-        } else {
-          selectedColor = c;
-        }
+        const c=btn.dataset.color;
+        selectedColor = (selectedColor===c) ? null : c;
         colorBtns.forEach(x=>x.classList.toggle("selected", x.dataset.color===selectedColor));
       });
     });
 
-    function choiceLabel(c){
+    function choiceLabelTR(c){
       if(c==="A") return "Bir şey oldu ama adı yok";
       if(c==="B") return "Her şey çok net";
       if(c==="C") return "Zordu bugün";
       return "—";
     }
+    function choiceIcon(c){
+      // küçük ikon (metin gibi): A=◯, B=◆, C=▲
+      if(c==="A") return "◯";
+      if(c==="B") return "◆";
+      if(c==="C") return "▲";
+      return "•";
+    }
+    function colorLabelTR(c){
+      const map={red:"Kırmızı",blue:"Mavi",yellow:"Sarı",green:"Yeşil",black:"(İstikrar)"};
+      return map[c] || "";
+    }
 
     function recordHistory(entry){
       state.history.unshift(entry);
-      // keep last 60 for compactness
-      state.history = state.history.slice(0, 60);
+      state.history = state.history.slice(0,60);
     }
 
     function setTodaySelection(){
-      const key = todayKey();
-      const exists = !!state.days[key];
-
-      state.days[key] = {
-        choice: selectedChoice,
-        color: selectedColor || null,
-        updatedAt: Date.now()
-      };
-
-      recordHistory({
-        ts: Date.now(),
-        date: key,
-        action: exists ? "edit" : "set",
-        choice: selectedChoice,
-        color: selectedColor || null
-      });
-
+      const key=todayKey();
+      const existed=!!state.days[key];
+      state.days[key]={ choice:selectedChoice, color:selectedColor||null, updatedAt:Date.now() };
+      recordHistory({ ts:Date.now(), date:key, action: existed?"Düzenledi":"Seçti", choice:selectedChoice, color:selectedColor||null });
       saveState();
     }
 
     /*********************
-     * CALENDAR RENDER
+     * CALENDAR (current month only)
      *********************/
-    const monthTitleEl = $("#monthTitle");
-    const dowRow = $("#dowRow");
-    const calGrid = $("#calGrid");
+    const monthTitleEl=document.getElementById("monthTitle");
+    const dowRow=document.getElementById("dowRow");
+    const calGrid=document.getElementById("calGrid");
 
-    const panelTitle = $("#panelTitle");
-    const panelText = $("#panelText");
-    const panelPill = $("#panelPill");
-    const panelActions = $("#panelActions");
-    const btnEditToday = $("#btnEditToday");
-    const btnDeleteToday = $("#btnDeleteToday");
+    const panelTitle=document.getElementById("panelTitle");
+    const panelText=document.getElementById("panelText");
+    const panelPill=document.getElementById("panelPill");
+    const panelActions=document.getElementById("panelActions");
+    const historyList=document.getElementById("historyList");
 
-    const historyList = $("#historyList");
+    const btnEditToday=document.getElementById("btnEditToday");
+    const btnDeleteToday=document.getElementById("btnDeleteToday");
 
-    const DOW = ["P","S","Ç","P","C","C","P"]; // Pazartesi..Pazar (kısa)
+    const DOW=["P","S","Ç","P","C","C","P"];
     function renderDOW(){
-      dowRow.innerHTML = "";
+      dowRow.innerHTML="";
       DOW.forEach(x=>{
-        const d = document.createElement("div");
+        const d=document.createElement("div");
         d.className="dow";
-        d.textContent = x;
+        d.textContent=x;
         dowRow.appendChild(d);
       });
     }
 
-    let currentMonthDate = new Date(); // now
-    let selectedDayKey = null;
+    let selectedDayKey=null;
 
     function renderCalendar(){
       renderDOW();
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = now.getMonth();
-      currentMonthDate = new Date(y, m, 1);
+      const now=new Date();
+      const y=now.getFullYear();
+      const m=now.getMonth();
+      monthTitleEl.textContent = monthNameTR(new Date(y,m,1));
+      calGrid.innerHTML="";
 
-      monthTitleEl.textContent = monthNameTR(currentMonthDate);
+      const firstDay=new Date(y,m,1);
+      const lastDay=new Date(y,m+1,0);
+      const daysInMonth=lastDay.getDate();
 
-      calGrid.innerHTML = "";
-
-      const firstDay = new Date(y, m, 1);
-      const lastDay = new Date(y, m+1, 0);
-      const daysInMonth = lastDay.getDate();
-
-      // Monday-based offset:
-      // JS getDay(): 0 Sun..6 Sat
-      // we want 0 for Monday
-      const jsDow = firstDay.getDay(); // 0..6 (Sun..Sat)
-      const offset = (jsDow + 6) % 7; // Mon=0
-
-      // empty slots
+      const jsDow=firstDay.getDay(); // 0 Sun..6 Sat
+      const offset=(jsDow+6)%7; // Mon=0
       for(let i=0;i<offset;i++){
-        const ph = document.createElement("div");
+        const ph=document.createElement("div");
         ph.style.height="44px";
         calGrid.appendChild(ph);
       }
 
-      const tKey = todayKey();
-
+      const tKey=todayKey();
       for(let d=1; d<=daysInMonth; d++){
-        const dateKey = `${y}-${pad(m+1)}-${pad(d)}`;
-        const cell = document.createElement("div");
+        const dateKey=`${y}-${pad(m+1)}-${pad(d)}`;
+        const cell=document.createElement("div");
         cell.className="day";
-        cell.textContent = d;
+        cell.textContent=d;
 
-        const isToday = dateKey === tKey;
+        const isToday = dateKey===tKey;
         if(isToday) cell.classList.add("today");
 
-        // Disable future days (no selection)
-        const isFuture = dateKey > tKey;
+        const isFuture = dateKey>tKey;
         if(isFuture) cell.classList.add("disabled");
 
-        const entry = state.days[dateKey];
+        const entry=state.days[dateKey];
         if(entry){
-          const mark = document.createElement("div");
-          mark.className = "mark" + (entry.color ? (" color-" + entry.color) : "");
+          const mark=document.createElement("div");
+          mark.className="mark" + (entry.color ? (" color-"+entry.color) : "");
+          mark.textContent = choiceIcon(entry.choice); // ikon işareti
           cell.appendChild(mark);
         }
 
         cell.addEventListener("click", ()=>{
-          if(isFuture){
-            showToast("Gelecek günler kilitli.");
-            return;
-          }
-          selectedDayKey = dateKey;
+          if(isFuture){ showToast("Gelecek günler kilitli."); return; }
+          selectedDayKey=dateKey;
           renderDayPanel();
         });
 
         calGrid.appendChild(cell);
       }
 
-      // auto select today panel
-      selectedDayKey = tKey;
+      selectedDayKey=tKey;
       renderDayPanel();
       renderHistory();
     }
 
     function renderHistory(){
-      const items = state.history.slice(0, 8);
-      if(items.length===0){
-        historyList.textContent = "Henüz yok.";
-        return;
-      }
-      const lines = items.map(it=>{
-        const t = new Date(it.ts);
-        const hh = pad(t.getHours());
-        const mm = pad(t.getMinutes());
-        const act = it.action==="set" ? "Seçti" : it.action==="edit" ? "Düzenledi" : "Sildi";
-        const c = it.choice ? ` • ${choiceLabel(it.choice)}` : "";
-        const col = it.color ? ` • renk:${it.color}` : "";
-        return `${hh}:${mm} • ${it.date} • ${act}${c}${col}`;
+      const items=(state.history||[]).slice(0,8);
+      if(items.length===0){ historyList.textContent="Henüz yok."; return; }
+      const lines=items.map(it=>{
+        const t=new Date(it.ts);
+        const hh=pad(t.getHours()), mm=pad(t.getMinutes());
+        const c = it.choice ? ` • ${choiceLabelTR(it.choice)}` : "";
+        const col = it.color ? ` • ${colorLabelTR(it.color)}` : "";
+        return `${hh}:${mm} • ${it.date} • ${it.action}${c}${col}`;
       });
       historyList.innerHTML = lines.map(x=>`<div style="padding:6px 0; border-top:1px solid var(--border)">${x}</div>`).join("");
     }
 
     function renderDayPanel(){
-      const tKey = todayKey();
-      const key = selectedDayKey || tKey;
-      const entry = state.days[key];
+      const tKey=todayKey();
+      const key=selectedDayKey || tKey;
+      const entry=state.days[key];
 
-      const isToday = key === tKey;
-      const isPast = key < tKey;
+      const isToday = key===tKey;
+      const isPast = key<tKey;
 
       panelTitle.textContent = isToday ? "Bugün" : (isPast ? "Geçmiş gün" : "Gün");
 
       if(!entry){
         panelText.textContent = isToday ? "Bugün için henüz seçim yok." : "Seçim yok.";
-        panelPill.style.display = "none";
-        panelActions.style.display = "none";
+        panelPill.style.display="none";
+        panelActions.style.display="none";
         return;
       }
 
-      panelText.textContent = choiceLabel(entry.choice);
-      panelPill.style.display = "inline-flex";
-      panelPill.textContent = entry.color ? `Renk: ${entry.color}` : "Renk: —";
+      panelText.textContent = choiceLabelTR(entry.choice);
+      panelPill.style.display="inline-flex";
+      panelPill.textContent = entry.color ? `Renk: ${colorLabelTR(entry.color)}` : "Renk: —";
 
-      // Actions ONLY today
+      // Kural: geçmiş günlerde Düzenle/Sil yok; sadece bugün açık
       panelActions.style.display = isToday ? "flex" : "none";
     }
 
     /*********************
-     * SETTINGS MODAL
+     * SETTINGS
      *********************/
-    const settingsBackdrop = $("#settingsBackdrop");
-    $("#btnSettings").addEventListener("click", ()=>settingsBackdrop.classList.add("show"));
-    $("#btnCloseSettings").addEventListener("click", ()=>settingsBackdrop.classList.remove("show"));
+    const settingsBackdrop=document.getElementById("settingsBackdrop");
+    document.getElementById("btnSettings").addEventListener("click", ()=>settingsBackdrop.classList.add("show"));
+    document.getElementById("btnCloseSettings").addEventListener("click", ()=>settingsBackdrop.classList.remove("show"));
     settingsBackdrop.addEventListener("click", (e)=>{ if(e.target===settingsBackdrop) settingsBackdrop.classList.remove("show"); });
 
-    $("#btnExportCSV").addEventListener("click", ()=>{
-      const rows = [["Tarih","Seçim","Renk"]];
-      const keys = Object.keys(state.days).sort();
+    document.getElementById("btnExportCSV").addEventListener("click", ()=>{
+      const rows=[["Tarih","Seçim","Renk"]];
+      const keys=Object.keys(state.days||{}).sort();
       keys.forEach(k=>{
-        const v = state.days[k];
-        rows.push([k, choiceLabel(v.choice), v.color || ""]);
+        const v=state.days[k];
+        rows.push([k, choiceLabelTR(v.choice), v.color ? colorLabelTR(v.color) : ""]);
       });
-      const csv = rows.map(r=>r.map(x=>{
-        const s = String(x ?? "");
-        // CSV escape
+      const csv=rows.map(r=>r.map(x=>{
+        const s=String(x??"");
         if(/[",\n]/.test(s)) return `"${s.replaceAll('"','""')}"`;
         return s;
       }).join(",")).join("\n");
 
-      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `today-export-${todayKey()}.csv`;
+      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=`today-export-${todayKey()}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -978,39 +683,32 @@
     });
 
     /*********************
-     * BUTTONS + RULES
+     * BUTTONS
      *********************/
-    $("#btnStart").addEventListener("click", async ()=>{
-      // user gesture => unlock audio
+    document.getElementById("btnStart").addEventListener("click", ()=>{
+      // iOS için ses kilidi burada açılır
       ensureAudio();
-      showScreen(screenCount);
       runCountdown();
     });
 
-    $("#btnToCalendar").addEventListener("click", ()=>{
-      if(!selectedChoice){
-        showToast("Önce bir seçenek seç.");
-        return;
-      }
+    document.getElementById("btnToCalendar").addEventListener("click", ()=>{
+      if(!selectedChoice){ showToast("Önce bir seçenek seç."); return; }
       setTodaySelection();
       showScreen(screenCal);
       renderCalendar();
       showToast("Kaydedildi.");
     });
 
-    $("#btnBackPick").addEventListener("click", ()=>{
-      // back to pick, keep selections in UI
-      showScreen(screenPick);
-    });
+    document.getElementById("btnBackPick").addEventListener("click", ()=>showScreen(screenPick));
 
     btnEditToday.addEventListener("click", ()=>{
-      // only today allowed anyway
+      // sadece bugün
       showScreen(screenPick);
-      const tKey = todayKey();
-      const entry = state.days[tKey];
+      const tKey=todayKey();
+      const entry=state.days[tKey];
       if(entry){
-        selectedChoice = entry.choice;
-        selectedColor = entry.color || null;
+        selectedChoice=entry.choice;
+        selectedColor=entry.color||null;
         choiceEls.forEach(x=>x.classList.toggle("selected", x.dataset.choice===selectedChoice));
         colorBtns.forEach(x=>x.classList.toggle("selected", x.dataset.color===selectedColor));
       }
@@ -1018,28 +716,20 @@
     });
 
     btnDeleteToday.addEventListener("click", ()=>{
-      const tKey = todayKey();
-      if(!state.days[tKey]){
-        showToast("Silinecek veri yok.");
-        return;
-      }
+      const tKey=todayKey();
+      if(!state.days[tKey]){ showToast("Silinecek veri yok."); return; }
       delete state.days[tKey];
-      recordHistory({ ts: Date.now(), date: tKey, action:"delete" });
+      recordHistory({ ts:Date.now(), date:tKey, action:"Sildi" });
       saveState();
       renderCalendar();
       showToast("Bugün sıfırlandı.");
     });
 
     /*********************
-     * INITIAL LOAD
+     * INIT
      *********************/
-    // Keep existing data across updates (no clearing).
-    // Start always on onboarding.
     showScreen(screenOnboard);
 
-    /*********************
-     * SERVICE WORKER
-     *********************/
     if("serviceWorker" in navigator){
       window.addEventListener("load", ()=>{
         navigator.serviceWorker.register("./sw.js").catch(()=>{});
