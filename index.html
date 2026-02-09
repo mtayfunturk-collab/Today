@@ -1,205 +1,1050 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#F4F5F6" />
   <title>Today</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#F4F5F6">
-
-  <!-- iOS -->
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v9.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/today-icon-v9-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v9.png" />
 
   <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f4f5f6;
-      color: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    :root{
+      --bg: #F4F5F6;
+      --card: #ffffff;
+      --text: #111111;
+      --muted: rgba(0,0,0,.55);
+      --shadow: 0 18px 60px rgba(0,0,0,.12);
+      --border: rgba(0,0,0,.08);
+      --btn: #111111;
+      --btnText: #ffffff;
+      --accentA1: #F4F5F6;
+      --accentA2: #EDEFF2;
+      --dot: rgba(17,17,17,.85);
+      --danger: #c62828;
+      --ok: #1b5e20;
+      --focus: rgba(0,0,0,.12);
     }
 
-    .screen {
+    body[data-theme="light"]{
+      --bg:#ffffff;
+      --card:#ffffff;
+      --text:#111111;
+      --muted: rgba(0,0,0,.55);
+      --border: rgba(0,0,0,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.10);
+      --dot: rgba(17,17,17,.85);
+    }
+
+    body[data-theme="dark"]{
+      --bg:#0f1115;
+      --card:#151822;
+      --text:#f2f5ff;
+      --muted: rgba(242,245,255,.55);
+      --border: rgba(242,245,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --btn:#f2f5ff;
+      --btnText:#0f1115;
+      --dot: rgba(242,245,255,.85);
+      --focus: rgba(242,245,255,.14);
+      --accentA1:#11131a;
+      --accentA2:#0f1115;
+    }
+
+    body[data-theme="contrast"]{
+      --bg:#000000;
+      --card:#0b0b0b;
+      --text:#ffffff;
+      --muted: rgba(255,255,255,.70);
+      --border: rgba(255,255,255,.18);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --btn:#ffffff;
+      --btnText:#000000;
+      --dot: rgba(255,255,255,.95);
+      --focus: rgba(255,255,255,.22);
+      --accentA1:#000000;
+      --accentA2:#000000;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 50% 30%, var(--accentA2), var(--bg));
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .screen{
+      position:fixed; inset:0;
+      display:none;
+      padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+    }
+    .screen.active{ display:flex; align-items:center; justify-content:center; }
+
+    .card{
+      width:min(520px, 92vw);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px 22px;
+    }
+
+    .center{
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 14px;
+    }
+
+    .logo{
+      width: 128px;
+      height: 128px;
+      border-radius: 28px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: transparent;
+    }
+    .logo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    h1{
+      margin:0;
+      font-size: 40px;
+      letter-spacing: 0.22em;
+      font-weight: 800;
+    }
+    .tagline{
+      margin:0;
+      font-size: 18px;
+      color: var(--muted);
+    }
+    .note{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      opacity: .75;
+    }
+
+    .btn{
       width: 100%;
-      max-width: 420px;
-      padding: 24px;
-      text-align: center;
-      display: none;
+      border:0;
+      border-radius: 18px;
+      background: var(--btn);
+      color: var(--btnText);
+      padding: 18px 18px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor:pointer;
+    }
+    .btn:active{ transform: scale(.99); }
+
+    /* Countdown */
+    .countNum{
+      font-weight: 900;
+      line-height: 1;
+      user-select:none;
     }
 
-    .screen.active {
-      display: block;
+    /* Choice */
+    .qTitle{
+      margin:0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      text-align:center;
+    }
+    .choices{
+      margin-top: 18px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+    .choice{
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 14px;
+      background: rgba(0,0,0,.02);
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      position:relative;
+      outline:none;
+    }
+    body[data-theme="dark"] .choice,
+    body[data-theme="contrast"] .choice{
+      background: rgba(255,255,255,.04);
+    }
+    .choice strong{ font-size: 17px; }
+    .choice small{ color: var(--muted); font-size: 13px; }
+    .choice.selected{
+      border-color: rgba(0,0,0,.0);
+      box-shadow: 0 0 0 4px var(--focus);
+      background: rgba(0,0,0,.04);
+    }
+    body[data-theme="dark"] .choice.selected,
+    body[data-theme="contrast"] .choice.selected{
+      background: rgba(255,255,255,.06);
     }
 
-    .logo {
-      width: 96px;
-      margin: 0 auto 24px;
+    /* Colors */
+    .colorRow{
+      margin-top: 14px;
+      display:flex;
+      justify-content:center;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+    .cbtn{
+      width: 44px; height:44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      cursor:pointer;
+      position:relative;
+      background: transparent;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .cbtn i{
+      width: 22px; height:22px;
+      border-radius: 999px;
+      display:block;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    }
+    .cbtn.selected{
+      box-shadow: 0 0 0 4px var(--focus);
     }
 
-    .subtitle {
-      opacity: 0.7;
+    /* Arrow to calendar */
+    .goCal{
+      margin-top: 16px;
+      display:flex;
+      justify-content:flex-end;
+    }
+    .fab{
+      width: 56px; height:56px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.06);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 22px;
+      font-weight: 900;
+      user-select:none;
+    }
+    body[data-theme="dark"] .fab,
+    body[data-theme="contrast"] .fab{
+      background: rgba(255,255,255,.08);
+    }
+
+    /* Calendar */
+    .topBar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 14px;
+    }
+    .monthTitle{
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing:.02em;
+    }
+    .iconBtn{
+      border:1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 700;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+    .dow{
+      text-align:center;
+      font-size: 12px;
+      color: var(--muted);
+      padding-bottom: 4px;
+      user-select:none;
+    }
+    .day{
+      height: 44px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.02);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      cursor:pointer;
+      user-select:none;
+    }
+    body[data-theme="dark"] .day,
+    body[data-theme="contrast"] .day{
+      background: rgba(255,255,255,.04);
+    }
+    .day.disabled{ opacity:.45; cursor:not-allowed; }
+    .day.today{ box-shadow: 0 0 0 4px var(--focus); }
+    .mark{
+      position:absolute;
+      bottom: 6px;
+      width: 18px; height: 4px;
+      border-radius: 999px;
+      background: var(--dot);
+      opacity: .9;
+    }
+    .mark.color-red{ background:#e53935; }
+    .mark.color-blue{ background:#1e88e5; }
+    .mark.color-yellow{ background:#fdd835; }
+    .mark.color-green{ background:#43a047; }
+    .mark.color-black{ background:#111111; }
+    body[data-theme="dark"] .mark.color-black,
+    body[data-theme="contrast"] .mark.color-black{ background:#ffffff; }
+
+    .panel{
+      margin-top: 14px;
+      border:1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(0,0,0,.02);
+    }
+    body[data-theme="dark"] .panel,
+    body[data-theme="contrast"] .panel{
+      background: rgba(255,255,255,.04);
+    }
+    .panel h3{
+      margin:0 0 8px 0;
       font-size: 14px;
-      margin-top: 8px;
+      color: var(--muted);
+      letter-spacing:.02em;
+      text-transform: uppercase;
     }
-
-    .btn {
-      margin-top: 24px;
-      padding: 16px;
+    .panel .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 0;
+      border-top: 1px solid var(--border);
+    }
+    .panel .row:first-of-type{ border-top:0; }
+    .pill{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      font-weight: 800;
+      font-size: 12px;
+      white-space:nowrap;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      margin-top: 10px;
+    }
+    .btn2{
+      border:1px solid var(--border);
+      background: transparent;
+      color: var(--text);
       border-radius: 14px;
-      border: none;
-      width: 100%;
-      font-size: 16px;
-      background: #111;
-      color: #fff;
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight: 800;
     }
+    .btn2.danger{ border-color: rgba(198,40,40,.45); color: var(--danger); }
+    .btn2.ok{ border-color: rgba(27,94,32,.45); color: var(--ok); }
 
-    .countdown {
-      font-size: 72px;
-      font-weight: 600;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-
-    .choice {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-      margin-top: 12px;
-      text-align: left;
-    }
-
-    .choice-title {
-      font-weight: 600;
-    }
-
-    .choice-desc {
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.78);
+      color:#fff;
+      padding: 10px 12px;
+      border-radius: 999px;
       font-size: 13px;
-      opacity: 0.7;
-      margin-top: 4px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease;
+      max-width: 86vw;
+      text-align:center;
     }
+    .toast.show{ opacity:1; }
 
-    .calendar-btn {
-      margin-top: 24px;
-      font-size: 20px;
-      background: none;
-      border: none;
+    /* Modal (Settings) */
+    .modalBackdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.35);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
     }
+    .modalBackdrop.show{ display:flex; }
+    .modal{
+      width:min(520px, 92vw);
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .modalHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+    }
+    .modalHead strong{ font-size: 16px; }
+    .modalBody{ display:flex; flex-direction:column; gap:10px; }
+    .select{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: transparent;
+      color: var(--text);
+      font-weight: 700;
+    }
+    .divider{ height:1px; background: var(--border); margin: 4px 0; }
   </style>
 </head>
 
 <body>
+  <!-- ONBOARD -->
+  <section class="screen active" id="screenOnboard" aria-label="Onboarding">
+    <div class="card center">
+      <div class="logo" aria-hidden="true">
+        <img src="icons/today-icon-v9-512.png" alt="">
+      </div>
+      <h1>TODAY</h1>
+      <p class="tagline">Sadece fark et. Hepsi bu.</p>
+      <button class="btn" id="btnStart" type="button">Başla</button>
+      <div class="note">Verileriniz sadece bu cihazda kaydedilmektedir.</div>
+    </div>
+  </section>
 
-<!-- ONBOARDING -->
-<div class="screen active" id="onboarding">
-  <img src="icons/today-icon-v9-512.png" class="logo" alt="Today">
-  <h1>TODAY</h1>
-  <div class="subtitle">Verileriniz sadece bu cihazda kaydedilmektedir.</div>
-  <button class="btn" onclick="startCountdown()">Başla</button>
-</div>
+  <!-- COUNTDOWN -->
+  <section class="screen" id="screenCount" aria-label="Sayaç">
+    <div class="card center" style="padding:36px 22px">
+      <div id="countNum" class="countNum" style="font-size:96px;">5</div>
+      <div class="note" style="margin-top:6px">5 saniye.</div>
+    </div>
+  </section>
 
-<!-- COUNTDOWN -->
-<div class="screen" id="countdownScreen">
-  <div class="countdown" id="countdown">5</div>
-</div>
+  <!-- CHOICE -->
+  <section class="screen" id="screenPick" aria-label="Seçim">
+    <div class="card">
+      <div class="qTitle">Bugün sende ne oldu?</div>
 
-<!-- CHOICES -->
-<div class="screen" id="choiceScreen">
-  <h2>Bugün sende ne oldu?</h2>
+      <div class="choices" role="listbox" aria-label="Seçenekler">
+        <div class="choice" data-choice="A" tabindex="0">
+          <strong>Bir şey oldu ama adı yok</strong>
+          <small>Adını koyma. Sadece fark et.</small>
+        </div>
+        <div class="choice" data-choice="B" tabindex="0">
+          <strong>Her şey çok net</strong>
+          <small>Bir cümleyle söyleyebiliyorsan tamam.</small>
+        </div>
+        <div class="choice" data-choice="C" tabindex="0">
+          <strong>Zordu bugün</strong>
+          <small>Zorluklar olgunlaşma için gereklidir.</small>
+        </div>
+      </div>
 
-  <div class="choice" onclick="saveChoice('adı yok')">
-    <div class="choice-title">Bir şey oldu ama adı yok</div>
-    <div class="choice-desc">Adını koyma. Sadece fark et.</div>
+      <div class="panel" style="margin-top:16px">
+        <h3>Renk (opsiyonel)</h3>
+        <div class="colorRow" aria-label="Renk seçimi">
+          <button class="cbtn" type="button" data-color="red" aria-label="Kırmızı"><i style="background:#e53935"></i></button>
+          <button class="cbtn" type="button" data-color="blue" aria-label="Mavi"><i style="background:#1e88e5"></i></button>
+          <button class="cbtn" type="button" data-color="yellow" aria-label="Sarı"><i style="background:#fdd835"></i></button>
+          <button class="cbtn" type="button" data-color="green" aria-label="Yeşil"><i style="background:#43a047"></i></button>
+          <button class="cbtn" type="button" data-color="black" aria-label="Siyah (istikrar)"><i style="background:#111111"></i></button>
+        </div>
+        <div class="note" style="text-align:center; margin-top:10px">Renk seçmeden de takvime geçebilirsin.</div>
+      </div>
+
+      <div class="goCal">
+        <button class="fab" id="btnToCalendar" type="button" aria-label="Takvime git">→</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="screen" id="screenCal" aria-label="Takvim">
+    <div class="card">
+      <div class="topBar">
+        <div class="monthTitle" id="monthTitle">Ay</div>
+        <div style="display:flex; gap:10px;">
+          <button class="iconBtn" id="btnSettings" type="button">Ayarlar</button>
+          <button class="iconBtn" id="btnBackPick" type="button">←</button>
+        </div>
+      </div>
+
+      <div class="grid" id="dowRow" aria-hidden="true"></div>
+      <div class="grid" id="calGrid" aria-label="Takvim günleri"></div>
+
+      <div class="panel" id="dayPanel" aria-live="polite">
+        <h3 id="panelTitle">Seçim</h3>
+        <div class="row">
+          <div id="panelText">Bir gün seç.</div>
+          <div id="panelPill" class="pill" style="display:none;">—</div>
+        </div>
+
+        <div class="actions" id="panelActions" style="display:none;">
+          <button class="btn2 ok" id="btnEditToday" type="button">Düzenle</button>
+          <button class="btn2 danger" id="btnDeleteToday" type="button">Sil</button>
+        </div>
+      </div>
+
+      <div class="panel" id="historyPanel">
+        <h3>Son yapılanlar</h3>
+        <div id="historyList" class="note" style="margin:0;">Henüz yok.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modalBackdrop" id="settingsBackdrop" role="dialog" aria-modal="true" aria-label="Ayarlar">
+    <div class="modal">
+      <div class="modalHead">
+        <strong>Ayarlar</strong>
+        <button class="iconBtn" id="btnCloseSettings" type="button">Kapat</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="divider"></div>
+
+        <label style="font-weight:800; font-size:13px; color:var(--muted)">🎨 Tema</label>
+        <select class="select" id="themeSelect">
+          <option value="default">Varsayılan</option>
+          <option value="light">Açık</option>
+          <option value="dark">Koyu</option>
+          <option value="contrast">Kontrastlı</option>
+        </select>
+
+        <div class="divider"></div>
+
+        <label style="font-weight:800; font-size:13px; color:var(--muted)">📦 Export</label>
+        <button class="btn2" id="btnExportCSV" type="button">CSV indir</button>
+
+        <div class="note">CSV sütunları: Tarih, Seçim, Renk</div>
+      </div>
+    </div>
   </div>
 
-  <div class="choice" onclick="saveChoice('netti')">
-    <div class="choice-title">Her şey çok net</div>
-    <div class="choice-desc">Bir cümleyle söyleyebiliyorsan tamam.</div>
-  </div>
+  <div class="toast" id="toast"></div>
 
-  <div class="choice" onclick="saveChoice('zordu')">
-    <div class="choice-title">Zordu bugün</div>
-    <div class="choice-desc">Zorluklar olgunlaşma için gereklidir.</div>
-  </div>
+  <script>
+    /*********************
+     * STORAGE + MIGRATION
+     *********************/
+    const STORAGE_KEY = "today_data_v1";
+    const THEME_KEY = "today_theme_v1";
 
-  <button class="calendar-btn" onclick="goCalendar()">→</button>
-</div>
+    const DEFAULT_STATE = {
+      version: 1,
+      days: {},     // "YYYY-MM-DD": { choice:"A|B|C", color:"red|...", updatedAt:number }
+      history: []   // { ts:number, date:"YYYY-MM-DD", action:"set|edit|delete", choice?, color? }
+    };
 
-<!-- CALENDAR -->
-<div class="screen" id="calendarScreen">
-  <h2>Bu Ay</h2>
-  <div id="calendar"></div>
-  <button class="btn" onclick="goHome()">Ana ekrana dön</button>
-</div>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-
-  let count = 5;
-  const countdownEl = document.getElementById('countdown');
-
-  function show(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
-  function startCountdown() {
-    show('countdownScreen');
-    count = 5;
-    countdownEl.textContent = count;
-
-    const interval = setInterval(() => {
-      count--;
-      countdownEl.textContent = count;
-      countdownEl.style.transform = `scale(${1 + count * 0.05})`;
-
-      if (count === 0) {
-        clearInterval(interval);
-        show('choiceScreen');
-      }
-    }, 1000);
-  }
-
-  function saveChoice(value) {
-    const today = new Date().toISOString().slice(0,10);
-    localStorage.setItem(today, value);
-    show('calendarScreen');
-    renderCalendar();
-  }
-
-  function renderCalendar() {
-    const cal = document.getElementById('calendar');
-    cal.innerHTML = '';
-    const now = new Date();
-    const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-
-    for (let d=1; d<=days; d++) {
-      const date = new Date(now.getFullYear(), now.getMonth(), d)
-        .toISOString().slice(0,10);
-      const val = localStorage.getItem(date) || '—';
-      const div = document.createElement('div');
-      div.textContent = `${d}: ${val}`;
-      cal.appendChild(div);
+    function safeJSONParse(str){
+      try { return JSON.parse(str); } catch { return null; }
     }
-  }
 
-  function goCalendar() {
-    show('calendarScreen');
-    renderCalendar();
-  }
+    function loadState(){
+      // 1) current
+      const cur = safeJSONParse(localStorage.getItem(STORAGE_KEY));
+      if(cur && cur.days && cur.history) return cur;
 
-  function goHome() {
-    show('onboarding');
-  }
-</script>
+      // 2) migrate from older keys (best-effort)
+      const candidates = [
+        "today_data", "today_v1", "todaySelections", "today_selection_v1"
+      ];
 
+      for(const k of candidates){
+        const v = safeJSONParse(localStorage.getItem(k));
+        if(!v) continue;
+
+        // Possible shapes:
+        // a) { days: {...} }
+        // b) { "YYYY-MM-DD": {choice,color} }  (direct map)
+        // c) { selected: "...", date: "..." }  (single day)
+        const next = structuredClone(DEFAULT_STATE);
+
+        if(v.days && typeof v.days === "object"){
+          next.days = v.days;
+          next.history = v.history || [];
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          return next;
+        }
+
+        const looksLikeMap = Object.keys(v).some(x => /^\d{4}-\d{2}-\d{2}$/.test(x));
+        if(looksLikeMap){
+          next.days = v;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          return next;
+        }
+
+        if(v.date && v.choice){
+          next.days[v.date] = { choice: v.choice, color: v.color || null, updatedAt: Date.now() };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          return next;
+        }
+      }
+
+      // 3) fresh
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_STATE));
+      return structuredClone(DEFAULT_STATE);
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    let state = loadState();
+
+    /*********************
+     * DATE HELPERS
+     *********************/
+    function pad(n){ return String(n).padStart(2,"0"); }
+    function todayKey(){
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+    function monthKey(d){
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+    }
+    function monthNameTR(date){
+      const months = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+      return `${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+    function isSameDateKey(a,b){ return a===b; }
+
+    /*********************
+     * UI HELPERS
+     *********************/
+    const $ = (s)=>document.querySelector(s);
+    const screenOnboard = $("#screenOnboard");
+    const screenCount = $("#screenCount");
+    const screenPick = $("#screenPick");
+    const screenCal = $("#screenCal");
+
+    function showScreen(which){
+      [screenOnboard, screenCount, screenPick, screenCal].forEach(el=>el.classList.remove("active"));
+      which.classList.add("active");
+    }
+
+    const toast = $("#toast");
+    let toastTimer = null;
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toast.classList.remove("show"), 1600);
+    }
+
+    /*********************
+     * THEME
+     *********************/
+    function loadTheme(){
+      const t = localStorage.getItem(THEME_KEY) || "default";
+      applyTheme(t);
+      $("#themeSelect").value = t;
+    }
+    function applyTheme(t){
+      if(t==="default") document.body.removeAttribute("data-theme");
+      else document.body.setAttribute("data-theme", t);
+      localStorage.setItem(THEME_KEY, t);
+    }
+    $("#themeSelect").addEventListener("change", (e)=>applyTheme(e.target.value));
+    loadTheme();
+
+    /*********************
+     * AUDIO "TIK" (WebAudio)
+     *********************/
+    let audioCtx = null;
+    function ensureAudio(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state === "suspended") audioCtx.resume();
+    }
+    function tick(){
+      if(!audioCtx) return;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = "square";
+      o.frequency.value = 1200;
+      g.gain.value = 0.0001;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start();
+
+      // short tick envelope
+      const now = audioCtx.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+      o.stop(now + 0.07);
+    }
+
+    /*********************
+     * COUNTDOWN
+     *********************/
+    const countEl = $("#countNum");
+    function countFontSize(n){
+      // bigger at 5, smaller at 1
+      const sizes = {5:96,4:86,3:76,2:66,1:58};
+      return (sizes[n] || 72) + "px";
+    }
+
+    async function runCountdown(){
+      showScreen(screenCount);
+      let n = 5;
+      countEl.textContent = n;
+      countEl.style.fontSize = countFontSize(n);
+
+      // first tick immediately
+      tick();
+
+      const iv = setInterval(()=>{
+        n--;
+        if(n<=0){
+          clearInterval(iv);
+          showScreen(screenPick);
+          return;
+        }
+        countEl.textContent = n;
+        countEl.style.fontSize = countFontSize(n);
+        tick();
+      }, 1000);
+    }
+
+    /*********************
+     * PICK (choices + color)
+     *********************/
+    let selectedChoice = null;
+    let selectedColor = null;
+
+    const choiceEls = Array.from(document.querySelectorAll(".choice"));
+    choiceEls.forEach(el=>{
+      el.addEventListener("click", ()=>selectChoice(el.dataset.choice));
+      el.addEventListener("keydown", (e)=>{
+        if(e.key==="Enter" || e.key===" ") { e.preventDefault(); selectChoice(el.dataset.choice); }
+      });
+    });
+
+    function selectChoice(c){
+      selectedChoice = c;
+      choiceEls.forEach(x=>x.classList.toggle("selected", x.dataset.choice===c));
+    }
+
+    const colorBtns = Array.from(document.querySelectorAll(".cbtn"));
+    colorBtns.forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const c = btn.dataset.color;
+        if(selectedColor === c){
+          selectedColor = null;
+        } else {
+          selectedColor = c;
+        }
+        colorBtns.forEach(x=>x.classList.toggle("selected", x.dataset.color===selectedColor));
+      });
+    });
+
+    function choiceLabel(c){
+      if(c==="A") return "Bir şey oldu ama adı yok";
+      if(c==="B") return "Her şey çok net";
+      if(c==="C") return "Zordu bugün";
+      return "—";
+    }
+
+    function recordHistory(entry){
+      state.history.unshift(entry);
+      // keep last 60 for compactness
+      state.history = state.history.slice(0, 60);
+    }
+
+    function setTodaySelection(){
+      const key = todayKey();
+      const exists = !!state.days[key];
+
+      state.days[key] = {
+        choice: selectedChoice,
+        color: selectedColor || null,
+        updatedAt: Date.now()
+      };
+
+      recordHistory({
+        ts: Date.now(),
+        date: key,
+        action: exists ? "edit" : "set",
+        choice: selectedChoice,
+        color: selectedColor || null
+      });
+
+      saveState();
+    }
+
+    /*********************
+     * CALENDAR RENDER
+     *********************/
+    const monthTitleEl = $("#monthTitle");
+    const dowRow = $("#dowRow");
+    const calGrid = $("#calGrid");
+
+    const panelTitle = $("#panelTitle");
+    const panelText = $("#panelText");
+    const panelPill = $("#panelPill");
+    const panelActions = $("#panelActions");
+    const btnEditToday = $("#btnEditToday");
+    const btnDeleteToday = $("#btnDeleteToday");
+
+    const historyList = $("#historyList");
+
+    const DOW = ["P","S","Ç","P","C","C","P"]; // Pazartesi..Pazar (kısa)
+    function renderDOW(){
+      dowRow.innerHTML = "";
+      DOW.forEach(x=>{
+        const d = document.createElement("div");
+        d.className="dow";
+        d.textContent = x;
+        dowRow.appendChild(d);
+      });
+    }
+
+    let currentMonthDate = new Date(); // now
+    let selectedDayKey = null;
+
+    function renderCalendar(){
+      renderDOW();
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth();
+      currentMonthDate = new Date(y, m, 1);
+
+      monthTitleEl.textContent = monthNameTR(currentMonthDate);
+
+      calGrid.innerHTML = "";
+
+      const firstDay = new Date(y, m, 1);
+      const lastDay = new Date(y, m+1, 0);
+      const daysInMonth = lastDay.getDate();
+
+      // Monday-based offset:
+      // JS getDay(): 0 Sun..6 Sat
+      // we want 0 for Monday
+      const jsDow = firstDay.getDay(); // 0..6 (Sun..Sat)
+      const offset = (jsDow + 6) % 7; // Mon=0
+
+      // empty slots
+      for(let i=0;i<offset;i++){
+        const ph = document.createElement("div");
+        ph.style.height="44px";
+        calGrid.appendChild(ph);
+      }
+
+      const tKey = todayKey();
+
+      for(let d=1; d<=daysInMonth; d++){
+        const dateKey = `${y}-${pad(m+1)}-${pad(d)}`;
+        const cell = document.createElement("div");
+        cell.className="day";
+        cell.textContent = d;
+
+        const isToday = dateKey === tKey;
+        if(isToday) cell.classList.add("today");
+
+        // Disable future days (no selection)
+        const isFuture = dateKey > tKey;
+        if(isFuture) cell.classList.add("disabled");
+
+        const entry = state.days[dateKey];
+        if(entry){
+          const mark = document.createElement("div");
+          mark.className = "mark" + (entry.color ? (" color-" + entry.color) : "");
+          cell.appendChild(mark);
+        }
+
+        cell.addEventListener("click", ()=>{
+          if(isFuture){
+            showToast("Gelecek günler kilitli.");
+            return;
+          }
+          selectedDayKey = dateKey;
+          renderDayPanel();
+        });
+
+        calGrid.appendChild(cell);
+      }
+
+      // auto select today panel
+      selectedDayKey = tKey;
+      renderDayPanel();
+      renderHistory();
+    }
+
+    function renderHistory(){
+      const items = state.history.slice(0, 8);
+      if(items.length===0){
+        historyList.textContent = "Henüz yok.";
+        return;
+      }
+      const lines = items.map(it=>{
+        const t = new Date(it.ts);
+        const hh = pad(t.getHours());
+        const mm = pad(t.getMinutes());
+        const act = it.action==="set" ? "Seçti" : it.action==="edit" ? "Düzenledi" : "Sildi";
+        const c = it.choice ? ` • ${choiceLabel(it.choice)}` : "";
+        const col = it.color ? ` • renk:${it.color}` : "";
+        return `${hh}:${mm} • ${it.date} • ${act}${c}${col}`;
+      });
+      historyList.innerHTML = lines.map(x=>`<div style="padding:6px 0; border-top:1px solid var(--border)">${x}</div>`).join("");
+    }
+
+    function renderDayPanel(){
+      const tKey = todayKey();
+      const key = selectedDayKey || tKey;
+      const entry = state.days[key];
+
+      const isToday = key === tKey;
+      const isPast = key < tKey;
+
+      panelTitle.textContent = isToday ? "Bugün" : (isPast ? "Geçmiş gün" : "Gün");
+
+      if(!entry){
+        panelText.textContent = isToday ? "Bugün için henüz seçim yok." : "Seçim yok.";
+        panelPill.style.display = "none";
+        panelActions.style.display = "none";
+        return;
+      }
+
+      panelText.textContent = choiceLabel(entry.choice);
+      panelPill.style.display = "inline-flex";
+      panelPill.textContent = entry.color ? `Renk: ${entry.color}` : "Renk: —";
+
+      // Actions ONLY today
+      panelActions.style.display = isToday ? "flex" : "none";
+    }
+
+    /*********************
+     * SETTINGS MODAL
+     *********************/
+    const settingsBackdrop = $("#settingsBackdrop");
+    $("#btnSettings").addEventListener("click", ()=>settingsBackdrop.classList.add("show"));
+    $("#btnCloseSettings").addEventListener("click", ()=>settingsBackdrop.classList.remove("show"));
+    settingsBackdrop.addEventListener("click", (e)=>{ if(e.target===settingsBackdrop) settingsBackdrop.classList.remove("show"); });
+
+    $("#btnExportCSV").addEventListener("click", ()=>{
+      const rows = [["Tarih","Seçim","Renk"]];
+      const keys = Object.keys(state.days).sort();
+      keys.forEach(k=>{
+        const v = state.days[k];
+        rows.push([k, choiceLabel(v.choice), v.color || ""]);
+      });
+      const csv = rows.map(r=>r.map(x=>{
+        const s = String(x ?? "");
+        // CSV escape
+        if(/[",\n]/.test(s)) return `"${s.replaceAll('"','""')}"`;
+        return s;
+      }).join(",")).join("\n");
+
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `today-export-${todayKey()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("CSV indirildi.");
+    });
+
+    /*********************
+     * BUTTONS + RULES
+     *********************/
+    $("#btnStart").addEventListener("click", async ()=>{
+      // user gesture => unlock audio
+      ensureAudio();
+      showScreen(screenCount);
+      runCountdown();
+    });
+
+    $("#btnToCalendar").addEventListener("click", ()=>{
+      if(!selectedChoice){
+        showToast("Önce bir seçenek seç.");
+        return;
+      }
+      setTodaySelection();
+      showScreen(screenCal);
+      renderCalendar();
+      showToast("Kaydedildi.");
+    });
+
+    $("#btnBackPick").addEventListener("click", ()=>{
+      // back to pick, keep selections in UI
+      showScreen(screenPick);
+    });
+
+    btnEditToday.addEventListener("click", ()=>{
+      // only today allowed anyway
+      showScreen(screenPick);
+      const tKey = todayKey();
+      const entry = state.days[tKey];
+      if(entry){
+        selectedChoice = entry.choice;
+        selectedColor = entry.color || null;
+        choiceEls.forEach(x=>x.classList.toggle("selected", x.dataset.choice===selectedChoice));
+        colorBtns.forEach(x=>x.classList.toggle("selected", x.dataset.color===selectedColor));
+      }
+      showToast("Bugünü düzenle.");
+    });
+
+    btnDeleteToday.addEventListener("click", ()=>{
+      const tKey = todayKey();
+      if(!state.days[tKey]){
+        showToast("Silinecek veri yok.");
+        return;
+      }
+      delete state.days[tKey];
+      recordHistory({ ts: Date.now(), date: tKey, action:"delete" });
+      saveState();
+      renderCalendar();
+      showToast("Bugün sıfırlandı.");
+    });
+
+    /*********************
+     * INITIAL LOAD
+     *********************/
+    // Keep existing data across updates (no clearing).
+    // Start always on onboarding.
+    showScreen(screenOnboard);
+
+    /*********************
+     * SERVICE WORKER
+     *********************/
+    if("serviceWorker" in navigator){
+      window.addEventListener("load", ()=>{
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      });
+    }
+  </script>
 </body>
 </html>
