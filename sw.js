@@ -1,4 +1,4 @@
-const CACHE_NAME = "today-v9-cache-1";
+const CACHE_NAME = "today-v10-cache-1";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,9 +10,7 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
@@ -31,9 +29,8 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     caches.match(req).then((cached) => {
-      // network-first for html to get updates, cache-first for assets
-      const isHTML =
-        req.headers.get("accept") && req.headers.get("accept").includes("text/html");
+      const accept = req.headers.get("accept") || "";
+      const isHTML = accept.includes("text/html");
 
       if (isHTML) {
         return fetch(req)
