@@ -3,738 +3,1304 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#F4F5F6" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
   <title>Today</title>
 
   <link rel="manifest" href="manifest.json" />
-
-  <!-- iOS ikon/cache inadı için: birden fazla aday yol (hangisi varsa o kullanılır) -->
-  <link rel="apple-touch-icon" href="apple-touch-icon-v9.png">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v9.png">
-  <link rel="apple-touch-icon" href="Icons/apple-touch-icon-v9.png">
+  <link rel="icon" href="today-icon-v9-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon-v9.png" />
 
   <style>
     :root{
-      --bg:#F4F5F6; --card:#fff; --text:#111; --muted:rgba(0,0,0,.55);
-      --border:rgba(0,0,0,.10); --shadow:0 18px 60px rgba(0,0,0,.12);
-      --btn:#111; --btnText:#fff; --focus:rgba(0,0,0,.12);
+      --bg0:#0b1220;
+      --bg1:#0c1222;
+      --card:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.10);
+      --text:#eef2ff;
+      --muted:rgba(238,242,255,.62);
+      --btn:#ffffff;
+      --btnText:#0b1220;
+
+      --washA: rgba(110, 220, 255, .12); /* adı yok */
+      --washB: rgba(120, 255, 180, .12); /* net */
+      --washC: rgba(255, 190, 90,  .14); /* zordu */
+
+      --rBlack:#101626; /* ⚫ (etikette siyah yazmayacağız) */
+      --rBlue:#2f6bff;
+      --rRed:#ff3b30;
+      --rGreen:#34c759;
+      --rYellow:#ffcc00;
+
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 24px;
     }
-    body[data-theme="light"]{ --bg:#fff; --card:#fff; --text:#111; --muted:rgba(0,0,0,.55); --border:rgba(0,0,0,.10); --shadow:0 18px 60px rgba(0,0,0,.10); --btn:#111; --btnText:#fff; --focus:rgba(0,0,0,.12); }
-    body[data-theme="dark"]{ --bg:#0f1115; --card:#151822; --text:#f2f5ff; --muted:rgba(242,245,255,.55); --border:rgba(242,245,255,.12); --shadow:0 18px 60px rgba(0,0,0,.45); --btn:#f2f5ff; --btnText:#0f1115; --focus:rgba(242,245,255,.14); }
-    body[data-theme="contrast"]{ --bg:#000; --card:#0b0b0b; --text:#fff; --muted:rgba(255,255,255,.70); --border:rgba(255,255,255,.20); --shadow:0 18px 60px rgba(0,0,0,.55); --btn:#fff; --btnText:#000; --focus:rgba(255,255,255,.22); }
+
+    /* Tema: Açık */
+    html[data-theme="light"]{
+      --bg0:#f5f6f8;
+      --bg1:#f3f4f7;
+      --card:rgba(0,0,0,.05);
+      --stroke:rgba(0,0,0,.08);
+      --text:#0b1220;
+      --muted:rgba(11,18,32,.58);
+      --btn:#0b1220;
+      --btnText:#ffffff;
+      --shadow: 0 18px 50px rgba(0,0,0,.10);
+
+      --washA: rgba( 30, 120, 255, .10);
+      --washB: rgba(  0, 160,  80, .10);
+      --washC: rgba(255, 140,   0, .12);
+      --rBlack:#0b1220;
+    }
+
+    /* Tema: Koyu */
+    html[data-theme="dark"]{
+      --bg0:#070b14;
+      --bg1:#070b14;
+      --card:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.10);
+      --text:#eef2ff;
+      --muted:rgba(238,242,255,.62);
+      --btn:#ffffff;
+      --btnText:#0b1220;
+    }
+
+    /* Tema: Kontrast */
+    html[data-theme="contrast"]{
+      --bg0:#000000;
+      --bg1:#000000;
+      --card:rgba(255,255,255,.10);
+      --stroke:rgba(255,255,255,.22);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,.75);
+      --btn:#ffffff;
+      --btnText:#000000;
+      --shadow: 0 18px 50px rgba(0,0,0,.60);
+    }
 
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
-      background:radial-gradient(1200px 800px at 50% 30%, #EDEFF2, var(--bg));
+      min-height:100vh;
+      font-family: -apple-system,BlinkMacSystemFont,system-ui,Segoe UI,Roboto,Helvetica,Arial;
       color:var(--text);
-      -webkit-tap-highlight-color:transparent;
+      background:
+        radial-gradient(1200px 800px at 50% 20%, rgba(255,255,255,.10), transparent 55%),
+        radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      -webkit-font-smoothing:antialiased;
+      -webkit-tap-highlight-color: transparent;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
-    .screen{position:fixed; inset:0; display:none; padding:22px 18px calc(22px + env(safe-area-inset-bottom));}
-    .screen.active{display:flex; align-items:center; justify-content:center;}
-    .card{
-      width:min(520px,92vw);
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:28px;
-      box-shadow:var(--shadow);
-      padding:28px 22px;
+
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
     }
-    .center{text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;}
-    .logoBox{width:128px; height:128px; border-radius:28px; overflow:hidden;}
-    .logoBox img{width:100%; height:100%; object-fit:cover; display:block;}
-    h1{margin:0; font-size:40px; letter-spacing:.22em; font-weight:900;}
-    .tagline{margin:0; font-size:18px; color:var(--muted);}
-    .note{margin-top:6px; font-size:12px; color:var(--muted); opacity:.75;}
+
+    .screen{
+      width:min(420px, 92vw);
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .inner{ padding:26px; }
+
+    .title{
+      font-size:34px;
+      letter-spacing: .14em;
+      text-align:center;
+      margin:8px 0 6px;
+      font-weight:750;
+    }
+    .sub{
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      margin:0 0 18px;
+      line-height:1.35;
+    }
+
     .btn{
-      width:100%; border:0; border-radius:18px;
-      background:var(--btn); color:var(--btnText);
-      padding:18px; font-size:18px; font-weight:800; cursor:pointer;
+      width:100%;
+      border:0;
+      padding:16px 18px;
+      border-radius: 18px;
+      background: var(--btn);
+      color: var(--btnText);
+      font-weight:700;
+      font-size:18px;
+      cursor:pointer;
     }
-    .btn:active{transform:scale(.99)}
-    .countNum{font-weight:900; line-height:1; user-select:none;}
+    .btn:active{ transform: scale(.99); }
 
-    .qTitle{margin:0; font-size:22px; font-weight:900; text-align:center;}
-    .choices{margin-top:18px; display:flex; flex-direction:column; gap:12px;}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--stroke);
+      border-radius: 999px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .q{
+      font-size:18px;
+      text-align:center;
+      margin:10px 0 18px;
+      color: var(--text);
+      font-weight:650;
+    }
+
+    .choices{ display:flex; flex-direction:column; gap:10px; }
+
     .choice{
-      border:1px solid var(--border); border-radius:18px; padding:14px;
-      background:rgba(0,0,0,.02); cursor:pointer;
-      display:flex; flex-direction:column; gap:6px;
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:14px 14px;
+      background: rgba(0,0,0,.06);
+      cursor:pointer;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
     }
-    body[data-theme="dark"] .choice, body[data-theme="contrast"] .choice{background:rgba(255,255,255,.04)}
-    .choice strong{font-size:17px}
-    .choice small{color:var(--muted); font-size:13px}
-    .choice.selected{box-shadow:0 0 0 4px var(--focus);}
 
-    .panel{margin-top:16px; border:1px solid var(--border); border-radius:18px; padding:14px; background:rgba(0,0,0,.02);}
-    body[data-theme="dark"] .panel, body[data-theme="contrast"] .panel{background:rgba(255,255,255,.04)}
-    .panel h3{margin:0 0 8px 0; font-size:13px; color:var(--muted); letter-spacing:.02em; text-transform:uppercase;}
-    .colorRow{display:flex; justify-content:center; gap:10px; flex-wrap:wrap;}
-    .cbtn{width:44px; height:44px; border-radius:14px; border:1px solid var(--border); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center;}
-    .cbtn i{width:22px; height:22px; border-radius:999px; display:block; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);}
-    .cbtn.selected{box-shadow:0 0 0 4px var(--focus);}
+    html[data-theme="light"] .choice{ background: rgba(255,255,255,.55); }
+    html[data-theme="contrast"] .choice{ background: rgba(255,255,255,.04); }
 
-    .goCal{margin-top:16px; display:flex; justify-content:flex-end;}
-    .fab{
-      width:56px; height:56px; border-radius:18px;
-      border:1px solid var(--border); background:rgba(0,0,0,.06);
-      cursor:pointer; display:flex; align-items:center; justify-content:center;
-      font-size:22px; font-weight:900; user-select:none;
+    .radio{
+      width:18px; height:18px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.35);
+      margin-top:2px;
+      flex:0 0 auto;
     }
-    body[data-theme="dark"] .fab, body[data-theme="contrast"] .fab{background:rgba(255,255,255,.08)}
+    html[data-theme="light"] .radio{ border-color: rgba(0,0,0,.28); }
+    html[data-theme="contrast"] .radio{ border-color: rgba(255,255,255,.60); }
 
-    .topBar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;}
-    .monthTitle{font-weight:900; font-size:18px;}
-    .iconBtn{border:1px solid var(--border); background:transparent; color:var(--text); border-radius:14px; padding:10px 12px; cursor:pointer; font-weight:800;}
+    .choice.selected .radio{
+      background: var(--text);
+      border-color: var(--text);
+    }
+    html[data-theme="light"] .choice.selected .radio{
+      background: var(--text);
+      border-color: var(--text);
+    }
 
-    .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:10px;}
-    .dow{text-align:center; font-size:12px; color:var(--muted); padding-bottom:4px; user-select:none;}
+    .ctitle{ font-weight:750; }
+    .cdesc{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.3; }
+
+    .colorRow{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      margin:16px 0 14px;
+    }
+    .cbtn{
+      width:38px; height:38px; border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      position:relative;
+    }
+    html[data-theme="light"] .cbtn{ background: rgba(255,255,255,.8); }
+
+    .dot{
+      width:18px; height:18px; border-radius:50%;
+      box-shadow: 0 8px 20px rgba(0,0,0,.18);
+    }
+    .cbtn.selected::after{
+      content:"";
+      position:absolute;
+      inset:-3px;
+      border-radius:999px;
+      border:2px solid rgba(255,255,255,.75);
+      pointer-events:none;
+    }
+    html[data-theme="light"] .cbtn.selected::after{ border-color: rgba(0,0,0,.35); }
+
+    .noteWrap{ margin-top:10px; }
+    textarea{
+      width:100%;
+      min-height: 92px;
+      resize: vertical;
+      border-radius: 16px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.06);
+      color: var(--text);
+      padding:12px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    html[data-theme="light"] textarea{ background: rgba(255,255,255,.65); }
+    html[data-theme="contrast"] textarea{ background: rgba(255,255,255,.04); }
+
+    .row2{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .linkBtn{
+      border:1px solid var(--stroke);
+      background: transparent;
+      color: var(--text);
+      border-radius: 14px;
+      padding:12px 12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .linkBtn:active{ transform: scale(.99); }
+
+    .mini{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    /* Takvim */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .monthTitle{
+      font-weight:800;
+      letter-spacing:.02em;
+      font-size:18px;
+    }
+
+    .iconBtn{
+      width:44px; height:44px;
+      border-radius: 14px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+    html[data-theme="light"] .iconBtn{ background: rgba(255,255,255,.8); }
+    .iconBtn:active{ transform: scale(.99); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .dow{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 0 2px;
+      user-select:none;
+    }
+
     .day{
-      height:44px; border-radius:14px; border:1px solid var(--border);
-      background:rgba(0,0,0,.02); display:flex; align-items:center; justify-content:center;
-      position:relative; cursor:pointer; user-select:none;
+      aspect-ratio: 1 / 1;
+      border-radius: 14px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      position:relative;
+      cursor:pointer;
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
+      padding:8px;
+      user-select:none;
+      overflow:hidden;
     }
-    body[data-theme="dark"] .day, body[data-theme="contrast"] .day{background:rgba(255,255,255,.04)}
-    .day.disabled{opacity:.45; cursor:not-allowed;}
-    .day.today{box-shadow:0 0 0 4px var(--focus);}
+    html[data-theme="light"] .day{ background: rgba(255,255,255,.75); }
+    .day.inactive{
+      opacity:.35;
+      cursor:default;
+    }
 
-    /* ikon işareti: küçük nokta + şekil */
+    .dnum{ font-weight:800; font-size:13px; }
+
+    .todayRing{
+      outline: 2px solid rgba(255,255,255,.55);
+      outline-offset: 1px;
+    }
+    html[data-theme="light"] .todayRing{ outline-color: rgba(0,0,0,.22); }
+
     .mark{
       position:absolute;
-      bottom:6px;
-      width:14px; height:14px;
+      right:8px; bottom:8px;
+      width:10px; height:10px;
+      border-radius:50%;
+      opacity:.9;
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+    }
+    .pen{
+      position:absolute;
+      left:8px; bottom:8px;
+      font-size:12px;
+      opacity:.75;
+    }
+
+    .expand{
+      margin-top:12px;
+      border:1px solid var(--stroke);
+      border-radius: 18px;
+      overflow:hidden;
+    }
+    .expandHead{
+      width:100%;
+      border:0;
+      background: transparent;
+      color:var(--text);
+      padding:14px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .expandBody{
+      padding:0 14px 14px;
+      color:var(--muted);
+      display:none;
+      font-size:13px;
+      line-height:1.45;
+    }
+    .expand.open .expandBody{ display:block; }
+
+    /* İstatistik paneli */
+    .tabs{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:10px;
+    }
+    .tab{
+      width:40px; height:36px;
+      border-radius: 12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+    html[data-theme="light"] .tab{ background: rgba(255,255,255,.8); }
+    .tab.active{
+      background: var(--btn);
+      color: var(--btnText);
+      border-color: transparent;
+    }
+
+    .chartWrap{
+      border:1px solid var(--stroke);
+      border-radius: 18px;
+      padding:14px;
+      margin-top:12px;
+      background: rgba(255,255,255,.03);
+    }
+    html[data-theme="light"] .chartWrap{ background: rgba(255,255,255,.65); }
+
+    .chart{
+      height:160px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:6px;
+    }
+    .bar{
+      flex:1 1 0;
+      border-radius: 10px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      height:8%;
+      transform-origin: bottom;
+      animation: up .35s ease-out;
+    }
+    html[data-theme="light"] .bar{
+      background: rgba(0,0,0,.06);
+      border-color: rgba(0,0,0,.06);
+    }
+    @keyframes up{
+      from{ transform: scaleY(.35); opacity:.6; }
+      to  { transform: scaleY(1); opacity:1; }
+    }
+
+    .xlabels{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    /* Bottom sheet */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.35);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease;
+    }
+    .overlay.show{ opacity:1; pointer-events:auto; }
+
+    .sheet{
+      position:fixed;
+      left:0; right:0;
+      bottom:-100%;
+      transition: transform .25s ease;
+      transform: translateY(100%);
+      display:flex;
+      justify-content:center;
+      padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+      pointer-events:none;
+    }
+    .sheet.show{
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+    .sheetCard{
+      width:min(520px, 96vw);
+      background: rgba(20,28,45,.96);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    html[data-theme="light"] .sheetCard{
+      background: rgba(255,255,255,.97);
+      border-color: rgba(0,0,0,.10);
+    }
+    html[data-theme="contrast"] .sheetCard{
+      background: rgba(0,0,0,.96);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    .handle{
+      width:44px; height:5px;
       border-radius:999px;
-      background:rgba(17,17,17,.85);
-      display:flex; align-items:center; justify-content:center;
-      font-size:10px; font-weight:900; color:#fff;
+      background: rgba(255,255,255,.25);
+      margin:0 auto 12px;
     }
-    body[data-theme="dark"] .mark, body[data-theme="contrast"] .mark{background:rgba(255,255,255,.85); color:#000;}
+    html[data-theme="light"] .handle{ background: rgba(0,0,0,.14); }
 
-    .mark.color-red{background:#e53935; color:#fff;}
-    .mark.color-blue{background:#1e88e5; color:#fff;}
-    .mark.color-yellow{background:#fdd835; color:#111;}
-    .mark.color-green{background:#43a047; color:#fff;}
-    .mark.color-black{background:#111; color:#fff;}
-    body[data-theme="dark"] .mark.color-black, body[data-theme="contrast"] .mark.color-black{background:#fff; color:#000;}
+    .sheetTitle{ font-weight:900; margin:2px 0 8px; text-align:center; }
+    .kv{ display:flex; justify-content:space-between; gap:10px; margin:10px 0; color:var(--muted); font-size:13px;}
+    .kv b{ color:var(--text); }
 
-    .panelRow{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--border);}
-    .panelRow:first-of-type{border-top:0;}
-    .pill{padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-weight:900; font-size:12px; white-space:nowrap;}
-    .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:10px;}
-    .btn2{border:1px solid var(--border); background:transparent; color:var(--text); border-radius:14px; padding:10px 12px; cursor:pointer; font-weight:900;}
-    .btn2.danger{border-color:rgba(198,40,40,.45); color:#c62828;}
-    .btn2.ok{border-color:rgba(27,94,32,.45); color:#1b5e20;}
-
-    .toast{
-      position:fixed; left:50%;
-      bottom:calc(18px + env(safe-area-inset-bottom));
-      transform:translateX(-50%);
-      background:rgba(0,0,0,.78); color:#fff;
-      padding:10px 12px; border-radius:999px; font-size:13px;
-      opacity:0; pointer-events:none; transition:opacity .18s ease;
-      max-width:86vw; text-align:center;
+    .danger{
+      width:100%;
+      border:1px solid rgba(255,80,80,.35);
+      background: rgba(255,80,80,.10);
+      color: var(--text);
+      padding:12px 12px;
+      border-radius: 16px;
+      font-weight:900;
+      cursor:pointer;
+      margin-top:10px;
     }
-    .toast.show{opacity:1;}
 
-    .modalBackdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; padding:18px;}
-    .modalBackdrop.show{display:flex;}
-    .modal{width:min(520px,92vw); background:var(--card); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); padding:16px;}
-    .modalHead{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
-    .modalHead strong{font-size:16px;}
-    .select{width:100%; border:1px solid var(--border); border-radius:14px; padding:12px; background:transparent; color:var(--text); font-weight:800;}
-    .divider{height:1px; background:var(--border); margin:4px 0;}
+    /* Ekranlar */
+    [data-view]{ display:none; }
+    [data-view].show{ display:block; }
+
+    .status{
+      text-align:center;
+      margin-top:10px;
+      font-size:13px;
+      color: var(--muted);
+      min-height: 18px;
+    }
   </style>
 </head>
 
 <body>
-  <!-- ONBOARD -->
-  <section class="screen active" id="screenOnboard">
-    <div class="card center">
-      <div class="logoBox" aria-hidden="true">
-        <img id="logoImg" alt="">
-      </div>
-      <h1>TODAY</h1>
-      <p class="tagline">Sadece fark et. Hepsi bu.</p>
-      <button class="btn" id="btnStart" type="button">Başla</button>
-      <div class="note">Verileriniz sadece bu cihazda kaydedilmektedir.</div>
-    </div>
-  </section>
+  <div class="wrap">
+    <div class="screen">
 
-  <!-- COUNTDOWN -->
-  <section class="screen" id="screenCount">
-    <div class="card center" style="padding:36px 22px">
-      <div id="countNum" class="countNum" style="font-size:96px;">5</div>
-      <div class="note" style="margin-top:6px">5 saniye.</div>
-    </div>
-  </section>
-
-  <!-- PICK -->
-  <section class="screen" id="screenPick">
-    <div class="card">
-      <div class="qTitle">Bugün sende ne oldu?</div>
-
-      <div class="choices">
-        <div class="choice" data-choice="A" tabindex="0">
-          <strong>Bir şey oldu ama adı yok</strong>
-          <small>Adını koyma. Sadece fark et.</small>
-        </div>
-        <div class="choice" data-choice="B" tabindex="0">
-          <strong>Her şey çok net</strong>
-          <small>Bir cümleyle söyleyebiliyorsan tamam.</small>
-        </div>
-        <div class="choice" data-choice="C" tabindex="0">
-          <strong>Zordu bugün</strong>
-          <small>Zorluklar olgunlaşma için gereklidir.</small>
-        </div>
+      <!-- VIEW: HOME -->
+      <div class="inner" data-view="home">
+        <div class="title">TODAY</div>
+        <div class="sub">verileriniz sadece bu cihazda kaydedilmektedir.</div>
+        <button class="btn" id="btnStart">Başla</button>
+        <div class="status" id="statusHome"></div>
       </div>
 
-      <div class="panel">
-        <h3>Renk (opsiyonel)</h3>
-        <div class="colorRow">
-          <button class="cbtn" type="button" data-color="red" aria-label="Kırmızı"><i style="background:#e53935"></i></button>
-          <button class="cbtn" type="button" data-color="blue" aria-label="Mavi"><i style="background:#1e88e5"></i></button>
-          <button class="cbtn" type="button" data-color="yellow" aria-label="Sarı"><i style="background:#fdd835"></i></button>
-          <button class="cbtn" type="button" data-color="green" aria-label="Yeşil"><i style="background:#43a047"></i></button>
-          <button class="cbtn" type="button" data-color="black" aria-label="İstikrar"><i style="background:#111"></i></button>
+      <!-- VIEW: PICK -->
+      <div class="inner" data-view="pick">
+        <div class="pill" id="todayPill">—</div>
+        <div class="q">Bugün sende ne oldu?</div>
+
+        <div class="choices" id="choices">
+          <div class="choice" data-choice="A">
+            <div class="radio"></div>
+            <div>
+              <div class="ctitle">Bir şey oldu ama adı yok</div>
+              <div class="cdesc">Adını koyma. Sadece fark et.</div>
+            </div>
+          </div>
+
+          <div class="choice" data-choice="B">
+            <div class="radio"></div>
+            <div>
+              <div class="ctitle">Her şey çok net</div>
+              <div class="cdesc">Bir cümleyle söyleyebiliyorsan tamam.</div>
+            </div>
+          </div>
+
+          <div class="choice" data-choice="C">
+            <div class="radio"></div>
+            <div>
+              <div class="ctitle">Zordu bugün</div>
+              <div class="cdesc">zorluklar olgunlaşma için gereklidir</div>
+            </div>
+          </div>
         </div>
-        <div class="note" style="text-align:center; margin-top:10px">Renk seçmeden de takvime geçebilirsin.</div>
-      </div>
 
-      <div class="goCal">
-        <button class="fab" id="btnToCalendar" type="button" aria-label="Takvime git">→</button>
-      </div>
-    </div>
-  </section>
+        <div class="colorRow" aria-label="Renk seçimi (opsiyonel)">
+          <button class="cbtn" data-color="K" title="Renk 1"><span class="dot" style="background:var(--rBlack)"></span></button>
+          <button class="cbtn" data-color="B" title="Renk 2"><span class="dot" style="background:var(--rBlue)"></span></button>
+          <button class="cbtn" data-color="R" title="Renk 3"><span class="dot" style="background:var(--rRed)"></span></button>
+          <button class="cbtn" data-color="G" title="Renk 4"><span class="dot" style="background:var(--rGreen)"></span></button>
+          <button class="cbtn" data-color="Y" title="Renk 5"><span class="dot" style="background:var(--rYellow)"></span></button>
+        </div>
 
-  <!-- CALENDAR -->
-  <section class="screen" id="screenCal">
-    <div class="card">
-      <div class="topBar">
-        <div class="monthTitle" id="monthTitle">Ay</div>
-        <div style="display:flex; gap:10px;">
-          <button class="iconBtn" id="btnSettings" type="button">Ayarlar</button>
-          <button class="iconBtn" id="btnBackPick" type="button">←</button>
+        <div class="noteWrap">
+          <textarea id="note" placeholder="Not (opsiyonel)…"></textarea>
+          <div class="mini" id="noteHint">Not otomatik kaydedilir.</div>
+        </div>
+
+        <div class="row2">
+          <button class="linkBtn" id="btnToCalendar">→ Takvim</button>
+          <div class="status" id="statusPick"></div>
         </div>
       </div>
 
-      <div class="grid" id="dowRow" aria-hidden="true"></div>
-      <div class="grid" id="calGrid"></div>
-
-      <div class="panel" id="dayPanel" aria-live="polite">
-        <h3 id="panelTitle">Seçim</h3>
-        <div class="panelRow">
-          <div id="panelText">Bir gün seç.</div>
-          <div id="panelPill" class="pill" style="display:none;">—</div>
+      <!-- VIEW: CALENDAR -->
+      <div class="inner" data-view="cal">
+        <div class="topbar">
+          <div>
+            <div class="monthTitle" id="monthTitle">—</div>
+            <div class="mini" id="monthMini">Bu ayın kayıtları</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="iconBtn" id="btnStats" title="İstatistik">📈</button>
+            <button class="iconBtn" id="btnSettings" title="Ayarlar">⚙</button>
+          </div>
         </div>
-        <div class="actions" id="panelActions" style="display:none;">
-          <button class="btn2 ok" id="btnEditToday" type="button">Düzenle</button>
-          <button class="btn2 danger" id="btnDeleteToday" type="button">Sil</button>
+
+        <div class="grid" id="dowRow"></div>
+        <div class="grid" id="calGrid"></div>
+
+        <div class="expand" id="summaryBox">
+          <button class="expandHead" id="summaryToggle">
+            <span>📊 Bu Ayın Özeti</span>
+            <span id="summaryChevron">▾</span>
+          </button>
+          <div class="expandBody" id="summaryBody">—</div>
+        </div>
+
+        <div class="row2">
+          <button class="linkBtn" id="btnBackPick">← Seçim</button>
+          <div class="status" id="statusCal"></div>
         </div>
       </div>
 
-      <div class="panel">
-        <h3>Son yapılanlar</h3>
-        <div id="historyList" class="note" style="margin:0;">Henüz yok.</div>
+      <!-- VIEW: STATS -->
+      <div class="inner" data-view="stats">
+        <div class="topbar">
+          <div class="monthTitle">📈 İstatistik</div>
+          <button class="iconBtn" id="btnCloseStats" title="Kapat">✕</button>
+        </div>
+
+        <div class="chartWrap">
+          <div class="mini" id="statsTitle">Günlük overlay (00:00–23:59)</div>
+          <div class="chart" id="chart"></div>
+          <div class="xlabels"><span>00:00</span><span>23:59</span></div>
+
+          <div class="tabs" aria-label="Görünüm">
+            <button class="tab active" data-mode="hour" title="Saat">🕒</button>
+            <button class="tab" data-mode="day" title="Gün">📅</button>
+            <button class="tab" data-mode="week" title="Hafta">📊</button>
+            <button class="tab" data-mode="month" title="Ay">🗓</button>
+          </div>
+        </div>
+
+        <div class="expand" style="margin-top:12px;">
+          <button class="expandHead" id="statsMoreToggle">
+            <span>Detaylar</span>
+            <span id="statsMoreChevron">▾</span>
+          </button>
+          <div class="expandBody" id="statsBody">—</div>
+        </div>
+
+        <div class="row2">
+          <button class="linkBtn" id="btnExport">📦 CSV indir</button>
+          <button class="linkBtn" id="btnBackCalFromStats">← Takvim</button>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- SETTINGS -->
-  <div class="modalBackdrop" id="settingsBackdrop" role="dialog" aria-modal="true" aria-label="Ayarlar">
-    <div class="modal">
-      <div class="modalHead">
-        <strong>Ayarlar</strong>
-        <button class="iconBtn" id="btnCloseSettings" type="button">Kapat</button>
+      <!-- VIEW: SETTINGS -->
+      <div class="inner" data-view="settings">
+        <div class="topbar">
+          <div class="monthTitle">⚙ Ayarlar</div>
+          <button class="iconBtn" id="btnCloseSettings" title="Kapat">✕</button>
+        </div>
+
+        <div class="mini" style="margin:4px 0 10px;">Tema seçimi:</div>
+
+        <div class="choices" id="themeChoices">
+          <div class="choice" data-theme="default">
+            <div class="radio"></div>
+            <div><div class="ctitle">Varsayılan</div><div class="cdesc">Sakin, koyu mavi.</div></div>
+          </div>
+          <div class="choice" data-theme="light">
+            <div class="radio"></div>
+            <div><div class="ctitle">Açık</div><div class="cdesc">Beyaz ve ferah.</div></div>
+          </div>
+          <div class="choice" data-theme="dark">
+            <div class="radio"></div>
+            <div><div class="ctitle">Koyu</div><div class="cdesc">Daha karanlık arka plan.</div></div>
+          </div>
+          <div class="choice" data-theme="contrast">
+            <div class="radio"></div>
+            <div><div class="ctitle">Kontrastlı</div><div class="cdesc">Daha belirgin ayrımlar.</div></div>
+          </div>
+        </div>
+
+        <div class="row2" style="margin-top:16px;">
+          <button class="linkBtn" id="btnBackCalFromSettings">← Takvim</button>
+          <div class="status" id="statusSettings"></div>
+        </div>
       </div>
 
-      <div class="divider"></div>
-
-      <label style="font-weight:900; font-size:13px; color:var(--muted)">🎨 Tema</label>
-      <select class="select" id="themeSelect">
-        <option value="default">Varsayılan</option>
-        <option value="light">Açık</option>
-        <option value="dark">Koyu</option>
-        <option value="contrast">Kontrastlı</option>
-      </select>
-
-      <div class="divider"></div>
-
-      <label style="font-weight:900; font-size:13px; color:var(--muted)">📦 Export</label>
-      <button class="btn2" id="btnExportCSV" type="button">CSV indir</button>
-
-      <div class="note">CSV sütunları: Tarih, Seçim, Renk</div>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <!-- Bottom sheet -->
+  <div class="overlay" id="overlay"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheetCard">
+      <div class="handle"></div>
+      <div class="sheetTitle" id="sheetTitle">—</div>
 
-  <script>
-    /*********************
-     * THEME
-     *********************/
-    const THEME_KEY = "today_theme_v1";
-    function applyTheme(t){
-      if(t==="default") document.body.removeAttribute("data-theme");
-      else document.body.setAttribute("data-theme", t);
-      localStorage.setItem(THEME_KEY, t);
+      <div class="kv"><span>Seçim</span><b id="sheetChoice">—</b></div>
+      <div class="kv"><span>Renk</span><b id="sheetColor">—</b></div>
+      <div class="kv"><span>Not</span><b id="sheetNote">—</b></div>
+      <div class="kv"><span>Değişiklik</span><b id="sheetEdits">—</b></div>
+
+      <button class="danger" id="btnDeleteToday">Bugünü Sil</button>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // -------------------------
+  // Helpers
+  // -------------------------
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const pad2 = n => String(n).padStart(2,'0');
+
+  const todayKey = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  };
+
+  const parseKey = (k) => {
+    const [y,m,d] = k.split('-').map(Number);
+    return new Date(y, m-1, d);
+  };
+
+  const monthKeyNow = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
+  };
+
+  const prettyDateTR = (k) => {
+    const d = parseKey(k);
+    const opts = { day:'2-digit', month:'long', year:'numeric' };
+    return d.toLocaleDateString('tr-TR', opts);
+  };
+
+  // -------------------------
+  // Storage model (v2)
+  // data = {
+  //   v:2,
+  //   days: {
+  //     "YYYY-MM-DD": { choice:"A|B|C", color:"K|B|R|G|Y|", note:"", edits: number, log: [{t, a}] }
+  //   }
+  //   theme: "default|light|dark|contrast"
+  // }
+  // -------------------------
+  const LS_KEY = "today_data_v2";
+  const load = () => {
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return { v:2, days:{}, theme:"default" };
+      const d = JSON.parse(raw);
+      if(!d || typeof d !== "object") return { v:2, days:{}, theme:"default" };
+      if(!d.days) d.days = {};
+      if(!d.theme) d.theme = "default";
+      d.v = 2;
+      return d;
+    }catch{
+      return { v:2, days:{}, theme:"default" };
     }
-    (function initTheme(){
-      const t = localStorage.getItem(THEME_KEY) || "default";
-      applyTheme(t);
-      document.getElementById("themeSelect").value = t;
-    })();
-    document.getElementById("themeSelect").addEventListener("change", e => applyTheme(e.target.value));
+  };
+  const save = (data) => localStorage.setItem(LS_KEY, JSON.stringify(data));
 
-    /*********************
-     * LOGO LOADER (path-safe)
-     *********************/
-    const logoCandidates = [
-      "icons/today-icon-v9-512.png",
-      "Icons/today-icon-v9-512.png",
-      "today-icon-v9-512.png",
-      "icons/today-icon-v9-192.png",
-      "Icons/today-icon-v9-192.png",
-      "today-icon-v9-192.png"
-    ];
-    (async function setLogo(){
-      const img = document.getElementById("logoImg");
-      for(const src of logoCandidates){
-        const ok = await new Promise(res=>{
-          const t = new Image();
-          t.onload = ()=>res(true);
-          t.onerror = ()=>res(false);
-          t.src = src + "?v=" + Date.now(); // cache-bust for iOS stubbornness
-        });
-        if(ok){
-          img.src = src;
-          return;
-        }
-      }
-      // fallback: invisible but no crash
-      img.alt = "Today";
-    })();
+  let data = load();
 
-    /*********************
-     * STORAGE + MIGRATION
-     *********************/
-    const STORAGE_KEY = "today_data_v1";
-    const DEFAULT_STATE = { version:1, days:{}, history:[] };
-
-    function safeParse(s){ try{return JSON.parse(s)}catch{return null} }
-    function isDateKey(k){ return /^\d{4}-\d{2}-\d{2}$/.test(k); }
-
-    function normalizeEntry(v){
-      // Accept older shapes:
-      // "A" -> {choice:"A"}
-      // {choice:"A", color:"red"} -> keep
-      if(typeof v === "string" && ["A","B","C"].includes(v)) return { choice:v, color:null, updatedAt:Date.now() };
-      if(v && typeof v === "object" && ["A","B","C"].includes(v.choice)) return {
-        choice: v.choice,
-        color: v.color || null,
-        updatedAt: v.updatedAt || Date.now()
-      };
-      return null;
-    }
-
-    function mergeIntoState(target, map){
-      for(const [k,v] of Object.entries(map)){
-        if(!isDateKey(k)) continue;
-        const entry = normalizeEntry(v);
-        if(!entry) continue;
-        // target wins? we keep existing if present, else import
-        if(!target.days[k]) target.days[k] = entry;
-      }
-    }
-
-    function loadStateWithMigration(){
-      // 1) if already exists and valid
-      const cur = safeParse(localStorage.getItem(STORAGE_KEY));
-      if(cur && cur.days && typeof cur.days === "object") return cur;
-
-      const next = structuredClone(DEFAULT_STATE);
-
-      // 2) scan ALL keys in localStorage for date maps
-      for(let i=0;i<localStorage.length;i++){
-        const key = localStorage.key(i);
-        if(!key || key===STORAGE_KEY) continue;
-
-        const val = safeParse(localStorage.getItem(key));
-        if(!val) continue;
-
-        // case: {days:{...}}
-        if(val.days && typeof val.days==="object"){
-          mergeIntoState(next, val.days);
-          continue;
-        }
-
-        // case: direct date map { "YYYY-MM-DD": "A" } or { "YYYY-MM-DD": {choice,...} }
-        const hasAnyDate = Object.keys(val).some(isDateKey);
-        if(hasAnyDate){
-          mergeIntoState(next, val);
-          continue;
-        }
-      }
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    }
-
-    let state = loadStateWithMigration();
-    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-
-    /*********************
-     * DATE HELPERS
-     *********************/
-    const pad = n => String(n).padStart(2,"0");
-    const todayKey = () => {
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    };
-    const monthNameTR = (date) => {
-      const months=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-      return `${months[date.getMonth()]} ${date.getFullYear()}`;
-    };
-
-    /*********************
-     * TOAST
-     *********************/
-    const toast = document.getElementById("toast");
-    let toastT=null;
-    function showToast(msg){
-      toast.textContent=msg;
-      toast.classList.add("show");
-      clearTimeout(toastT);
-      toastT=setTimeout(()=>toast.classList.remove("show"), 1600);
-    }
-
-    /*********************
-     * SCREENS
-     *********************/
-    const screenOnboard = document.getElementById("screenOnboard");
-    const screenCount = document.getElementById("screenCount");
-    const screenPick = document.getElementById("screenPick");
-    const screenCal = document.getElementById("screenCal");
-    function showScreen(which){
-      [screenOnboard,screenCount,screenPick,screenCal].forEach(s=>s.classList.remove("active"));
-      which.classList.add("active");
-    }
-
-    /*********************
-     * AUDIO TICK (WebAudio)
-     *********************/
-    let audioCtx=null;
-    function ensureAudio(){
-      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-      if(audioCtx.state==="suspended") audioCtx.resume();
-    }
-    function tick(){
-      if(!audioCtx) return;
-      const o=audioCtx.createOscillator();
-      const g=audioCtx.createGain();
-      o.type="square";
-      o.frequency.value=1200;
-      g.gain.value=0.0001;
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start();
-      const now=audioCtx.currentTime;
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(0.12, now+0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.06);
-      o.stop(now+0.07);
-    }
-
-    /*********************
-     * COUNTDOWN 5->1 (size decreases)
-     *********************/
-    const countEl=document.getElementById("countNum");
-    const sizeMap={5:96,4:86,3:76,2:66,1:58};
-    function runCountdown(){
-      showScreen(screenCount);
-      let n=5;
-      countEl.textContent=n;
-      countEl.style.fontSize=(sizeMap[n]||72)+"px";
-      tick();
-      const iv=setInterval(()=>{
-        n--;
-        if(n<=0){
-          clearInterval(iv);
-          showScreen(screenPick);
-          return;
-        }
-        countEl.textContent=n;
-        countEl.style.fontSize=(sizeMap[n]||72)+"px";
-        tick();
-      },1000);
-    }
-
-    /*********************
-     * PICK
-     *********************/
-    let selectedChoice=null;
-    let selectedColor=null;
-
-    const choiceEls=[...document.querySelectorAll(".choice")];
-    choiceEls.forEach(el=>{
-      el.addEventListener("click", ()=>selectChoice(el.dataset.choice));
-      el.addEventListener("keydown", (e)=>{
-        if(e.key==="Enter"||e.key===" "){ e.preventDefault(); selectChoice(el.dataset.choice); }
-      });
+  // -------------------------
+  // Service Worker
+  // -------------------------
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(()=>{});
     });
-    function selectChoice(c){
-      selectedChoice=c;
-      choiceEls.forEach(x=>x.classList.toggle("selected", x.dataset.choice===c));
-    }
+  }
 
-    const colorBtns=[...document.querySelectorAll(".cbtn")];
-    colorBtns.forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const c=btn.dataset.color;
-        selectedColor = (selectedColor===c) ? null : c;
-        colorBtns.forEach(x=>x.classList.toggle("selected", x.dataset.color===selectedColor));
-      });
+  // -------------------------
+  // Views
+  // -------------------------
+  const showView = (name) => {
+    $$("[data-view]").forEach(v => v.classList.remove("show"));
+    $(`[data-view="${name}"]`).classList.add("show");
+  };
+
+  // Start on Home always (simple)
+  showView("home");
+
+  // -------------------------
+  // Theme
+  // -------------------------
+  const applyTheme = (t) => {
+    if(!t) t="default";
+    if(t === "default") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    data.theme = t;
+    save(data);
+    paintChart(); // adapt instantly
+    paintCalendar();
+  };
+
+  applyTheme(data.theme);
+
+  // -------------------------
+  // Home
+  // -------------------------
+  $("#btnStart").addEventListener("click", () => {
+    // pick view
+    preparePick();
+    showView("pick");
+  });
+
+  // -------------------------
+  // Pick
+  // -------------------------
+  const choiceEls = $$(".choice", $("#choices"));
+  const colorBtns = $$(".cbtn");
+  let currentDay = todayKey();
+
+  const isToday = (k) => k === todayKey();
+
+  const dayObj = (k) => data.days[k] || (data.days[k] = { choice:"", color:"", note:"", edits:0, log:[] });
+
+  const bumpEdit = (k, action) => {
+    const o = dayObj(k);
+    o.edits = (o.edits||0) + 1;
+    // log only for today (kept until day ends conceptually)
+    const now = new Date();
+    if(isToday(k)){
+      o.log = o.log || [];
+      o.log.push({ t: now.toISOString(), a: action });
+    }
+  };
+
+  const setWash = (choice) => {
+    const root = document.body;
+    root.style.background =
+      choice === "A" ? `radial-gradient(1200px 800px at 50% 20%, var(--washA), transparent 55%), radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%), linear-gradient(180deg,var(--bg0),var(--bg1))` :
+      choice === "B" ? `radial-gradient(1200px 800px at 50% 20%, var(--washB), transparent 55%), radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%), linear-gradient(180deg,var(--bg0),var(--bg1))` :
+      choice === "C" ? `radial-gradient(1200px 800px at 50% 20%, var(--washC), transparent 55%), radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%), linear-gradient(180deg,var(--bg0),var(--bg1))` :
+      "";
+  };
+
+  const renderPick = () => {
+    const o = dayObj(currentDay);
+    $("#todayPill").textContent = prettyDateTR(currentDay);
+
+    // choices UI
+    choiceEls.forEach(el => {
+      el.classList.toggle("selected", el.dataset.choice === o.choice);
     });
 
-    function choiceLabelTR(c){
-      if(c==="A") return "Bir şey oldu ama adı yok";
-      if(c==="B") return "Her şey çok net";
-      if(c==="C") return "Zordu bugün";
-      return "—";
-    }
-    function choiceIcon(c){
-      // küçük ikon (metin gibi): A=◯, B=◆, C=▲
-      if(c==="A") return "◯";
-      if(c==="B") return "◆";
-      if(c==="C") return "▲";
-      return "•";
-    }
-    function colorLabelTR(c){
-      const map={red:"Kırmızı",blue:"Mavi",yellow:"Sarı",green:"Yeşil",black:"(İstikrar)"};
-      return map[c] || "";
-    }
+    // colors UI
+    colorBtns.forEach(b => b.classList.toggle("selected", b.dataset.color === o.color));
 
-    function recordHistory(entry){
-      state.history.unshift(entry);
-      state.history = state.history.slice(0,60);
-    }
+    // note
+    $("#note").value = o.note || "";
 
-    function setTodaySelection(){
-      const key=todayKey();
-      const existed=!!state.days[key];
-      state.days[key]={ choice:selectedChoice, color:selectedColor||null, updatedAt:Date.now() };
-      recordHistory({ ts:Date.now(), date:key, action: existed?"Düzenledi":"Seçti", choice:selectedChoice, color:selectedColor||null });
-      saveState();
-    }
+    // wash
+    setWash(o.choice);
+  };
 
-    /*********************
-     * CALENDAR (current month only)
-     *********************/
-    const monthTitleEl=document.getElementById("monthTitle");
-    const dowRow=document.getElementById("dowRow");
-    const calGrid=document.getElementById("calGrid");
+  const preparePick = () => {
+    currentDay = todayKey();
+    // ensure object
+    dayObj(currentDay);
+    renderPick();
+  };
 
-    const panelTitle=document.getElementById("panelTitle");
-    const panelText=document.getElementById("panelText");
-    const panelPill=document.getElementById("panelPill");
-    const panelActions=document.getElementById("panelActions");
-    const historyList=document.getElementById("historyList");
+  // choice click
+  choiceEls.forEach(el => {
+    el.addEventListener("click", () => {
+      const o = dayObj(currentDay);
 
-    const btnEditToday=document.getElementById("btnEditToday");
-    const btnDeleteToday=document.getElementById("btnDeleteToday");
-
-    const DOW=["P","S","Ç","P","C","C","P"];
-    function renderDOW(){
-      dowRow.innerHTML="";
-      DOW.forEach(x=>{
-        const d=document.createElement("div");
-        d.className="dow";
-        d.textContent=x;
-        dowRow.appendChild(d);
-      });
-    }
-
-    let selectedDayKey=null;
-
-    function renderCalendar(){
-      renderDOW();
-      const now=new Date();
-      const y=now.getFullYear();
-      const m=now.getMonth();
-      monthTitleEl.textContent = monthNameTR(new Date(y,m,1));
-      calGrid.innerHTML="";
-
-      const firstDay=new Date(y,m,1);
-      const lastDay=new Date(y,m+1,0);
-      const daysInMonth=lastDay.getDate();
-
-      const jsDow=firstDay.getDay(); // 0 Sun..6 Sat
-      const offset=(jsDow+6)%7; // Mon=0
-      for(let i=0;i<offset;i++){
-        const ph=document.createElement("div");
-        ph.style.height="44px";
-        calGrid.appendChild(ph);
+      // allow change only today (and only today is accessible in pick view)
+      const next = el.dataset.choice;
+      if(o.choice !== next){
+        bumpEdit(currentDay, `choice:${next}`);
+        o.choice = next;
+        save(data);
+        renderPick();
+      } else {
+        // keep but still show wash
+        renderPick();
       }
+    });
+  });
 
-      const tKey=todayKey();
-      for(let d=1; d<=daysInMonth; d++){
-        const dateKey=`${y}-${pad(m+1)}-${pad(d)}`;
-        const cell=document.createElement("div");
-        cell.className="day";
-        cell.textContent=d;
+  // color click (optional)
+  colorBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const o = dayObj(currentDay);
+      const c = btn.dataset.color;
 
-        const isToday = dateKey===tKey;
-        if(isToday) cell.classList.add("today");
+      if(o.color !== c){
+        bumpEdit(currentDay, `color:${c}`);
+        o.color = c;
+        save(data);
+        renderPick();
+      }
+    });
+  });
 
-        const isFuture = dateKey>tKey;
-        if(isFuture) cell.classList.add("disabled");
+  // note autosave (today only)
+  let noteTimer = null;
+  $("#note").addEventListener("input", () => {
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      const o = dayObj(currentDay);
+      const v = $("#note").value || "";
+      if(o.note !== v){
+        bumpEdit(currentDay, "note");
+        o.note = v;
+        save(data);
+        $("#statusPick").textContent = "Kaydedildi.";
+        setTimeout(()=> $("#statusPick").textContent="", 900);
+      }
+    }, 350);
+  });
 
-        const entry=state.days[dateKey];
-        if(entry){
-          const mark=document.createElement("div");
-          mark.className="mark" + (entry.color ? (" color-"+entry.color) : "");
-          mark.textContent = choiceIcon(entry.choice); // ikon işareti
+  // to calendar
+  $("#btnToCalendar").addEventListener("click", () => {
+    paintCalendar();
+    showView("cal");
+  });
+
+  // -------------------------
+  // Calendar
+  // -------------------------
+  const DOW = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+
+  const getColorValue = (code) => {
+    const styles = getComputedStyle(document.documentElement);
+    if(code === "K") return styles.getPropertyValue("--rBlack").trim();
+    if(code === "B") return styles.getPropertyValue("--rBlue").trim();
+    if(code === "R") return styles.getPropertyValue("--rRed").trim();
+    if(code === "G") return styles.getPropertyValue("--rGreen").trim();
+    if(code === "Y") return styles.getPropertyValue("--rYellow").trim();
+    return "";
+  };
+
+  const monthTitleText = () => {
+    const d = new Date();
+    const m = d.toLocaleDateString("tr-TR", { month:"long", year:"numeric" });
+    return m.charAt(0).toUpperCase() + m.slice(1);
+  };
+
+  const daysInMonth = (y,m) => new Date(y, m+1, 0).getDate(); // m:0-based
+  const firstDowMon0 = (y,m) => {
+    // convert JS Sun=0..Sat=6 to Mon=0..Sun=6
+    const js = new Date(y,m,1).getDay();
+    return (js + 6) % 7;
+  };
+
+  const paintCalendar = () => {
+    $("#monthTitle").textContent = monthTitleText();
+
+    // DOW row
+    const dowRow = $("#dowRow");
+    dowRow.innerHTML = "";
+    DOW.forEach(t => {
+      const d = document.createElement("div");
+      d.className="dow";
+      d.textContent=t;
+      dowRow.appendChild(d);
+    });
+
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+
+    const first = firstDowMon0(y,m);
+    const total = daysInMonth(y,m);
+
+    const grid = $("#calGrid");
+    grid.innerHTML = "";
+
+    // fillers before 1st
+    for(let i=0;i<first;i++){
+      const cell = document.createElement("div");
+      cell.className="day inactive";
+      grid.appendChild(cell);
+    }
+
+    // days
+    for(let d=1; d<=total; d++){
+      const k = `${y}-${pad2(m+1)}-${pad2(d)}`;
+      const cell = document.createElement("div");
+      cell.className="day";
+      const num = document.createElement("div");
+      num.className="dnum";
+      num.textContent = d;
+      cell.appendChild(num);
+
+      // today ring
+      if(k === todayKey()) cell.classList.add("todayRing");
+
+      const o = data.days[k];
+      if(o && (o.choice || o.color || o.note)){
+        // color mark / wash
+        if(o.color){
+          const mark = document.createElement("div");
+          mark.className="mark";
+          mark.style.background = getColorValue(o.color) || "rgba(255,255,255,.8)";
           cell.appendChild(mark);
+
+          // wash background
+          cell.style.background = `linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)), radial-gradient(140px 140px at 30% 30%, ${getColorValue(o.color)}22, transparent 55%)`;
+          if(document.documentElement.getAttribute("data-theme")==="light"){
+            cell.style.background = `linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.01)), radial-gradient(140px 140px at 30% 30%, ${getColorValue(o.color)}22, transparent 55%)`;
+          }
         }
+        if(o.note && o.note.trim()){
+          const pen = document.createElement("div");
+          pen.className="pen";
+          pen.textContent="✎";
+          cell.appendChild(pen);
+        }
+      }
 
-        cell.addEventListener("click", ()=>{
-          if(isFuture){ showToast("Gelecek günler kilitli."); return; }
-          selectedDayKey=dateKey;
-          renderDayPanel();
+      // lock logic: only today editable/inspectable; other days open sheet read-only
+      cell.addEventListener("click", () => openDaySheet(k));
+      grid.appendChild(cell);
+    }
+
+    // summary
+    paintSummary();
+  };
+
+  const paintSummary = () => {
+    const mk = monthKeyNow(); // YYYY-MM
+    const entries = Object.entries(data.days).filter(([k,o]) => k.startsWith(mk) && o && (o.choice||o.color||o.note));
+
+    let countA=0,countB=0,countC=0, notes=0, edited=0;
+    entries.forEach(([k,o])=>{
+      if(o.choice==="A") countA++;
+      if(o.choice==="B") countB++;
+      if(o.choice==="C") countC++;
+      if(o.note && o.note.trim()) notes++;
+      if((o.edits||0)>0) edited++;
+    });
+
+    const top = [
+      ["Bir şey oldu ama adı yok", countA],
+      ["Her şey çok net", countB],
+      ["Zordu bugün", countC],
+    ].sort((a,b)=>b[1]-a[1])[0];
+
+    const body = $("#summaryBody");
+    if(entries.length===0){
+      body.textContent = "Bu ay henüz kayıt yok.";
+      return;
+    }
+    body.innerHTML =
+      `En çok seçilen: <b style="color:var(--text)">${top[0]}</b> (${top[1]})<br>` +
+      `Not yazılan gün: <b style="color:var(--text)">${notes}</b><br>` +
+      `Kayıt bulunan gün: <b style="color:var(--text)">${entries.length}</b><br>` +
+      `Değişiklik yapılan gün: <b style="color:var(--text)">${edited}</b>`;
+  };
+
+  // summary toggle
+  $("#summaryToggle").addEventListener("click", () => {
+    const box = $("#summaryBox");
+    box.classList.toggle("open");
+    $("#summaryChevron").textContent = box.classList.contains("open") ? "▴" : "▾";
+  });
+
+  $("#btnBackPick").addEventListener("click", () => {
+    preparePick();
+    showView("pick");
+  });
+
+  // -------------------------
+  // Bottom sheet (day detail)
+  // -------------------------
+  const overlay = $("#overlay");
+  const sheet = $("#sheet");
+  const closeSheet = () => {
+    overlay.classList.remove("show");
+    sheet.classList.remove("show");
+  };
+  overlay.addEventListener("click", closeSheet);
+
+  const choiceText = (c) => c==="A" ? "Bir şey oldu ama adı yok" : c==="B" ? "Her şey çok net" : c==="C" ? "Zordu bugün" : "—";
+  const colorText = (c) => c==="K" ? "●" : c==="B" ? "●" : c==="R" ? "●" : c==="G" ? "●" : c==="Y" ? "●" : "—";
+  const openDaySheet = (k) => {
+    const o = data.days[k] || { choice:"", color:"", note:"", edits:0, log:[] };
+    $("#sheetTitle").textContent = prettyDateTR(k) + (k===todayKey() ? "" : " (Kilitli)");
+    $("#sheetChoice").textContent = choiceText(o.choice);
+    $("#sheetColor").textContent = colorText(o.color);
+    $("#sheetColor").style.color = getColorValue(o.color) || "var(--text)";
+    $("#sheetNote").textContent = (o.note && o.note.trim()) ? o.note.trim() : "—";
+    $("#sheetEdits").textContent = String(o.edits || 0);
+
+    // delete only today
+    $("#btnDeleteToday").style.display = (k===todayKey()) ? "block" : "none";
+
+    overlay.classList.add("show");
+    sheet.classList.add("show");
+  };
+
+  $("#btnDeleteToday").addEventListener("click", () => {
+    const k = todayKey();
+    if(data.days[k]){
+      data.days[k] = { choice:"", color:"", note:"", edits:0, log:[] };
+      save(data);
+    }
+    closeSheet();
+    preparePick();
+    paintCalendar();
+  });
+
+  // -------------------------
+  // Stats
+  // -------------------------
+  const statsMode = { value: "hour" };
+
+  const paintChart = () => {
+    // simple vertical bars; we fill from stored edit logs (today) and month density as a proxy
+    const mode = statsMode.value;
+    const chart = $("#chart");
+    chart.innerHTML = "";
+
+    // create N bars
+    const N = mode==="hour" ? 24 : mode==="day" ? 30 : mode==="week" ? 12 : 12;
+    const now = new Date();
+
+    // gather activity counts
+    const counts = new Array(N).fill(0);
+
+    if(mode === "hour"){
+      // today logs by hour
+      const k = todayKey();
+      const o = data.days[k];
+      if(o && Array.isArray(o.log)){
+        o.log.forEach(e=>{
+          const hh = new Date(e.t).getHours();
+          if(hh>=0 && hh<24) counts[hh] += 1;
         });
-
-        calGrid.appendChild(cell);
       }
-
-      selectedDayKey=tKey;
-      renderDayPanel();
-      renderHistory();
-    }
-
-    function renderHistory(){
-      const items=(state.history||[]).slice(0,8);
-      if(items.length===0){ historyList.textContent="Henüz yok."; return; }
-      const lines=items.map(it=>{
-        const t=new Date(it.ts);
-        const hh=pad(t.getHours()), mm=pad(t.getMinutes());
-        const c = it.choice ? ` • ${choiceLabelTR(it.choice)}` : "";
-        const col = it.color ? ` • ${colorLabelTR(it.color)}` : "";
-        return `${hh}:${mm} • ${it.date} • ${it.action}${c}${col}`;
-      });
-      historyList.innerHTML = lines.map(x=>`<div style="padding:6px 0; border-top:1px solid var(--border)">${x}</div>`).join("");
-    }
-
-    function renderDayPanel(){
-      const tKey=todayKey();
-      const key=selectedDayKey || tKey;
-      const entry=state.days[key];
-
-      const isToday = key===tKey;
-      const isPast = key<tKey;
-
-      panelTitle.textContent = isToday ? "Bugün" : (isPast ? "Geçmiş gün" : "Gün");
-
-      if(!entry){
-        panelText.textContent = isToday ? "Bugün için henüz seçim yok." : "Seçim yok.";
-        panelPill.style.display="none";
-        panelActions.style.display="none";
-        return;
+    } else if(mode === "day"){
+      // last 30 days with any activity
+      for(let i=0;i<30;i++){
+        const d = new Date(now);
+        d.setDate(now.getDate()- (29-i));
+        const kk = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+        const o = data.days[kk];
+        if(o && (o.choice||o.color|| (o.note && o.note.trim()) )) counts[i] = 1 + Math.min(4, (o.edits||0));
       }
-
-      panelText.textContent = choiceLabelTR(entry.choice);
-      panelPill.style.display="inline-flex";
-      panelPill.textContent = entry.color ? `Renk: ${colorLabelTR(entry.color)}` : "Renk: —";
-
-      // Kural: geçmiş günlerde Düzenle/Sil yok; sadece bugün açık
-      panelActions.style.display = isToday ? "flex" : "none";
-    }
-
-    /*********************
-     * SETTINGS
-     *********************/
-    const settingsBackdrop=document.getElementById("settingsBackdrop");
-    document.getElementById("btnSettings").addEventListener("click", ()=>settingsBackdrop.classList.add("show"));
-    document.getElementById("btnCloseSettings").addEventListener("click", ()=>settingsBackdrop.classList.remove("show"));
-    settingsBackdrop.addEventListener("click", (e)=>{ if(e.target===settingsBackdrop) settingsBackdrop.classList.remove("show"); });
-
-    document.getElementById("btnExportCSV").addEventListener("click", ()=>{
-      const rows=[["Tarih","Seçim","Renk"]];
-      const keys=Object.keys(state.days||{}).sort();
-      keys.forEach(k=>{
-        const v=state.days[k];
-        rows.push([k, choiceLabelTR(v.choice), v.color ? colorLabelTR(v.color) : ""]);
-      });
-      const csv=rows.map(r=>r.map(x=>{
-        const s=String(x??"");
-        if(/[",\n]/.test(s)) return `"${s.replaceAll('"','""')}"`;
-        return s;
-      }).join(",")).join("\n");
-
-      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      a.href=url;
-      a.download=`today-export-${todayKey()}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      showToast("CSV indirildi.");
-    });
-
-    /*********************
-     * BUTTONS
-     *********************/
-    document.getElementById("btnStart").addEventListener("click", ()=>{
-      // iOS için ses kilidi burada açılır
-      ensureAudio();
-      runCountdown();
-    });
-
-    document.getElementById("btnToCalendar").addEventListener("click", ()=>{
-      if(!selectedChoice){ showToast("Önce bir seçenek seç."); return; }
-      setTodaySelection();
-      showScreen(screenCal);
-      renderCalendar();
-      showToast("Kaydedildi.");
-    });
-
-    document.getElementById("btnBackPick").addEventListener("click", ()=>showScreen(screenPick));
-
-    btnEditToday.addEventListener("click", ()=>{
-      // sadece bugün
-      showScreen(screenPick);
-      const tKey=todayKey();
-      const entry=state.days[tKey];
-      if(entry){
-        selectedChoice=entry.choice;
-        selectedColor=entry.color||null;
-        choiceEls.forEach(x=>x.classList.toggle("selected", x.dataset.choice===selectedChoice));
-        colorBtns.forEach(x=>x.classList.toggle("selected", x.dataset.color===selectedColor));
+    } else if(mode === "week"){
+      // last 12 weeks
+      for(let i=0;i<12;i++){
+        const start = new Date(now);
+        start.setDate(now.getDate() - ((11-i)*7));
+        let sum=0;
+        for(let j=0;j<7;j++){
+          const d = new Date(start);
+          d.setDate(start.getDate()+j);
+          const kk = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+          const o = data.days[kk];
+          if(o && (o.choice||o.color||(o.note && o.note.trim()))) sum += 1 + Math.min(4,(o.edits||0));
+        }
+        counts[i] = sum;
       }
-      showToast("Bugünü düzenle.");
-    });
-
-    btnDeleteToday.addEventListener("click", ()=>{
-      const tKey=todayKey();
-      if(!state.days[tKey]){ showToast("Silinecek veri yok."); return; }
-      delete state.days[tKey];
-      recordHistory({ ts:Date.now(), date:tKey, action:"Sildi" });
-      saveState();
-      renderCalendar();
-      showToast("Bugün sıfırlandı.");
-    });
-
-    /*********************
-     * INIT
-     *********************/
-    showScreen(screenOnboard);
-
-    if("serviceWorker" in navigator){
-      window.addEventListener("load", ()=>{
-        navigator.serviceWorker.register("./sw.js").catch(()=>{});
-      });
+    } else {
+      // last 12 months
+      const base = new Date(now.getFullYear(), now.getMonth(), 1);
+      for(let i=0;i<12;i++){
+        const d = new Date(base.getFullYear(), base.getMonth()-(11-i), 1);
+        const prefix = `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
+        let sum=0;
+        Object.entries(data.days).forEach(([k,o])=>{
+          if(k.startsWith(prefix) && o && (o.choice||o.color||(o.note && o.note.trim()))) sum += 1 + Math.min(4,(o.edits||0));
+        });
+        counts[i] = sum;
+      }
     }
-  </script>
+
+    const max = Math.max(1, ...counts);
+    // color by today's selected color (optional)
+    const tcol = getColorValue((data.days[todayKey()]||{}).color);
+    const barColor = tcol ? tcol : "rgba(255,255,255,.35)";
+
+    for(let i=0;i<N;i++){
+      const b = document.createElement("div");
+      b.className="bar";
+      const h = 8 + Math.round((counts[i]/max) * 92);
+      b.style.height = `${h}%`;
+      b.style.background = `linear-gradient(180deg, ${barColor}66, ${barColor}22)`;
+      chart.appendChild(b);
+    }
+
+    $("#statsTitle").textContent =
+      mode==="hour" ? "Günlük overlay (00:00–23:59)" :
+      mode==="day"  ? "Son 30 gün" :
+      mode==="week" ? "Son 12 hafta" :
+                      "Son 12 ay";
+
+    // details body
+    paintStatsBody(mode, counts);
+  };
+
+  const paintStatsBody = (mode, counts) => {
+    const sum = counts.reduce((a,b)=>a+b,0);
+    const nonzero = counts.filter(x=>x>0).length;
+    const txt =
+      `Toplam aktivite: <b style="color:var(--text)">${sum}</b><br>`+
+      `Aktif dilim: <b style="color:var(--text)">${nonzero}</b><br>`+
+      `Not: Aktivite, seçim/renk/not ve gün içi değişikliklerden türetilir.`;
+    $("#statsBody").innerHTML = txt;
+  };
+
+  // stats open/close
+  $("#btnStats").addEventListener("click", () => {
+    paintChart();
+    showView("stats");
+  });
+  $("#btnCloseStats").addEventListener("click", () => showView("cal"));
+  $("#btnBackCalFromStats").addEventListener("click", () => showView("cal"));
+
+  // stats details toggle
+  const statsMore = { open:false };
+  $("#statsMoreToggle").addEventListener("click", () => {
+    const box = $("#statsMoreToggle").parentElement;
+    box.classList.toggle("open");
+    $("#statsMoreChevron").textContent = box.classList.contains("open") ? "▴" : "▾";
+  });
+
+  // mode tabs
+  $$(".tab").forEach(t => {
+    t.addEventListener("click", () => {
+      $$(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      statsMode.value = t.dataset.mode;
+      paintChart();
+    });
+  });
+
+  // -------------------------
+  // Settings
+  // -------------------------
+  $("#btnSettings").addEventListener("click", () => {
+    // sync radio
+    const t = data.theme || "default";
+    $$("#themeChoices .choice").forEach(el => {
+      el.classList.toggle("selected", el.dataset.theme === t);
+    });
+    showView("settings");
+  });
+
+  $("#btnCloseSettings").addEventListener("click", () => showView("cal"));
+  $("#btnBackCalFromSettings").addEventListener("click", () => showView("cal"));
+
+  $$("#themeChoices .choice").forEach(el => {
+    el.addEventListener("click", () => {
+      $$("#themeChoices .choice").forEach(x=>x.classList.remove("selected"));
+      el.classList.add("selected");
+      applyTheme(el.dataset.theme);
+      $("#statusSettings").textContent = "Uygulandı.";
+      setTimeout(()=>$("#statusSettings").textContent="", 900);
+    });
+  });
+
+  // -------------------------
+  // Export CSV (Turkish headers)
+  // -------------------------
+  $("#btnExport").addEventListener("click", () => {
+    const rows = [["tarih","secim","renk","not","degisiklik_sayisi"]];
+    const entries = Object.entries(data.days)
+      .filter(([k,o]) => o && (o.choice || o.color || (o.note && o.note.trim())))
+      .sort((a,b)=> a[0].localeCompare(b[0]));
+
+    const choiceTR = (c) => c==="A" ? "Bir şey oldu ama adı yok" : c==="B" ? "Her şey çok net" : c==="C" ? "Zordu bugün" : "";
+    const colorTR = (c) => c==="K" ? "Renk-1" : c==="B" ? "Renk-2" : c==="R" ? "Renk-3" : c==="G" ? "Renk-4" : c==="Y" ? "Renk-5" : "";
+
+    entries.forEach(([k,o]) => {
+      rows.push([k, choiceTR(o.choice), colorTR(o.color), (o.note||"").replace(/\n/g," "), String(o.edits||0)]);
+    });
+
+    const csv = rows.map(r => r.map(v=>{
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+    }).join(",")).join("\n");
+
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `today-rapor-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  });
+
+  // -------------------------
+  // Initial render for calendar cache
+  // -------------------------
+  // prebuild calendar if user goes there
+  // (nothing else)
+})();
+</script>
 </body>
 </html>
