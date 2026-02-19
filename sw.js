@@ -1,20 +1,25 @@
-const CACHE_NAME = "today-cache-v9-2";
-const CORE = [
+const CACHE_NAME = "today-v9-cache-1";
+const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./sw.js"
+  "./sw.js",
+  "./today-icon-v9-192.png",
+  "./today-icon-v9-512.png",
+  "./apple-touch-icon-v9.png"
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(k => (k === CACHE_NAME ? null : caches.delete(k))))
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))))
     )
   );
   self.clients.claim();
@@ -22,18 +27,32 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-  const url = new URL(req.url);
-
-  if (url.origin !== location.origin) return;
+  if (req.method !== "GET") return;
 
   event.respondWith(
-    caches.match(req).then(cached => {
-      if (cached) return cached;
-      return fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
-        return res;
-      });
+    caches.match(req).then((cached) => {
+      // network-first for html to get updates, cache-first for assets
+      const isHTML =
+        req.headers.get("accept") && req.headers.get("accept").includes("text/html");
+
+      if (isHTML) {
+        return fetch(req)
+          .then((res) => {
+            const copy = res.clone();
+            caches.open(CACHE_NAME).then((c) => c.put(req, copy));
+            return res;
+          })
+          .catch(() => cached || caches.match("./index.html"));
+      }
+
+      return (
+        cached ||
+        fetch(req).then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(req, copy));
+          return res;
+        })
+      );
     })
   );
 });
