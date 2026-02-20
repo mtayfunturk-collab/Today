@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <title>Today</title>
+  <title>Today (DEBUG)</title>
 
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./today-icon-v9-192.png" />
@@ -24,38 +24,7 @@
       --shadow:0 20px 60px rgba(0,0,0,.35);
       --radius:24px;
 
-      /* renkler (etikette siyah yazmıyoruz) */
-      --rK:#101626;
-      --rB:#2f6bff;
-      --rR:#ff3b30;
-      --rG:#34c759;
-      --rY:#ffcc00;
-    }
-
-    html[data-theme="light"]{
-      --bg0:#f5f6f8; --bg1:#f3f4f7;
-      --card:rgba(0,0,0,.05);
-      --stroke:rgba(0,0,0,.08);
-      --text:#0b1220;
-      --muted:rgba(11,18,32,.58);
-      --btn:#0b1220; --btnText:#ffffff;
-      --shadow:0 18px 50px rgba(0,0,0,.12);
-      --rK:#0b1220;
-    }
-    html[data-theme="dark"]{
-      --bg0:#070b14; --bg1:#070b14;
-      --card:rgba(255,255,255,.08);
-      --stroke:rgba(255,255,255,.10);
-      --text:#eef2ff; --muted:rgba(238,242,255,.62);
-      --btn:#ffffff; --btnText:#0b1220;
-    }
-    html[data-theme="contrast"]{
-      --bg0:#000; --bg1:#000;
-      --card:rgba(255,255,255,.10);
-      --stroke:rgba(255,255,255,.22);
-      --text:#fff; --muted:rgba(255,255,255,.75);
-      --btn:#fff; --btnText:#000;
-      --shadow:0 18px 50px rgba(0,0,0,.6);
+      --rK:#101626; --rB:#2f6bff; --rR:#ff3b30; --rG:#34c759; --rY:#ffcc00;
     }
 
     *{box-sizing:border-box}
@@ -72,11 +41,7 @@
       -webkit-tap-highlight-color: transparent;
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
-    .wrap{
-      min-height:100vh;
-      display:flex; align-items:center; justify-content:center;
-      padding:24px;
-    }
+    .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
     .screen{
       width:min(460px, 94vw);
       background:var(--card);
@@ -86,20 +51,9 @@
       overflow:hidden;
     }
     .inner{ padding:26px; }
-    .title{
-      text-align:center;
-      letter-spacing:.14em;
-      font-weight:800;
-      font-size:34px;
-      margin:6px 0 6px;
-    }
-    .sub{
-      text-align:center;
-      color:var(--muted);
-      font-size:14px;
-      margin:0 0 18px;
-      line-height:1.35;
-    }
+    .title{ text-align:center; letter-spacing:.14em; font-weight:800; font-size:34px; margin:6px 0 6px; }
+    .sub{ text-align:center; color:var(--muted); font-size:14px; margin:0 0 18px; line-height:1.35; }
+    .mini{ color:var(--muted); font-size:12px; }
     .btn{
       width:100%;
       border:0;
@@ -110,102 +64,38 @@
       font-weight:800;
       font-size:18px;
       cursor:pointer;
+      position:relative;
+      z-index:10;
+      pointer-events:auto;
     }
     .btn:active{ transform:scale(.99); }
 
+    /* Debug: hiçbir katman tıklamayı yutmasın */
+    .wrap,.screen,.inner{ pointer-events:auto !important; }
+
+    [data-view]{ display:none; }
+    [data-view].show{ display:block; }
+
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border:1px solid var(--stroke);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:13px;
-      user-select:none;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border:1px solid var(--stroke);
+      border-radius:999px; color:var(--muted); font-size:13px; user-select:none;
     }
-    .q{
-      text-align:center;
-      font-weight:700;
-      font-size:18px;
-      margin:12px 0 16px;
-    }
+    .q{ text-align:center; font-weight:700; font-size:18px; margin:12px 0 16px; }
 
     .choices{ display:flex; flex-direction:column; gap:10px; }
     .choice{
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      padding:14px;
-      border:1px solid var(--stroke);
-      border-radius:18px;
-      background:rgba(255,255,255,.04);
-      cursor:pointer;
-      user-select:none;
+      display:flex; gap:12px; align-items:flex-start;
+      padding:14px; border:1px solid var(--stroke);
+      border-radius:18px; background:rgba(255,255,255,.04);
+      cursor:pointer; user-select:none;
     }
-    html[data-theme="light"] .choice{ background:rgba(255,255,255,.70); }
-    html[data-theme="contrast"] .choice{ background:rgba(255,255,255,.03); }
-
-    .radio{
-      width:18px; height:18px;
-      border-radius:50%;
-      border:2px solid rgba(255,255,255,.35);
-      margin-top:2px;
-      flex:0 0 auto;
-    }
-    html[data-theme="light"] .radio{ border-color:rgba(0,0,0,.25); }
-    html[data-theme="contrast"] .radio{ border-color:rgba(255,255,255,.60); }
+    .radio{ width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,.35); margin-top:2px; }
     .choice.selected .radio{ background:var(--text); border-color:var(--text); }
-
     .ctitle{ font-weight:800; }
     .cdesc{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.3; }
 
-    .colorRow{
-      display:flex; justify-content:center; gap:12px;
-      margin:16px 0 14px;
-    }
-    .cbtn{
-      width:38px; height:38px;
-      border-radius:999px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer;
-      position:relative;
-    }
-    html[data-theme="light"] .cbtn{ background:rgba(255,255,255,.85); }
-    .dot{ width:18px; height:18px; border-radius:50%; box-shadow:0 8px 20px rgba(0,0,0,.18); }
-    .cbtn.selected::after{
-      content:"";
-      position:absolute;
-      inset:-3px;
-      border-radius:999px;
-      border:2px solid rgba(255,255,255,.75);
-    }
-    html[data-theme="light"] .cbtn.selected::after{ border-color:rgba(0,0,0,.30); }
-
-    textarea{
-      width:100%;
-      min-height:92px;
-      resize:vertical;
-      border-radius:16px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      padding:12px;
-      font-size:14px;
-      outline:none;
-    }
-    html[data-theme="light"] textarea{ background:rgba(255,255,255,.70); }
-    html[data-theme="contrast"] textarea{ background:rgba(255,255,255,.03); }
-
-    .row2{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-top:14px;
-    }
+    .row2{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
     .linkBtn{
       border:1px solid var(--stroke);
       background:transparent;
@@ -216,183 +106,7 @@
       cursor:pointer;
       user-select:none;
     }
-    .linkBtn:active{ transform:scale(.99); }
-    .mini{ color:var(--muted); font-size:12px; }
-
-    /* Takvim */
-    .topbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
-    .monthTitle{ font-weight:900; font-size:18px; letter-spacing:.02em; }
-    .iconBtn{
-      width:44px; height:44px;
-      border-radius:14px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer;
-    }
-    html[data-theme="light"] .iconBtn{ background:rgba(255,255,255,.85); }
-
-    .grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:10px; }
-    .dow{ text-align:center; font-size:12px; color:var(--muted); padding:6px 0 2px; user-select:none; }
-
-    .day{
-      aspect-ratio:1/1;
-      border-radius:14px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-      padding:8px;
-      position:relative;
-      cursor:pointer;
-      user-select:none;
-      overflow:hidden;
-    }
-    html[data-theme="light"] .day{ background:rgba(255,255,255,.75); }
-    .day.inactive{ opacity:.35; cursor:default; }
-    .dnum{ font-weight:900; font-size:13px; }
-
-    .todayRing{ outline:2px solid rgba(255,255,255,.55); outline-offset:1px; }
-    html[data-theme="light"] .todayRing{ outline-color:rgba(0,0,0,.20); }
-
-    .mark{
-      position:absolute; right:8px; bottom:8px;
-      width:10px; height:10px; border-radius:50%;
-      opacity:.9;
-      box-shadow:0 10px 22px rgba(0,0,0,.18);
-    }
-    .pen{
-      position:absolute; left:8px; bottom:8px;
-      font-size:12px; opacity:.75;
-    }
-
-    .expand{
-      margin-top:12px;
-      border:1px solid var(--stroke);
-      border-radius:18px;
-      overflow:hidden;
-    }
-    .expandHead{
-      width:100%;
-      border:0;
-      background:transparent;
-      color:var(--text);
-      padding:14px;
-      display:flex; justify-content:space-between; align-items:center;
-      font-weight:900;
-      cursor:pointer;
-    }
-    .expandBody{
-      padding:0 14px 14px;
-      color:var(--muted);
-      display:none;
-      font-size:13px;
-      line-height:1.45;
-    }
-    .expand.open .expandBody{ display:block; }
-
-    /* İstatistik */
-    .chartWrap{
-      border:1px solid var(--stroke);
-      border-radius:18px;
-      padding:14px;
-      margin-top:12px;
-      background:rgba(255,255,255,.03);
-    }
-    html[data-theme="light"] .chartWrap{ background:rgba(255,255,255,.65); }
-
-    .chart{ height:170px; display:flex; gap:6px; align-items:flex-end; }
-    .bar{
-      flex:1 1 0;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.10);
-      height:10%;
-      transition: height .35s ease-out, background .25s ease-out;
-    }
-    html[data-theme="light"] .bar{ border-color:rgba(0,0,0,.07); background:rgba(0,0,0,.06); }
-
-    .tabs{ display:flex; justify-content:center; gap:10px; margin-top:10px; }
-    .tab{
-      width:44px; height:38px;
-      border-radius:12px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      cursor:pointer;
-      font-weight:900;
-    }
-    html[data-theme="light"] .tab{ background:rgba(255,255,255,.85); }
-    .tab.active{ background:var(--btn); color:var(--btnText); border-color:transparent; }
-
-    /* Bottom sheet */
-    .overlay{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.35);
-      opacity:0; pointer-events:none;
-      transition:opacity .2s ease;
-    }
-    .overlay.show{ opacity:1; pointer-events:auto; }
-    .sheet{
-      position:fixed; left:0; right:0;
-      bottom:0;
-      transform:translateY(120%);
-      transition:transform .25s ease;
-      display:flex; justify-content:center;
-      padding:12px 12px calc(12px + env(safe-area-inset-bottom));
-      pointer-events:none;
-    }
-    .sheet.show{ transform:translateY(0); pointer-events:auto; }
-    .sheetCard{
-      width:min(520px, 96vw);
-      background:rgba(20,28,45,.96);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      padding:14px;
-    }
-    html[data-theme="light"] .sheetCard{
-      background:rgba(255,255,255,.97);
-      border-color:rgba(0,0,0,.10);
-    }
-    html[data-theme="contrast"] .sheetCard{
-      background:rgba(0,0,0,.96);
-      border-color:rgba(255,255,255,.22);
-    }
-    .handle{
-      width:44px; height:5px;
-      border-radius:999px;
-      background:rgba(255,255,255,.25);
-      margin:0 auto 12px;
-    }
-    html[data-theme="light"] .handle{ background:rgba(0,0,0,.14); }
-
-    .sheetTitle{ font-weight:900; text-align:center; margin:2px 0 10px; }
-    .kv{ display:flex; justify-content:space-between; gap:10px; color:var(--muted); font-size:13px; margin:10px 0; }
-    .kv b{ color:var(--text); }
-
-    .danger{
-      width:100%;
-      border:1px solid rgba(255,80,80,.35);
-      background:rgba(255,80,80,.10);
-      color:var(--text);
-      padding:12px;
-      border-radius:16px;
-      font-weight:900;
-      cursor:pointer;
-      margin-top:10px;
-    }
-
-    /* Views */
-    [data-view]{ display:none; }
-    [data-view].show{ display:block; }
-
-    .status{
-      text-align:center;
-      font-size:13px;
-      color:var(--muted);
-      min-height:18px;
-      margin-top:10px;
-    }
+    .status{ text-align:center; font-size:13px; color:var(--muted); min-height:18px; margin-top:10px; }
   </style>
 </head>
 
@@ -401,9 +115,15 @@
     <div class="screen">
 
       <!-- HOME -->
-      <div class="inner" data-view="home">
+      <div class="inner show" data-view="home">
         <div class="title">TODAY</div>
         <div class="sub">verileriniz sadece bu cihazda kaydedilmektedir.</div>
+
+        <!-- build etiketi: doğru dosya mı yayınlanıyor hemen anlarsın -->
+        <div class="mini" style="text-align:center;opacity:.75;margin-bottom:14px">
+          build: v10-DEBUG-001
+        </div>
+
         <button class="btn" id="btnStart" type="button">Başla</button>
         <div class="status" id="statusHome"></div>
       </div>
@@ -437,132 +157,28 @@
           </div>
         </div>
 
-        <div class="colorRow" aria-label="Renk seçimi (opsiyonel)">
-          <button class="cbtn" data-color="K" type="button" title="Renk 1"><span class="dot" style="background:var(--rK)"></span></button>
-          <button class="cbtn" data-color="B" type="button" title="Renk 2"><span class="dot" style="background:var(--rB)"></span></button>
-          <button class="cbtn" data-color="R" type="button" title="Renk 3"><span class="dot" style="background:var(--rR)"></span></button>
-          <button class="cbtn" data-color="G" type="button" title="Renk 4"><span class="dot" style="background:var(--rG)"></span></button>
-          <button class="cbtn" data-color="Y" type="button" title="Renk 5"><span class="dot" style="background:var(--rY)"></span></button>
-        </div>
-
-        <textarea id="note" placeholder="Bugün için not (opsiyonel)…"></textarea>
-        <div class="mini" id="noteHint">Not otomatik kaydedilir.</div>
-
         <div class="row2">
-          <button class="linkBtn" id="btnToCal" type="button">→ Takvim</button>
+          <button class="linkBtn" id="btnBackHome" type="button">← Home</button>
           <div class="status" id="statusPick"></div>
         </div>
       </div>
 
-      <!-- CALENDAR -->
-      <div class="inner" data-view="cal">
-        <div class="topbar">
-          <div>
-            <div class="monthTitle" id="monthTitle">—</div>
-            <div class="mini">Bu ayın kayıtları</div>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button class="iconBtn" id="btnStats" type="button" title="İstatistik">📈</button>
-            <button class="iconBtn" id="btnSettings" type="button" title="Ayarlar">⚙</button>
-          </div>
-        </div>
-
-        <div class="grid" id="dowRow"></div>
-        <div class="grid" id="calGrid"></div>
-
-        <div class="expand" id="sumBox">
-          <button class="expandHead" id="sumToggle" type="button">
-            <span>📊 Bu Ayın Özeti</span>
-            <span id="sumChevron">▾</span>
-          </button>
-          <div class="expandBody" id="sumBody">—</div>
-        </div>
-
-        <div class="row2">
-          <button class="linkBtn" id="btnBackPick" type="button">← Seçim</button>
-          <div class="status" id="statusCal"></div>
-        </div>
-      </div>
-
-      <!-- STATS -->
-      <div class="inner" data-view="stats">
-        <div class="topbar">
-          <div class="monthTitle">📈 İstatistik</div>
-          <button class="iconBtn" id="btnCloseStats" type="button" title="Kapat">✕</button>
-        </div>
-
-        <div class="chartWrap">
-          <div class="mini" id="statsTitle">—</div>
-          <div class="chart" id="chart"></div>
-          <div class="mini" style="display:flex;justify-content:space-between;margin-top:8px;">
-            <span>00:00</span><span>23:00</span>
-          </div>
-
-          <div class="tabs" aria-label="Mod">
-            <button class="tab active" data-mode="hour" type="button" title="Saat">🕒</button>
-            <button class="tab" data-mode="day" type="button" title="Gün">📅</button>
-            <button class="tab" data-mode="week" type="button" title="Hafta">📊</button>
-            <button class="tab" data-mode="month" type="button" title="Ay">🗓</button>
-          </div>
-        </div>
-
-        <div class="expand" style="margin-top:12px;">
-          <button class="expandHead" id="statsToggle" type="button">
-            <span>Detaylar</span><span id="statsChevron">▾</span>
-          </button>
-          <div class="expandBody" id="statsBody">—</div>
-        </div>
-
-        <div class="row2">
-          <button class="linkBtn" id="btnExport" type="button">📦 CSV indir</button>
-          <button class="linkBtn" id="btnBackCalFromStats" type="button">← Takvim</button>
-        </div>
-      </div>
-
-      <!-- SETTINGS -->
-      <div class="inner" data-view="settings">
-        <div class="topbar">
-          <div class="monthTitle">⚙ Ayarlar</div>
-          <button class="iconBtn" id="btnCloseSettings" type="button" title="Kapat">✕</button>
-        </div>
-
-        <div class="mini" style="margin:6px 0 10px;">Tema seçimi:</div>
-
-        <div class="choices" id="themeChoices">
-          <div class="choice" data-theme="default"><div class="radio"></div><div><div class="ctitle">Varsayılan</div><div class="cdesc">Sakin.</div></div></div>
-          <div class="choice" data-theme="light"><div class="radio"></div><div><div class="ctitle">Açık</div><div class="cdesc">Beyaz.</div></div></div>
-          <div class="choice" data-theme="dark"><div class="radio"></div><div><div class="ctitle">Koyu</div><div class="cdesc">Daha karanlık.</div></div></div>
-          <div class="choice" data-theme="contrast"><div class="radio"></div><div><div class="ctitle">Kontrastlı</div><div class="cdesc">Daha belirgin.</div></div></div>
-        </div>
-
-        <div class="row2">
-          <button class="linkBtn" id="btnBackCalFromSettings" type="button">← Takvim</button>
-          <div class="status" id="statusSettings"></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Bottom sheet -->
-  <div class="overlay" id="overlay"></div>
-  <div class="sheet" id="sheet">
-    <div class="sheetCard">
-      <div class="handle"></div>
-      <div class="sheetTitle" id="sheetTitle">—</div>
-      <div class="kv"><span>Seçim</span><b id="sheetChoice">—</b></div>
-      <div class="kv"><span>Renk</span><b id="sheetColor">—</b></div>
-      <div class="kv"><span>Not</span><b id="sheetNote">—</b></div>
-      <div class="kv"><span>Değişiklik</span><b id="sheetEdits">—</b></div>
-      <button class="danger" id="btnDeleteToday" type="button">Bugünü Sil</button>
     </div>
   </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // ---------- helpers ----------
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+  // DEBUG: Service Worker KAPALI (cache karışmasın)
+  // if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+
+  const showView = (name) => {
+    $$("[data-view]").forEach(v => v.classList.remove("show"));
+    $(`[data-view="${name}"]`).classList.add("show");
+  };
+
   const pad2 = n => String(n).padStart(2,"0");
   const todayKey = () => {
     const d=new Date();
@@ -573,501 +189,44 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Date(y,m-1,d);
   };
   const prettyTR = (k) => parseKey(k).toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
-  const monthPrefixNow = () => {
-    const d=new Date();
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
-  };
 
-  // ---------- storage (v10) ----------
   const LS_KEY = "today_data_v10";
-  const LEGACY_KEYS = ["today_data_v2","today_data_v1","today_data","today_app_data"];
-
-  const emptyModel = () => ({ v:10, days:{}, theme:"default" });
-
   const load = () => {
-    try{
-      const raw = localStorage.getItem(LS_KEY);
-      if(raw){
-        const d = JSON.parse(raw);
-        if(d && typeof d==="object"){
-          if(!d.days) d.days = {};
-          if(!d.theme) d.theme = "default";
-          d.v = 10;
-          return d;
-        }
-      }
-      // try migrate legacy if new empty
-      for(const k of LEGACY_KEYS){
-        const legacyRaw = localStorage.getItem(k);
-        if(!legacyRaw) continue;
-        try{
-          const legacy = JSON.parse(legacyRaw);
-          // Heuristic: legacy has "days" object
-          if(legacy && typeof legacy==="object" && legacy.days && typeof legacy.days==="object"){
-            const fresh = emptyModel();
-            fresh.days = legacy.days; // keep as-is
-            fresh.theme = legacy.theme || "default";
-            localStorage.setItem(LS_KEY, JSON.stringify(fresh));
-            return fresh;
-          }
-        }catch{}
-      }
-      return emptyModel();
-    }catch{
-      return emptyModel();
-    }
+    try{ return JSON.parse(localStorage.getItem(LS_KEY) || '{"v":10,"days":{}}'); }
+    catch{ return {v:10,days:{}}; }
   };
   const save = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
-
   let state = load();
+  if(!state.days) state.days = {};
 
-  // ---------- SW register ----------
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
-  }
+  const dayObj = (k) => state.days[k] || (state.days[k] = { choice:"" });
 
-  // ---------- views ----------
-  const showView = (name) => {
-    $$("[data-view]").forEach(v=>v.classList.remove("show"));
-    $(`[data-view="${name}"]`).classList.add("show");
-  };
-  showView("home");
-
-  // ---------- theme ----------
-  const applyTheme = (t) => {
-    t = t || "default";
-    if(t==="default") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme", t);
-    state.theme = t;
-    save();
-    paintCalendar();
-    paintChart();
-  };
-  applyTheme(state.theme);
-
-  // ---------- model helpers ----------
-  const dayObj = (k) => state.days[k] || (state.days[k]={ choice:"", color:"", note:"", edits:0, log:[] });
-
-  const isToday = (k) => k === todayKey();
-  const bumpEdit = (k, action) => {
-    const o = dayObj(k);
-    o.edits = (o.edits||0) + 1;
-    if(isToday(k)){
-      o.log = o.log || [];
-      o.log.push({ t:new Date().toISOString(), a: action });
-    }
-  };
-
-  const choiceTR = (c) => c==="A" ? "Bir şey oldu ama adı yok" : c==="B" ? "Her şey çok net" : c==="C" ? "Zordu bugün" : "—";
-  const colorCSS = (code) => {
-    const s = getComputedStyle(document.documentElement);
-    if(code==="K") return s.getPropertyValue("--rK").trim();
-    if(code==="B") return s.getPropertyValue("--rB").trim();
-    if(code==="R") return s.getPropertyValue("--rR").trim();
-    if(code==="G") return s.getPropertyValue("--rG").trim();
-    if(code==="Y") return s.getPropertyValue("--rY").trim();
-    return "";
-  };
-
-  // ---------- HOME ----------
+  // ✅ Başla tıklaması: önce alert ile tık kesin mi görelim
   $("#btnStart").addEventListener("click", () => {
-    preparePick();
-    showView("pick");
-  });
-
-  // ---------- PICK ----------
-  let currentDay = todayKey();
-
-  const choiceEls = $$("#choices .choice");
-  const colorBtns = $$(".cbtn");
-  const noteEl = $("#note");
-
-  const renderPick = () => {
-    const o = dayObj(currentDay);
-    $("#pillDate").textContent = prettyTR(currentDay);
-    choiceEls.forEach(el => el.classList.toggle("selected", el.dataset.choice === o.choice));
-    colorBtns.forEach(btn => btn.classList.toggle("selected", btn.dataset.color === o.color));
-    noteEl.value = o.note || "";
-  };
-
-  const preparePick = () => {
-    currentDay = todayKey();
-    dayObj(currentDay);
-    renderPick();
-  };
-
-  choiceEls.forEach(el => {
-    el.addEventListener("click", () => {
-      const o = dayObj(currentDay);
-      const next = el.dataset.choice;
-      if(o.choice !== next){
-        bumpEdit(currentDay, `choice:${next}`);
-        o.choice = next;
-        save();
-        renderPick();
-      }
-    });
-  });
-
-  colorBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const o = dayObj(currentDay);
-      const c = btn.dataset.color;
-      if(o.color !== c){
-        bumpEdit(currentDay, `color:${c}`);
-        o.color = c;
-        save();
-        renderPick();
-      }
-    });
-  });
-
-  let noteTimer=null;
-  noteEl.addEventListener("input", () => {
-    clearTimeout(noteTimer);
-    noteTimer = setTimeout(() => {
-      const o = dayObj(currentDay);
-      const v = noteEl.value || "";
-      if(o.note !== v){
-        bumpEdit(currentDay,"note");
-        o.note = v;
-        save();
-        $("#statusPick").textContent = "Kaydedildi.";
-        setTimeout(()=>$("#statusPick").textContent="", 900);
-      }
-    }, 300);
-  });
-
-  $("#btnToCal").addEventListener("click", () => {
-    paintCalendar();
-    showView("cal");
-  });
-
-  $("#btnBackPick").addEventListener("click", () => {
-    preparePick();
-    showView("pick");
-  });
-
-  // ---------- CALENDAR ----------
-  const DOW = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
-
-  const monthTitleText = () => {
-    const d = new Date();
-    const s = d.toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
-    return s.charAt(0).toUpperCase()+s.slice(1);
-  };
-
-  const daysInMonth = (y,m0) => new Date(y, m0+1, 0).getDate();
-  const firstDowMon0 = (y,m0) => {
-    const js = new Date(y,m0,1).getDay(); // Sun=0..Sat=6
-    return (js + 6) % 7; // Mon=0..Sun=6
-  };
-
-  const paintCalendar = () => {
-    $("#monthTitle").textContent = monthTitleText();
-
-    const dowRow = $("#dowRow");
-    dowRow.innerHTML = "";
-    DOW.forEach(t => {
-      const el = document.createElement("div");
-      el.className="dow";
-      el.textContent=t;
-      dowRow.appendChild(el);
-    });
-
-    const now = new Date();
-    const y = now.getFullYear();
-    const m0 = now.getMonth();
-
-    const first = firstDowMon0(y,m0);
-    const total = daysInMonth(y,m0);
-
-    const grid = $("#calGrid");
-    grid.innerHTML = "";
-
-    for(let i=0;i<first;i++){
-      const cell = document.createElement("div");
-      cell.className="day inactive";
-      grid.appendChild(cell);
-    }
-
-    for(let d=1; d<=total; d++){
-      const k = `${y}-${pad2(m0+1)}-${pad2(d)}`;
-      const cell = document.createElement("div");
-      cell.className="day";
-      if(k===todayKey()) cell.classList.add("todayRing");
-
-      const num = document.createElement("div");
-      num.className="dnum";
-      num.textContent=d;
-      cell.appendChild(num);
-
-      const o = state.days[k];
-      if(o && (o.choice || o.color || (o.note && o.note.trim()))){
-        if(o.color){
-          const col = colorCSS(o.color) || "rgba(255,255,255,.8)";
-          const mark = document.createElement("div");
-          mark.className="mark";
-          mark.style.background = col;
-          cell.appendChild(mark);
-
-          // wash bg
-          const isLight = document.documentElement.getAttribute("data-theme")==="light";
-          cell.style.background =
-            (isLight ? "linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.01))," : "linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),") +
-            `radial-gradient(140px 140px at 30% 30%, ${col}22, transparent 55%)`;
-        }
-        if(o.note && o.note.trim()){
-          const pen = document.createElement("div");
-          pen.className="pen";
-          pen.textContent="✎";
-          cell.appendChild(pen);
-        }
-      }
-
-      cell.addEventListener("click", () => openDaySheet(k));
-      grid.appendChild(cell);
-    }
-
-    paintSummary();
-  };
-
-  const paintSummary = () => {
-    const prefix = monthPrefixNow();
-    const entries = Object.entries(state.days)
-      .filter(([k,o]) => k.startsWith(prefix) && o && (o.choice||o.color||(o.note&&o.note.trim())));
-
-    if(entries.length===0){
-      $("#sumBody").textContent = "Bu ay henüz kayıt yok.";
-      return;
-    }
-
-    let A=0,B=0,C=0, notes=0, edited=0;
-    for(const [,o] of entries){
-      if(o.choice==="A") A++;
-      if(o.choice==="B") B++;
-      if(o.choice==="C") C++;
-      if(o.note && o.note.trim()) notes++;
-      if((o.edits||0)>0) edited++;
-    }
-    const top = [["Bir şey oldu ama adı yok",A],["Her şey çok net",B],["Zordu bugün",C]].sort((x,y)=>y[1]-x[1])[0];
-
-    $("#sumBody").innerHTML =
-      `En çok seçilen: <b style="color:var(--text)">${top[0]}</b> (${top[1]})<br>`+
-      `Not yazılan gün: <b style="color:var(--text)">${notes}</b><br>`+
-      `Kayıt bulunan gün: <b style="color:var(--text)">${entries.length}</b><br>`+
-      `Değişiklik yapılan gün: <b style="color:var(--text)">${edited}</b>`;
-  };
-
-  $("#sumToggle").addEventListener("click", () => {
-    $("#sumBox").classList.toggle("open");
-    $("#sumChevron").textContent = $("#sumBox").classList.contains("open") ? "▴" : "▾";
-  });
-
-  // ---------- Bottom sheet (day detail) ----------
-  const overlay = $("#overlay");
-  const sheet = $("#sheet");
-  const closeSheet = () => { overlay.classList.remove("show"); sheet.classList.remove("show"); };
-  overlay.addEventListener("click", closeSheet);
-
-  const openDaySheet = (k) => {
-    const o = state.days[k] || {choice:"",color:"",note:"",edits:0,log:[]};
-    $("#sheetTitle").textContent = prettyTR(k) + (isToday(k) ? "" : " (Kilitli)");
-    $("#sheetChoice").textContent = choiceTR(o.choice);
-    $("#sheetColor").textContent = o.color ? "●" : "—";
-    $("#sheetColor").style.color = colorCSS(o.color) || "var(--text)";
-    $("#sheetNote").textContent = (o.note && o.note.trim()) ? o.note.trim() : "—";
-    $("#sheetEdits").textContent = String(o.edits||0);
-
-    $("#btnDeleteToday").style.display = isToday(k) ? "block" : "none";
-
-    overlay.classList.add("show");
-    sheet.classList.add("show");
-  };
-
-  $("#btnDeleteToday").addEventListener("click", () => {
+    alert("Başla tıklandı ✅ (build: v10-DEBUG-001)");
     const k = todayKey();
-    state.days[k] = { choice:"", color:"", note:"", edits:0, log:[] };
+    $("#pillDate").textContent = prettyTR(k);
+    dayObj(k);
     save();
-    closeSheet();
-    preparePick();
-    paintCalendar();
+    showView("pick");
   });
 
-  // ---------- STATS ----------
-  let statsMode = "hour";
+  $("#btnBackHome").addEventListener("click", () => showView("home"));
 
-  const setTabs = () => {
-    $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.mode===statsMode));
-  };
-
-  const computeCounts = () => {
-    const now = new Date();
-    if(statsMode==="hour"){
-      const arr = new Array(24).fill(0);
-      const o = state.days[todayKey()];
-      if(o && Array.isArray(o.log)){
-        for(const e of o.log){
-          const hh = new Date(e.t).getHours();
-          if(hh>=0 && hh<24) arr[hh] += 1;
-        }
-      }
-      return arr;
-    }
-    if(statsMode==="day"){
-      const arr = new Array(7).fill(0);
-      for(let i=0;i<7;i++){
-        const d = new Date(now);
-        d.setDate(now.getDate() - (6-i));
-        const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-        const o = state.days[k];
-        if(o && (o.choice||o.color||(o.note&&o.note.trim()))) arr[i] = 1 + Math.min(4,(o.edits||0));
-      }
-      return arr;
-    }
-    if(statsMode==="week"){
-      const arr = new Array(4).fill(0);
-      for(let w=0; w<4; w++){
-        let sum=0;
-        for(let j=0;j<7;j++){
-          const d = new Date(now);
-          d.setDate(now.getDate() - ((3-w)*7 + (6-j)));
-          const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-          const o = state.days[k];
-          if(o && (o.choice||o.color||(o.note&&o.note.trim()))) sum += 1 + Math.min(4,(o.edits||0));
-        }
-        arr[w]=sum;
-      }
-      return arr;
-    }
-    // month: last 6 months
-    const arr = new Array(6).fill(0);
-    const base = new Date(now.getFullYear(), now.getMonth(), 1);
-    for(let i=0;i<6;i++){
-      const d = new Date(base.getFullYear(), base.getMonth()-(5-i), 1);
-      const prefix = `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
-      let sum=0;
-      for(const [k,o] of Object.entries(state.days)){
-        if(k.startsWith(prefix) && o && (o.choice||o.color||(o.note&&o.note.trim()))) sum += 1 + Math.min(4,(o.edits||0));
-      }
-      arr[i]=sum;
-    }
-    return arr;
-  };
-
-  const paintChart = () => {
-    const counts = computeCounts();
-    const max = Math.max(1, ...counts);
-    const chart = $("#chart");
-    if(!chart) return;
-    chart.innerHTML = "";
-
-    const tcol = colorCSS((state.days[todayKey()]||{}).color);
-    const barCol = tcol ? tcol : "rgba(255,255,255,.35)";
-
-    // create bars
-    for(let i=0;i<counts.length;i++){
-      const b = document.createElement("div");
-      b.className="bar";
-      const h = 10 + Math.round((counts[i]/max)*90);
-      b.style.height = `${h}%`;
-      b.style.background = `linear-gradient(180deg, ${barCol}66, ${barCol}22)`;
-      chart.appendChild(b);
-    }
-
-    $("#statsTitle").textContent =
-      statsMode==="hour" ? "🕒 24 Saatlik Aktivite (00:00–23:00)" :
-      statsMode==="day"  ? "📅 Son 7 Gün" :
-      statsMode==="week" ? "📊 Son 4 Hafta" :
-                           "🗓 Son 6 Ay";
-
-    // details
-    const sum = counts.reduce((a,b)=>a+b,0);
-    const nonzero = counts.filter(x=>x>0).length;
-    $("#statsBody").innerHTML =
-      `Toplam aktivite: <b style="color:var(--text)">${sum}</b><br>`+
-      `Aktif dilim: <b style="color:var(--text)">${nonzero}</b><br>`+
-      `Not: Aktivite; seçim/renk/not ve gün içi değişikliklerden türetilir.`;
-  };
-
-  // open/close stats
-  $("#btnStats").addEventListener("click", () => { setTabs(); paintChart(); showView("stats"); });
-  $("#btnCloseStats").addEventListener("click", () => showView("cal"));
-  $("#btnBackCalFromStats").addEventListener("click", () => showView("cal"));
-
-  // tabs
-  $$(".tab").forEach(t => {
-    t.addEventListener("click", () => {
-      statsMode = t.dataset.mode;
-      setTabs();
-      paintChart();
-    });
-  });
-
-  // stats expandable
-  $("#statsToggle").addEventListener("click", () => {
-    const box = $("#statsToggle").parentElement;
-    box.classList.toggle("open");
-    $("#statsChevron").textContent = box.classList.contains("open") ? "▴" : "▾";
-  });
-
-  // ---------- SETTINGS ----------
-  const syncThemeUI = () => {
-    const t = state.theme || "default";
-    $$("#themeChoices .choice").forEach(el => el.classList.toggle("selected", el.dataset.theme===t));
-  };
-
-  $("#btnSettings").addEventListener("click", () => { syncThemeUI(); showView("settings"); });
-  $("#btnCloseSettings").addEventListener("click", () => showView("cal"));
-  $("#btnBackCalFromSettings").addEventListener("click", () => showView("cal"));
-
-  $$("#themeChoices .choice").forEach(el => {
+  $$("#choices .choice").forEach(el => {
     el.addEventListener("click", () => {
-      $$("#themeChoices .choice").forEach(x=>x.classList.remove("selected"));
+      const k = todayKey();
+      const o = dayObj(k);
+      o.choice = el.dataset.choice;
+      save();
+      $$("#choices .choice").forEach(x => x.classList.remove("selected"));
       el.classList.add("selected");
-      applyTheme(el.dataset.theme);
-      $("#statusSettings").textContent="Uygulandı.";
-      setTimeout(()=>$("#statusSettings").textContent="", 900);
+      $("#statusPick").textContent = "Kaydedildi.";
+      setTimeout(()=>$("#statusPick").textContent="", 900);
     });
   });
 
-  // ---------- EXPORT CSV (Turkish) ----------
-  $("#btnExport").addEventListener("click", () => {
-    const rows = [["tarih","secim","renk","not","degisiklik_sayisi"]];
-    const entries = Object.entries(state.days)
-      .filter(([k,o]) => o && (o.choice||o.color||(o.note&&o.note.trim())))
-      .sort((a,b)=>a[0].localeCompare(b[0]));
-
-    const colorTR = (c) => c==="K"?"Renk-1":c==="B"?"Renk-2":c==="R"?"Renk-3":c==="G"?"Renk-4":c==="Y"?"Renk-5":"";
-
-    for(const [k,o] of entries){
-      rows.push([
-        k,
-        (o.choice||"") ? choiceTR(o.choice) : "",
-        (o.color||"") ? colorTR(o.color) : "",
-        (o.note||"").replace(/\n/g," "),
-        String(o.edits||0)
-      ]);
-    }
-
-    const csv = rows.map(r => r.map(v=>{
-      const s = String(v ?? "");
-      return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
-    }).join(",")).join("\n");
-
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `today-rapor-${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  });
-
-  // ---------- calendar init (only when needed, but safe) ----------
-  paintCalendar();
+  showView("home");
 });
 </script>
 </body>
