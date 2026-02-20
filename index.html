@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <title>Today (DEBUG)</title>
+  <title>Today</title>
 
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./today-icon-v9-192.png" />
@@ -24,7 +24,38 @@
       --shadow:0 20px 60px rgba(0,0,0,.35);
       --radius:24px;
 
-      --rK:#101626; --rB:#2f6bff; --rR:#ff3b30; --rG:#34c759; --rY:#ffcc00;
+      /* seçim rengi */
+      --accent:#88a9ff;
+
+      /* renk paleti */
+      --cNavy:#1b2a52;
+      --cOrange:#ff7a00;
+      --cRed:#ff3b30;
+      --cBlue:#2f6bff;
+      --cYellow:#ffcc00;
+      --cGreen:#34c759;
+      --cBlack:#0b0f18;
+    }
+
+    /* Theme overrides */
+    html[data-theme="light"]{
+      --bg0:#f6f7fb; --bg1:#eef1f7;
+      --card:rgba(10,16,30,.06);
+      --stroke:rgba(10,16,30,.10);
+      --text:#0b1220;
+      --muted:rgba(11,18,32,.60);
+      --btn:#0b1220; --btnText:#ffffff;
+      --shadow:0 16px 50px rgba(0,0,0,.12);
+    }
+    html[data-theme="dark"]{ /* varsayılan koyu zaten */ }
+    html[data-theme="contrast"]{
+      --bg0:#000000; --bg1:#000000;
+      --card:rgba(255,255,255,.10);
+      --stroke:rgba(255,255,255,.22);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,.72);
+      --btn:#ffffff; --btnText:#000000;
+      --shadow:0 0 0 rgba(0,0,0,0);
     }
 
     *{box-sizing:border-box}
@@ -41,19 +72,47 @@
       -webkit-tap-highlight-color: transparent;
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
-    .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+
+    .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:22px; }
     .screen{
-      width:min(460px, 94vw);
+      width:min(520px, 94vw);
       background:var(--card);
       border:1px solid var(--stroke);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .inner{ padding:26px; }
-    .title{ text-align:center; letter-spacing:.14em; font-weight:800; font-size:34px; margin:6px 0 6px; }
+    .inner{ padding:24px; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:10px;
+    }
+    .back{
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .ghost{
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .title{ text-align:center; letter-spacing:.14em; font-weight:900; font-size:34px; margin:6px 0 6px; }
     .sub{ text-align:center; color:var(--muted); font-size:14px; margin:0 0 18px; line-height:1.35; }
+
     .mini{ color:var(--muted); font-size:12px; }
+    .build{ text-align:center; opacity:.7; margin-top:10px; }
+
     .btn{
       width:100%;
       border:0;
@@ -61,17 +120,11 @@
       padding:16px 18px;
       background:var(--btn);
       color:var(--btnText);
-      font-weight:800;
+      font-weight:900;
       font-size:18px;
       cursor:pointer;
-      position:relative;
-      z-index:10;
-      pointer-events:auto;
     }
     .btn:active{ transform:scale(.99); }
-
-    /* Debug: hiçbir katman tıklamayı yutmasın */
-    .wrap,.screen,.inner{ pointer-events:auto !important; }
 
     [data-view]{ display:none; }
     [data-view].show{ display:block; }
@@ -80,8 +133,9 @@
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 10px; border:1px solid var(--stroke);
       border-radius:999px; color:var(--muted); font-size:13px; user-select:none;
+      max-width:100%;
     }
-    .q{ text-align:center; font-weight:700; font-size:18px; margin:12px 0 16px; }
+    .q{ text-align:center; font-weight:800; font-size:18px; margin:12px 0 14px; }
 
     .choices{ display:flex; flex-direction:column; gap:10px; }
     .choice{
@@ -90,27 +144,178 @@
       border-radius:18px; background:rgba(255,255,255,.04);
       cursor:pointer; user-select:none;
     }
-    .radio{ width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,.35); margin-top:2px; }
+    .radio{ width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,.35); margin-top:2px; flex:0 0 auto; }
+    html[data-theme="light"] .radio{ border-color: rgba(11,18,32,.28); }
+    .choice.selected{ outline:2px solid color-mix(in srgb, var(--accent) 58%, transparent); }
     .choice.selected .radio{ background:var(--text); border-color:var(--text); }
-    .ctitle{ font-weight:800; }
+    html[data-theme="light"] .choice.selected .radio{ background:var(--text); border-color:var(--text); }
+
+    .ctitle{ font-weight:900; }
     .cdesc{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.3; }
 
     .row2{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
-    .linkBtn{
+    .status{ text-align:center; font-size:13px; color:var(--muted); min-height:18px; margin-top:10px; }
+
+    /* Renk seçimi */
+    .colors{
+      display:flex; gap:10px; align-items:center; justify-content:center;
+      margin:14px 0 8px;
+    }
+    .cbtn{
+      width:34px; height:34px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.28);
+      background:transparent;
+      cursor:pointer;
+    }
+    html[data-theme="light"] .cbtn{ border-color: rgba(11,18,32,.22); }
+    .cbtn[data-color="navy"]{ background:var(--cNavy); }
+    .cbtn[data-color="orange"]{ background:var(--cOrange); }
+    .cbtn[data-color="red"]{ background:var(--cRed); }
+    .cbtn[data-color="blue"]{ background:var(--cBlue); }
+    .cbtn[data-color="yellow"]{ background:var(--cYellow); }
+    .cbtn[data-color="green"]{ background:var(--cGreen); }
+    .cbtn[data-color="deep"]{ background:var(--cBlack); }
+
+    .cbtn.selected{ outline:3px solid color-mix(in srgb, var(--accent) 60%, transparent); }
+
+    /* Not alanı */
+    .noteWrap{ margin-top:14px; }
+    textarea{
+      width:100%;
+      min-height:110px;
+      resize:vertical;
+      border-radius:16px;
+      padding:12px 12px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+      line-height:1.35;
+    }
+    html[data-theme="light"] textarea{ background:rgba(11,18,32,.03); }
+
+    /* Takvim */
+    .calHead{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; margin:6px 0 12px;
+    }
+    .monthTitle{ font-weight:900; font-size:16px; }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:8px;
+      margin-top:10px;
+    }
+    .dow{
+      text-align:center; font-size:11px; color:var(--muted);
+      padding-bottom:4px;
+    }
+    .day{
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:10px 8px;
+      min-height:56px;
+      background:rgba(255,255,255,.03);
+      position:relative;
+      cursor:pointer;
+      user-select:none;
+    }
+    .day.disabled{ opacity:.45; cursor:default; }
+    .num{ font-weight:900; font-size:14px; }
+    .badge{
+      position:absolute; right:10px; top:10px;
+      width:10px; height:10px; border-radius:50%;
+      background:transparent;
+      box-shadow:0 0 0 2px rgba(255,255,255,.20) inset;
+    }
+    html[data-theme="light"] .badge{ box-shadow:0 0 0 2px rgba(11,18,32,.18) inset; }
+    .badge.on{ background:var(--accent); box-shadow:none; }
+
+    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */
+    .toolbar{
+      display:flex; gap:10px; justify-content:space-between; align-items:center;
+      margin-top:14px;
+    }
+    .tb{
+      flex:1;
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:16px;
+      padding:12px 10px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    /* Accordion */
+    .acc{
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      overflow:hidden;
+      margin-top:12px;
+      background:rgba(255,255,255,.03);
+    }
+    .accHead{
+      padding:14px 14px;
+      display:flex; justify-content:space-between; align-items:center;
+      cursor:pointer; user-select:none;
+      font-weight:900;
+    }
+    .accBody{ display:none; padding:0 14px 14px; }
+    .acc.open .accBody{ display:block; }
+
+    /* Chart */
+    .chartBox{
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:12px;
+      background:rgba(255,255,255,.02);
+    }
+    .chartTitle{ font-weight:900; margin:0 0 10px; font-size:14px; color:var(--muted); }
+    .modeRow{
+      display:flex; gap:10px; justify-content:center; margin-top:12px;
+    }
+    .mode{
+      width:44px; height:38px;
       border:1px solid var(--stroke);
       background:transparent;
       color:var(--text);
       border-radius:14px;
-      padding:12px 12px;
-      font-weight:800;
+      font-weight:900;
       cursor:pointer;
-      user-select:none;
+      opacity:.8;
     }
-    .status{ text-align:center; font-size:13px; color:var(--muted); min-height:18px; margin-top:10px; }
+    .mode.active{ opacity:1; outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent); }
+
+    /* Settings */
+    .field{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    select{
+      width:100%;
+      border-radius:14px;
+      padding:12px 12px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:800;
+      outline:none;
+    }
+    html[data-theme="light"] select{ background:rgba(11,18,32,.03); }
+
+    .smallBtns{ display:flex; gap:10px; margin-top:10px; }
+    .smallBtns .ghost{ flex:1; }
+
+    /* Seçim rengine göre arka plan vurgusu (isteğe göre yumuşak) */
+    body[data-accent="on"]{
+      background:
+        radial-gradient(1100px 800px at 50% 15%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+        radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+    }
   </style>
 </head>
 
-<body>
+<body data-accent="on">
   <div class="wrap">
     <div class="screen">
 
@@ -119,18 +324,20 @@
         <div class="title">TODAY</div>
         <div class="sub">verileriniz sadece bu cihazda kaydedilmektedir.</div>
 
-        <!-- build etiketi: doğru dosya mı yayınlanıyor hemen anlarsın -->
-        <div class="mini" style="text-align:center;opacity:.75;margin-bottom:14px">
-          build: v10-DEBUG-001
-        </div>
-
         <button class="btn" id="btnStart" type="button">Başla</button>
+
+        <div class="build mini build" id="buildTag">build: v10-APP-002</div>
         <div class="status" id="statusHome"></div>
       </div>
 
       <!-- PICK -->
       <div class="inner" data-view="pick">
-        <div class="pill" id="pillDate">—</div>
+        <div class="topbar">
+          <button class="back" id="btnHomeFromPick" type="button">←</button>
+          <span class="pill" id="pillDate">—</span>
+          <button class="ghost" id="btnCalendar" type="button">📅</button>
+        </div>
+
         <div class="q">Bugün sende ne oldu?</div>
 
         <div class="choices" id="choices">
@@ -141,6 +348,7 @@
               <div class="cdesc">Adını koyma. Sadece fark et.</div>
             </div>
           </div>
+
           <div class="choice" data-choice="B">
             <div class="radio"></div>
             <div>
@@ -148,6 +356,7 @@
               <div class="cdesc">Bir cümleyle söyleyebiliyorsan tamam.</div>
             </div>
           </div>
+
           <div class="choice" data-choice="C">
             <div class="radio"></div>
             <div>
@@ -157,28 +366,146 @@
           </div>
         </div>
 
+        <!-- Renk: opsiyonel -->
+        <div class="colors" aria-label="Renk seçimi (opsiyonel)">
+          <button class="cbtn" data-color="navy" title="Lacivert"></button>
+          <button class="cbtn" data-color="orange" title="Turuncu"></button>
+          <button class="cbtn" data-color="red" title="Kırmızı"></button>
+          <button class="cbtn" data-color="blue" title="Mavi"></button>
+          <button class="cbtn" data-color="yellow" title="Sarı"></button>
+          <button class="cbtn" data-color="green" title="Yeşil"></button>
+          <button class="cbtn" data-color="deep" title="Derin"></button>
+        </div>
+        <div class="mini" style="text-align:center; margin-top:2px;">Renk seçmek zorunlu değil.</div>
+
+        <!-- Not -->
+        <div class="noteWrap">
+          <div class="mini" style="margin:0 0 8px;">Not (opsiyonel)</div>
+          <textarea id="note" placeholder="Bugünden küçük bir not…"></textarea>
+        </div>
+
         <div class="row2">
-          <button class="linkBtn" id="btnBackHome" type="button">← Home</button>
+          <button class="ghost" id="btnResetToday" type="button">Bugünü sıfırla</button>
           <div class="status" id="statusPick"></div>
         </div>
+      </div>
+
+      <!-- CALENDAR + STATS + SETTINGS -->
+      <div class="inner" data-view="calendar">
+        <div class="topbar">
+          <button class="back" id="btnBackToPick" type="button">←</button>
+          <span class="pill" id="calPill">Takvim</span>
+          <button class="ghost" id="btnStats" type="button">📊</button>
+        </div>
+
+        <div class="calHead">
+          <div class="monthTitle" id="monthTitle">—</div>
+          <div class="mini" id="calHint">Sadece bu ay görünür.</div>
+        </div>
+
+        <div class="grid" id="calGrid"></div>
+
+        <div class="toolbar">
+          <button class="tb" id="btnOpenStats" type="button">İstatistik</button>
+          <button class="tb" id="btnOpenSettings" type="button">Ayarlar</button>
+        </div>
+
+        <!-- İSTATİSTİK -->
+        <div class="acc" id="accStats">
+          <div class="accHead" id="accStatsHead">
+            <span>İstatistik</span>
+            <span class="mini" id="accStatsArrow">▼</span>
+          </div>
+          <div class="accBody">
+            <div class="chartBox">
+              <div class="chartTitle" id="chartLabel">Gün içi giriş ritmi (00:00 → 23:59)</div>
+              <svg id="chart" viewBox="0 0 320 160" width="100%" height="160" aria-label="grafik">
+                <defs>
+                  <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(255,255,255,.28)"></stop>
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
+                  </linearGradient>
+                </defs>
+                <path id="area" d="" fill="url(#fillGrad)"></path>
+                <path id="line" d="" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.2" stroke-linecap="round"></path>
+              </svg>
+              <div class="mini" id="chartMini" style="text-align:center;margin-top:8px;">
+                Soldan sağa: gün akışı. Aşağıdan yukarı: biriken ivme.
+              </div>
+
+              <div class="modeRow" aria-label="Grafik modları">
+                <button class="mode active" data-mode="hour" title="Saat">🕒</button>
+                <button class="mode" data-mode="day" title="Gün">📅</button>
+                <button class="mode" data-mode="week" title="Hafta">📆</button>
+                <button class="mode" data-mode="month" title="Ay">🗓️</button>
+              </div>
+            </div>
+
+            <div class="acc" id="accSummary" style="margin-top:12px;">
+              <div class="accHead" id="accSummaryHead">
+                <span>Özet</span><span class="mini">▼</span>
+              </div>
+              <div class="accBody">
+                <div class="mini" id="summaryText">—</div>
+              </div>
+            </div>
+
+            <div class="smallBtns">
+              <button class="ghost" id="btnExport" type="button">CSV indir</button>
+              <button class="ghost" id="btnClearTodayLogs" type="button">Bugün loglarını temizle</button>
+            </div>
+
+            <div class="mini" style="margin-top:10px;">
+              Not: “değişim logları” sadece bugün görünür, yarına kalmaz (ama veri saklanır).
+            </div>
+          </div>
+        </div>
+
+        <!-- AYARLAR -->
+        <div class="acc" id="accSettings">
+          <div class="accHead" id="accSettingsHead">
+            <span>Ayarlar</span>
+            <span class="mini">▼</span>
+          </div>
+          <div class="accBody">
+            <div class="field">
+              <div class="mini">Tema</div>
+              <select id="themeSelect">
+                <option value="system">Varsayılan</option>
+                <option value="light">Açık</option>
+                <option value="dark">Koyu</option>
+                <option value="contrast">Kontrastlı</option>
+              </select>
+            </div>
+
+            <div class="mini" style="margin-top:12px;">
+              Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur.
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
   </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+(() => {
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-  // DEBUG: Service Worker KAPALI (cache karışmasın)
-  // if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+  /* =========================
+     0) Service Worker (safe)
+     ========================= */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(()=>{});
+    });
+  }
 
-  const showView = (name) => {
-    $$("[data-view]").forEach(v => v.classList.remove("show"));
-    $(`[data-view="${name}"]`).classList.add("show");
-  };
-
+  /* =========================
+     1) Helpers (dates)
+     ========================= */
   const pad2 = n => String(n).padStart(2,"0");
   const todayKey = () => {
     const d=new Date();
@@ -189,45 +516,644 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Date(y,m-1,d);
   };
   const prettyTR = (k) => parseKey(k).toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
+  const ymKey = (d=new Date()) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
+  const isSameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
 
-  const LS_KEY = "today_data_v10";
-  const load = () => {
-    try{ return JSON.parse(localStorage.getItem(LS_KEY) || '{"v":10,"days":{}}'); }
-    catch{ return {v:10,days:{}}; }
+  /* =========================
+     2) Storage model + migration
+     ========================= */
+  const APP_KEY = "today_app_v10";
+  const emptyState = () => ({
+    v:10,
+    theme:"system",
+    days:{},          // "YYYY-MM-DD": {choice, color, note}
+    logs:{},          // "YYYY-MM-DD": {changes:[{t,what}], entries:[ts,...]}
+  });
+
+  const safeParse = (v) => { try { return JSON.parse(v); } catch { return null; } };
+  const looksLikeDays = (obj) => {
+    if(!obj || typeof obj!=="object") return false;
+    const keys = Object.keys(obj);
+    return keys.some(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
   };
-  const save = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
+
+  // Migration: localStorage içindeki olası eski key'lerden günleri toparlamaya çalışır
+  const migrateOldDays = () => {
+    const merged = {};
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(!k) continue;
+      const raw = localStorage.getItem(k);
+      const obj = safeParse(raw);
+      if(!obj) continue;
+
+      // olası şablonlar:
+      // {days:{...}}  veya direkt {...} (günler)
+      const cand1 = obj.days;
+      const cand2 = obj;
+
+      if (looksLikeDays(cand1)) Object.assign(merged, cand1);
+      else if (looksLikeDays(cand2)) Object.assign(merged, cand2);
+    }
+    return merged;
+  };
+
+  const load = () => {
+    const obj = safeParse(localStorage.getItem(APP_KEY));
+    if(obj && obj.v===10) return obj;
+
+    // yoksa yeni oluştur + eski veriyi dene
+    const st = emptyState();
+    const old = migrateOldDays();
+    // old formatı {date:{choice,color,note}} gibi değilse normalize etmeye çalış
+    Object.keys(old).forEach(date => {
+      const v = old[date];
+      if(!v || typeof v!=="object") return;
+      st.days[date] = {
+        choice: v.choice || v.sel || v.pick || "",
+        color: v.color || v.col || "",
+        note:  v.note  || v.n   || ""
+      };
+    });
+
+    localStorage.setItem(APP_KEY, JSON.stringify(st));
+    return st;
+  };
+
   let state = load();
-  if(!state.days) state.days = {};
+  const save = () => localStorage.setItem(APP_KEY, JSON.stringify(state));
 
-  const dayObj = (k) => state.days[k] || (state.days[k] = { choice:"" });
+  const dayObj = (k) => state.days[k] || (state.days[k] = { choice:"", color:"", note:"" });
+  const logObj = (k) => state.logs[k] || (state.logs[k] = { changes:[], entries:[] });
 
-  // ✅ Başla tıklaması: önce alert ile tık kesin mi görelim
+  /* =========================
+     3) Theme
+     ========================= */
+  const applyTheme = () => {
+    const t = state.theme || "system";
+    if(t==="system"){
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", t);
+    }
+  };
+  applyTheme();
+
+  $("#themeSelect").value = state.theme || "system";
+  $("#themeSelect").addEventListener("change", () => {
+    state.theme = $("#themeSelect").value;
+    save();
+    applyTheme();
+    // tema değişince grafik de kendini tekrar çizsin
+    renderChart(currentMode);
+  });
+
+  /* =========================
+     4) View routing
+     ========================= */
+  const showView = (name) => {
+    $$("[data-view]").forEach(v => v.classList.remove("show"));
+    $(`[data-view="${name}"]`).classList.add("show");
+  };
+
+  /* =========================
+     5) Locking rules
+     - sadece bugün düzenlenebilir
+     - geçmiş günler: görüntülenir ama değiştirilemez
+     - gelecek günler: seçilemez
+     ========================= */
+  const canEditDate = (k) => {
+    const t = todayKey();
+    return k === t;
+  };
+
+  /* =========================
+     6) Accent: seçilen renge göre vurgu
+     ========================= */
+  const colorHex = (c) => ({
+    navy:getComputedStyle(document.documentElement).getPropertyValue("--cNavy").trim(),
+    orange:getComputedStyle(document.documentElement).getPropertyValue("--cOrange").trim(),
+    red:getComputedStyle(document.documentElement).getPropertyValue("--cRed").trim(),
+    blue:getComputedStyle(document.documentElement).getPropertyValue("--cBlue").trim(),
+    yellow:getComputedStyle(document.documentElement).getPropertyValue("--cYellow").trim(),
+    green:getComputedStyle(document.documentElement).getPropertyValue("--cGreen").trim(),
+    deep:getComputedStyle(document.documentElement).getPropertyValue("--cBlack").trim(),
+  }[c] || "#88a9ff");
+
+  const applyAccentFor = (k) => {
+    const d = dayObj(k);
+    const hex = d.color ? colorHex(d.color) : "#88a9ff";
+    document.documentElement.style.setProperty("--accent", hex);
+  };
+
+  /* =========================
+     7) Entry logging (graph)
+     ========================= */
+  const logEntry = () => {
+    const k = todayKey();
+    const L = logObj(k);
+    L.entries.push(Date.now());
+    // çok büyümesin diye 500 ile sınırla
+    if(L.entries.length > 500) L.entries = L.entries.slice(-500);
+    save();
+  };
+
+  // uygulama açılınca + görünür olunca say
+  logEntry();
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden) logEntry();
+  });
+
+  /* =========================
+     8) HOME -> PICK
+     ========================= */
   $("#btnStart").addEventListener("click", () => {
-    alert("Başla tıklandı ✅ (build: v10-DEBUG-001)");
     const k = todayKey();
     $("#pillDate").textContent = prettyTR(k);
-    dayObj(k);
-    save();
+    applyAccentFor(k);
+    loadPickUI(k);
     showView("pick");
   });
 
-  $("#btnBackHome").addEventListener("click", () => showView("home"));
+  $("#btnHomeFromPick").addEventListener("click", () => showView("home"));
 
+  /* =========================
+     9) PICK screen: choices, color, note, reset
+     ========================= */
+  const loadPickUI = (k) => {
+    const d = dayObj(k);
+
+    // seçim seçili mi?
+    $$("#choices .choice").forEach(el => {
+      el.classList.toggle("selected", el.dataset.choice === d.choice);
+    });
+
+    // renk seçili mi?
+    $$(".cbtn").forEach(b => b.classList.toggle("selected", b.dataset.color === d.color));
+
+    // not
+    $("#note").value = d.note || "";
+
+    // bugün değilse: tüm seçim alanlarını disable gibi yap
+    const editable = canEditDate(k);
+    $$("#choices .choice").forEach(el => el.style.pointerEvents = editable ? "auto" : "none");
+    $$(".cbtn").forEach(el => el.style.pointerEvents = editable ? "auto" : "none");
+    $("#note").disabled = !editable;
+    $("#btnResetToday").disabled = !editable;
+
+    $("#statusPick").textContent = editable ? "" : "Geçmiş günler düzenlenemez.";
+  };
+
+  const logChange = (k, what) => {
+    const L = logObj(k);
+    L.changes.push({ t: Date.now(), what });
+    // sadece bugün gösterilecek ama saklanacak → yine de çok büyümesin
+    if(L.changes.length > 200) L.changes = L.changes.slice(-200);
+  };
+
+  const flash = (el, msg) => {
+    el.textContent = msg;
+    setTimeout(()=> el.textContent="", 900);
+  };
+
+  // seçim
   $$("#choices .choice").forEach(el => {
     el.addEventListener("click", () => {
       const k = todayKey();
-      const o = dayObj(k);
-      o.choice = el.dataset.choice;
+      if(!canEditDate(k)) return;
+
+      const d = dayObj(k);
+      d.choice = el.dataset.choice;
+      applyAccentFor(k);
+      logChange(k, `Seçim: ${d.choice}`);
+
       save();
       $$("#choices .choice").forEach(x => x.classList.remove("selected"));
       el.classList.add("selected");
-      $("#statusPick").textContent = "Kaydedildi.";
-      setTimeout(()=>$("#statusPick").textContent="", 900);
+      flash($("#statusPick"), "Kaydedildi.");
+      renderCalendar(); // takvim noktası güncellensin
+      renderSummary();  // özet güncellensin
     });
   });
 
+  // renk (opsiyonel)
+  $$(".cbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const k = todayKey();
+      if(!canEditDate(k)) return;
+
+      const d = dayObj(k);
+      d.color = btn.dataset.color;
+      applyAccentFor(k);
+      logChange(k, `Renk: ${d.color}`);
+      save();
+
+      $$(".cbtn").forEach(x => x.classList.remove("selected"));
+      btn.classList.add("selected");
+
+      flash($("#statusPick"), "Renk kaydedildi.");
+      renderCalendar();
+      renderChart(currentMode); // grafikte vurgu rengi
+    });
+  });
+
+  // not
+  let noteTimer = null;
+  $("#note").addEventListener("input", () => {
+    const k = todayKey();
+    if(!canEditDate(k)) return;
+
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      const d = dayObj(k);
+      d.note = $("#note").value || "";
+      logChange(k, "Not güncellendi");
+      save();
+      flash($("#statusPick"), "Not kaydedildi.");
+    }, 450);
+  });
+
+  // bugünü sıfırla (sadece bugün)
+  $("#btnResetToday").addEventListener("click", () => {
+    const k = todayKey();
+    if(!canEditDate(k)) return;
+
+    state.days[k] = { choice:"", color:"", note:"" };
+    logChange(k, "Bugün sıfırlandı");
+    save();
+    applyAccentFor(k);
+    loadPickUI(k);
+    renderCalendar();
+    renderSummary();
+    renderChart(currentMode);
+    flash($("#statusPick"), "Bugün temizlendi.");
+  });
+
+  /* =========================
+     10) Calendar screen
+     ========================= */
+  $("#btnCalendar").addEventListener("click", () => {
+    showView("calendar");
+    renderCalendar();
+    renderSummary();
+    renderChart(currentMode);
+  });
+
+  $("#btnBackToPick").addEventListener("click", () => {
+    const k = todayKey();
+    $("#pillDate").textContent = prettyTR(k);
+    applyAccentFor(k);
+    loadPickUI(k);
+    showView("pick");
+  });
+
+  const buildCalendarMatrix = (d=new Date()) => {
+    const year = d.getFullYear();
+    const month = d.getMonth(); // 0-11
+    const first = new Date(year, month, 1);
+    const last  = new Date(year, month+1, 0);
+    const daysInMonth = last.getDate();
+
+    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)
+    const dow = (first.getDay() + 6) % 7; // Mon=0 ... Sun=6
+    const cells = [];
+    for(let i=0;i<dow;i++) cells.push(null);
+    for(let day=1; day<=daysInMonth; day++) cells.push(new Date(year, month, day));
+    return {year,month,daysInMonth,cells};
+  };
+
+  const renderCalendar = () => {
+    const now = new Date();
+    const tKey = todayKey();
+    const {year,month,cells} = buildCalendarMatrix(now);
+
+    $("#monthTitle").textContent = now.toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
+    $("#calPill").textContent = "Takvim";
+
+    const grid = $("#calGrid");
+    grid.innerHTML = "";
+
+    // DOW header
+    ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"].forEach(n=>{
+      const div=document.createElement("div");
+      div.className="dow";
+      div.textContent=n;
+      grid.appendChild(div);
+    });
+
+    // days
+    cells.forEach(dt=>{
+      const cell=document.createElement("div");
+      if(!dt){
+        cell.style.visibility="hidden";
+        grid.appendChild(cell);
+        return;
+      }
+      const k = `${dt.getFullYear()}-${pad2(dt.getMonth()+1)}-${pad2(dt.getDate())}`;
+      const d = state.days[k];
+
+      const isPast = parseKey(k) < parseKey(tKey);
+      const isFuture = parseKey(k) > parseKey(tKey);
+      const editable = k===tKey;
+
+      cell.className = "day" + ((isPast||isFuture) ? " disabled" : "");
+      cell.innerHTML = `
+        <div class="num">${dt.getDate()}</div>
+        <div class="badge ${d && (d.choice||d.color||d.note) ? "on":""}"></div>
+      `;
+
+      // “gün işareti ikon” gibi minik vurgu: badge on ise rengi seçime göre olsun
+      if(d && (d.choice||d.color||d.note)){
+        const badge = cell.querySelector(".badge");
+        const hex = d.color ? colorHex(d.color) : "#88a9ff";
+        badge.style.background = hex;
+        badge.style.boxShadow = "none";
+      }
+
+      // sadece bugün tıklanabilir (düzenleme kuralı)
+      if(editable){
+        cell.classList.remove("disabled");
+        cell.addEventListener("click", () => {
+          // bugüne geri dön ve düzenle
+          $("#pillDate").textContent = prettyTR(tKey);
+          applyAccentFor(tKey);
+          loadPickUI(tKey);
+          showView("pick");
+        });
+      }
+      grid.appendChild(cell);
+    });
+  };
+
+  /* =========================
+     11) Stats + Settings accordions
+     ========================= */
+  const toggleAcc = (accId) => {
+    const el = $(accId);
+    el.classList.toggle("open");
+  };
+
+  $("#accStatsHead").addEventListener("click", () => toggleAcc("#accStats"));
+  $("#accSettingsHead").addEventListener("click", () => toggleAcc("#accSettings"));
+  $("#accSummaryHead").addEventListener("click", () => toggleAcc("#accSummary"));
+
+  $("#btnStats").addEventListener("click", () => {
+    $("#accStats").classList.add("open");
+    $("#accSettings").classList.remove("open");
+    renderChart(currentMode);
+    renderSummary();
+  });
+
+  $("#btnOpenStats").addEventListener("click", () => {
+    $("#accStats").classList.add("open");
+    $("#accSettings").classList.remove("open");
+    renderChart(currentMode);
+    renderSummary();
+  });
+
+  $("#btnOpenSettings").addEventListener("click", () => {
+    $("#accSettings").classList.add("open");
+    $("#accStats").classList.remove("open");
+  });
+
+  /* =========================
+     12) Summary (expandable)
+     ========================= */
+  const choiceLabelTR = (c) => ({
+    A:"Bir şey oldu ama adı yok",
+    B:"Her şey çok net",
+    C:"Zordu bugün"
+  }[c] || "");
+
+  const colorLabelTR = (c) => ({
+    navy:"Lacivert",
+    orange:"Turuncu",
+    red:"Kırmızı",
+    blue:"Mavi",
+    yellow:"Sarı",
+    green:"Yeşil",
+    deep:"Derin"
+  }[c] || "");
+
+  const renderSummary = () => {
+    // son 7 gün içinde en çok seçilen
+    const t = parseKey(todayKey());
+    const last7 = [];
+    for(let i=0;i<7;i++){
+      const d = new Date(t);
+      d.setDate(d.getDate()-i);
+      const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+      if(state.days[k] && state.days[k].choice) last7.push(state.days[k].choice);
+    }
+    const freq = {};
+    last7.forEach(x => freq[x]=(freq[x]||0)+1);
+    const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
+    const topText = top ? `Son 7 günde en çok: “${choiceLabelTR(top[0])}” (${top[1]} kez)` : "Son 7 günde seçim yok.";
+    $("#summaryText").textContent = topText;
+  };
+
+  /* =========================
+     13) CSV Export (Turkish)
+     ========================= */
+  const download = (filename, text) => {
+    const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 500);
+  };
+
+  $("#btnExport").addEventListener("click", () => {
+    // Tüm kayıtları tarih sırasıyla
+    const rows = [];
+    rows.push(["Tarih","Seçim","Renk","Not"].join(";"));
+
+    const keys = Object.keys(state.days).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
+    keys.forEach(k => {
+      const d = state.days[k];
+      const sel = choiceLabelTR(d.choice) || "";
+      const col = colorLabelTR(d.color) || "";
+      const note = (d.note || "").replaceAll("\n"," ").replaceAll(";"," ");
+      // boş günleri export etmeyelim istersen: burada filtreleyebilirsin
+      if(!(d.choice || d.color || d.note)) return;
+      rows.push([k, sel, col, note].join(";"));
+    });
+
+    const csv = rows.join("\n");
+    download(`today-rapor-${todayKey()}.csv`, csv);
+  });
+
+  /* “değişim logları” sadece bugün ekranda görünsün, istenirse temizle */
+  $("#btnClearTodayLogs").addEventListener("click", () => {
+    const k = todayKey();
+    const L = logObj(k);
+    L.changes = [];
+    save();
+    renderChart(currentMode);
+    renderSummary();
+  });
+
+  /* =========================
+     14) Chart (animated) — modes
+     ========================= */
+  let currentMode = "hour";
+
+  const seriesHour = () => {
+    // bugün: saatlik giriş sayıları (00-23)
+    const k = todayKey();
+    const L = logObj(k);
+    const arr = new Array(24).fill(0);
+    (L.entries||[]).forEach(ts=>{
+      const d=new Date(ts);
+      const h=d.getHours();
+      arr[h] += 1;
+    });
+    // biriken ivme olsun (cumulative)
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const seriesDay = () => {
+    // son 7 gün: her gün giriş (cumulative)
+    const t = parseKey(todayKey());
+    const arr = [];
+    for(let i=6;i>=0;i--){
+      const d = new Date(t);
+      d.setDate(d.getDate()-i);
+      const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+      const L = state.logs[k];
+      arr.push((L && L.entries) ? L.entries.length : 0);
+    }
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const seriesWeek = () => {
+    // son 4 hafta: haftalık giriş (cumulative)
+    const t = parseKey(todayKey());
+    const arr = [];
+    for(let w=3; w>=0; w--){
+      let sum = 0;
+      for(let i=0;i<7;i++){
+        const d = new Date(t);
+        d.setDate(d.getDate() - (w*7 + i));
+        const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+        const L = state.logs[k];
+        sum += (L && L.entries) ? L.entries.length : 0;
+      }
+      arr.push(sum);
+    }
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const seriesMonth = () => {
+    // son 12 ay: aylık giriş (cumulative)
+    const now = new Date();
+    const arr = [];
+    for(let m=11; m>=0; m--){
+      const d = new Date(now.getFullYear(), now.getMonth()-m, 1);
+      const y = d.getFullYear();
+      const mo = d.getMonth();
+      let sum=0;
+
+      Object.keys(state.logs).forEach(k=>{
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+        const dt = parseKey(k);
+        if(dt.getFullYear()===y && dt.getMonth()===mo){
+          const L = state.logs[k];
+          sum += (L && L.entries) ? L.entries.length : 0;
+        }
+      });
+
+      arr.push(sum);
+    }
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const toPath = (arr) => {
+    const W=320, H=160, pad=10;
+    const n = arr.length;
+    const max = Math.max(1, ...arr);
+    const dx = (W - pad*2) / (n-1);
+
+    const pts = arr.map((v,i)=>{
+      const x = pad + dx*i;
+      const y = (H - pad) - ((H - pad*2) * (v/max));
+      return {x,y};
+    });
+
+    const line = "M " + pts.map(p => `${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" L ");
+    const area = line + ` L ${(pad + dx*(n-1)).toFixed(2)} ${(H-pad).toFixed(2)} L ${pad.toFixed(2)} ${(H-pad).toFixed(2)} Z`;
+    return {line, area};
+  };
+
+  const animatePath = (el, dNew) => {
+    el.setAttribute("d", dNew);
+    // basit “stroke-dash” animasyonu
+    const len = el.getTotalLength ? el.getTotalLength() : 0;
+    if(len){
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+      el.getBoundingClientRect();
+      el.style.transition = "stroke-dashoffset 650ms ease";
+      el.style.strokeDashoffset = "0";
+      setTimeout(()=> {
+        el.style.transition = "";
+        el.style.strokeDasharray = "";
+        el.style.strokeDashoffset = "";
+      }, 700);
+    }
+  };
+
+  const renderChart = (mode) => {
+    currentMode = mode;
+
+    // seçim rengine göre çizgi rengi
+    const d = dayObj(todayKey());
+    const hex = d.color ? colorHex(d.color) : "#88a9ff";
+    $("#line").setAttribute("stroke", hex);
+
+    let arr;
+    if(mode==="hour"){ arr = seriesHour(); $("#chartLabel").textContent = "Gün içi giriş ritmi (00:00 → 23:59)"; }
+    if(mode==="day"){ arr = seriesDay(); $("#chartLabel").textContent = "Son 7 gün ivmesi"; }
+    if(mode==="week"){ arr = seriesWeek(); $("#chartLabel").textContent = "Son 4 hafta ivmesi"; }
+    if(mode==="month"){ arr = seriesMonth(); $("#chartLabel").textContent = "Son 12 ay ivmesi"; }
+
+    const {line, area} = toPath(arr);
+
+    // area yumuşak kalsın
+    $("#area").setAttribute("d", area);
+    animatePath($("#line"), line);
+
+    $$(".mode").forEach(b => b.classList.toggle("active", b.dataset.mode===mode));
+  };
+
+  $$(".mode").forEach(b => {
+    b.addEventListener("click", () => renderChart(b.dataset.mode));
+  });
+
+  /* =========================
+     15) Init
+     ========================= */
+  $("#buildTag").textContent = "build: v10-APP-002";
+
+  // defaults: calendar acc kapalı, stats kapalı
+  $("#accStats").classList.remove("open");
+  $("#accSettings").classList.remove("open");
+  $("#accSummary").classList.remove("open");
+
+  // home açılışında bugünün accent'ini hazırla
+  applyAccentFor(todayKey());
+
+  // ilk girişte home kalsın
   showView("home");
-});
+})();
 </script>
 </body>
 </html>
