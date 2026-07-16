@@ -11,7 +11,7 @@
 
 "use strict";
 
-const VERSION = "today-v2-foundation-001";
+const VERSION = "today-v2-foundation-002";
 const CACHE_NAME = `today-cache-${VERSION}`;
 
 const APP_SHELL = [
