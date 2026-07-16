@@ -691,20 +691,75 @@ console.info("Today migration sonucu:", migrationResult);
   return mergedState;
 };
   const save = () => {
-  localStorage.setItem(APP_KEY, JSON.stringify(state));
+  // Eski v10 kaydını geçici güvenlik yedeği olarak koru.
+  localStorage.setItem(
+    APP_KEY,
+    JSON.stringify(state)
+  );
 
   if (
-    window.TodayBridge &&
-    typeof window.TodayBridge.syncFromLegacy === "function"
+    !window.TodayStorage ||
+    typeof window.TodayStorage.saveDay !== "function"
   ) {
-    try {
-      window.TodayBridge.syncFromLegacy(state);
-    } catch (error) {
-      console.warn(
-        "Today Bridge eşitlemesi başarısız oldu.",
-        error
-      );
-    }
+    console.warn(
+      "TodayStorage kullanılamıyor; yalnızca eski kayıt sistemi güncellendi."
+    );
+    return;
+  }
+
+  try {
+    Object.entries(state.days || {}).forEach(
+      ([dateKey, day]) => {
+        if (
+          !/^\d{4}-\d{2}-\d{2}$/.test(dateKey) ||
+          !day ||
+          typeof day !== "object"
+        ) {
+          return;
+        }
+
+        const dayLogs =
+          state.logs?.[dateKey] || {};
+
+        const changes = Array.isArray(dayLogs.changes)
+          ? dayLogs.changes
+          : [];
+
+        window.TodayStorage.saveDay(dateKey, {
+          choice: day.choice || "",
+          color: day.color || "",
+          note: day.note || "",
+
+          changeCount: changes.length,
+
+          changeLog: changes.map((entry) => ({
+            timestamp:
+              entry.t ||
+              entry.timestamp ||
+              new Date().toISOString(),
+
+            type:
+              entry.type ||
+              entry.what ||
+              "change",
+
+            description:
+              entry.description ||
+              entry.what ||
+              ""
+          }))
+        });
+      }
+    );
+
+    console.info(
+      "Today kayıtları doğrudan TodayStorage içine yazıldı."
+    );
+  } catch (error) {
+    console.warn(
+      "TodayStorage kaydı başarısız oldu; eski kayıt korundu.",
+      error
+    );
   }
 };
 
