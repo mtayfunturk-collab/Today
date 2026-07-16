@@ -555,48 +555,141 @@ console.info("Today migration sonucu:", migrationResult);
   };
 
   // Migration: localStorage içindeki olası eski key'lerden günleri toparlamaya çalışır
-  const migrateOldDays = () => {
-    const merged = {};
-    for (let i=0;i<localStorage.length;i++){
-      const k = localStorage.key(i);
-      if(!k) continue;
-      const raw = localStorage.getItem(k);
-      const obj = safeParse(raw);
-      if(!obj) continue;
+  const mergeV2IntoLegacyState = (legacyState) => {
+  if (
+    !window.TodayStorage ||
+    typeof window.TodayStorage.loadStore !== "function"
+  ) {
+    return legacyState;
+  }
 
-      // olası şablonlar:
-      // {days:{...}}  veya direkt {...} (günler)
-      const cand1 = obj.days;
-      const cand2 = obj;
+  try {
+    const v2Store = window.TodayStorage.loadStore();
 
-      if (looksLikeDays(cand1)) Object.assign(merged, cand1);
-      else if (looksLikeDays(cand2)) Object.assign(merged, cand2);
+    if (
+      !v2Store ||
+      typeof v2Store !== "object" ||
+      !v2Store.days ||
+      typeof v2Store.days !== "object"
+    ) {
+      return legacyState;
     }
-    return merged;
-  };
+
+    const mergedState = {
+      ...legacyState,
+      v: 10,
+      theme:
+        v2Store.settings?.theme ||
+        legacyState.theme ||
+        "system",
+      days: {
+        ...(legacyState.days || {})
+      },
+      logs: {
+        ...(legacyState.logs || {})
+      }
+    };
+
+    Object.entries(v2Store.days).forEach(
+      ([dateKey, v2Day]) => {
+        if (
+          !/^\d{4}-\d{2}-\d{2}$/.test(dateKey) ||
+          !v2Day ||
+          typeof v2Day !== "object"
+        ) {
+          return;
+        }
+
+        const legacyDay =
+          mergedState.days[dateKey] || {};
+
+        mergedState.days[dateKey] = {
+          ...legacyDay,
+
+          choice:
+            v2Day.choice ??
+            legacyDay.choice ??
+            "",
+
+          color:
+            v2Day.color ??
+            legacyDay.color ??
+            "",
+
+          note:
+            v2Day.note ??
+            legacyDay.note ??
+            ""
+        };
+      }
+    );
+
+    console.info(
+      "Today v2 okuma katmanı aktif:",
+      Object.keys(v2Store.days).length,
+      "gün"
+    );
+
+    return mergedState;
+  } catch (error) {
+    console.warn(
+      "Today v2 verisi okunamadı; eski kayıt kullanılacak.",
+      error
+    );
+
+    return legacyState;
+  }
+};
 
   const load = () => {
-    const obj = safeParse(localStorage.getItem(APP_KEY));
-    if(obj && obj.v===10) return obj;
+  const obj = safeParse(
+    localStorage.getItem(APP_KEY)
+  );
 
-    // yoksa yeni oluştur + eski veriyi dene
-    const st = emptyState();
-    const old = migrateOldDays();
-    // old formatı {date:{choice,color,note}} gibi değilse normalize etmeye çalış
-    Object.keys(old).forEach(date => {
-      const v = old[date];
-      if(!v || typeof v!=="object") return;
-      st.days[date] = {
-        choice: v.choice || v.sel || v.pick || "",
-        color: v.color || v.col || "",
-        note:  v.note  || v.n   || ""
-      };
-    });
+  if (obj && obj.v === 10) {
+    return mergeV2IntoLegacyState(obj);
+  }
 
-    localStorage.setItem(APP_KEY, JSON.stringify(st));
-    return st;
-  };
+  // V10 kayıt yoksa boş yapı oluştur ve eski verileri tara.
+  const st = emptyState();
+  const old = migrateOldDays();
 
+  Object.keys(old).forEach((date) => {
+    const value = old[date];
+
+    if (!value || typeof value !== "object") {
+      return;
+    }
+
+    st.days[date] = {
+      choice:
+        value.choice ||
+        value.sel ||
+        value.pick ||
+        "",
+
+      color:
+        value.color ||
+        value.col ||
+        "",
+
+      note:
+        value.note ||
+        value.n ||
+        ""
+    };
+  });
+
+  const mergedState =
+    mergeV2IntoLegacyState(st);
+
+  localStorage.setItem(
+    APP_KEY,
+    JSON.stringify(mergedState)
+  );
+
+  return mergedState;
+};
   const save = () => {
   localStorage.setItem(APP_KEY, JSON.stringify(state));
 
