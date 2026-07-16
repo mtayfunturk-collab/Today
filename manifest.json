@@ -1,15 +1,43 @@
 {
+  "id": "./",
   "name": "Today",
   "short_name": "Today",
   "description": "Basit bir fark etme alanı",
+  "lang": "tr-TR",
+  "dir": "ltr",
+
   "start_url": "./index.html",
   "scope": "./",
+
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+
+  "orientation": "portrait-primary",
+
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
-  "lang": "tr",
+
   "icons": [
-    { "src": "today-icon-v9-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "today-icon-v9-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "./today-icon-v9-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./today-icon-v9-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./today-icon-v9-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
