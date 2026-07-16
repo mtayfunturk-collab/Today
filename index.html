@@ -597,26 +597,6 @@ console.info("Today migration sonucu:", migrationResult);
     return st;
   };
 
-  let state = load();
-  if (
-  window.TodayBridge &&
-  typeof window.TodayBridge.syncFromLegacy === "function"
-) {
-  try {
-    const bridgeResult =
-      window.TodayBridge.syncFromLegacy(state);
-
-    console.info(
-      "Today başlangıç eşitlemesi:",
-      bridgeResult
-    );
-  } catch (error) {
-    console.warn(
-      "Today başlangıç eşitlemesi başarısız oldu.",
-      error
-    );
-  }
-}
   const save = () => {
   localStorage.setItem(APP_KEY, JSON.stringify(state));
 
@@ -635,6 +615,27 @@ console.info("Today migration sonucu:", migrationResult);
   }
 };
 
+let state = load();
+
+if (
+  window.TodayBridge &&
+  typeof window.TodayBridge.syncFromLegacy === "function"
+) {
+  try {
+    const bridgeResult =
+      window.TodayBridge.syncFromLegacy(state);
+
+    console.info(
+      "Today başlangıç eşitlemesi:",
+      bridgeResult
+    );
+  } catch (error) {
+    console.warn(
+      "Today başlangıç eşitlemesi başarısız oldu.",
+      error
+    );
+  }
+}
   const dayObj = (k) => state.days[k] || (state.days[k] = { choice:"", color:"", note:"" });
   const logObj = (k) => state.logs[k] || (state.logs[k] = { changes:[], entries:[] });
 
