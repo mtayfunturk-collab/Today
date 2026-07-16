@@ -529,235 +529,33 @@ const {
   getOrCreateLog
 } = window.TodayDay;
 
-  /* =========================
-     2) Storage model + migration
-     ========================= */
-  const APP_KEY = "today_app_v10";
-  const emptyState = () => ({
-    v:10,
-    theme:"system",
-    days:{},          // "YYYY-MM-DD": {choice, color, note}
-    logs:{},          // "YYYY-MM-DD": {changes:[{t,what}], entries:[ts,...]}
-  });
+  
+/* =========================
+ 2) State Manager
+========================= */
 
-  const safeParse = (v) => { try { return JSON.parse(v); } catch { return null; } };
-  const looksLikeDays = (obj) => {
-    if(!obj || typeof obj!=="object") return false;
-    const keys = Object.keys(obj);
-    return keys.some(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
-  };
-
-  // Migration: localStorage içindeki olası eski key'lerden günleri toparlamaya çalışır
-  const mergeV2IntoLegacyState = (legacyState) => {
-  if (
-    !window.TodayStorage ||
-    typeof window.TodayStorage.loadStore !== "function"
-  ) {
-    return legacyState;
-  }
-
-  try {
-    const v2Store = window.TodayStorage.loadStore();
-
-    if (
-      !v2Store ||
-      typeof v2Store !== "object" ||
-      !v2Store.days ||
-      typeof v2Store.days !== "object"
-    ) {
-      return legacyState;
-    }
-
-    const mergedState = {
-      ...legacyState,
-      v: 10,
-      theme:
-        v2Store.settings?.theme ||
-        legacyState.theme ||
-        "system",
-      days: {
-        ...(legacyState.days || {})
-      },
-      logs: {
-        ...(legacyState.logs || {})
-      }
-    };
-
-    Object.entries(v2Store.days).forEach(
-      ([dateKey, v2Day]) => {
-        if (
-          !/^\d{4}-\d{2}-\d{2}$/.test(dateKey) ||
-          !v2Day ||
-          typeof v2Day !== "object"
-        ) {
-          return;
-        }
-
-        const legacyDay =
-          mergedState.days[dateKey] || {};
-
-        mergedState.days[dateKey] = {
-          ...legacyDay,
-
-          choice:
-            v2Day.choice ??
-            legacyDay.choice ??
-            "",
-
-          color:
-            v2Day.color ??
-            legacyDay.color ??
-            "",
-
-          note:
-            v2Day.note ??
-            legacyDay.note ??
-            ""
-        };
-      }
-    );
-
-    console.info(
-      "Today v2 okuma katmanı aktif:",
-      Object.keys(v2Store.days).length,
-      "gün"
-    );
-
-    return mergedState;
-  } catch (error) {
-    console.warn(
-      "Today v2 verisi okunamadı; eski kayıt kullanılacak.",
-      error
-    );
-
-    return legacyState;
-  }
-};
-
-  const load = () => {
-  const obj = safeParse(
-    localStorage.getItem(APP_KEY)
+if (!window.TodayState) {
+  throw new Error(
+    "Today başlatılamadı: State Manager yüklenmedi."
   );
+}
 
-  if (obj && obj.v === 10) {
-    return mergeV2IntoLegacyState(obj);
-  }
+const APP_KEY = window.TodayState.APP_KEY;
 
-  // V10 kayıt yoksa boş yapı oluştur ve eski verileri tara.
-  const st = emptyState();
-  const old = migrateOldDays();
+let state = window.TodayState.load();
 
-  Object.keys(old).forEach((date) => {
-    const value = old[date];
+const save = () => {
+  const result = window.TodayState.save(state);
 
-    if (!value || typeof value !== "object") {
-      return;
-    }
-
-    st.days[date] = {
-      choice:
-        value.choice ||
-        value.sel ||
-        value.pick ||
-        "",
-
-      color:
-        value.color ||
-        value.col ||
-        "",
-
-      note:
-        value.note ||
-        value.n ||
-        ""
-    };
-  });
-
-  const mergedState =
-    mergeV2IntoLegacyState(st);
-
-  localStorage.setItem(
-    APP_KEY,
-    JSON.stringify(mergedState)
-  );
-
-  return mergedState;
-};
-  const save = () => {
-  // Eski v10 kaydını geçici güvenlik yedeği olarak koru.
-  localStorage.setItem(
-    APP_KEY,
-    JSON.stringify(state)
-  );
-
-  if (
-    !window.TodayStorage ||
-    typeof window.TodayStorage.saveDay !== "function"
-  ) {
+  if (!result.success) {
     console.warn(
-      "TodayStorage kullanılamıyor; yalnızca eski kayıt sistemi güncellendi."
-    );
-    return;
-  }
-
-  try {
-    Object.entries(state.days || {}).forEach(
-      ([dateKey, day]) => {
-        if (
-          !/^\d{4}-\d{2}-\d{2}$/.test(dateKey) ||
-          !day ||
-          typeof day !== "object"
-        ) {
-          return;
-        }
-
-        const dayLogs =
-          state.logs?.[dateKey] || {};
-
-        const changes = Array.isArray(dayLogs.changes)
-          ? dayLogs.changes
-          : [];
-
-        window.TodayStorage.saveDay(dateKey, {
-          choice: day.choice || "",
-          color: day.color || "",
-          note: day.note || "",
-
-          changeCount: changes.length,
-
-          changeLog: changes.map((entry) => ({
-            timestamp:
-              entry.t ||
-              entry.timestamp ||
-              new Date().toISOString(),
-
-            type:
-              entry.type ||
-              entry.what ||
-              "change",
-
-            description:
-              entry.description ||
-              entry.what ||
-              ""
-          }))
-        });
-      }
-    );
-
-    console.info(
-      "Today kayıtları doğrudan TodayStorage içine yazıldı."
-    );
-  } catch (error) {
-    console.warn(
-      "TodayStorage kaydı başarısız oldu; eski kayıt korundu.",
-      error
+      "Today state tamamen kaydedilemedi.",
+      result
     );
   }
+
+  return result;
 };
-
-let state = load();
-
 
   const dayObj = (dateKey) =>
   getOrCreateDay(state, dateKey);
