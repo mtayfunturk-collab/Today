@@ -138,17 +138,95 @@
     );
   }
 
+/**
+ * Belirtilen güne ait kayıt varsa döndürür.
+ * Yoksa boş günlük kayıt oluşturur.
+ */
+function getOrCreateDay(state, dateKey) {
+  if (!state || typeof state !== "object") {
+    throw new Error(
+      "Today Day Manager: State nesnesi geçersiz."
+    );
+  }
+
+  if (!isValidDateKey(dateKey)) {
+    throw new Error(
+      `Today Day Manager: Geçersiz tarih anahtarı: ${dateKey}`
+    );
+  }
+
+  if (!state.days || typeof state.days !== "object") {
+    state.days = {};
+  }
+
+  if (
+    !state.days[dateKey] ||
+    typeof state.days[dateKey] !== "object"
+  ) {
+    state.days[dateKey] = {
+      choice: "",
+      color: "",
+      note: ""
+    };
+  }
+
+  return state.days[dateKey];
+}
+
+/**
+ * Belirtilen güne ait işlem kaydı varsa döndürür.
+ * Yoksa boş log kaydı oluşturur.
+ */
+function getOrCreateLog(state, dateKey) {
+  if (!state || typeof state !== "object") {
+    throw new Error(
+      "Today Day Manager: State nesnesi geçersiz."
+    );
+  }
+
+  if (!isValidDateKey(dateKey)) {
+    throw new Error(
+      `Today Day Manager: Geçersiz tarih anahtarı: ${dateKey}`
+    );
+  }
+
+  if (!state.logs || typeof state.logs !== "object") {
+    state.logs = {};
+  }
+
+  if (
+    !state.logs[dateKey] ||
+    typeof state.logs[dateKey] !== "object"
+  ) {
+    state.logs[dateKey] = {
+      changes: [],
+      entries: []
+    };
+  }
+
+  if (!Array.isArray(state.logs[dateKey].changes)) {
+    state.logs[dateKey].changes = [];
+  }
+
+  if (!Array.isArray(state.logs[dateKey].entries)) {
+    state.logs[dateKey].entries = [];
+  }
+
+  return state.logs[dateKey];
+}
   window.TodayDay = Object.freeze({
-    DATE_KEY_PATTERN,
-    pad2,
-    toDateKey,
-    todayKey,
-    isValidDateKey,
-    parseKey,
-    prettyTR,
-    ymKey,
-    isSameDay
-  });
+  DATE_KEY_PATTERN,
+  pad2,
+  toDateKey,
+  todayKey,
+  isValidDateKey,
+  parseKey,
+  prettyTR,
+  ymKey,
+  isSameDay,
+  getOrCreateDay,
+  getOrCreateLog
+});
 
   console.info("Today Day Manager hazır.");
 })();
