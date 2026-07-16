@@ -524,7 +524,9 @@ const {
   parseKey,
   prettyTR,
   ymKey,
-  isSameDay
+  isSameDay,
+  getOrCreateDay,
+  getOrCreateLog
 } = window.TodayDay;
 
   /* =========================
@@ -757,8 +759,11 @@ const {
 let state = load();
 
 
-  const dayObj = (k) => state.days[k] || (state.days[k] = { choice:"", color:"", note:"" });
-  const logObj = (k) => state.logs[k] || (state.logs[k] = { changes:[], entries:[] });
+  const dayObj = (dateKey) =>
+  getOrCreateDay(state, dateKey);
+
+const logObj = (dateKey) =>
+  getOrCreateLog(state, dateKey);
 
   /* =========================
      3) Theme
