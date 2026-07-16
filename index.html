@@ -491,22 +491,11 @@
   
 <script src="./modules/storage.js"></script>
 <script src="./modules/version.js"></script>
-<script src="./modules/migration.js"></script>
 
 
 <script>
 (() => {
-  const migrationResult =
-  window.TodayMigration &&
-  typeof window.TodayMigration.migrate === "function"
-    ? window.TodayMigration.migrate()
-    : {
-        success: false,
-        migrated: false,
-        message: "Migration Manager yüklenmedi."
-      };
-
-console.info("Today migration sonucu:", migrationResult);
+  
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
