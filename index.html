@@ -331,8 +331,61 @@
         <div class="status" id="statusHome"></div>
       </div>
 
-      <!-- PICK -->
-      <div class="inner" data-view="pick">
+<!-- MODULE CENTER -->
+<div class="inner" data-view="modules">
+  <div class="title">TODAY</div>
+
+  <div class="moduleCards">
+
+    <button
+      class="moduleCard"
+      id="btnModuleCore"
+      type="button"
+      data-module="core"
+    >
+      <span class="moduleIcon moduleIconCore">●</span>
+
+      <span class="moduleText">
+        <strong>Today Core</strong>
+        <small>Günlük, notlar ve ajanda</small>
+      </span>
+    </button>
+
+    <button
+      class="moduleCard"
+      id="btnModuleHealth"
+      type="button"
+      data-module="health"
+    >
+      <span class="moduleIcon moduleIconHealth">♥</span>
+
+      <span class="moduleText">
+        <strong>Today Health</strong>
+        <small>Sağlık, spor ve yaşam</small>
+      </span>
+    </button>
+
+    <button
+      class="moduleCard"
+      id="btnModuleSky"
+      type="button"
+      data-module="sky"
+    >
+      <span class="moduleIcon moduleIconSky">✦</span>
+
+      <span class="moduleText">
+        <strong>Today Sky</strong>
+        <small>Haritan ve gökyüzü</small>
+      </span>
+    </button>
+
+  </div>
+
+  <div class="status" id="statusModules"></div>
+</div>
+
+      <!-- TODAY CORE -->
+<div class="inner" data-view="pick">
         <div class="topbar">
           <button class="back" id="btnHomeFromPick" type="button">←</button>
           <span class="pill" id="pillDate">—</span>
@@ -389,7 +442,190 @@
           <button class="ghost" id="btnResetToday" type="button">Bugünü sıfırla</button>
           <div class="status" id="statusPick"></div>
         </div>
+        <nav class="bottomNav" aria-label="Today ana modülleri">
+  <button
+    class="navItem active"
+    type="button"
+    data-open-module="core"
+    aria-label="Today Core"
+  >
+    <span class="navIcon navIconActive">●</span>
+    <span>Core</span>
+  </button>
+
+  <button
+    class="navItem"
+    type="button"
+    data-open-module="health"
+    aria-label="Today Health"
+  >
+    <span class="navIcon">♡</span>
+    <span>Health</span>
+  </button>
+
+  <button
+    class="navItem"
+    type="button"
+    data-open-module="sky"
+    aria-label="Today Sky"
+  >
+    <span class="navIcon">☆</span>
+    <span>Sky</span>
+  </button>
+</nav>
       </div>
+<div class="row2">
+  <button class="ghost" id="btnResetToday" type="button">
+    Bugünü sıfırla
+  </button>
+  <div class="status" id="statusPick"></div>
+  <nav class="bottomNav" aria-label="Today ana modülleri">
+  <button
+    class="navItem active"
+    type="button"
+    data-open-module="core"
+  >
+    <span class="navIcon">●</span>
+    <span>Core</span>
+  </button>
+
+  <button
+    class="navItem"
+    type="button"
+    data-open-module="health"
+  >
+    <span class="navIcon">♡</span>
+    <span>Health</span>
+  </button>
+
+  <button
+    class="navItem"
+    type="button"
+    data-open-module="sky"
+  >
+    <span class="navIcon">☆</span>
+    <span>Sky</span>
+  </button>
+</nav>
+</div>
+
+<!-- TODAY HEALTH -->
+<div class="inner" data-view="health">
+  <div class="topbar">
+    <button
+      class="back"
+      id="btnModulesFromHealth"
+      type="button"
+      aria-label="Modül merkezine dön"
+    >
+      ←
+    </button>
+
+    <span class="pill">Today Health</span>
+
+    <span class="topbarSpacer"></span>
+  </div>
+
+  <div class="modulePlaceholder">
+    <div class="placeholderIcon">♥</div>
+    <div class="q">Today Health</div>
+
+    <div class="mini placeholderText">
+      Sağlık, spor, uyku, beslenme ve ölçüm araçları
+      burada yer alacak.
+    </div>
+
+    <div class="comingSoon">Yakında</div>
+  </div>
+
+  <nav class="bottomNav" aria-label="Today ana modülleri">
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="core"
+    >
+      <span class="navIcon">○</span>
+      <span>Core</span>
+    </button>
+
+    <button
+      class="navItem active"
+      type="button"
+      data-open-module="health"
+    >
+      <span class="navIcon navIconActive">♥</span>
+      <span>Health</span>
+    </button>
+
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="sky"
+    >
+      <span class="navIcon">☆</span>
+      <span>Sky</span>
+    </button>
+  </nav>
+</div>
+
+<!-- TODAY SKY -->
+<div class="inner" data-view="sky">
+  <div class="topbar">
+    <button
+      class="back"
+      id="btnModulesFromSky"
+      type="button"
+      aria-label="Modül merkezine dön"
+    >
+      ←
+    </button>
+
+    <span class="pill">Today Sky</span>
+
+    <span class="topbarSpacer"></span>
+  </div>
+
+  <div class="modulePlaceholder">
+    <div class="placeholderIcon">✦</div>
+    <div class="q">Today Sky</div>
+
+    <div class="mini placeholderText">
+      Doğum haritası, transitler ve kişisel günlük
+      yorumlar burada yer alacak.
+    </div>
+
+    <div class="comingSoon">Yakında</div>
+  </div>
+
+  <nav class="bottomNav" aria-label="Today ana modülleri">
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="core"
+    >
+      <span class="navIcon">○</span>
+      <span>Core</span>
+    </button>
+
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="health"
+    >
+      <span class="navIcon">♡</span>
+      <span>Health</span>
+    </button>
+
+    <button
+      class="navItem active"
+      type="button"
+      data-open-module="sky"
+    >
+      <span class="navIcon navIconActive">✦</span>
+      <span>Sky</span>
+    </button>
+  </nav>
+</div>
 
       <!-- CALENDAR + STATS + SETTINGS -->
       <div class="inner" data-view="calendar">
@@ -643,17 +879,70 @@ const logObj = (dateKey) =>
   });
 
   /* =========================
-     8) HOME -> PICK
-     ========================= */
-  $("#btnStart").addEventListener("click", () => {
-    const k = todayKey();
-    $("#pillDate").textContent = prettyTR(k);
-    applyAccentFor(k);
-    loadPickUI(k);
-    showView("pick");
-  });
+   8) TODAY MODULE PLATFORM
+   ========================= */
 
-  $("#btnHomeFromPick").addEventListener("click", () => showView("home"));
+const openTodayCore = () => {
+  const k = todayKey();
+
+  $("#pillDate").textContent = prettyTR(k);
+  applyAccentFor(k);
+  loadPickUI(k);
+
+  showView("pick");
+};
+
+const openTodayHealth = () => {
+  showView("health");
+};
+
+const openTodaySky = () => {
+  showView("sky");
+};
+
+/* HOME → MODULE CENTER */
+$("#btnStart").addEventListener("click", () => {
+  showView("modules");
+});
+
+/* MODULE CENTER kartları */
+$("#btnModuleCore").addEventListener("click", openTodayCore);
+$("#btnModuleHealth").addEventListener("click", openTodayHealth);
+$("#btnModuleSky").addEventListener("click", openTodaySky);
+
+/* Modüllerden merkeze dönüş */
+$("#btnHomeFromPick").addEventListener("click", () => {
+  showView("modules");
+});
+
+$("#btnModulesFromHealth").addEventListener("click", () => {
+  showView("modules");
+});
+
+$("#btnModulesFromSky").addEventListener("click", () => {
+  showView("modules");
+});
+
+/* Ortak alt navigasyon */
+document
+  .querySelectorAll("[data-open-module]")
+  .forEach((button) => {
+    button.addEventListener("click", () => {
+      const moduleName = button.dataset.openModule;
+
+      if (moduleName === "core") {
+        openTodayCore();
+      }
+
+      if (moduleName === "health") {
+        openTodayHealth();
+      }
+
+      if (moduleName === "sky") {
+        openTodaySky();
+      }
+    });
+  });
 
   /* =========================
      9) PICK screen: choices, color, note, reset
