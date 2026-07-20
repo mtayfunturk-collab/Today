@@ -313,6 +313,220 @@
         radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%),
         linear-gradient(180deg,var(--bg0),var(--bg1));
     }
+    
+    /* =========================
+   TODAY MODULE CENTER V1
+========================= */
+
+.moduleCenter {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+
+.moduleCenterHead {
+  flex: 0 0 auto;
+  padding-top: 6px;
+  text-align: center;
+}
+
+/* Kart grubunu ekranın görsel merkezine taşır */
+.moduleCards {
+  width: 100%;
+  max-width: 420px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  margin: auto;
+  padding: 30px 0 26px;
+}
+
+/* Geniş ve dolgulu modül kartı */
+.moduleCard {
+  width: 100%;
+  min-height: 98px;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  padding: 20px 22px;
+
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.16),
+      rgba(255, 255, 255, 0.075)
+    );
+
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.moduleCard:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.21),
+      rgba(255, 255, 255, 0.10)
+    );
+}
+
+.moduleCard:active {
+  transform: scale(0.98);
+}
+
+/* Üç ikonun görsel ölçüsü eşit */
+.moduleIcon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 31px;
+  line-height: 1;
+}
+
+.moduleText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.moduleText strong {
+  font-size: 18px;
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -0.2px;
+}
+
+.moduleText small {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.66;
+}
+
+/* Modül merkezinin alt navigasyonu */
+.moduleNav {
+  flex: 0 0 auto;
+
+  width: 100%;
+  max-width: 420px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin: 0 auto;
+  padding:
+    9px
+    8px
+    calc(7px + env(safe-area-inset-bottom));
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.075);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.moduleNavItem {
+  min-height: 54px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  padding: 5px 4px;
+
+  border: 0;
+  border-radius: 15px;
+
+  background: transparent;
+  color: inherit;
+
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.64;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.moduleNavItem:active {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.moduleNavIcon {
+  width: 28px;
+  height: 28px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 23px;
+  line-height: 1;
+}
+
+/* Core ekranındaki sıfırlama butonu şimdilik görünmez */
+#btnResetToday {
+  display: none;
+}
+
+/* Dar ekran düzenlemesi */
+@media (max-width: 420px) {
+  .moduleCards {
+    gap: 14px;
+  }
+
+  .moduleCard {
+    min-height: 92px;
+    padding: 18px 19px;
+    border-radius: 22px;
+  }
+
+  .moduleIcon {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    font-size: 29px;
+  }
+
+  .moduleText strong {
+    font-size: 17px;
+  }
+}
+    
   </style>
 </head>
 
@@ -327,13 +541,16 @@
 
         <button class="btn" id="btnStart" type="button">Başla</button>
 
-        <div class="build mini build" id="buildTag">build: v10-APP-002</div>
+        <div class="build mini build" id="buildTag">build: v10-APP-003</div>
         <div class="status" id="statusHome"></div>
       </div>
 
 <!-- MODULE CENTER -->
-<div class="inner" data-view="modules">
-  <div class="title">TODAY</div>
+<div class="inner moduleCenter" data-view="modules">
+
+  <div class="moduleCenterHead">
+    <div class="title">TODAY</div>
+  </div>
 
   <div class="moduleCards">
 
@@ -343,7 +560,7 @@
       type="button"
       data-module="core"
     >
-      <span class="moduleIcon moduleIconCore">●</span>
+      <span class="moduleIcon">●</span>
 
       <span class="moduleText">
         <strong>Today Core</strong>
@@ -357,7 +574,7 @@
       type="button"
       data-module="health"
     >
-      <span class="moduleIcon moduleIconHealth">♥</span>
+      <span class="moduleIcon">♥</span>
 
       <span class="moduleText">
         <strong>Today Health</strong>
@@ -371,7 +588,7 @@
       type="button"
       data-module="sky"
     >
-      <span class="moduleIcon moduleIconSky">✦</span>
+      <span class="moduleIcon">★</span>
 
       <span class="moduleText">
         <strong>Today Sky</strong>
@@ -380,6 +597,7 @@
     </button>
 
   </div>
+
 
   <div class="status" id="statusModules"></div>
 </div>
