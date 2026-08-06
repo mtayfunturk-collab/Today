@@ -1,0 +1,3544 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Today" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <title>Today</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./today-icon-v9-192.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon-v9.png" />
+
+  <style>
+    :root{
+      --bg0:#0b1220; --bg1:#0b1220;
+      --card:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.10);
+      --text:#eef2ff;
+      --muted:rgba(238,242,255,.62);
+      --btn:#ffffff; --btnText:#0b1220;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:24px;
+      --focus:#ffd60a;
+
+      /* seçim rengi */
+      --accent:#88a9ff;
+
+      /* renk paleti */
+      --cNavy:#1b2a52;
+      --cOrange:#ff7a00;
+      --cRed:#ff3b30;
+      --cBlue:#2f6bff;
+      --cYellow:#ffcc00;
+      --cGreen:#34c759;
+      --cBlack:#0b0f18;
+    }
+
+    /* Theme overrides */
+    html[data-theme="light"]{
+      --bg0:#f6f7fb; --bg1:#eef1f7;
+      --card:rgba(10,16,30,.06);
+      --stroke:rgba(10,16,30,.10);
+      --text:#0b1220;
+      --muted:rgba(11,18,32,.60);
+      --btn:#0b1220; --btnText:#ffffff;
+      --shadow:0 16px 50px rgba(0,0,0,.12);
+      --focus:#005fcc;
+    }
+    html[data-theme="dark"]{ /* varsayılan koyu zaten */ }
+    html[data-theme="contrast"]{
+      --bg0:#000000; --bg1:#000000;
+      --card:rgba(255,255,255,.10);
+      --stroke:rgba(255,255,255,.22);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,.72);
+      --btn:#ffffff; --btnText:#000000;
+      --shadow:0 0 0 rgba(0,0,0,0);
+      --focus:#00ffff;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:-apple-system,BlinkMacSystemFont,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 800px at 50% 15%, rgba(255,255,255,.10), transparent 55%),
+        radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      -webkit-font-smoothing:antialiased;
+      -webkit-tap-highlight-color: transparent;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    .skipLink{
+      position:fixed;
+      z-index:1000;
+      top:calc(8px + env(safe-area-inset-top));
+      left:calc(8px + env(safe-area-inset-left));
+      padding:12px 16px;
+      border-radius:12px;
+      background:var(--btn);
+      color:var(--btnText);
+      font-weight:900;
+      transform:translateY(-180%);
+      transition:transform .16s ease;
+    }
+    .skipLink:focus{ transform:translateY(0); }
+
+    .visuallyHidden{
+      position:absolute !important;
+      width:1px !important;
+      height:1px !important;
+      padding:0 !important;
+      margin:-1px !important;
+      overflow:hidden !important;
+      clip:rect(0 0 0 0) !important;
+      clip-path:inset(50%) !important;
+      white-space:nowrap !important;
+      border:0 !important;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [role="button"]:focus-visible,
+    [role="radio"]:focus-visible,
+    [data-view-title]:focus-visible{
+      outline:3px solid var(--focus);
+      outline-offset:3px;
+    }
+
+    .screen:focus{ outline:none; }
+
+    .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:22px; }
+    .screen{
+      width:min(520px, 94vw);
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .inner{ padding:24px; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:10px;
+    }
+    .back{
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .ghost{
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .title{ text-align:center; letter-spacing:.14em; font-weight:900; font-size:34px; margin:6px 0 6px; }
+    .sub{ text-align:center; color:var(--muted); font-size:14px; margin:0 0 18px; line-height:1.35; }
+
+    .mini{ color:var(--muted); font-size:12px; }
+    .build{ text-align:center; opacity:.7; margin-top:10px; }
+
+    .btn{
+      width:100%;
+      border:0;
+      border-radius:18px;
+      padding:16px 18px;
+      background:var(--btn);
+      color:var(--btnText);
+      font-weight:900;
+      font-size:18px;
+      cursor:pointer;
+    }
+    .btn:active{ transform:scale(.99); }
+
+    [data-view]{ display:none; }
+    [data-view].show{ display:block; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border:1px solid var(--stroke);
+      border-radius:999px; color:var(--muted); font-size:13px; user-select:none;
+      max-width:100%;
+    }
+    .q{ text-align:center; font-weight:800; font-size:18px; margin:12px 0 14px; }
+
+    .choices{ display:flex; flex-direction:column; gap:10px; }
+    .choice{
+      display:flex; gap:12px; align-items:flex-start;
+      padding:14px; border:1px solid var(--stroke);
+      border-radius:18px; background:rgba(255,255,255,.04);
+      cursor:pointer; user-select:none;
+    }
+    .radio{ width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,.35); margin-top:2px; flex:0 0 auto; }
+    html[data-theme="light"] .radio{ border-color: rgba(11,18,32,.28); }
+    .choice.selected{ outline:2px solid color-mix(in srgb, var(--accent) 58%, transparent); }
+    .choice.selected .radio{ background:var(--text); border-color:var(--text); }
+    html[data-theme="light"] .choice.selected .radio{ background:var(--text); border-color:var(--text); }
+
+    .ctitle{ font-weight:900; }
+    .cdesc{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.3; }
+
+    .row2{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
+    .status{ text-align:center; font-size:13px; color:var(--muted); min-height:18px; margin-top:10px; }
+
+    /* Renk seçimi */
+    .colors{
+      display:flex; gap:10px; align-items:center; justify-content:center;
+      flex-wrap:wrap;
+      margin:14px 0 8px;
+    }
+    .cbtn{
+      width:44px; height:44px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.28);
+      background:transparent;
+      cursor:pointer;
+      position:relative;
+      display:inline-grid;
+      place-items:center;
+    }
+    html[data-theme="light"] .cbtn{ border-color: rgba(11,18,32,.22); }
+    .cbtn[data-color="navy"]{ background:var(--cNavy); }
+    .cbtn[data-color="orange"]{ background:var(--cOrange); }
+    .cbtn[data-color="red"]{ background:var(--cRed); }
+    .cbtn[data-color="blue"]{ background:var(--cBlue); }
+    .cbtn[data-color="yellow"]{ background:var(--cYellow); }
+    .cbtn[data-color="green"]{ background:var(--cGreen); }
+    .cbtn[data-color="deep"]{ background:var(--cBlack); }
+
+    .cbtn.selected{ outline:3px solid color-mix(in srgb, var(--accent) 60%, transparent); }
+    .cbtn.selected::after{
+      content:"✓";
+      color:#ffffff;
+      font-size:18px;
+      font-weight:950;
+      line-height:1;
+      text-shadow:0 1px 2px #000000, 0 0 2px #000000;
+    }
+
+    /* Not alanı */
+    .noteWrap{ margin-top:14px; }
+    textarea{
+      width:100%;
+      min-height:110px;
+      resize:vertical;
+      border-radius:16px;
+      padding:12px 12px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+      line-height:1.35;
+    }
+    html[data-theme="light"] textarea{ background:rgba(11,18,32,.03); }
+
+    /* Takvim */
+    .calHead{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; margin:6px 0 12px;
+    }
+    .monthTitle{ font-weight:900; font-size:16px; }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:8px;
+      margin-top:10px;
+    }
+    .calendarRow{ display:contents; }
+    .dow{
+      text-align:center; font-size:11px; color:var(--muted);
+      padding-bottom:4px;
+    }
+    .day{
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:10px 8px;
+      min-height:56px;
+      background:rgba(255,255,255,.03);
+      position:relative;
+      cursor:pointer;
+      user-select:none;
+      color:var(--text);
+      font:inherit;
+      text-align:left;
+    }
+    .day.disabled{ opacity:.45; cursor:default; }
+    .num{ font-weight:900; font-size:14px; }
+    .badge{
+      position:absolute; right:10px; top:10px;
+      width:10px; height:10px; border-radius:50%;
+      background:transparent;
+      box-shadow:0 0 0 2px rgba(255,255,255,.20) inset;
+    }
+    html[data-theme="light"] .badge{ box-shadow:0 0 0 2px rgba(11,18,32,.18) inset; }
+    .badge.on{ background:var(--accent); box-shadow:none; }
+
+    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */
+    .toolbar{
+      display:flex; gap:10px; justify-content:space-between; align-items:center;
+      margin-top:14px;
+    }
+    .tb{
+      flex:1;
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:16px;
+      padding:12px 10px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    /* Accordion */
+    .acc{
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      overflow:hidden;
+      margin-top:12px;
+      background:rgba(255,255,255,.03);
+    }
+    .accHead{
+      padding:14px 14px;
+      display:flex; justify-content:space-between; align-items:center;
+      cursor:pointer; user-select:none;
+      font-weight:900;
+    }
+    .accBody{ display:none; padding:0 14px 14px; }
+    .acc.open .accBody{ display:block; }
+
+    /* Chart */
+    .chartBox{
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:12px;
+      background:rgba(255,255,255,.02);
+    }
+    .chartTitle{ font-weight:900; margin:0 0 10px; font-size:14px; color:var(--muted); }
+    .modeRow{
+      display:flex; gap:10px; justify-content:center; margin-top:12px;
+    }
+    .mode{
+      width:44px; height:44px;
+      border:1px solid var(--stroke);
+      background:transparent;
+      color:var(--text);
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
+      opacity:.8;
+    }
+    .mode.active{ opacity:1; outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent); }
+
+    /* Settings */
+    .field{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    select{
+      width:100%;
+      border-radius:14px;
+      padding:12px 12px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:800;
+      outline:none;
+      min-height:44px;
+    }
+    html[data-theme="light"] select{ background:rgba(11,18,32,.03); }
+
+    .smallBtns{ display:flex; gap:10px; margin-top:10px; }
+    .smallBtns .ghost{ flex:1; }
+
+    /* Seçim rengine göre arka plan vurgusu (isteğe göre yumuşak) */
+    body[data-accent="on"]{
+      background:
+        radial-gradient(1100px 800px at 50% 15%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+        radial-gradient(900px 700px at 10% 90%, rgba(120,170,255,.10), transparent 55%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+    }
+    
+    /* =========================
+   TODAY MODULE CENTER V1
+========================= */
+
+.moduleCenter {
+  min-height: 100%;
+  flex-direction: column;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+
+.inner.show.moduleCenter {
+  display: flex;
+}
+
+.moduleCenterHead {
+  flex: 0 0 auto;
+  padding-top: 6px;
+  text-align: center;
+}
+
+/* Kart grubunu ekranın görsel merkezine taşır */
+.moduleCards {
+  width: 100%;
+  max-width: 420px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  margin: auto;
+  padding: 30px 0 26px;
+}
+
+/* Geniş ve dolgulu modül kartı */
+.moduleCard {
+  width: 100%;
+  min-height: 98px;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  padding: 20px 22px;
+
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.16),
+      rgba(255, 255, 255, 0.075)
+    );
+
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.moduleCard:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.21),
+      rgba(255, 255, 255, 0.10)
+    );
+}
+
+.moduleCard:active {
+  transform: scale(0.98);
+}
+
+/* Üç ikonun görsel ölçüsü eşit */
+.moduleIcon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 31px;
+  line-height: 1;
+}
+
+.moduleText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.moduleText strong {
+  font-size: 18px;
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -0.2px;
+}
+
+.moduleText small {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.66;
+}
+
+/* Modül merkezinin alt navigasyonu */
+.moduleNav {
+  flex: 0 0 auto;
+
+  width: 100%;
+  max-width: 420px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin: 0 auto;
+  padding:
+    9px
+    8px
+    calc(7px + env(safe-area-inset-bottom));
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.075);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.moduleNavItem {
+  min-height: 54px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  padding: 5px 4px;
+
+  border: 0;
+  border-radius: 15px;
+
+  background: transparent;
+  color: inherit;
+
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.64;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back,
+.ghost,
+.tb,
+.navItem,
+.moduleNavItem {
+  min-height: 44px;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.moduleNavItem:active {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.moduleNavIcon {
+  width: 28px;
+  height: 28px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 23px;
+  line-height: 1;
+}
+
+/* Core ekranındaki sıfırlama butonu şimdilik görünmez */
+#btnResetToday {
+  display: none;
+}
+
+/* =========================
+   NUT-008 / NUT-008.1 / NUT-009 / NUT-010 — HEALTH NUTRITION UI
+========================= */
+
+.healthView {
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 18px;
+}
+
+.healthHero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0 16px;
+}
+
+.healthHero > div {
+  min-width: 0;
+}
+
+.healthMark {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--stroke);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  font-size: 27px;
+}
+
+.healthEyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.healthTitle {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.healthIntro {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.healthDashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.healthCard {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 15px;
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  background: rgba(255,255,255,.035);
+}
+
+html[data-theme="light"] .healthCard {
+  background: rgba(11,18,32,.025);
+}
+
+.healthSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      rgba(255,255,255,.035)
+    );
+}
+
+.healthSummaryCard > div {
+  min-width: 0;
+}
+
+.healthDayNav {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.healthDayButton {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--stroke);
+  border-radius: 13px;
+  padding: 7px 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.healthDayToday {
+  min-width: 62px;
+  font-size: 11px;
+}
+
+.healthDayButton:disabled,
+.healthQuickButton:disabled,
+.healthMealSubmit:disabled,
+.healthPlanConsume:disabled,
+.healthEntryManage:disabled,
+.healthLibraryAction:disabled,
+.healthLibraryManagerButton:disabled,
+.healthInput:disabled,
+.healthSelect:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.healthDate {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.healthSummaryText {
+  display: block;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.healthKnowledgeNote {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.healthCurrentOnlyNote {
+  margin: -2px 2px 0;
+  padding: 9px 11px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.healthRefresh {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.healthSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.healthSectionTitle {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.healthCount {
+  min-width: 27px;
+  padding: 4px 8px;
+  border: 1px solid var(--stroke);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.healthQuickActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.healthQuickButton,
+.healthMealSubmit,
+.healthPlanConsume {
+  min-height: 44px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.healthEntryManage {
+  flex: 0 0 auto;
+  min-height: 40px;
+  border: 1px solid var(--stroke);
+  border-radius: 13px;
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.healthArchivedCard {
+  border-style: dashed;
+}
+
+.healthQuickButton {
+  background: rgba(255,255,255,.055);
+  color: var(--text);
+}
+
+.healthMealFields {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: 9px;
+}
+
+.healthField {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.healthFieldLabel {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.healthInput,
+.healthSelect {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 10px 11px;
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+html[data-theme="light"] .healthInput,
+html[data-theme="light"] .healthSelect {
+  background: rgba(11,18,32,.03);
+}
+
+.healthMealSubmit {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--btn);
+  color: var(--btnText);
+}
+
+.healthLibraryPicker {
+  min-width: 0;
+  margin: 13px 0 0;
+  padding: 13px;
+  border: 1px solid var(--stroke);
+  border-radius: 17px;
+}
+
+.healthLibraryLegend {
+  padding: 0 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.healthLibraryControls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(112px, .75fr);
+  gap: 9px;
+  min-width: 0;
+}
+
+.healthLibrarySubsection {
+  min-width: 0;
+  margin-top: 12px;
+}
+
+.healthLibrarySubhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+
+.healthLibrarySubhead strong {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.healthLibraryList {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.healthLibraryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.healthLibrarySelectedItem {
+  border-style: dashed;
+}
+
+.healthLibraryAction {
+  flex: 0 0 auto;
+  min-height: 38px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 7px 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.healthLibraryNote {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.healthLibraryManagerActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.healthLibraryManagerButton {
+  min-height: 44px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 9px 11px;
+  background: rgba(255,255,255,.055);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.healthLibraryEditor {
+  min-width: 0;
+  margin-top: 13px;
+  padding: 13px;
+  border: 1px solid var(--stroke);
+  border-radius: 17px;
+  background: rgba(255,255,255,.022);
+}
+
+.healthLibraryEditorHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.healthLibraryEditorHead strong {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.healthLibraryEditorGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, .55fr) minmax(92px, .65fr);
+  gap: 9px;
+  min-width: 0;
+}
+
+.healthLibraryEditorSection {
+  min-width: 0;
+  margin-top: 12px;
+}
+
+.healthLibraryEditorSection > strong {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.healthLibraryNutritionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  min-width: 0;
+}
+
+.healthLibraryMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  min-width: 0;
+  margin-top: 12px;
+}
+
+.healthLibraryEditorActions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .7fr);
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.healthLibraryEditorSave {
+  background: var(--btn);
+  color: var(--btnText);
+}
+
+.healthLibraryEditorCancel {
+  background: transparent;
+}
+
+.healthRecipeIngredientControls {
+  display: grid;
+  grid-template-columns: minmax(74px, .7fr) minmax(82px, .8fr) auto;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.healthRecipeAmount,
+.healthRecipeUnit {
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 8px;
+  font-size: 12px;
+}
+
+.healthLibraryManagedItem {
+  align-items: flex-start;
+}
+
+.healthLibraryManagedActions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.healthLibraryArchivedManager {
+  min-width: 0;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--stroke);
+}
+
+.healthLibraryManagerStatus {
+  min-height: 18px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.healthLibraryManagerStatus[data-kind="success"] {
+  color: color-mix(in srgb, #63e58d 82%, var(--text));
+}
+
+.healthLibraryManagerStatus[data-kind="error"] {
+  color: color-mix(in srgb, #ff7676 82%, var(--text));
+}
+
+.healthList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.healthListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 50px;
+  padding: 10px 11px;
+  border: 1px solid var(--stroke);
+  border-radius: 15px;
+  background: rgba(255,255,255,.025);
+}
+
+.healthListContent {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.healthListTitle {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthListMeta {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.healthEmptyItem {
+  padding: 4px 1px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.healthPlanConsume {
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.healthStatus {
+  min-height: 20px;
+  margin: 2px 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.healthStatus[data-kind="success"] {
+  color: color-mix(in srgb, #63e58d 82%, var(--text));
+}
+
+.healthStatus[data-kind="error"] {
+  color: color-mix(in srgb, #ff7676 82%, var(--text));
+}
+
+.bottomNav {
+  position: sticky;
+  bottom: calc(7px + env(safe-area-inset-bottom));
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 16px;
+  padding: 7px;
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg0) 88%, transparent);
+  box-shadow: 0 12px 30px rgba(0,0,0,.16);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+  opacity: .58;
+  cursor: pointer;
+}
+
+.navItem.active {
+  background: rgba(255,255,255,.08);
+  opacity: 1;
+}
+
+.navIcon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Dar ekran düzenlemesi */
+@media (max-width: 420px) {
+  .moduleCards {
+    gap: 14px;
+  }
+
+  .moduleCard {
+    min-height: 92px;
+    padding: 18px 19px;
+    border-radius: 22px;
+  }
+
+  .moduleIcon {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    font-size: 29px;
+  }
+
+  .moduleText strong {
+    font-size: 17px;
+  }
+
+  .healthMealFields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .healthLibraryControls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .healthLibraryEditorGrid,
+  .healthLibraryNutritionGrid,
+  .healthLibraryMetaGrid,
+  .healthLibraryEditorActions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .healthRecipeIngredientItem {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .healthRecipeIngredientControls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    width: 100%;
+  }
+}
+
+/* =========================
+   TB-009 — ACCESSIBILITY
+========================= */
+
+@media (max-width: 360px) {
+  .toolbar,
+  .smallBtns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar > *,
+  .smallBtns > * {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+  .btn:active,
+  .moduleCard:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .choice.selected,
+  .cbtn.selected,
+  .mode.active {
+    outline:3px solid Highlight;
+  }
+
+  .radio,
+  .badge {
+    forced-color-adjust:none;
+  }
+}
+    
+  
+    .healthConsumptionEditor{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(88px,120px) auto;gap:8px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+    .healthConsumptionLabel,.healthConsumptionUnit{font-size:12px;color:var(--muted)}
+    .healthConsumptionInput{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);padding:9px 10px;font:inherit}
+    .healthConsumptionInput[aria-invalid="true"]{border-color:currentColor}
+    @media(max-width:520px){.healthConsumptionEditor{grid-template-columns:1fr 96px auto}}
+</style>
+</head>
+
+<body data-accent="on">
+  <a class="skipLink" id="skipToContent" href="#appContent">Ana içeriğe geç</a>
+
+  <div class="wrap">
+    <div class="screen" id="appContent" tabindex="-1">
+
+      <!-- HOME -->
+      <div
+        class="inner show"
+        data-view="home"
+        role="main"
+        aria-labelledby="homeTitle"
+        aria-hidden="false"
+      >
+        <h1 class="title" id="homeTitle" data-view-title tabindex="-1">TODAY</h1>
+        <div class="sub">verileriniz sadece bu cihazda kaydedilmektedir.</div>
+
+        <button class="btn" id="btnStart" type="button">Başla</button>
+
+       <div class="build mini build" id="buildTag">build: —</div>
+        <div class="status" id="statusHome" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+
+<!-- MODULE CENTER -->
+<div
+  class="inner moduleCenter"
+  data-view="modules"
+  role="main"
+  aria-labelledby="modulesTitle"
+  aria-hidden="true"
+>
+
+  <div class="moduleCenterHead">
+    <h1 class="title" id="modulesTitle" data-view-title tabindex="-1">TODAY</h1>
+  </div>
+
+  <div class="moduleCards" role="group" aria-label="Today modülleri">
+
+    <button
+      class="moduleCard"
+      id="btnModuleCore"
+      type="button"
+      data-module="core"
+      aria-labelledby="moduleCoreTitle"
+      aria-describedby="moduleCoreDesc"
+    >
+      <span class="moduleIcon" aria-hidden="true">●</span>
+
+      <span class="moduleText">
+        <strong id="moduleCoreTitle">Today Core</strong>
+        <small id="moduleCoreDesc">Günlük, notlar ve ajanda</small>
+      </span>
+    </button>
+
+    <button
+      class="moduleCard"
+      id="btnModuleHealth"
+      type="button"
+      data-module="health"
+      aria-labelledby="moduleHealthTitle"
+      aria-describedby="moduleHealthDesc"
+    >
+      <span class="moduleIcon" aria-hidden="true">♥</span>
+
+      <span class="moduleText">
+        <strong id="moduleHealthTitle">Today Health</strong>
+        <small id="moduleHealthDesc">Beslenme, su ve yaşam</small>
+      </span>
+    </button>
+
+    <button
+      class="moduleCard"
+      id="btnModuleSky"
+      type="button"
+      data-module="sky"
+      aria-labelledby="moduleSkyTitle"
+      aria-describedby="moduleSkyDesc"
+    >
+      <span class="moduleIcon" aria-hidden="true">★</span>
+
+      <span class="moduleText">
+        <strong id="moduleSkyTitle">Today Sky</strong>
+        <small id="moduleSkyDesc">Haritan ve gökyüzü</small>
+      </span>
+    </button>
+
+  </div>
+
+
+  <div class="status" id="statusModules" role="status" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+      <!-- TODAY CORE -->
+<div
+  class="inner"
+  data-view="pick"
+  role="main"
+  aria-labelledby="pickTitle"
+  aria-hidden="true"
+>
+        <div class="topbar">
+          <button
+            class="back"
+            id="btnHomeFromPick"
+            type="button"
+            aria-label="Modül merkezine dön"
+          >
+            <span aria-hidden="true">←</span>
+          </button>
+          <span class="pill" id="pillDate">—</span>
+          <button
+            class="ghost"
+            id="btnCalendar"
+            type="button"
+            aria-label="Takvimi aç"
+          >
+            <span aria-hidden="true">📅</span>
+          </button>
+        </div>
+
+        <h1 class="q" id="pickTitle" data-view-title tabindex="-1">Bugün sende ne oldu?</h1>
+
+        <div class="choices" id="choices" role="radiogroup" aria-labelledby="pickTitle">
+          <div
+            class="choice"
+            data-choice="A"
+            role="radio"
+            tabindex="0"
+            aria-checked="false"
+            aria-labelledby="choiceATitle"
+            aria-describedby="choiceADesc"
+          >
+            <div class="radio" aria-hidden="true"></div>
+            <div>
+              <div class="ctitle" id="choiceATitle">Bir şey oldu ama adı yok</div>
+              <div class="cdesc" id="choiceADesc">Adını koyma. Sadece fark et.</div>
+            </div>
+          </div>
+
+          <div
+            class="choice"
+            data-choice="B"
+            role="radio"
+            tabindex="-1"
+            aria-checked="false"
+            aria-labelledby="choiceBTitle"
+            aria-describedby="choiceBDesc"
+          >
+            <div class="radio" aria-hidden="true"></div>
+            <div>
+              <div class="ctitle" id="choiceBTitle">Her şey çok net</div>
+              <div class="cdesc" id="choiceBDesc">Bir cümleyle söyleyebiliyorsan tamam.</div>
+            </div>
+          </div>
+
+          <div
+            class="choice"
+            data-choice="C"
+            role="radio"
+            tabindex="-1"
+            aria-checked="false"
+            aria-labelledby="choiceCTitle"
+            aria-describedby="choiceCDesc"
+          >
+            <div class="radio" aria-hidden="true"></div>
+            <div>
+              <div class="ctitle" id="choiceCTitle">Zordu bugün</div>
+              <div class="cdesc" id="choiceCDesc">zorluklar olgunlaşma için gereklidir</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Renk: opsiyonel -->
+        <div class="colors" role="group" aria-label="Renk seçimi, opsiyonel">
+          <button class="cbtn" type="button" data-color="navy" title="Lacivert" aria-label="Lacivert" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="orange" title="Turuncu" aria-label="Turuncu" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="red" title="Kırmızı" aria-label="Kırmızı" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="blue" title="Mavi" aria-label="Mavi" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="yellow" title="Sarı" aria-label="Sarı" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="green" title="Yeşil" aria-label="Yeşil" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="deep" title="Derin" aria-label="Derin" aria-pressed="false"></button>
+        </div>
+        <div class="mini" style="text-align:center; margin-top:2px;">Renk seçmek zorunlu değil.</div>
+
+        <!-- Not -->
+        <div class="noteWrap">
+          <label class="mini" for="note" style="margin:0 0 8px; display:block;">Not (opsiyonel)</label>
+          <textarea id="note" placeholder="Bugünden küçük bir not…"></textarea>
+        </div>
+
+        <div class="row2">
+          <button class="ghost" id="btnResetToday" type="button">Bugünü sıfırla</button>
+          <div class="status" id="statusPick" role="status" aria-live="polite" aria-atomic="true"></div>
+        </div>
+        <nav class="bottomNav" aria-label="Today ana modülleri">
+  <button
+    class="navItem active"
+    type="button"
+    data-open-module="core"
+    aria-label="Today Core"
+    aria-current="page"
+  >
+    <span class="navIcon navIconActive" aria-hidden="true">●</span>
+    <span>Core</span>
+  </button>
+
+  <button
+    class="navItem"
+    type="button"
+    data-open-module="health"
+    aria-label="Today Health"
+  >
+    <span class="navIcon" aria-hidden="true">♡</span>
+    <span>Health</span>
+  </button>
+
+  <button
+    class="navItem"
+    type="button"
+    data-open-module="sky"
+    aria-label="Today Sky"
+  >
+    <span class="navIcon" aria-hidden="true">☆</span>
+    <span>Sky</span>
+  </button>
+</nav>
+      </div>
+
+<!-- TODAY HEALTH -->
+<div
+  class="inner healthView"
+  data-view="health"
+  role="main"
+  aria-labelledby="healthTitle"
+  aria-hidden="true"
+>
+  <div class="topbar">
+    <button
+      class="back"
+      id="btnModulesFromHealth"
+      type="button"
+      aria-label="Modül merkezine dön"
+    >
+      <span aria-hidden="true">←</span>
+    </button>
+
+    <span class="pill">Today Health</span>
+
+    <span class="topbarSpacer"></span>
+  </div>
+
+  <header class="healthHero">
+    <div class="healthMark" aria-hidden="true">♥</div>
+    <div>
+      <span class="healthEyebrow">Beslenme</span>
+      <h1 class="healthTitle" id="healthTitle" data-view-title tabindex="-1">
+        Bugün bedeninde ne var?
+      </h1>
+      <p class="healthIntro">Sadece kaydet. Eksik olması sorun değil.</p>
+    </div>
+  </header>
+
+  <div class="healthDashboard" id="healthDashboard" aria-busy="false">
+    <section class="healthCard healthSummaryCard" aria-labelledby="healthTodayLabel">
+      <div>
+        <nav class="healthDayNav" aria-label="Beslenme günü seçimi">
+          <button
+            class="healthDayButton"
+            id="btnHealthPreviousDay"
+            type="button"
+            data-health-action
+            aria-label="Önceki günü göster"
+          >‹</button>
+          <button
+            class="healthDayButton healthDayToday"
+            id="btnHealthToday"
+            type="button"
+            data-health-action
+          >Bugün</button>
+          <button
+            class="healthDayButton"
+            id="btnHealthNextDay"
+            type="button"
+            data-health-action
+            aria-label="Sonraki günü göster"
+          >›</button>
+        </nav>
+        <span class="healthDate" id="healthTodayLabel">Bugün</span>
+        <strong class="healthSummaryText" id="healthSummaryText">
+          Health açılınca günün özeti burada görünecek.
+        </strong>
+        <small class="healthKnowledgeNote" id="healthKnowledgeNote" hidden></small>
+      </div>
+      <button
+        class="healthRefresh"
+        id="btnHealthRefresh"
+        type="button"
+        data-health-action
+        aria-label="Seçili günün beslenme kayıtlarını yenile"
+      >↻</button>
+    </section>
+
+    <p class="healthCurrentOnlyNote" id="healthCurrentOnlyNote" hidden></p>
+
+    <section class="healthCard" aria-labelledby="healthWaterTitle">
+      <div class="healthSectionHead">
+        <h2 class="healthSectionTitle" id="healthWaterTitle">Su</h2>
+        <span class="mini">Hızlı ekle</span>
+      </div>
+      <div class="healthQuickActions">
+        <button
+          class="healthQuickButton"
+          type="button"
+          data-health-water-ml="250"
+          data-health-action
+          data-health-current-action
+        >+250 ml</button>
+        <button
+          class="healthQuickButton"
+          type="button"
+          data-health-water-ml="500"
+          data-health-action
+          data-health-current-action
+        >+500 ml</button>
+      </div>
+    </section>
+
+    <form class="healthCard" id="healthMealForm" aria-labelledby="healthMealTitle">
+      <div class="healthSectionHead">
+        <h2 class="healthSectionTitle" id="healthMealTitle">Öğün</h2>
+        <span class="mini">Sade + kütüphane</span>
+      </div>
+      <div class="healthMealFields">
+        <label class="healthField" for="healthMealType">
+          <span class="healthFieldLabel">Tür</span>
+          <select class="healthSelect" id="healthMealType" data-health-current-action>
+            <option value="breakfast">Kahvaltı</option>
+            <option value="lunch">Öğle</option>
+            <option value="dinner">Akşam</option>
+            <option value="snack">Ara öğün</option>
+            <option value="other">Diğer</option>
+          </select>
+        </label>
+        <label class="healthField" for="healthMealName">
+          <span class="healthFieldLabel">Ne yedin? (isteğe bağlı)</span>
+          <input
+            class="healthInput"
+            id="healthMealName"
+            type="text"
+            maxlength="120"
+            autocomplete="off"
+            placeholder="Örn. mercimek çorbası"
+            data-health-current-action
+          />
+        </label>
+      </div>
+      <fieldset class="healthLibraryPicker">
+        <legend class="healthLibraryLegend">Kütüphaneden seç</legend>
+        <div class="healthLibraryControls">
+          <label class="healthField" for="healthLibrarySearch">
+            <span class="healthFieldLabel">Besin, tarif veya öğün ara</span>
+            <input
+              class="healthInput"
+              id="healthLibrarySearch"
+              type="search"
+              maxlength="120"
+              autocomplete="off"
+              placeholder="Örn. yoğurt"
+              aria-describedby="healthLibraryNote"
+              data-health-current-action
+            />
+          </label>
+          <label class="healthField" for="healthLibraryType">
+            <span class="healthFieldLabel">Tür</span>
+            <select
+              class="healthSelect"
+              id="healthLibraryType"
+              data-health-current-action
+            >
+              <option value="all">Tümü</option>
+              <option value="food_version">Besin</option>
+              <option value="recipe_version">Tarif</option>
+              <option value="meal_template">Öğün şablonu</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="healthLibrarySubsection">
+          <div class="healthLibrarySubhead">
+            <strong>Sonuçlar</strong>
+            <span
+              class="healthCount"
+              id="healthLibraryResultCount"
+              aria-label="Kütüphane arama sonucu sayısı"
+            >—</span>
+          </div>
+          <ol
+            class="healthLibraryList"
+            id="healthLibraryResults"
+            aria-label="Beslenme kütüphanesi arama sonuçları"
+          >
+            <li class="healthEmptyItem">Health açılınca yerel kütüphane burada görünecek.</li>
+          </ol>
+        </div>
+
+        <div class="healthLibrarySubsection">
+          <div class="healthLibrarySubhead">
+            <strong>Bu öğüne seçilenler</strong>
+            <span
+              class="healthCount"
+              id="healthLibrarySelectedCount"
+              aria-label="Öğüne seçilen kütüphane öğesi sayısı"
+            >0</span>
+          </div>
+          <ol
+            class="healthLibraryList"
+            id="healthLibrarySelected"
+            aria-label="Öğüne seçilen kütüphane öğeleri"
+          >
+            <li class="healthEmptyItem">Henüz kütüphaneden bir öğe seçilmedi.</li>
+          </ol>
+        </div>
+
+        <small class="healthLibraryNote" id="healthLibraryNote">
+          Yalnız cihazındaki etkin ve doğrulanmış kayıtlar gösterilir.
+        </small>
+      </fieldset>
+      <button
+        class="healthMealSubmit"
+        id="btnHealthMealSubmit"
+        type="submit"
+        data-health-action
+        data-health-current-action
+      >Öğünü kaydet</button>
+    </form>
+
+    <section
+      class="healthCard"
+      id="healthLibraryManager"
+      aria-labelledby="healthLibraryManagerTitle"
+      aria-busy="false"
+    >
+      <div class="healthSectionHead">
+        <div>
+          <h2 class="healthSectionTitle" id="healthLibraryManagerTitle">Kütüphanem</h2>
+          <span class="mini">Kendi besin ve tariflerin</span>
+        </div>
+        <span
+          class="healthCount"
+          id="healthLibraryManagerCount"
+          aria-label="Etkin kullanıcı kütüphanesi kaydı sayısı"
+        >—</span>
+      </div>
+
+      <div class="healthLibraryManagerActions">
+        <button
+          class="healthLibraryManagerButton"
+          id="btnHealthNewFood"
+          type="button"
+          data-health-library-management-action
+        >+ Besin ekle</button>
+        <button
+          class="healthLibraryManagerButton"
+          id="btnHealthNewRecipe"
+          type="button"
+          data-health-library-management-action
+        >+ Tarif ekle</button>
+      </div>
+
+      <form
+        class="healthLibraryEditor"
+        id="healthLibraryEditor"
+        aria-labelledby="healthLibraryEditorTitle"
+        hidden
+      >
+        <div class="healthLibraryEditorHead">
+          <strong id="healthLibraryEditorTitle">Yeni kayıt</strong>
+          <span class="mini" id="healthLibraryEditorKind">Besin</span>
+        </div>
+
+        <div class="healthLibraryEditorGrid">
+          <label class="healthField" for="healthLibraryEditorName">
+            <span class="healthFieldLabel">Ad</span>
+            <input
+              class="healthInput"
+              id="healthLibraryEditorName"
+              type="text"
+              maxlength="120"
+              autocomplete="off"
+              placeholder="Örn. ev yoğurdu"
+              required
+              data-health-library-management-action
+            />
+          </label>
+          <label class="healthField" for="healthLibraryEditorAmount">
+            <span class="healthFieldLabel">Varsayılan miktar</span>
+            <input
+              class="healthInput"
+              id="healthLibraryEditorAmount"
+              type="number"
+              min="0.01"
+              step="any"
+              inputmode="decimal"
+              required
+              data-health-library-management-action
+            />
+          </label>
+          <label class="healthField" for="healthLibraryEditorUnit">
+            <span class="healthFieldLabel">Birim</span>
+            <select
+              class="healthSelect"
+              id="healthLibraryEditorUnit"
+              data-health-library-management-action
+            >
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="mg">mg</option>
+              <option value="ml">ml</option>
+              <option value="l">L</option>
+              <option value="piece">adet</option>
+              <option value="portion">porsiyon</option>
+              <option value="serving">servis</option>
+              <option value="slice">dilim</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset
+          class="healthLibraryEditorSection"
+          id="healthLibraryFoodFields"
+        >
+          <legend class="healthLibraryLegend">Besin değerleri — bu miktar için</legend>
+          <div class="healthLibraryNutritionGrid">
+            <label class="healthField" for="healthLibraryEnergy">
+              <span class="healthFieldLabel">Kalori (kcal, isteğe bağlı)</span>
+              <input
+                class="healthInput"
+                id="healthLibraryEnergy"
+                type="number"
+                min="0"
+                step="any"
+                inputmode="decimal"
+                data-health-library-management-action
+              />
+            </label>
+            <label class="healthField" for="healthLibraryProtein">
+              <span class="healthFieldLabel">Protein (g, isteğe bağlı)</span>
+              <input
+                class="healthInput"
+                id="healthLibraryProtein"
+                type="number"
+                min="0"
+                step="any"
+                inputmode="decimal"
+                data-health-library-management-action
+              />
+            </label>
+            <label class="healthField" for="healthLibraryCarbohydrate">
+              <span class="healthFieldLabel">Karbonhidrat (g, isteğe bağlı)</span>
+              <input
+                class="healthInput"
+                id="healthLibraryCarbohydrate"
+                type="number"
+                min="0"
+                step="any"
+                inputmode="decimal"
+                data-health-library-management-action
+              />
+            </label>
+            <label class="healthField" for="healthLibraryFat">
+              <span class="healthFieldLabel">Yağ (g, isteğe bağlı)</span>
+              <input
+                class="healthInput"
+                id="healthLibraryFat"
+                type="number"
+                min="0"
+                step="any"
+                inputmode="decimal"
+                data-health-library-management-action
+              />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset
+          class="healthLibraryEditorSection"
+          id="healthLibraryRecipeFields"
+          hidden
+        >
+          <legend class="healthLibraryLegend">Tarif bileşenleri</legend>
+          <label class="healthField" for="healthRecipeIngredientSearch">
+            <span class="healthFieldLabel">Kütüphanede ara</span>
+            <input
+              class="healthInput"
+              id="healthRecipeIngredientSearch"
+              type="search"
+              maxlength="120"
+              autocomplete="off"
+              placeholder="Örn. yulaf"
+              data-health-library-management-action
+            />
+          </label>
+
+          <div class="healthLibrarySubsection">
+            <div class="healthLibrarySubhead">
+              <strong>Eklenebilir kayıtlar</strong>
+              <span
+                class="healthCount"
+                id="healthRecipeIngredientResultCount"
+                aria-label="Tarif bileşeni arama sonucu sayısı"
+              >0</span>
+            </div>
+            <ol
+              class="healthLibraryList"
+              id="healthRecipeIngredientResults"
+              aria-label="Tarife eklenebilir kütüphane kayıtları"
+            >
+              <li class="healthEmptyItem">Kütüphane açılınca kayıtlar burada görünecek.</li>
+            </ol>
+          </div>
+
+          <div class="healthLibrarySubsection">
+            <div class="healthLibrarySubhead">
+              <strong>Seçilen bileşenler</strong>
+              <span
+                class="healthCount"
+                id="healthRecipeIngredientCount"
+                aria-label="Seçilen tarif bileşeni sayısı"
+              >0</span>
+            </div>
+            <ol
+              class="healthLibraryList"
+              id="healthRecipeIngredientSelected"
+              aria-label="Seçilen tarif bileşenleri ve miktarları"
+            >
+              <li class="healthEmptyItem">Tarife henüz bir bileşen eklenmedi.</li>
+            </ol>
+          </div>
+        </fieldset>
+
+        <div class="healthLibraryMetaGrid">
+          <label class="healthField" for="healthLibraryTags">
+            <span class="healthFieldLabel">Etiketler (isteğe bağlı)</span>
+            <input
+              class="healthInput"
+              id="healthLibraryTags"
+              type="text"
+              maxlength="240"
+              autocomplete="off"
+              placeholder="kahvaltı, ev yapımı"
+              data-health-library-management-action
+            />
+          </label>
+          <label class="healthField" for="healthLibraryPreparation">
+            <span class="healthFieldLabel">Hazırlama biçimi (isteğe bağlı)</span>
+            <input
+              class="healthInput"
+              id="healthLibraryPreparation"
+              type="text"
+              maxlength="120"
+              autocomplete="off"
+              placeholder="sade, haşlanmış…"
+              data-health-library-management-action
+            />
+          </label>
+        </div>
+
+        <small class="healthLibraryNote" id="healthLibraryEditorNote">
+          Eksik değerler bilinmiyor olarak kalır.
+        </small>
+
+        <div class="healthLibraryEditorActions">
+          <button
+            class="healthLibraryManagerButton healthLibraryEditorSave"
+            id="btnHealthLibrarySave"
+            type="submit"
+            data-health-library-management-action
+          >Kaydet</button>
+          <button
+            class="healthLibraryManagerButton healthLibraryEditorCancel"
+            id="btnHealthLibraryCancel"
+            type="button"
+            data-health-library-management-action
+          >Vazgeç</button>
+        </div>
+      </form>
+
+      <div class="healthLibrarySubsection">
+        <div class="healthLibrarySubhead">
+          <strong>Etkin kayıtlar</strong>
+          <span class="mini">Düzenleme yeni sürüm oluşturur</span>
+        </div>
+        <ol
+          class="healthLibraryList"
+          id="healthLibraryManageList"
+          aria-label="Etkin kullanıcı besin ve tarif kayıtları"
+        >
+          <li class="healthEmptyItem">Health açılınca kütüphanen burada görünecek.</li>
+        </ol>
+      </div>
+
+      <div
+        class="healthLibraryArchivedManager"
+        id="healthLibraryArchivedSection"
+        hidden
+      >
+        <div class="healthLibrarySubhead">
+          <strong>Arşivlenenler</strong>
+          <span
+            class="healthCount"
+            id="healthLibraryArchivedCount"
+            aria-label="Arşivlenen kullanıcı kütüphanesi kaydı sayısı"
+          >0</span>
+        </div>
+        <ol
+          class="healthLibraryList"
+          id="healthLibraryArchivedList"
+          aria-label="Arşivlenen kullanıcı besin ve tarif kayıtları"
+        >
+          <li class="healthEmptyItem">Arşivlenmiş kütüphane kaydı yok.</li>
+        </ol>
+      </div>
+
+      <div
+        class="healthLibraryManagerStatus"
+        id="healthLibraryManagerStatus"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
+    </section>
+
+    <section class="healthCard" aria-labelledby="healthPlanTitle">
+      <div class="healthSectionHead">
+        <h2 class="healthSectionTitle" id="healthPlanTitle">Günün planı</h2>
+        <span class="healthCount" id="healthPlanCount" aria-label="Planlanan öğün sayısı">—</span>
+      </div>
+      <ol class="healthList" id="healthPlannedMeals">
+        <li class="healthEmptyItem">Health açılınca planlar burada görünecek.</li>
+      </ol>
+    </section>
+
+    <section class="healthCard" aria-labelledby="healthEntriesTitle">
+      <div class="healthSectionHead">
+        <h2 class="healthSectionTitle" id="healthEntriesTitle">Günün kayıtları</h2>
+        <span class="healthCount" id="healthEntryCount" aria-label="Bugünkü kayıt sayısı">—</span>
+      </div>
+      <ol class="healthList" id="healthEntryList">
+        <li class="healthEmptyItem">Health açılınca kayıtlar burada görünecek.</li>
+      </ol>
+    </section>
+
+    <section
+      class="healthCard healthArchivedCard"
+      id="healthArchivedSection"
+      aria-labelledby="healthArchivedTitle"
+      hidden
+    >
+      <div class="healthSectionHead">
+        <h2 class="healthSectionTitle" id="healthArchivedTitle">Arşivlenen kayıtlar</h2>
+        <span class="healthCount" id="healthArchivedCount" aria-label="Arşivlenen kayıt sayısı">0</span>
+      </div>
+      <ol class="healthList" id="healthArchivedList">
+        <li class="healthEmptyItem">Bu gün için arşivlenen kayıt yok.</li>
+      </ol>
+    </section>
+
+    <div
+      class="healthStatus"
+      id="healthStatus"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+  </div>
+
+  <nav class="bottomNav" aria-label="Today ana modülleri">
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="core"
+      aria-label="Today Core"
+    >
+      <span class="navIcon" aria-hidden="true">○</span>
+      <span>Core</span>
+    </button>
+
+    <button
+      class="navItem active"
+      type="button"
+      data-open-module="health"
+      aria-label="Today Health"
+      aria-current="page"
+    >
+      <span class="navIcon navIconActive" aria-hidden="true">♥</span>
+      <span>Health</span>
+    </button>
+
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="sky"
+      aria-label="Today Sky"
+    >
+      <span class="navIcon" aria-hidden="true">☆</span>
+      <span>Sky</span>
+    </button>
+  </nav>
+</div>
+
+<!-- TODAY SKY -->
+<div
+  class="inner"
+  data-view="sky"
+  role="main"
+  aria-labelledby="skyTitle"
+  aria-hidden="true"
+>
+  <div class="topbar">
+    <button
+      class="back"
+      id="btnModulesFromSky"
+      type="button"
+      aria-label="Modül merkezine dön"
+    >
+      <span aria-hidden="true">←</span>
+    </button>
+
+    <span class="pill">Today Sky</span>
+
+    <span class="topbarSpacer"></span>
+  </div>
+
+  <div class="modulePlaceholder">
+    <div class="placeholderIcon" aria-hidden="true">✦</div>
+    <h1 class="q" id="skyTitle" data-view-title tabindex="-1">Today Sky</h1>
+
+    <div class="mini placeholderText">
+      Doğum haritası, transitler ve kişisel günlük
+      yorumlar burada yer alacak.
+    </div>
+
+    <div class="comingSoon">Yakında</div>
+  </div>
+
+  <nav class="bottomNav" aria-label="Today ana modülleri">
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="core"
+      aria-label="Today Core"
+    >
+      <span class="navIcon" aria-hidden="true">○</span>
+      <span>Core</span>
+    </button>
+
+    <button
+      class="navItem"
+      type="button"
+      data-open-module="health"
+      aria-label="Today Health"
+    >
+      <span class="navIcon" aria-hidden="true">♡</span>
+      <span>Health</span>
+    </button>
+
+    <button
+      class="navItem active"
+      type="button"
+      data-open-module="sky"
+      aria-label="Today Sky"
+      aria-current="page"
+    >
+      <span class="navIcon navIconActive" aria-hidden="true">✦</span>
+      <span>Sky</span>
+    </button>
+  </nav>
+</div>
+
+      <!-- CALENDAR + STATS + SETTINGS -->
+      <div
+        class="inner"
+        data-view="calendar"
+        role="main"
+        aria-labelledby="calPill"
+        aria-hidden="true"
+      >
+        <div class="topbar">
+          <button class="back" id="btnBackToPick" type="button" aria-label="Today Core'a dön">
+            <span aria-hidden="true">←</span>
+          </button>
+          <span
+            class="pill"
+            id="calPill"
+            role="heading"
+            aria-level="1"
+            data-view-title
+            tabindex="-1"
+          >
+            Takvim
+          </span>
+          <button
+            class="ghost"
+            id="btnStats"
+            type="button"
+            aria-label="İstatistiği aç"
+            aria-controls="accStatsBody"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">📊</span>
+          </button>
+        </div>
+
+        <div class="calHead">
+          <div class="monthTitle" id="monthTitle" role="heading" aria-level="2">—</div>
+          <div class="mini" id="calHint">Sadece bu ay görünür.</div>
+        </div>
+
+        <div
+          class="grid"
+          id="calGrid"
+          role="grid"
+          aria-labelledby="monthTitle"
+          aria-describedby="calHint"
+        ></div>
+
+        <div class="toolbar">
+          <button
+            class="tb"
+            id="btnOpenStats"
+            type="button"
+            aria-controls="accStatsBody"
+            aria-expanded="false"
+          >
+            İstatistik
+          </button>
+          <button
+            class="tb"
+            id="btnOpenSettings"
+            type="button"
+            aria-controls="accSettingsBody"
+            aria-expanded="false"
+          >
+            Ayarlar
+          </button>
+        </div>
+
+        <!-- İSTATİSTİK -->
+        <div class="acc" id="accStats">
+          <div
+            class="accHead"
+            id="accStatsHead"
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+            aria-controls="accStatsBody"
+          >
+            <span>İstatistik</span>
+            <span class="mini" id="accStatsArrow" aria-hidden="true">▼</span>
+          </div>
+          <div class="accBody" id="accStatsBody" role="region" aria-labelledby="accStatsHead" hidden>
+            <div class="chartBox">
+              <div class="chartTitle" id="chartLabel">Gün içi giriş ritmi (00:00 → 23:59)</div>
+              <svg
+                id="chart"
+                viewBox="0 0 320 160"
+                width="100%"
+                height="160"
+                role="img"
+                aria-labelledby="chartLabel"
+                aria-describedby="chartMini chartSummary"
+              >
+                <defs>
+                  <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(255,255,255,.28)"></stop>
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)"></stop>
+                  </linearGradient>
+                </defs>
+                <path id="area" d="" fill="url(#fillGrad)"></path>
+                <path id="line" d="" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.2" stroke-linecap="round"></path>
+              </svg>
+              <div class="mini" id="chartMini" style="text-align:center;margin-top:8px;">
+                Soldan sağa: gün akışı. Aşağıdan yukarı: biriken ivme.
+              </div>
+              <div class="visuallyHidden" id="chartSummary">Grafik verisi hazırlanıyor.</div>
+
+              <div class="modeRow" role="group" aria-label="Grafik zaman aralığı">
+                <button class="mode active" type="button" data-mode="hour" title="Saat" aria-label="Saatlik grafik" aria-pressed="true">🕒</button>
+                <button class="mode" type="button" data-mode="day" title="Gün" aria-label="Son 7 gün grafiği" aria-pressed="false">📅</button>
+                <button class="mode" type="button" data-mode="week" title="Hafta" aria-label="Son 4 hafta grafiği" aria-pressed="false">📆</button>
+                <button class="mode" type="button" data-mode="month" title="Ay" aria-label="Son 12 ay grafiği" aria-pressed="false">🗓️</button>
+              </div>
+            </div>
+
+            <div class="acc" id="accSummary" style="margin-top:12px;">
+              <div
+                class="accHead"
+                id="accSummaryHead"
+                role="button"
+                tabindex="0"
+                aria-expanded="false"
+                aria-controls="accSummaryBody"
+              >
+                <span>Özet</span><span class="mini" aria-hidden="true">▼</span>
+              </div>
+              <div class="accBody" id="accSummaryBody" role="region" aria-labelledby="accSummaryHead" hidden>
+                <div class="mini" id="summaryText">—</div>
+              </div>
+            </div>
+
+            <div class="smallBtns">
+              <button class="ghost" id="btnExport" type="button">CSV indir</button>
+              <button class="ghost" id="btnClearTodayLogs" type="button">Bugün loglarını temizle</button>
+            </div>
+
+            <div class="mini" style="margin-top:10px;">
+              Not: “değişim logları” sadece bugün görünür, yarına kalmaz (ama veri saklanır).
+            </div>
+          </div>
+        </div>
+
+        <!-- AYARLAR -->
+        <div class="acc" id="accSettings">
+          <div
+            class="accHead"
+            id="accSettingsHead"
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+            aria-controls="accSettingsBody"
+          >
+            <span>Ayarlar</span>
+            <span class="mini" aria-hidden="true">▼</span>
+          </div>
+          <div class="accBody" id="accSettingsBody" role="region" aria-labelledby="accSettingsHead" hidden>
+            <div class="field">
+              <label class="mini" for="themeSelect">Tema</label>
+              <select id="themeSelect">
+                <option value="system">Varsayılan</option>
+                <option value="light">Açık</option>
+                <option value="dark">Koyu</option>
+                <option value="contrast">Kontrastlı</option>
+              </select>
+            </div>
+
+            <div class="mini" style="margin-top:12px;">
+              Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  
+<script src="./modules/error-manager.js"></script>
+<script src="./modules/service-worker-manager.js"></script>
+<script src="./modules/storage.js"></script>
+<script src="./modules/version.js"></script>
+<script src="./modules/migration.js"></script>
+<script src="./modules/day-manager.js"></script>
+<script src="./modules/state-manager.js"></script>
+<script src="./modules/adapter-interfaces.js"></script>
+<script src="./modules/nutrition-contracts.js"></script>
+<script src="./modules/nutrition-calculations.js"></script>
+<script src="./modules/nutrition-storage.js"></script>
+<script src="./modules/nutrition-migrations.js"></script>
+<script src="./modules/nutrition-profile.js"></script>
+<script src="./modules/nutrition-library.js"></script>
+<script src="./modules/nutrition-entry.js"></script>
+<script src="./modules/nutrition-planning.js"></script>
+<script src="./modules/nutrition-history.js"></script>
+<script src="./modules/nutrition-ui.js"></script>
+<script src="./modules/nutrition-consumption-editor.js"></script>
+<script src="./modules/nutrition-library-ui.js"></script>
+<script src="./modules/router.js"></script>
+<script src="./modules/module-registry.js"></script>
+<script src="./modules/startup-manager.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  const errorManager = window.TodayErrors;
+  const errorManagerReady = Boolean(
+    errorManager?.getState?.().initialized
+  );
+  const reportError = (eventName, detail) =>
+    errorManagerReady &&
+    window.dispatchEvent(
+      new window.CustomEvent(eventName, { detail })
+    );
+
+  const showStartupManagerFailure = () => {
+    if (
+      document.getElementById(
+        "todayStartupError"
+      )
+    ) {
+      return;
+    }
+
+    const surface = document.createElement("main");
+    surface.id = "todayStartupError";
+    surface.setAttribute("role", "alert");
+    surface.setAttribute("aria-live", "assertive");
+    surface.tabIndex = -1;
+    surface.style.cssText = [
+      "position:fixed",
+      "inset:0",
+      "z-index:2147483647",
+      "display:grid",
+      "place-items:center",
+      "padding:24px",
+      "background:#0b0f17",
+      "color:#f5f7fb",
+      "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+    ].join(";");
+
+    const card = document.createElement("section");
+    card.style.cssText = [
+      "width:min(100%,440px)",
+      "padding:24px",
+      "border:1px solid rgba(255,255,255,.16)",
+      "border-radius:20px",
+      "background:#151b27",
+      "box-shadow:0 18px 60px rgba(0,0,0,.38)"
+    ].join(";");
+
+    const title = document.createElement("h1");
+    title.textContent = "Today başlatılamadı";
+    title.style.cssText =
+      "margin:0 0 12px;font-size:24px;line-height:1.25";
+
+    const text = document.createElement("p");
+    text.textContent =
+      "Başlangıç yöneticisi yüklenemedi. " +
+      "Kayıtların silinmedi. İnternet bağlantını " +
+      "kontrol edip yeniden dene.";
+    text.style.cssText =
+      "margin:0 0 20px;color:#cbd3df;font-size:16px;line-height:1.55";
+
+    const retryButton =
+      document.createElement("button");
+    retryButton.type = "button";
+    retryButton.textContent = "Yeniden dene";
+    retryButton.style.cssText = [
+      "width:100%",
+      "min-height:48px",
+      "border:0",
+      "border-radius:14px",
+      "padding:12px 18px",
+      "background:#eef3ff",
+      "color:#111827",
+      "font:inherit",
+      "font-weight:700",
+      "cursor:pointer"
+    ].join(";");
+    retryButton.addEventListener(
+      "click",
+      () => window.location.reload(),
+      { once: true }
+    );
+
+    card.append(title, text, retryButton);
+    surface.appendChild(card);
+    document.body.appendChild(surface);
+
+    try {
+      surface.focus({ preventScroll: true });
+    } catch (error) {
+      surface.focus();
+    }
+  };
+
+  if (
+    !errorManagerReady ||
+    !window.TodayStartup ||
+    typeof window.TodayStartup.start !== "function"
+  ) {
+    if (
+      !reportError("today:startup-error", {
+        errorCode: "TODAY-STARTUP-004"
+      })
+    ) {
+      console.error(
+        "[TODAY-ERRORS-LOAD] Merkezi hata yöneticisi yüklenemedi."
+      );
+    }
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener(
+        "load",
+        () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .catch(error => {
+              const reported = reportError(
+                "today:service-worker-error",
+                {
+                  scriptUrl: "./sw.js",
+                  errorName: error?.name
+                }
+              );
+
+              if (!reported) {
+                console.warn(
+                  "Today Service Worker kaydedilemedi.",
+                  error
+                );
+              }
+            });
+        },
+        { once: true }
+      );
+    }
+
+    showStartupManagerFailure();
+    return;
+  }
+
+  try {
+    window.TodayStartup.start({
+      serviceWorkerUrl: "./sw.js",
+      initialize() {
+  const migrationResult =
+    window.TodayMigration.run();
+
+  if (!migrationResult.success) {
+    const migrationError =
+      new Error(
+        migrationResult.errorCode ||
+        "TODAY-MIGRATION-UNKNOWN"
+    );
+    migrationError.name =
+      "TodayMigrationError";
+    migrationError.todayCode =
+      migrationResult.errorCode;
+    throw migrationError;
+  }
+  
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
+  /* =========================
+ 1) Day Manager
+========================= */
+
+const {
+  pad2,
+  todayKey,
+  parseKey,
+  prettyTR,
+  ymKey,
+  isSameDay,
+  getOrCreateDay,
+  getOrCreateLog
+} = window.TodayDay;
+
+  
+/* =========================
+ 2) State Manager
+========================= */
+
+const APP_KEY = window.TodayState.APP_KEY;
+
+let state = window.TodayState.load();
+
+const save = () => {
+  const result = window.TodayState.save(state);
+
+  if (!result.success) {
+    reportError(
+      "today:stateerror",
+      {
+        errorCode: "TODAY-STATE-001",
+        storageSaved: result.storageSaved,
+        legacyBackupSaved: result.legacyBackupSaved,
+        savedDayCount: result.savedDayCount,
+        errorName: result.error?.name
+      }
+    );
+  }
+
+  return result;
+};
+
+  const dayObj = (dateKey) =>
+  getOrCreateDay(state, dateKey);
+
+const logObj = (dateKey) =>
+  getOrCreateLog(state, dateKey);
+
+  /* =========================
+     3) Theme
+     ========================= */
+  const applyTheme = () => {
+    const t = state.theme || "system";
+    if(t==="system"){
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", t);
+    }
+  };
+  applyTheme();
+
+  $("#themeSelect").value = state.theme || "system";
+  $("#themeSelect").addEventListener("change", () => {
+    state.theme = $("#themeSelect").value;
+    save();
+    applyTheme();
+    // tema değişince grafik de kendini tekrar çizsin
+    renderChart(currentMode);
+  });
+
+  /* =========================
+     4) View routing
+     ========================= */
+  const router = window.TodayRouter;
+  const moduleRegistry =
+    window.TodayModules;
+  const nutritionUI =
+    window.TodayNutritionUI;
+  const nutritionLibraryUI =
+    window.TodayNutritionLibraryUI;
+
+  if (
+    !router ||
+    typeof router.init !== "function" ||
+    typeof router.navigate !== "function" ||
+    typeof router.backTo !== "function" ||
+    typeof router.focusCurrent !== "function"
+  ) {
+    throw new Error(
+      "Today Router sözleşmesi yüklenemedi."
+    );
+  }
+
+  if (
+    !nutritionUI ||
+    typeof nutritionUI.init !== "function" ||
+    typeof nutritionUI.open !== "function" ||
+    typeof nutritionUI.getState !== "function"
+  ) {
+    throw new Error(
+      "Today Health beslenme arayüzü yüklenemedi."
+    );
+  }
+
+  if (
+    !nutritionLibraryUI ||
+    typeof nutritionLibraryUI.init !== "function" ||
+    typeof nutritionLibraryUI.open !== "function" ||
+    typeof nutritionLibraryUI.getState !== "function"
+  ) {
+    throw new Error(
+      "Today Health kütüphane yönetim arayüzü yüklenemedi."
+    );
+  }
+
+  if (
+    !moduleRegistry ||
+    typeof moduleRegistry.init !== "function" ||
+    typeof moduleRegistry.open !== "function" ||
+    typeof moduleRegistry.getState !== "function"
+  ) {
+    throw new Error(
+      "Today modül kayıt sözleşmesi yüklenemedi."
+    );
+  }
+
+  $("#skipToContent").addEventListener("click", event => {
+    event.preventDefault();
+    router.focusCurrent();
+  });
+
+  /* =========================
+     5) Locking rules
+     - sadece bugün düzenlenebilir
+     - geçmiş günler: görüntülenir ama değiştirilemez
+     - gelecek günler: seçilemez
+     ========================= */
+  const canEditDate = (k) => {
+    const t = todayKey();
+    return k === t;
+  };
+
+  /* =========================
+     6) Accent: seçilen renge göre vurgu
+     ========================= */
+  const colorHex = (c) => ({
+    navy:getComputedStyle(document.documentElement).getPropertyValue("--cNavy").trim(),
+    orange:getComputedStyle(document.documentElement).getPropertyValue("--cOrange").trim(),
+    red:getComputedStyle(document.documentElement).getPropertyValue("--cRed").trim(),
+    blue:getComputedStyle(document.documentElement).getPropertyValue("--cBlue").trim(),
+    yellow:getComputedStyle(document.documentElement).getPropertyValue("--cYellow").trim(),
+    green:getComputedStyle(document.documentElement).getPropertyValue("--cGreen").trim(),
+    deep:getComputedStyle(document.documentElement).getPropertyValue("--cBlack").trim(),
+  }[c] || "#88a9ff");
+
+  const applyAccentFor = (k) => {
+    const d = dayObj(k);
+    const hex = d.color ? colorHex(d.color) : "#88a9ff";
+    document.documentElement.style.setProperty("--accent", hex);
+  };
+
+  /* =========================
+     7) Entry logging (graph)
+     ========================= */
+  const logEntry = () => {
+    const k = todayKey();
+    const L = logObj(k);
+    L.entries.push(Date.now());
+    // çok büyümesin diye 500 ile sınırla
+    if(L.entries.length > 500) L.entries = L.entries.slice(-500);
+    save();
+  };
+
+  // uygulama açılınca + görünür olunca say
+  logEntry();
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden) logEntry();
+  });
+
+  /* =========================
+   8) TODAY MODULE PLATFORM
+   ========================= */
+
+/* HOME → MODULE CENTER */
+$("#btnStart").addEventListener("click", () => {
+  router.navigate("modules");
+});
+
+/* Modüllerden merkeze dönüş */
+[
+  "#btnHomeFromPick",
+  "#btnModulesFromHealth",
+  "#btnModulesFromSky"
+].forEach(selector => {
+  $(selector).addEventListener("click", () => {
+    router.backTo("modules");
+  });
+});
+
+  /* =========================
+     9) PICK screen: choices, color, note, reset
+     ========================= */
+  const syncChoiceControls = (selectedChoice, editable) => {
+    const controls = $$("#choices .choice");
+    const selectedIndex = controls.findIndex(
+      control => control.dataset.choice === selectedChoice
+    );
+
+    controls.forEach((control, index) => {
+      const selected = index === selectedIndex;
+
+      control.classList.toggle("selected", selected);
+      control.setAttribute("aria-checked", String(selected));
+      control.setAttribute("aria-disabled", String(!editable));
+      control.tabIndex =
+        editable && (selected || (selectedIndex === -1 && index === 0))
+          ? 0
+          : -1;
+      control.style.pointerEvents = editable ? "auto" : "none";
+    });
+  };
+
+  const syncColorControls = (selectedColor, editable) => {
+    $$(".cbtn").forEach(control => {
+      const selected = control.dataset.color === selectedColor;
+
+      control.classList.toggle("selected", selected);
+      control.setAttribute("aria-pressed", String(selected));
+      control.disabled = !editable;
+    });
+  };
+
+  const loadPickUI = (k) => {
+    const d = dayObj(k);
+    const editable = canEditDate(k);
+
+    // seçim seçili mi?
+    syncChoiceControls(d.choice, editable);
+
+    // renk seçili mi?
+    syncColorControls(d.color, editable);
+
+    // not
+    $("#note").value = d.note || "";
+
+    // bugün değilse: tüm seçim alanlarını disable gibi yap
+    $("#note").disabled = !editable;
+    $("#btnResetToday").disabled = !editable;
+
+    $("#statusPick").textContent = editable ? "" : "Geçmiş günler düzenlenemez.";
+  };
+
+  const logChange = (k, what) => {
+    const L = logObj(k);
+    L.changes.push({ t: Date.now(), what });
+    // sadece bugün gösterilecek ama saklanacak → yine de çok büyümesin
+    if(L.changes.length > 200) L.changes = L.changes.slice(-200);
+  };
+
+  const flashTimers = new WeakMap();
+
+  const flash = (el, msg) => {
+    window.clearTimeout(flashTimers.get(el));
+    el.textContent = "";
+
+    window.requestAnimationFrame(() => {
+      el.textContent = msg;
+
+      const timer = window.setTimeout(() => {
+        el.textContent = "";
+      }, 900);
+
+      flashTimers.set(el, timer);
+    });
+  };
+
+  // seçim
+  $$("#choices .choice").forEach(el => {
+    el.addEventListener("click", () => {
+      const k = todayKey();
+      if(!canEditDate(k)) return;
+
+      const d = dayObj(k);
+      d.choice = el.dataset.choice;
+      applyAccentFor(k);
+      logChange(k, `Seçim: ${d.choice}`);
+
+      save();
+      syncChoiceControls(d.choice, true);
+      flash($("#statusPick"), "Kaydedildi.");
+      renderCalendar(); // takvim noktası güncellensin
+      renderSummary();  // özet güncellensin
+    });
+  });
+
+  // seçimler: Enter/Boşluk ile etkinleştirme, ok tuşlarıyla dolaşma
+  $$("#choices .choice").forEach((el, index, controls) => {
+    el.addEventListener("keydown", event => {
+      if(el.getAttribute("aria-disabled") === "true") return;
+
+      const activate =
+        event.key === "Enter" ||
+        event.key === " " ||
+        event.key === "Spacebar";
+
+      if(activate){
+        event.preventDefault();
+        el.click();
+        return;
+      }
+
+      const previous =
+        event.key === "ArrowUp" ||
+        event.key === "ArrowLeft";
+      const next =
+        event.key === "ArrowDown" ||
+        event.key === "ArrowRight";
+
+      if(!previous && !next) return;
+
+      event.preventDefault();
+
+      const direction = previous ? -1 : 1;
+      const nextIndex =
+        (index + direction + controls.length) %
+        controls.length;
+      const nextControl = controls[nextIndex];
+
+      nextControl.focus();
+      nextControl.click();
+    });
+  });
+
+  // renk (opsiyonel)
+  $$(".cbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const k = todayKey();
+      if(!canEditDate(k)) return;
+
+      const d = dayObj(k);
+      d.color = btn.dataset.color;
+      applyAccentFor(k);
+      logChange(k, `Renk: ${d.color}`);
+      save();
+
+      syncColorControls(d.color, true);
+
+      flash($("#statusPick"), "Renk kaydedildi.");
+      renderCalendar();
+      renderChart(currentMode); // grafikte vurgu rengi
+    });
+  });
+
+  // not
+  let noteTimer = null;
+  $("#note").addEventListener("input", () => {
+    const k = todayKey();
+    if(!canEditDate(k)) return;
+
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      const d = dayObj(k);
+      d.note = $("#note").value || "";
+      logChange(k, "Not güncellendi");
+      save();
+      flash($("#statusPick"), "Not kaydedildi.");
+    }, 450);
+  });
+
+  // bugünü sıfırla (sadece bugün)
+  $("#btnResetToday").addEventListener("click", () => {
+    const k = todayKey();
+    if(!canEditDate(k)) return;
+
+    state.days[k] = { choice:"", color:"", note:"" };
+    logChange(k, "Bugün sıfırlandı");
+    save();
+    applyAccentFor(k);
+    loadPickUI(k);
+    renderCalendar();
+    renderSummary();
+    renderChart(currentMode);
+    flash($("#statusPick"), "Bugün temizlendi.");
+  });
+
+  /* =========================
+     10) Calendar screen
+     ========================= */
+  $("#btnCalendar").addEventListener("click", () => {
+    router.navigate("calendar");
+  });
+
+  $("#btnBackToPick").addEventListener("click", () => {
+    router.backTo("pick");
+  });
+
+  const buildCalendarMatrix = (d=new Date()) => {
+    const year = d.getFullYear();
+    const month = d.getMonth(); // 0-11
+    const first = new Date(year, month, 1);
+    const last  = new Date(year, month+1, 0);
+    const daysInMonth = last.getDate();
+
+    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)
+    const dow = (first.getDay() + 6) % 7; // Mon=0 ... Sun=6
+    const cells = [];
+    for(let i=0;i<dow;i++) cells.push(null);
+    for(let day=1; day<=daysInMonth; day++) cells.push(new Date(year, month, day));
+    while(cells.length % 7) cells.push(null);
+    return {year,month,daysInMonth,cells};
+  };
+
+  const renderCalendar = () => {
+    const now = new Date();
+    const tKey = todayKey();
+    const {year,month,cells} = buildCalendarMatrix(now);
+
+    $("#monthTitle").textContent = now.toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
+    $("#calPill").textContent = "Takvim";
+
+    const grid = $("#calGrid");
+    grid.innerHTML = "";
+
+    // DOW header
+    const headerRow = document.createElement("div");
+    headerRow.className = "calendarRow";
+    headerRow.setAttribute("role", "row");
+
+    [
+      ["Pzt","Pazartesi"],
+      ["Sal","Salı"],
+      ["Çar","Çarşamba"],
+      ["Per","Perşembe"],
+      ["Cum","Cuma"],
+      ["Cmt","Cumartesi"],
+      ["Paz","Pazar"]
+    ].forEach(([shortName, fullName])=>{
+      const div=document.createElement("div");
+      div.className="dow";
+      div.textContent=shortName;
+      div.setAttribute("role", "columnheader");
+      div.setAttribute("aria-label", fullName);
+      headerRow.appendChild(div);
+    });
+    grid.appendChild(headerRow);
+
+    // days
+    let calendarRow = null;
+
+    cells.forEach((dt, index)=>{
+      if(index % 7 === 0){
+        calendarRow = document.createElement("div");
+        calendarRow.className = "calendarRow";
+        calendarRow.setAttribute("role", "row");
+        grid.appendChild(calendarRow);
+      }
+
+      const cell=document.createElement("div");
+      cell.setAttribute("role", "gridcell");
+
+      if(!dt){
+        cell.style.visibility="hidden";
+        cell.setAttribute("aria-hidden", "true");
+        calendarRow.appendChild(cell);
+        return;
+      }
+      const k = `${dt.getFullYear()}-${pad2(dt.getMonth()+1)}-${pad2(dt.getDate())}`;
+      const d = state.days[k];
+
+      const isPast = parseKey(k) < parseKey(tKey);
+      const isFuture = parseKey(k) > parseKey(tKey);
+      const editable = k===tKey;
+      const hasRecord = Boolean(d && (d.choice||d.color||d.note));
+      const dateLabel = dt.toLocaleDateString("tr-TR", {
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+      });
+      const recordParts = [];
+
+      if(d && d.choice) recordParts.push(choiceLabelTR(d.choice));
+      if(d && d.color) recordParts.push(`renk ${colorLabelTR(d.color)}`);
+      if(d && d.note) recordParts.push("not var");
+
+      const timeLabel =
+        isPast
+          ? "geçmiş gün"
+          : isFuture
+            ? "gelecek gün"
+            : "bugün";
+      const recordLabel =
+        hasRecord
+          ? recordParts.join(", ")
+          : "kayıt yok";
+
+      cell.className = "day" + ((isPast||isFuture) ? " disabled" : "");
+      cell.tabIndex = editable ? 0 : -1;
+      cell.setAttribute("aria-disabled", String(!editable));
+      cell.setAttribute(
+        "aria-label",
+        `${dateLabel}, ${timeLabel}, ${recordLabel}${
+          editable
+            ? ". Düzenlemek için Enter veya Boşluk tuşuna basın"
+            : ""
+        }`
+      );
+
+      if(editable) cell.setAttribute("aria-current", "date");
+
+      cell.innerHTML = `
+        <div class="num">${dt.getDate()}</div>
+        <div class="badge ${hasRecord ? "on":""}" aria-hidden="true"></div>
+      `;
+
+      // “gün işareti ikon” gibi minik vurgu: badge on ise rengi seçime göre olsun
+      if(d && (d.choice||d.color||d.note)){
+        const badge = cell.querySelector(".badge");
+        const hex = d.color ? colorHex(d.color) : "#88a9ff";
+        badge.style.background = hex;
+        badge.style.boxShadow = "none";
+      }
+
+      // sadece bugün tıklanabilir (düzenleme kuralı)
+      if(editable){
+        cell.classList.remove("disabled");
+        const openTodayFromCalendar = () => {
+          // bugüne geri dön ve düzenle
+          router.backTo("pick");
+        };
+
+        cell.addEventListener("click", openTodayFromCalendar);
+        cell.addEventListener("keydown", event => {
+          if(
+            event.key !== "Enter" &&
+            event.key !== " " &&
+            event.key !== "Spacebar"
+          ) return;
+
+          event.preventDefault();
+          openTodayFromCalendar();
+        });
+      }
+      calendarRow.appendChild(cell);
+    });
+  };
+
+  /* =========================
+     11) Stats + Settings accordions
+     ========================= */
+  const setAccordionState = (accId, open) => {
+    const accordion = $(accId);
+    const directChildren = Array.from(accordion.children);
+    const head = directChildren.find(child =>
+      child.classList.contains("accHead")
+    );
+    const body = directChildren.find(child =>
+      child.classList.contains("accBody")
+    );
+
+    accordion.classList.toggle("open", open);
+    head.setAttribute("aria-expanded", String(open));
+    body.hidden = !open;
+
+    $$(`[aria-controls="${body.id}"]`).forEach(control => {
+      control.setAttribute("aria-expanded", String(open));
+    });
+
+    const arrow = head.querySelector(".mini[aria-hidden='true']");
+    if(arrow) arrow.textContent = open ? "▲" : "▼";
+  };
+
+  const toggleAcc = (accId) => {
+    const accordion = $(accId);
+    setAccordionState(
+      accId,
+      !accordion.classList.contains("open")
+    );
+  };
+
+  const toggleRoutedPanel = (routeName) => {
+    const currentRoute =
+      router.getState().route;
+
+    if (currentRoute === routeName) {
+      router.backTo("calendar", {
+        source: "accordion"
+      });
+      return;
+    }
+
+    router.navigate(routeName, {
+      source: "accordion"
+    });
+  };
+
+  $("#accStatsHead").addEventListener("click", () => {
+    toggleRoutedPanel("statistics");
+  });
+  $("#accSettingsHead").addEventListener("click", () => {
+    toggleRoutedPanel("settings");
+  });
+  $("#accSummaryHead").addEventListener("click", () => toggleAcc("#accSummary"));
+
+  $$(".accHead[role='button']").forEach(head => {
+    head.addEventListener("keydown", event => {
+      if(
+        event.key !== "Enter" &&
+        event.key !== " " &&
+        event.key !== "Spacebar"
+      ) return;
+
+      event.preventDefault();
+      head.click();
+    });
+  });
+
+  $("#btnStats").addEventListener("click", () => {
+    router.navigate("statistics");
+  });
+
+  $("#btnOpenStats").addEventListener("click", () => {
+    router.navigate("statistics");
+  });
+
+  $("#btnOpenSettings").addEventListener("click", () => {
+    router.navigate("settings");
+  });
+
+  /* =========================
+     12) Summary (expandable)
+     ========================= */
+  const choiceLabelTR = (c) => ({
+    A:"Bir şey oldu ama adı yok",
+    B:"Her şey çok net",
+    C:"Zordu bugün"
+  }[c] || "");
+
+  const colorLabelTR = (c) => ({
+    navy:"Lacivert",
+    orange:"Turuncu",
+    red:"Kırmızı",
+    blue:"Mavi",
+    yellow:"Sarı",
+    green:"Yeşil",
+    deep:"Derin"
+  }[c] || "");
+
+  const renderSummary = () => {
+    // son 7 gün içinde en çok seçilen
+    const t = parseKey(todayKey());
+    const last7 = [];
+    for(let i=0;i<7;i++){
+      const d = new Date(t);
+      d.setDate(d.getDate()-i);
+      const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+      if(state.days[k] && state.days[k].choice) last7.push(state.days[k].choice);
+    }
+    const freq = {};
+    last7.forEach(x => freq[x]=(freq[x]||0)+1);
+    const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
+    const topText = top ? `Son 7 günde en çok: “${choiceLabelTR(top[0])}” (${top[1]} kez)` : "Son 7 günde seçim yok.";
+    $("#summaryText").textContent = topText;
+  };
+
+  /* =========================
+     13) CSV Export (Turkish)
+     ========================= */
+  const download = (filename, text) => {
+    const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 500);
+  };
+
+  $("#btnExport").addEventListener("click", () => {
+    // Tüm kayıtları tarih sırasıyla
+    const rows = [];
+    rows.push(["Tarih","Seçim","Renk","Not"].join(";"));
+
+    const keys = Object.keys(state.days).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
+    keys.forEach(k => {
+      const d = state.days[k];
+      const sel = choiceLabelTR(d.choice) || "";
+      const col = colorLabelTR(d.color) || "";
+      const note = (d.note || "").replaceAll("\n"," ").replaceAll(";"," ");
+      // boş günleri export etmeyelim istersen: burada filtreleyebilirsin
+      if(!(d.choice || d.color || d.note)) return;
+      rows.push([k, sel, col, note].join(";"));
+    });
+
+    const csv = rows.join("\n");
+    download(`today-rapor-${todayKey()}.csv`, csv);
+  });
+
+  /* “değişim logları” sadece bugün ekranda görünsün, istenirse temizle */
+  $("#btnClearTodayLogs").addEventListener("click", () => {
+    const k = todayKey();
+    const L = logObj(k);
+    L.changes = [];
+    save();
+    renderChart(currentMode);
+    renderSummary();
+  });
+
+  /* =========================
+     14) Chart (animated) — modes
+     ========================= */
+  let currentMode = "hour";
+
+  const seriesHour = () => {
+    // bugün: saatlik giriş sayıları (00-23)
+    const k = todayKey();
+    const L = logObj(k);
+    const arr = new Array(24).fill(0);
+    (L.entries||[]).forEach(ts=>{
+      const d=new Date(ts);
+      const h=d.getHours();
+      arr[h] += 1;
+    });
+    // biriken ivme olsun (cumulative)
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const seriesDay = () => {
+    // son 7 gün: her gün giriş (cumulative)
+    const t = parseKey(todayKey());
+    const arr = [];
+    for(let i=6;i>=0;i--){
+      const d = new Date(t);
+      d.setDate(d.getDate()-i);
+      const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+      const L = state.logs[k];
+      arr.push((L && L.entries) ? L.entries.length : 0);
+    }
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const seriesWeek = () => {
+    // son 4 hafta: haftalık giriş (cumulative)
+    const t = parseKey(todayKey());
+    const arr = [];
+    for(let w=3; w>=0; w--){
+      let sum = 0;
+      for(let i=0;i<7;i++){
+        const d = new Date(t);
+        d.setDate(d.getDate() - (w*7 + i));
+        const k = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+        const L = state.logs[k];
+        sum += (L && L.entries) ? L.entries.length : 0;
+      }
+      arr.push(sum);
+    }
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const seriesMonth = () => {
+    // son 12 ay: aylık giriş (cumulative)
+    const now = new Date();
+    const arr = [];
+    for(let m=11; m>=0; m--){
+      const d = new Date(now.getFullYear(), now.getMonth()-m, 1);
+      const y = d.getFullYear();
+      const mo = d.getMonth();
+      let sum=0;
+
+      Object.keys(state.logs).forEach(k=>{
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+        const dt = parseKey(k);
+        if(dt.getFullYear()===y && dt.getMonth()===mo){
+          const L = state.logs[k];
+          sum += (L && L.entries) ? L.entries.length : 0;
+        }
+      });
+
+      arr.push(sum);
+    }
+    for(let i=1;i<arr.length;i++) arr[i] += arr[i-1];
+    return arr;
+  };
+
+  const toPath = (arr) => {
+    const W=320, H=160, pad=10;
+    const n = arr.length;
+    const max = Math.max(1, ...arr);
+    const dx = (W - pad*2) / (n-1);
+
+    const pts = arr.map((v,i)=>{
+      const x = pad + dx*i;
+      const y = (H - pad) - ((H - pad*2) * (v/max));
+      return {x,y};
+    });
+
+    const line = "M " + pts.map(p => `${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" L ");
+    const area = line + ` L ${(pad + dx*(n-1)).toFixed(2)} ${(H-pad).toFixed(2)} L ${pad.toFixed(2)} ${(H-pad).toFixed(2)} Z`;
+    return {line, area};
+  };
+
+  const animatePath = (el, dNew) => {
+    el.setAttribute("d", dNew);
+
+    if(prefersReducedMotion.matches){
+      el.style.transition = "";
+      el.style.strokeDasharray = "";
+      el.style.strokeDashoffset = "";
+      return;
+    }
+
+    // basit “stroke-dash” animasyonu
+    const len = el.getTotalLength ? el.getTotalLength() : 0;
+    if(len){
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+      el.getBoundingClientRect();
+      el.style.transition = "stroke-dashoffset 650ms ease";
+      el.style.strokeDashoffset = "0";
+      setTimeout(()=> {
+        el.style.transition = "";
+        el.style.strokeDasharray = "";
+        el.style.strokeDashoffset = "";
+      }, 700);
+    }
+  };
+
+  const renderChart = (mode) => {
+    currentMode = mode;
+
+    // seçim rengine göre çizgi rengi
+    const d = dayObj(todayKey());
+    const hex = d.color ? colorHex(d.color) : "#88a9ff";
+    $("#line").setAttribute("stroke", hex);
+
+    let arr;
+    if(mode==="hour"){ arr = seriesHour(); $("#chartLabel").textContent = "Gün içi giriş ritmi (00:00 → 23:59)"; }
+    if(mode==="day"){ arr = seriesDay(); $("#chartLabel").textContent = "Son 7 gün ivmesi"; }
+    if(mode==="week"){ arr = seriesWeek(); $("#chartLabel").textContent = "Son 4 hafta ivmesi"; }
+    if(mode==="month"){ arr = seriesMonth(); $("#chartLabel").textContent = "Son 12 ay ivmesi"; }
+
+    const {line, area} = toPath(arr);
+
+    // area yumuşak kalsın
+    $("#area").setAttribute("d", area);
+    animatePath($("#line"), line);
+
+    const total = arr[arr.length - 1] || 0;
+    $("#chartSummary").textContent =
+      `${$("#chartLabel").textContent}. ` +
+      `Dönem sonundaki birikimli giriş sayısı: ${total}.`;
+
+    $$(".mode").forEach(button => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  };
+
+  $$(".mode").forEach(b => {
+    b.addEventListener("click", () => renderChart(b.dataset.mode));
+  });
+
+  const handleRouteChange = ({ to }) => {
+    if (to === "health") {
+      void Promise.all([
+        nutritionUI.open(),
+        nutritionLibraryUI.open()
+      ]);
+    }
+
+    if (to === "pick") {
+      const k = todayKey();
+
+      $("#pillDate").textContent =
+        prettyTR(k);
+      applyAccentFor(k);
+      loadPickUI(k);
+    }
+
+    if (
+      to === "calendar" ||
+      to === "statistics" ||
+      to === "settings"
+    ) {
+      setAccordionState(
+        "#accStats",
+        to === "statistics"
+      );
+      setAccordionState(
+        "#accSettings",
+        to === "settings"
+      );
+
+      renderCalendar();
+      renderSummary();
+      renderChart(currentMode);
+    }
+  };
+
+  /* =========================
+     15) Init
+     ========================= */
+  const versionInfo = window.TodayVersion.getCurrentVersion();
+
+$("#buildTag").textContent =
+  `build: ${versionInfo.appVersion}`;
+
+  // defaults: calendar acc kapalı, stats kapalı
+  setAccordionState("#accStats", false);
+  setAccordionState("#accSettings", false);
+  setAccordionState("#accSummary", false);
+
+  // home açılışında bugünün accent'ini hazırla
+  applyAccentFor(todayKey());
+
+  // Health UI yalnız olaylarını bağlar; veriyi Health açılınca okur.
+  nutritionUI.init({ root: document });
+  nutritionLibraryUI.init({ root: document });
+
+  // ilk girişte home kalsın
+  const routingResult = router.init({
+    initialRoute: "home",
+    moveFocus: false,
+    onRouteChange: handleRouteChange
+  });
+
+  if (!routingResult.success) {
+    throw new Error(
+      routingResult.errorCode ||
+      "TODAY-ROUTER-INIT"
+    );
+  }
+
+  const moduleResult =
+    moduleRegistry.init({
+      router,
+      root: document
+    });
+
+  if (!moduleResult.success) {
+    throw new Error(
+      moduleResult.errorCode ||
+      "TODAY-MODULES-INIT"
+    );
+  }
+      }
+    });
+  } catch (error) {
+    const reported = reportError(
+      "today:startup-error",
+      {
+        errorCode: "TODAY-STARTUP-005",
+        errorName: error?.name
+      }
+    );
+
+    if (!reported) {
+      console.error(
+        "Today Startup Manager çalıştırılamadı.",
+        error
+      );
+    }
+
+    showStartupManagerFailure();
+  }
+})();
+</script>
+</body>
+</html>

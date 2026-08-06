@@ -1,0 +1,17 @@
+{
+  "name": "today-app",
+  "version": "2.4.1",
+  "private": true,
+  "description": "Today App platform regression gate",
+  "scripts": {
+    "test": "node tests/run-platform-regression.cjs",
+    "test:browser": "node tests/platform-browser-regression.test.cjs"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.5",
+    "jsdom": "29.0.0"
+  }
+}
