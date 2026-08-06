@@ -1,0 +1,1146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "today:nutrition:record:v1",
+  "$comment": "Today contract version 1. Semantic domain rules are enforced by modules/nutrition-contracts.js.",
+  "title": "Today Nutrition Record Contract v1",
+  "description": "Portable envelope schema for Today nutrition records. Cross-field and domain invariants are enforced by modules/nutrition-contracts.js.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "schemaVersion",
+    "createdAt",
+    "updatedAt",
+    "eventAt",
+    "source",
+    "knowledgeStatus",
+    "recordStatus",
+    "verificationStatus",
+    "calculationVersion",
+    "userEdited",
+    "payload"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "type": {
+      "enum": [
+        "nutrition_profile",
+        "dietary_constraint",
+        "nutrition_goal_version",
+        "food_version",
+        "recipe_version",
+        "meal_template",
+        "meal_entry",
+        "meal_item_snapshot",
+        "hydration_entry",
+        "meal_plan",
+        "planned_meal",
+        "batch_preparation",
+        "leftover_portion",
+        "shopping_list",
+        "shopping_list_item",
+        "home_availability",
+        "activity_reference",
+        "recovery_check",
+        "weight_reference",
+        "nutrition_summary",
+        "insight_snapshot",
+        "report_snapshot",
+        "nutrition_reminder"
+      ]
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eventAt": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "knowledgeStatus": {
+      "enum": [
+        "known",
+        "estimated",
+        "unknown"
+      ]
+    },
+    "recordStatus": {
+      "enum": [
+        "draft",
+        "active",
+        "archived",
+        "superseded"
+      ]
+    },
+    "verificationStatus": {
+      "enum": [
+        "unverified",
+        "user_confirmed",
+        "source_verified"
+      ]
+    },
+    "calculationVersion": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/version"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "userEdited": {
+      "type": "boolean"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9]+(?:\\.[a-z0-9-]+)+$"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "ai_draft"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "knowledgeStatus": {
+            "const": "estimated"
+          },
+          "recordStatus": {
+            "const": "draft"
+          },
+          "verificationStatus": {
+            "const": "unverified"
+          },
+          "userEdited": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "system_calculation"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "calculationVersion": {
+            "$ref": "#/$defs/version"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "nutrition_summary",
+              "insight_snapshot",
+              "report_snapshot"
+            ]
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "calculationVersion": {
+            "$ref": "#/$defs/version"
+          }
+        }
+      }
+    },
+    {
+      "$ref": "#/$defs/nutritionProfileRule"
+    },
+    {
+      "$ref": "#/$defs/dietaryConstraintRule"
+    },
+    {
+      "$ref": "#/$defs/nutritionGoalVersionRule"
+    },
+    {
+      "$ref": "#/$defs/foodVersionRule"
+    },
+    {
+      "$ref": "#/$defs/recipeVersionRule"
+    },
+    {
+      "$ref": "#/$defs/mealTemplateRule"
+    },
+    {
+      "$ref": "#/$defs/mealEntryRule"
+    },
+    {
+      "$ref": "#/$defs/mealItemSnapshotRule"
+    },
+    {
+      "$ref": "#/$defs/hydrationEntryRule"
+    },
+    {
+      "$ref": "#/$defs/mealPlanRule"
+    },
+    {
+      "$ref": "#/$defs/plannedMealRule"
+    },
+    {
+      "$ref": "#/$defs/batchPreparationRule"
+    },
+    {
+      "$ref": "#/$defs/leftoverPortionRule"
+    },
+    {
+      "$ref": "#/$defs/shoppingListRule"
+    },
+    {
+      "$ref": "#/$defs/shoppingListItemRule"
+    },
+    {
+      "$ref": "#/$defs/homeAvailabilityRule"
+    },
+    {
+      "$ref": "#/$defs/activityReferenceRule"
+    },
+    {
+      "$ref": "#/$defs/recoveryCheckRule"
+    },
+    {
+      "$ref": "#/$defs/weightReferenceRule"
+    },
+    {
+      "$ref": "#/$defs/nutritionSummaryRule"
+    },
+    {
+      "$ref": "#/$defs/insightSnapshotRule"
+    },
+    {
+      "$ref": "#/$defs/reportSnapshotRule"
+    },
+    {
+      "$ref": "#/$defs/nutritionReminderRule"
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9._:-]{0,78}[a-z0-9])?$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._+-]{0,62}[A-Za-z0-9])?$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "referenceId",
+        "version"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "manual",
+            "device",
+            "data_package",
+            "ai_draft",
+            "system_calculation"
+          ]
+        },
+        "referenceId": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/version"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "value",
+        "unit",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "known",
+            "estimated",
+            "unknown"
+          ]
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "enum": [
+                  "known",
+                  "estimated"
+                ]
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 0
+              },
+              "unit": {
+                "$ref": "#/$defs/identifier"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "estimated"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "basis": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            }
+          }
+        }
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "status",
+        "comparableRecordCount",
+        "totalRecordCount",
+        "missingRecordCount",
+        "userDeclared"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "single_event",
+            "unspecified"
+          ]
+        },
+        "comparableRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missingRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "userDeclared": {
+          "type": "boolean"
+        }
+      }
+    },
+    "period": {
+      "type": "object",
+      "required": [
+        "startDate",
+        "endDate"
+      ],
+      "properties": {
+        "startDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "sharing": {
+      "type": "object",
+      "required": [
+        "status",
+        "consent",
+        "method"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_shared",
+            "shared"
+          ]
+        },
+        "consent": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "granted",
+                "purpose",
+                "grantedAt"
+              ],
+              "properties": {
+                "granted": {
+                  "const": true
+                },
+                "purpose": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "grantedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method": {
+          "enum": [
+            "device_save",
+            "device_share",
+            null
+          ]
+        }
+      }
+    },
+    "nutritionProfileRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "nutrition_profile"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "trackingMode",
+              "dietaryConstraintIds",
+              "primaryGoalVersionId"
+            ]
+          }
+        }
+      }
+    },
+    "dietaryConstraintRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "dietary_constraint"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "kind",
+              "label",
+              "active"
+            ]
+          }
+        }
+      }
+    },
+    "nutritionGoalVersionRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "nutrition_goal_version"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "goalKind",
+              "effectiveFrom",
+              "supersedesId",
+              "targets"
+            ]
+          }
+        }
+      }
+    },
+    "foodVersionRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "food_version"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "foodId",
+              "version",
+              "name",
+              "servingBasis",
+              "nutrients",
+              "referenceSourceIds"
+            ]
+          }
+        }
+      }
+    },
+    "recipeVersionRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "recipe_version"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "recipeId",
+              "version",
+              "name",
+              "yield",
+              "ingredientSnapshotIds"
+            ]
+          }
+        }
+      }
+    },
+    "mealTemplateRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "meal_template"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "name",
+              "mealType",
+              "itemSnapshotIds"
+            ]
+          }
+        }
+      }
+    },
+    "mealEntryRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "meal_entry"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "consumedAt",
+              "mealType",
+              "itemSnapshotIds",
+              "coverage",
+              "plannedMealId"
+            ]
+          }
+        }
+      }
+    },
+    "mealItemSnapshotRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "meal_item_snapshot"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "itemKind",
+              "referenceId",
+              "name",
+              "amount",
+              "nutrients",
+              "sourceVersion"
+            ]
+          }
+        }
+      }
+    },
+    "hydrationEntryRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "hydration_entry"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "consumedAt",
+              "beverageType",
+              "amount"
+            ]
+          }
+        }
+      }
+    },
+    "mealPlanRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "meal_plan"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "startDate",
+              "endDate",
+              "status",
+              "plannedMealIds"
+            ]
+          }
+        }
+      }
+    },
+    "plannedMealRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "planned_meal"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "plannedFor",
+              "mealType",
+              "itemSnapshotIds",
+              "status",
+              "mealEntryId"
+            ]
+          }
+        }
+      }
+    },
+    "batchPreparationRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "batch_preparation"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "preparedAt",
+              "recipeVersionId",
+              "producedPortions",
+              "leftoverPortionIds"
+            ]
+          }
+        }
+      }
+    },
+    "leftoverPortionRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "leftover_portion"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "batchPreparationId",
+              "amount",
+              "status",
+              "mealEntryId"
+            ]
+          }
+        }
+      }
+    },
+    "shoppingListRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "shopping_list"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "name",
+              "status",
+              "itemIds"
+            ]
+          }
+        }
+      }
+    },
+    "shoppingListItemRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "shopping_list_item"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "name",
+              "amount",
+              "status",
+              "plannedMealIds"
+            ]
+          }
+        }
+      }
+    },
+    "homeAvailabilityRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "home_availability"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "checkedAt",
+              "itemKind",
+              "referenceId",
+              "amount"
+            ]
+          }
+        }
+      }
+    },
+    "activityReferenceRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "activity_reference"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "healthRecordId",
+              "relation",
+              "occurredAt"
+            ]
+          }
+        }
+      }
+    },
+    "recoveryCheckRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "recovery_check"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "healthRecordId",
+              "relation",
+              "occurredAt"
+            ]
+          }
+        }
+      }
+    },
+    "weightReferenceRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "weight_reference"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "healthRecordId",
+              "relation",
+              "occurredAt"
+            ]
+          }
+        }
+      }
+    },
+    "nutritionSummaryRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "nutrition_summary"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "period",
+              "usedRecordIds",
+              "coverage",
+              "metrics"
+            ]
+          }
+        }
+      }
+    },
+    "insightSnapshotRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "insight_snapshot"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "period",
+              "usedRecordIds",
+              "observation",
+              "basis",
+              "relationshipType",
+              "uncertainty",
+              "aiNarrationVersion"
+            ]
+          }
+        }
+      }
+    },
+    "reportSnapshotRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "report_snapshot"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "period",
+              "includedRecordIds",
+              "coverage",
+              "goalVersionId",
+              "referenceSourceIds",
+              "includedSections",
+              "hiddenFields",
+              "generatedAt",
+              "aiNarrationVersion",
+              "sharing"
+            ]
+          }
+        }
+      }
+    },
+    "nutritionReminderRule": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "nutrition_reminder"
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": [
+              "reminderKind",
+              "enabled",
+              "userInitiated",
+              "schedule",
+              "messageStyle"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
