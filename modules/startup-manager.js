@@ -376,7 +376,15 @@
       details.error || details
     );
 
-    showFailureSurface(errorCode);
+    showFailureSurface(
+  `${errorCode} — ${
+    details.error?.name || "Error"
+  }: ${
+    details.error?.message ||
+    details.missingDependencies?.join(", ") ||
+    message
+  }`
+);
 
     dispatch("today:startup-error", {
       errorCode,
