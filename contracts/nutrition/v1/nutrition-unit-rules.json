@@ -1,0 +1,40 @@
+{
+  "ruleSetId": "today:nutrition:units:v1",
+  "version": 1,
+  "calculationVersion": "nutrition-calc-v1",
+  "precisionDigits": 12,
+  "dimensions": {
+    "mass": {
+      "baseUnit": "g",
+      "units": {
+        "mcg": { "numerator": 1, "denominator": 1000000 },
+        "mg": { "numerator": 1, "denominator": 1000 },
+        "g": { "numerator": 1, "denominator": 1 },
+        "kg": { "numerator": 1000, "denominator": 1 }
+      }
+    },
+    "volume": {
+      "baseUnit": "ml",
+      "units": {
+        "ml": { "numerator": 1, "denominator": 1 },
+        "cl": { "numerator": 10, "denominator": 1 },
+        "dl": { "numerator": 100, "denominator": 1 },
+        "l": { "numerator": 1000, "denominator": 1 }
+      }
+    },
+    "energy": {
+      "baseUnit": "kj",
+      "units": {
+        "kj": { "numerator": 1, "denominator": 1 },
+        "kcal": { "numerator": 4184, "denominator": 1000 }
+      }
+    }
+  },
+  "contextualUnits": [
+    "count",
+    "piece",
+    "portion",
+    "serving",
+    "slice"
+  ]
+}
