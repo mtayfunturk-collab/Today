@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 1;
-  const RULESET_ID = "today:health:hub:v1";
+  const API_VERSION = 2;
+  const RULESET_ID = "today:health:hub:v3";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -46,22 +46,20 @@
     styleElement = document.createElement("style");
     styleElement.id = "todayHealthHubStyles";
     styleElement.textContent = `
-      html,
-      body {
+      html, body {
         width: 100%;
         max-width: 100%;
         overflow-x: clip;
       }
 
-      body {
-        min-height: 100dvh;
-      }
+      body { min-height: 100dvh; }
 
       .wrap {
         width: 100%;
         max-width: 100%;
         min-height: 100dvh;
-        align-items: flex-start !important;
+        align-items: center !important;
+        justify-content: center !important;
         padding:
           max(14px, env(safe-area-inset-top))
           max(14px, env(safe-area-inset-right))
@@ -74,6 +72,29 @@
         width: min(520px, 100%) !important;
         max-width: 100% !important;
         margin: 0 auto;
+      }
+
+      body[data-route="health"] .wrap {
+        align-items: flex-start !important;
+      }
+
+      body[data-route="health"] .screen {
+        min-height: calc(100dvh - 28px);
+      }
+
+      [data-view="pick"].show,
+      [data-view="health"].show,
+      [data-view="sky"].show {
+        min-height: calc(100dvh - 28px);
+        display: flex !important;
+        flex-direction: column;
+      }
+
+      [data-view="pick"] > .bottomNav,
+      [data-view="health"] > .bottomNav,
+      [data-view="sky"] > .bottomNav {
+        margin-top: auto !important;
+        flex: 0 0 auto;
       }
 
       .inner,
@@ -91,8 +112,33 @@
         max-width: 100%;
       }
 
-      .healthView {
-        overflow-x: clip;
+      .healthView { overflow-x: clip; }
+
+      .healthView > .topbar {
+        position: relative;
+        min-height: 50px;
+        margin-bottom: 4px;
+      }
+
+      .healthView > .topbar .pill {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 0;
+        background: transparent;
+        padding: 0 8px;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: -.02em;
+        white-space: nowrap;
+      }
+
+      .healthView > .topbar .topbarSpacer {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
       }
 
       .healthHub {
@@ -100,12 +146,12 @@
         gap: 14px;
         width: 100%;
         max-width: 100%;
-        padding-top: 4px;
+        padding-top: 2px;
       }
 
       .healthHubHeader {
         text-align: center;
-        padding: 10px 4px 6px;
+        padding: 4px 4px 8px;
       }
 
       .healthHubMark {
@@ -117,22 +163,26 @@
         border: 1px solid var(--stroke);
         border-radius: 18px;
         background: rgba(255,255,255,.045);
-        font-size: 27px;
+        font-size: 31px;
         font-weight: 900;
+        line-height: 1;
       }
 
       .healthHubTitle {
-        margin: 0;
-        font-size: 25px;
-        line-height: 1.15;
-        letter-spacing: -.02em;
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        overflow: hidden !important;
+        clip: rect(0 0 0 0) !important;
+        clip-path: inset(50%) !important;
+        white-space: nowrap !important;
       }
 
       .healthHubIntro {
-        max-width: 34ch;
-        margin: 8px auto 0;
+        max-width: 36ch;
+        margin: 0 auto;
         color: var(--muted);
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.45;
       }
 
@@ -159,9 +209,7 @@
         cursor: pointer;
       }
 
-      .healthHubCard:active {
-        transform: scale(.992);
-      }
+      .healthHubCard:active { transform: scale(.992); }
 
       .healthHubIcon {
         width: 46px;
@@ -172,14 +220,24 @@
         border: 1px solid var(--stroke);
         border-radius: 15px;
         background: rgba(255,255,255,.045);
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 900;
+        line-height: 1;
       }
 
-      .healthHubCopy {
-        min-width: 0;
-        flex: 1;
+      .healthCrescentSvg {
+        width: 29px;
+        height: 29px;
+        display: block;
+        color: var(--text);
       }
+
+      .healthCrescentSvgLarge {
+        width: 32px;
+        height: 32px;
+      }
+
+      .healthHubCopy { min-width: 0; flex: 1; }
 
       .healthHubCopy strong {
         display: block;
@@ -235,7 +293,8 @@
         margin: 0 auto 12px;
         border: 1px solid var(--stroke);
         border-radius: 17px;
-        font-size: 24px;
+        font-size: 26px;
+        line-height: 1;
       }
 
       .healthPlaceholderCard h2 {
@@ -261,19 +320,39 @@
         font-weight: 800;
       }
 
+      .healthCollapsibleSection > .healthSectionHead {
+        cursor: pointer;
+        user-select: none;
+        margin-bottom: 0;
+      }
+
+      .healthCollapsibleSection[data-collapsed="false"] > .healthSectionHead {
+        margin-bottom: 11px;
+      }
+
+      .healthCollapseArrow {
+        display: inline-grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        margin-left: 6px;
+        color: var(--muted);
+        font-size: 17px;
+        transition: transform .15s ease;
+      }
+
+      .healthCollapsibleSection[data-collapsed="false"] .healthCollapseArrow {
+        transform: rotate(90deg);
+      }
+
+      .healthCollapsibleSection > ol[hidden] {
+        display: none !important;
+      }
+
       @media (max-width: 420px) {
-        .inner {
-          padding: 18px !important;
-        }
-
-        .healthHub {
-          gap: 11px;
-        }
-
-        .healthHubCard {
-          min-height: 84px;
-          padding: 14px;
-        }
+        .inner { padding: 18px !important; }
+        .healthHub { gap: 11px; }
+        .healthHubCard { min-height: 84px; padding: 14px; }
 
         .healthLibraryItem,
         .healthListItem {
@@ -290,6 +369,31 @@
     document.head.appendChild(styleElement);
   }
 
+
+  function createCrescentIcon(className = "healthCrescentSvg") {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 64 64");
+    svg.setAttribute("class", className);
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+
+    const outer = document.createElementNS(ns, "circle");
+    outer.setAttribute("cx", "32");
+    outer.setAttribute("cy", "32");
+    outer.setAttribute("r", "22");
+    outer.setAttribute("fill", "currentColor");
+
+    const cutout = document.createElementNS(ns, "circle");
+    cutout.setAttribute("cx", "23");
+    cutout.setAttribute("cy", "27");
+    cutout.setAttribute("r", "20");
+    cutout.setAttribute("fill", "var(--bg0)");
+
+    svg.append(outer, cutout);
+    return svg;
+  }
+
   function makeHubCard(section, icon, title, description) {
     const button = createElement("button", {
       className: "healthHubCard",
@@ -302,9 +406,14 @@
 
     const iconElement = createElement("span", {
       className: "healthHubIcon",
-      text: icon,
       attributes: { "aria-hidden": "true" }
     });
+
+    if (section === "wellness") {
+      iconElement.appendChild(createCrescentIcon());
+    } else {
+      iconElement.textContent = icon;
+    }
 
     const copy = createElement("span", { className: "healthHubCopy" });
     const strong = createElement("strong", { text: title });
@@ -334,9 +443,14 @@
     const card = createElement("div", { className: "healthPlaceholderCard" });
     const iconElement = createElement("div", {
       className: "healthPlaceholderIcon",
-      text: icon,
       attributes: { "aria-hidden": "true" }
     });
+
+    if (id === "healthWellnessPanel") {
+      iconElement.appendChild(createCrescentIcon("healthCrescentSvg healthCrescentSvgLarge"));
+    } else {
+      iconElement.textContent = icon;
+    }
     const heading = createElement("h2", {
       id: `${id}Title`,
       text: title
@@ -357,10 +471,10 @@
     if (!pill) return;
 
     const labels = {
-      hub: "Today Health",
-      sport: "Health · Spor",
-      nutrition: "Health · Beslenme",
-      wellness: "Health · Sağlık"
+      hub: "Health",
+      sport: "Spor",
+      nutrition: "Beslenme",
+      wellness: "Sağlık"
     };
 
     pill.textContent = labels[section] || labels.hub;
@@ -443,7 +557,7 @@
     });
     const intro = createElement("p", {
       className: "healthHubIntro",
-      text: "Bugün bedeninde hangi alana bakmak istiyorsun?"
+      text: "Bugün bedeninde neyi fark etmek istiyorsun?"
     });
 
     header.append(mark, title, intro);
@@ -464,7 +578,7 @@
       ),
       makeHubCard(
         "wellness",
-        "+",
+        "",
         "Sağlık",
         "Uyku, enerji, semptomlar ve beden notları."
       )
@@ -531,6 +645,79 @@
     );
   }
 
+
+  function refineGlobalHealthIdentity() {
+    const moduleDescription = document.getElementById("moduleHealthDesc");
+    if (moduleDescription) {
+      moduleDescription.textContent = "Beslenme, spor ve yaşam";
+    }
+
+    const mainHealthIcon =
+      document.querySelector("#btnModuleHealth .moduleIcon");
+    if (mainHealthIcon) {
+      mainHealthIcon.textContent = "♥";
+    }
+
+    document
+      .querySelectorAll('[data-open-module="health"] .navIcon')
+      .forEach((icon) => {
+        icon.textContent = "♥";
+      });
+  }
+
+  function setupCollapsibleSection(section, titleText) {
+    if (!section || section.dataset.healthCollapsibleReady === "true") {
+      return;
+    }
+
+    const head = section.querySelector(".healthSectionHead");
+    const list = section.querySelector("ol");
+    if (!head || !list) return;
+
+    const title = head.querySelector(".healthSectionTitle");
+    if (title && titleText) title.textContent = titleText;
+
+    section.classList.add("healthCollapsibleSection");
+    section.dataset.healthCollapsibleReady = "true";
+    section.dataset.collapsed = "true";
+    list.hidden = true;
+
+    head.setAttribute("role", "button");
+    head.setAttribute("tabindex", "0");
+    head.setAttribute("aria-expanded", "false");
+
+    const arrow = createElement("span", {
+      className: "healthCollapseArrow",
+      text: "›",
+      attributes: { "aria-hidden": "true" }
+    });
+    head.appendChild(arrow);
+
+    const toggle = () => {
+      const willOpen = section.dataset.collapsed !== "false";
+      section.dataset.collapsed = willOpen ? "false" : "true";
+      list.hidden = !willOpen;
+      head.setAttribute("aria-expanded", String(willOpen));
+    };
+
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      toggle();
+    });
+  }
+
+  function simplifyNutritionRecords() {
+    const entriesSection =
+      document.getElementById("healthEntriesTitle")?.closest("section");
+    setupCollapsibleSection(entriesSection, "Bugünün kayıtları");
+
+    const archivedSection =
+      document.getElementById("healthArchivedSection");
+    setupCollapsibleSection(archivedSection, "Arşiv");
+  }
+
   function init() {
     if (initialized) return getState();
 
@@ -543,6 +730,7 @@
     }
 
     installLayoutStyles();
+    refineGlobalHealthIdentity();
 
     if (!wrapNutritionPanel()) {
       return {
@@ -563,7 +751,7 @@
 
     wellnessPanel = makePlaceholder(
       "healthWellnessPanel",
-      "+",
+      "",
       "Sağlık",
       "Uyku, enerji, semptomlar ve beden notları burada gelişecek."
     );
@@ -571,6 +759,7 @@
     nutritionPanel.parentNode.insertBefore(sportPanel, nutritionPanel.nextSibling);
     nutritionPanel.parentNode.insertBefore(wellnessPanel, sportPanel.nextSibling);
 
+    simplifyNutritionRecords();
     interceptBackButton();
     resetWhenOpeningHealth();
 
