@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 10;
-  const RULESET_ID = "today:health:hub:v11";
+  const API_VERSION = 11;
+  const RULESET_ID = "today:health:hub:v12";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -39,6 +39,7 @@
   let sportPanels = {};
   const SPORT_PROGRAM_KEY = "today.health.sport.program.v1";
   const SPORT_WORKOUT_LOG_KEY = "today.health.sport.workouts.v1";
+  const SPORT_CUSTOM_DAYS_KEY = "today.health.sport.customDays.v1";
   let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
@@ -996,6 +997,18 @@
       }
 
 
+      /* NUT-014.6 — Programım ↔ Hareket Kütüphanesi */
+      .sportProgramDayEditor{display:grid;gap:11px;padding-bottom:calc(118px + env(safe-area-inset-bottom))}
+      .sportProgramExerciseList{display:grid;gap:8px}
+      .sportProgramExerciseRow{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--stroke);border-radius:16px;background:rgba(255,255,255,.03)}
+      .sportProgramExerciseThumb{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:13px;background:rgba(8,15,28,.35);overflow:hidden}
+      .sportProgramExerciseThumb img{width:100%;height:100%;object-fit:contain;padding:5px}
+      .sportProgramExerciseCopy{min-width:0;flex:1}.sportProgramExerciseCopy strong{display:block;font-size:12px}.sportProgramExerciseCopy small{display:block;margin-top:3px;color:var(--muted);font-size:10px}
+      .sportProgramRemove{width:36px;height:36px;flex:0 0 36px;border:1px solid var(--stroke);border-radius:11px;background:rgba(255,255,255,.025);color:var(--muted);font:inherit;font-size:18px}
+      .sportLibrarySelectCard{position:relative}
+      .sportLibraryAddBadge{position:absolute;right:8px;top:8px;min-width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:999px;background:rgba(8,15,28,.82);font-size:17px;font-weight:900}
+      .sportProgramEditorActions{display:grid;gap:8px}
+
       /* NUT-014.5 — Gelişim & Antrenman Geçmişi */
       .sportProgressShell{display:grid;gap:12px;padding-bottom:calc(118px + env(safe-area-inset-bottom))}
       .sportProgressStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -1532,10 +1545,15 @@
     const shell = createElement("div",{className:"sportWorkoutShell"});
     const startedAt = Date.now();
 
-    sportExerciseTemplates(day[0]).forEach((exercise,index) => {
+    const workoutExercises = exerciseIdsForDay(dayIndex,day[0])
+      .map(id=>sportLibraryItem(id))
+      .filter(Boolean);
+
+    workoutExercises.forEach((libraryExercise,index) => {
+      const exercise = [libraryExercise.name,libraryExercise.muscle,"3","10"];
       const card = createElement("section",{
         className:"sportWorkoutExercise",
-        attributes:{"data-workout-exercise":String(index)}
+        attributes:{"data-workout-exercise":String(index),"data-exercise-id":libraryExercise.id}
       });
       const head = createElement("div",{className:"sportWorkoutExerciseHead"});
       const copy = createElement("span");
@@ -1587,13 +1605,14 @@
     });
     finish.addEventListener("click",() => {
       const exercises = Array.from(shell.querySelectorAll("[data-workout-exercise]")).map((card,index) => {
-        const template = sportExerciseTemplates(day[0])[index];
+        const exerciseId = card.dataset.exerciseId;
+        const template = sportLibraryItem(exerciseId);
         const get = key => card.querySelector(`[data-workout-field="${key}"]`)?.value || "";
         return {
-          exerciseId:exerciseIdFromName(template[0]) || `sport-exercise-${dayIndex}-${index}`,
-          name:template[0],
-          muscle:template[1],
-          image:sportLibraryItem(exerciseIdFromName(template[0]))?.image || null,
+          exerciseId:exerciseId || `sport-exercise-${dayIndex}-${index}`,
+          name:template?.name || "Hareket",
+          muscle:template?.muscle || "",
+          image:template?.image || null,
           sets:Number(get("set")) || 0,
           reps:Number(get("reps")) || 0,
           kg:Number(get("kg")) || 0,
@@ -1624,6 +1643,125 @@
     );
     panel.append(header,shell);
     resetHealthScroll();
+  }
+
+  function readSportCustomDays() {
+    try {
+      const raw=localStorage.getItem(SPORT_CUSTOM_DAYS_KEY);
+      const parsed=raw?JSON.parse(raw):{};
+      return parsed && typeof parsed==="object" ? parsed : {};
+    } catch(error) { return {}; }
+  }
+
+  function saveSportCustomDays(data) {
+    try {
+      localStorage.setItem(SPORT_CUSTOM_DAYS_KEY,JSON.stringify(data));
+      return true;
+    } catch(error) { return false; }
+  }
+
+  function defaultExerciseIdsForDay(dayTitle) {
+    return sportExerciseTemplates(dayTitle)
+      .map(item=>exerciseIdFromName(item[0]))
+      .filter(Boolean);
+  }
+
+  function exerciseIdsForDay(dayIndex,dayTitle) {
+    const custom=readSportCustomDays();
+    const key=String(dayIndex);
+    return Array.isArray(custom[key]) ? custom[key] : defaultExerciseIdsForDay(dayTitle);
+  }
+
+  function setExerciseIdsForDay(dayIndex,ids) {
+    const custom=readSportCustomDays();
+    custom[String(dayIndex)]=Array.from(new Set(ids));
+    saveSportCustomDays(custom);
+  }
+
+  function renderSportProgramDayEditor(panel,dayIndex) {
+    const program=readSportProgram();
+    if(!panel||!program)return;
+    const days=defaultProgramDays(Number(program.days));
+    const day=days[dayIndex]||days[0];
+    panel.replaceChildren();
+
+    const header=createElement("header",{className:"sportSubviewHeader"});
+    header.append(
+      createElement("h2",{text:`${dayIndex+1}. Gün`}),
+      createElement("p",{text:day[0]})
+    );
+
+    const editor=createElement("div",{className:"sportProgramDayEditor"});
+    const list=createElement("div",{className:"sportProgramExerciseList"});
+    const ids=exerciseIdsForDay(dayIndex,day[0]);
+
+    if(!ids.length){
+      const empty=createElement("div",{className:"sportProgressEmpty"});
+      empty.append(createElement("strong",{text:"Bu güne hareket eklenmedi"}),createElement("p",{text:"Görsel kütüphaneden istediğin hareketleri ekleyebilirsin."}));
+      list.appendChild(empty);
+    } else {
+      ids.forEach(id=>{
+        const item=sportLibraryItem(id);
+        if(!item)return;
+        const row=createElement("div",{className:"sportProgramExerciseRow"});
+        const thumb=createElement("div",{className:"sportProgramExerciseThumb"});
+        const img=document.createElement("img");img.src=item.image;img.alt="";thumb.appendChild(img);
+        const copy=createElement("div",{className:"sportProgramExerciseCopy"});
+        copy.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
+        const remove=createElement("button",{className:"sportProgramRemove",type:"button",text:"×",attributes:{"aria-label":`${item.name} hareketini çıkar`}});
+        remove.addEventListener("click",()=>{
+          setExerciseIdsForDay(dayIndex,exerciseIdsForDay(dayIndex,day[0]).filter(x=>x!==id));
+          renderSportProgramDayEditor(panel,dayIndex);
+          buildTodayWorkoutUI(sportPanels.today,true);
+        });
+        row.append(thumb,copy,remove);list.appendChild(row);
+      });
+    }
+
+    const actions=createElement("div",{className:"sportProgramEditorActions"});
+    const add=createElement("button",{className:"sportPrimaryAction",type:"button",text:"Hareket ekle"});
+    add.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,"Tümü"));
+    const workout=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Bu antrenmanı aç"});
+    workout.addEventListener("click",()=>{showSportSection("today",{focus:false});openSportWorkoutDay(dayIndex)});
+    const back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Programıma dön"});
+    back.addEventListener("click",()=>renderSportProgram(panel,program));
+    actions.append(add,workout,back);
+    editor.append(list,actions);panel.append(header,editor);resetHealthScroll();
+  }
+
+  function renderSportLibrarySelector(panel,dayIndex,activeCategory="Tümü") {
+    const program=readSportProgram(); if(!program)return;
+    const days=defaultProgramDays(Number(program.days)); const day=days[dayIndex]||days[0];
+    panel.replaceChildren();
+    const header=createElement("header",{className:"sportSubviewHeader"});
+    header.append(createElement("h2",{text:"Hareket ekle"}),createElement("p",{text:`${dayIndex+1}. Gün · ${day[0]}`}));
+    const filters=createElement("div",{className:"sportLibraryFilters"});
+    ["Tümü","Göğüs","Sırt","Omuz","Kol","Bacak"].forEach(category=>{
+      const b=createElement("button",{className:"sportLibraryFilter",type:"button",text:category,attributes:{"aria-pressed":category===activeCategory?"true":"false"}});
+      b.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,category));filters.appendChild(b);
+    });
+    const selected=new Set(exerciseIdsForDay(dayIndex,day[0]));
+    const grid=createElement("div",{className:"sportLibraryGrid"});
+    SPORT_EXERCISE_LIBRARY.filter(item=>activeCategory==="Tümü"||item.category===activeCategory).forEach(item=>{
+      const card=createElement("button",{className:"sportLibraryCard sportLibrarySelectCard",type:"button"});
+      const visual=createElement("span",{className:"sportLibraryVisual"});const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img);
+      const badge=createElement("span",{className:"sportLibraryAddBadge",text:selected.has(item.id)?"✓":"+"});
+      visual.appendChild(badge);
+      const copy=createElement("span",{className:"sportLibraryCopy"});copy.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
+      card.append(visual,copy);
+      card.addEventListener("click",()=>{
+        const ids=exerciseIdsForDay(dayIndex,day[0]);
+        if(ids.includes(item.id)) setExerciseIdsForDay(dayIndex,ids.filter(x=>x!==item.id));
+        else setExerciseIdsForDay(dayIndex,[...ids,item.id]);
+        renderSportLibrarySelector(panel,dayIndex,activeCategory);
+        buildTodayWorkoutUI(sportPanels.today,true);
+      });
+      grid.appendChild(card);
+    });
+    const done=createElement("button",{className:"sportPrimaryAction",type:"button",text:"Bitti"});
+    done.addEventListener("click",()=>renderSportProgramDayEditor(panel,dayIndex));
+    const wrap=createElement("div",{className:"sportProgramEditorActions"});wrap.appendChild(done);
+    panel.append(header,filters,grid,wrap);resetHealthScroll();
   }
 
   function sportDate(value) {
@@ -2015,8 +2153,7 @@
         createElement("span", {className:"healthHubArrow", text:"›", attributes:{"aria-hidden":"true"}})
       );
       card.addEventListener("click",() => {
-        showSportSection("today",{focus:false});
-        openSportWorkoutDay(index);
+        renderSportProgramDayEditor(panel,index);
       });
       dayList.appendChild(card);
     });
