@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 6;
-  const RULESET_ID = "today:health:hub:v7";
+  const API_VERSION = 7;
+  const RULESET_ID = "today:health:hub:v8";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -37,6 +37,8 @@
   let sportActiveSection = "hub";
   let sportHub = null;
   let sportPanels = {};
+  const SPORT_PROGRAM_KEY = "today.health.sport.program.v1";
+  let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
     const element = document.createElement(tag);
@@ -839,6 +841,159 @@
       .sportFoundationCard p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
       .sportFoundationBadge{display:inline-flex;align-items:center;min-height:30px;margin-top:13px;padding:0 10px;border:1px solid var(--stroke);border-radius:999px;color:var(--muted);font-size:11px;font-weight:800}
 
+
+      /* NUT-014.2 — Programım */
+      .sportProgramSetup,
+      .sportProgramSummary {
+        display: grid;
+        gap: 13px;
+      }
+
+      .sportProgramSetup[hidden],
+      .sportProgramSummary[hidden] {
+        display: none !important;
+      }
+
+      .sportSetupStep {
+        padding: 16px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.035);
+      }
+
+      .sportSetupStep h3 {
+        margin: 0 0 11px;
+        font-size: 15px;
+      }
+
+      .sportChoiceGrid {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 8px;
+      }
+
+      .sportChoice {
+        min-height: 46px;
+        padding: 9px 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .sportChoice[aria-pressed="true"] {
+        background: rgba(255,255,255,.11);
+        border-color: color-mix(in srgb,var(--text) 42%,transparent);
+      }
+
+      .sportSetupActions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding-bottom: calc(106px + env(safe-area-inset-bottom));
+      }
+
+      .sportPrimaryAction,
+      .sportSecondaryAction {
+        width: 100%;
+        min-height: 50px;
+        border-radius: 15px;
+        font: inherit;
+        font-weight: 850;
+      }
+
+      .sportPrimaryAction {
+        border: 1px solid var(--text);
+        background: var(--text);
+        color: var(--bg);
+      }
+
+      .sportPrimaryAction:disabled {
+        opacity: .38;
+      }
+
+      .sportSecondaryAction {
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,.035);
+        color: var(--text);
+      }
+
+      .sportProgramHero {
+        padding: 17px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.04);
+        text-align: center;
+      }
+
+      .sportProgramHero strong {
+        display: block;
+        font-size: 18px;
+      }
+
+      .sportProgramHero span {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .sportDayList {
+        display: grid;
+        gap: 10px;
+      }
+
+      .sportDayCard {
+        width: 100%;
+        min-height: 86px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 18px;
+        background: rgba(255,255,255,.035);
+        color: var(--text);
+        text-align: left;
+        font: inherit;
+      }
+
+      .sportDayNumber {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--stroke);
+        border-radius: 13px;
+        font-weight: 900;
+      }
+
+      .sportDayCopy {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .sportDayCopy strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .sportDayCopy small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .sportEquipmentChoices {
+        margin-top: 10px;
+      }
+
       @media (max-width: 420px) {
         #mealAddPanel {
           padding-bottom: calc(132px + env(safe-area-inset-bottom));
@@ -1143,6 +1298,270 @@
     return button;
   }
 
+  function readSportProgram() {
+    try {
+      const raw = localStorage.getItem(SPORT_PROGRAM_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveSportProgram(program) {
+    try {
+      localStorage.setItem(SPORT_PROGRAM_KEY, JSON.stringify(program));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function sportChoice(group, value, label, multi = false) {
+    return createElement("button", {
+      className: "sportChoice",
+      type: "button",
+      text: label,
+      attributes: {
+        "data-sport-choice-group": group,
+        "data-sport-choice-value": value,
+        "data-sport-choice-multi": multi ? "true" : "false",
+        "aria-pressed": "false"
+      }
+    });
+  }
+
+  function sportSetupStep(title, choices) {
+    const section = createElement("section", {className:"sportSetupStep"});
+    section.appendChild(createElement("h3", {text:title}));
+    const grid = createElement("div", {className:"sportChoiceGrid"});
+    choices.forEach(choice => grid.appendChild(choice));
+    section.appendChild(grid);
+    return section;
+  }
+
+  function defaultProgramDays(days) {
+    const templates = {
+      2: [
+        ["Tüm Vücut A","6 hareket"],
+        ["Tüm Vücut B","6 hareket"]
+      ],
+      3: [
+        ["Göğüs · Omuz · Triceps","6 hareket"],
+        ["Sırt · Biceps","6 hareket"],
+        ["Bacak · Core","7 hareket"]
+      ],
+      4: [
+        ["Üst Vücut A","6 hareket"],
+        ["Alt Vücut A","6 hareket"],
+        ["Üst Vücut B","6 hareket"],
+        ["Alt Vücut B","6 hareket"]
+      ],
+      5: [
+        ["Göğüs · Triceps","6 hareket"],
+        ["Sırt · Biceps","6 hareket"],
+        ["Bacak","7 hareket"],
+        ["Omuz · Core","6 hareket"],
+        ["Tüm Vücut","6 hareket"]
+      ]
+    };
+    return templates[days] || templates[3];
+  }
+
+  function buildSportProgramUI(panel) {
+    if (!panel || panel.dataset.programReady === "true") return;
+    panel.dataset.programReady = "true";
+    panel.replaceChildren();
+
+    const header = createElement("header", {className:"sportSubviewHeader"});
+    header.append(
+      createElement("h2", {text:"Programım"}),
+      createElement("p", {text:"Sana uygun temel program yapısını birkaç seçimle kur."})
+    );
+
+    const setup = createElement("div", {
+      className:"sportProgramSetup",
+      id:"sportProgramSetup"
+    });
+
+    setup.append(
+      sportSetupStep("Hedefin ne?", [
+        sportChoice("goal","muscle","Kas geliştirme"),
+        sportChoice("goal","strength","Güç"),
+        sportChoice("goal","condition","Form & kondisyon"),
+        sportChoice("goal","general","Genel hareket")
+      ]),
+      sportSetupStep("Seviyen?", [
+        sportChoice("level","beginner","Başlangıç"),
+        sportChoice("level","intermediate","Orta"),
+        sportChoice("level","advanced","İleri")
+      ]),
+      sportSetupStep("Haftada kaç gün?", [
+        sportChoice("days","2","2 gün"),
+        sportChoice("days","3","3 gün"),
+        sportChoice("days","4","4 gün"),
+        sportChoice("days","5","5 gün")
+      ]),
+      sportSetupStep("Antrenman süresi?", [
+        sportChoice("duration","30","30 dk"),
+        sportChoice("duration","45","45 dk"),
+        sportChoice("duration","60","60 dk"),
+        sportChoice("duration","75","75+ dk")
+      ]),
+      sportSetupStep("Nerede çalışıyorsun?", [
+        sportChoice("location","gym","Spor salonu"),
+        sportChoice("location","home","Ev"),
+        sportChoice("location","mixed","Karma")
+      ])
+    );
+
+    const equipmentStep = sportSetupStep("Ekipman", [
+      sportChoice("equipment","machines","Makineler",true),
+      sportChoice("equipment","dumbbell","Dumbbell",true),
+      sportChoice("equipment","barbell","Barbell",true),
+      sportChoice("equipment","cable","Cable",true),
+      sportChoice("equipment","cardio","Cardio",true)
+    ]);
+    equipmentStep.classList.add("sportEquipmentChoices");
+    equipmentStep.hidden = true;
+    setup.appendChild(equipmentStep);
+
+    const actions = createElement("div", {className:"sportSetupActions"});
+    const createButton = createElement("button", {
+      className:"sportPrimaryAction",
+      id:"btnCreateSportProgram",
+      type:"button",
+      text:"Programı oluştur",
+      attributes:{disabled:""}
+    });
+    actions.appendChild(createButton);
+    setup.appendChild(actions);
+
+    const summary = createElement("div", {
+      className:"sportProgramSummary",
+      id:"sportProgramSummary",
+      attributes:{hidden:""}
+    });
+
+    panel.append(header, setup, summary);
+
+    sportProgramDraft = {
+      goal:null, level:null, days:null, duration:null, location:null, equipment:[]
+    };
+
+    function updateCreateState() {
+      const ready = sportProgramDraft.goal &&
+        sportProgramDraft.level &&
+        sportProgramDraft.days &&
+        sportProgramDraft.duration &&
+        sportProgramDraft.location;
+      createButton.disabled = !ready;
+      equipmentStep.hidden = !["gym","mixed"].includes(sportProgramDraft.location);
+    }
+
+    setup.addEventListener("click", event => {
+      const button = event.target.closest("[data-sport-choice-group]");
+      if (!button) return;
+      const group = button.dataset.sportChoiceGroup;
+      const value = button.dataset.sportChoiceValue;
+      const multi = button.dataset.sportChoiceMulti === "true";
+
+      if (multi) {
+        const selected = new Set(sportProgramDraft[group] || []);
+        if (selected.has(value)) selected.delete(value);
+        else selected.add(value);
+        sportProgramDraft[group] = Array.from(selected);
+        button.setAttribute("aria-pressed", selected.has(value) ? "true" : "false");
+      } else {
+        setup.querySelectorAll(`[data-sport-choice-group="${group}"]`)
+          .forEach(node => node.setAttribute("aria-pressed","false"));
+        button.setAttribute("aria-pressed","true");
+        sportProgramDraft[group] = value;
+        if (group === "location" && value === "home") {
+          sportProgramDraft.equipment = [];
+          equipmentStep.querySelectorAll("[aria-pressed='true']")
+            .forEach(node => node.setAttribute("aria-pressed","false"));
+        }
+      }
+      updateCreateState();
+    });
+
+    createButton.addEventListener("click", () => {
+      if (createButton.disabled) return;
+      const program = {
+        ...sportProgramDraft,
+        days:Number(sportProgramDraft.days),
+        duration:Number(sportProgramDraft.duration),
+        createdAt:new Date().toISOString()
+      };
+      saveSportProgram(program);
+      renderSportProgram(panel, program);
+    });
+
+    const existing = readSportProgram();
+    if (existing) renderSportProgram(panel, existing);
+  }
+
+  function renderSportProgram(panel, program) {
+    const setup = panel.querySelector("#sportProgramSetup");
+    const summary = panel.querySelector("#sportProgramSummary");
+    if (!summary) return;
+
+    if (setup) setup.hidden = true;
+    summary.hidden = false;
+    summary.replaceChildren();
+
+    const goalLabels = {
+      muscle:"Kas geliştirme",
+      strength:"Güç",
+      condition:"Form & kondisyon",
+      general:"Genel hareket"
+    };
+
+    const hero = createElement("section", {className:"sportProgramHero"});
+    hero.append(
+      createElement("strong", {text:goalLabels[program.goal] || "Programım"}),
+      createElement("span", {text:`${program.days} gün · ${program.duration}${program.duration >= 75 ? "+" : ""} dakika`})
+    );
+
+    const dayList = createElement("div", {className:"sportDayList"});
+    defaultProgramDays(Number(program.days)).forEach((day,index) => {
+      const card = createElement("button", {
+        className:"sportDayCard",
+        type:"button",
+        attributes:{"aria-label":`${index+1}. gün ${day[0]}`}
+      });
+      card.append(
+        createElement("span", {className:"sportDayNumber", text:String(index+1)}),
+        (() => {
+          const copy = createElement("span", {className:"sportDayCopy"});
+          copy.append(
+            createElement("strong", {text:day[0]}),
+            createElement("small", {text:day[1]})
+          );
+          return copy;
+        })(),
+        createElement("span", {className:"healthHubArrow", text:"›", attributes:{"aria-hidden":"true"}})
+      );
+      dayList.appendChild(card);
+    });
+
+    const edit = createElement("button", {
+      className:"sportSecondaryAction",
+      type:"button",
+      text:"Programı düzenle"
+    });
+    edit.addEventListener("click", () => {
+      summary.hidden = true;
+      if (setup) setup.hidden = false;
+      resetHealthScroll();
+    });
+
+    const actions = createElement("div", {className:"sportSetupActions"});
+    actions.appendChild(edit);
+    summary.append(hero, dayList, actions);
+  }
+
   function makeSportPanel(id, title, detail, nextStep) {
     const panel = createElement("section", {className: "sportSubview", id, attributes: {hidden: ""}});
     const header = createElement("header", {className: "sportSubviewHeader"});
@@ -1180,12 +1599,17 @@
     sportPanel.appendChild(sportHub);
 
     sportPanels = {
-      program: makeSportPanel("sportProgramPanel","Programım","Hedef, seviye, gün, süre ve ekipmana göre plan.","Program oluşturma akışı"),
+      program: createElement("section", {
+        className:"sportSubview",
+        id:"sportProgramPanel",
+        attributes:{hidden:""}
+      }),
       today: makeSportPanel("sportTodayPanel","Bugünkü Antrenman","Isınma, ana bölüm ve soğuma akışı.","Antrenman kayıt ekranı"),
       exercises: makeSportPanel("sportExercisesPanel","Hareketler","Aletli hareketler görsel kartlarla gösterilecek.","Görsel hareket kütüphanesi"),
       progress: makeSportPanel("sportProgressPanel","Gelişim","Set, tekrar, ağırlık, süre ve geçmiş gelişimi.","Gelişim ve geçmiş görünümü")
     };
     Object.values(sportPanels).forEach(panel => sportPanel.appendChild(panel));
+    buildSportProgramUI(sportPanels.program);
 
     cards.addEventListener("click", event => {
       const button = event.target.closest("[data-sport-hub-open]");
