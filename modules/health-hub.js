@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 7;
-  const RULESET_ID = "today:health:hub:v8";
+  const API_VERSION = 8;
+  const RULESET_ID = "today:health:hub:v9";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -38,6 +38,7 @@
   let sportHub = null;
   let sportPanels = {};
   const SPORT_PROGRAM_KEY = "today.health.sport.program.v1";
+  const SPORT_WORKOUT_LOG_KEY = "today.health.sport.workouts.v1";
   let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
@@ -907,8 +908,8 @@
 
       .sportPrimaryAction {
         border: 1px solid var(--text);
-        background: var(--text);
-        color: var(--bg);
+        background: #f5f7ff;
+        color: #0b1323;
       }
 
       .sportPrimaryAction:disabled {
@@ -993,6 +994,27 @@
       .sportEquipmentChoices {
         margin-top: 10px;
       }
+
+
+      /* NUT-014.3 — Bugünkü Antrenman */
+      .sportWorkoutShell{display:grid;gap:12px;padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+      .sportWorkoutShell[hidden]{display:none!important}
+      .sportWorkoutDayPicker{display:grid;gap:9px}
+      .sportWorkoutDayButton{width:100%;min-height:64px;display:flex;align-items:center;gap:11px;padding:12px;border:1px solid var(--stroke);border-radius:17px;background:rgba(255,255,255,.035);color:var(--text);font:inherit;text-align:left}
+      .sportWorkoutDayButton strong{display:block;font-size:14px}
+      .sportWorkoutDayButton small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+      .sportWorkoutExercise{padding:14px;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.035)}
+      .sportWorkoutExerciseHead{display:flex;align-items:center;gap:10px}
+      .sportWorkoutExerciseIndex{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border:1px solid var(--stroke);border-radius:12px;font-weight:900}
+      .sportWorkoutExerciseHead strong{display:block;font-size:14px}
+      .sportWorkoutExerciseHead small{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+      .sportWorkoutFields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:12px}
+      .sportWorkoutField{display:grid;gap:5px}
+      .sportWorkoutField label{color:var(--muted);font-size:10px;font-weight:800}
+      .sportWorkoutField input{width:100%;min-height:42px;padding:8px;border:1px solid var(--stroke);border-radius:12px;background:rgba(255,255,255,.025);color:var(--text);font:inherit;text-align:center}
+      .sportWorkoutDone{width:100%;min-height:42px;margin-top:10px;border:1px solid var(--stroke);border-radius:12px;background:rgba(255,255,255,.03);color:var(--text);font:inherit;font-weight:800}
+      .sportWorkoutDone[aria-pressed="true"]{background:rgba(255,255,255,.13)}
+      .sportWorkoutMeta{text-align:center;color:var(--muted);font-size:11px}
 
       @media (max-width: 420px) {
         #mealAddPanel {
@@ -1368,6 +1390,230 @@
     return templates[days] || templates[3];
   }
 
+  function sportExerciseTemplates(dayTitle) {
+    const name = String(dayTitle || "");
+    if (name.includes("Göğüs") || name.includes("Üst Vücut")) {
+      return [
+        ["Chest Press","Göğüs","3","10"],
+        ["Lat Pulldown","Sırt","3","10"],
+        ["Shoulder Press","Omuz","3","10"],
+        ["Cable Row","Sırt","3","12"],
+        ["Triceps Pushdown","Triceps","3","12"],
+        ["Biceps Curl","Biceps","3","12"]
+      ];
+    }
+    if (name.includes("Sırt")) {
+      return [
+        ["Lat Pulldown","Sırt","3","10"],
+        ["Seated Cable Row","Sırt","3","10"],
+        ["T-Bar Row","Sırt","3","10"],
+        ["Face Pull","Arka omuz","3","12"],
+        ["Biceps Curl","Biceps","3","12"],
+        ["Hammer Curl","Biceps","3","12"]
+      ];
+    }
+    if (name.includes("Bacak") || name.includes("Alt Vücut")) {
+      return [
+        ["Leg Press","Bacak","3","10"],
+        ["Leg Curl","Arka bacak","3","12"],
+        ["Leg Extension","Ön bacak","3","12"],
+        ["Calf Raise","Baldır","3","15"],
+        ["Hip Hinge","Kalça","3","10"],
+        ["Core","Core","3","12"]
+      ];
+    }
+    return [
+      ["Leg Press","Bacak","3","10"],
+      ["Chest Press","Göğüs","3","10"],
+      ["Lat Pulldown","Sırt","3","10"],
+      ["Shoulder Press","Omuz","3","10"],
+      ["Leg Curl","Arka bacak","3","12"],
+      ["Core","Core","3","12"]
+    ];
+  }
+
+  function readWorkoutLogs() {
+    try {
+      const raw = localStorage.getItem(SPORT_WORKOUT_LOG_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveWorkoutLog(log) {
+    try {
+      const logs = readWorkoutLogs();
+      logs.unshift(log);
+      localStorage.setItem(SPORT_WORKOUT_LOG_KEY, JSON.stringify(logs.slice(0,100)));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function openSportWorkoutDay(dayIndex) {
+    const panel = sportPanels.today;
+    const program = readSportProgram();
+    if (!panel || !program) return;
+
+    const days = defaultProgramDays(Number(program.days));
+    const day = days[dayIndex] || days[0];
+    panel.replaceChildren();
+
+    const header = createElement("header",{className:"sportSubviewHeader"});
+    header.append(
+      createElement("h2",{text:`${dayIndex + 1}. Gün`}),
+      createElement("p",{text:day[0]})
+    );
+
+    const shell = createElement("div",{className:"sportWorkoutShell"});
+    const startedAt = Date.now();
+
+    sportExerciseTemplates(day[0]).forEach((exercise,index) => {
+      const card = createElement("section",{
+        className:"sportWorkoutExercise",
+        attributes:{"data-workout-exercise":String(index)}
+      });
+      const head = createElement("div",{className:"sportWorkoutExerciseHead"});
+      const copy = createElement("span");
+      copy.append(
+        createElement("strong",{text:exercise[0]}),
+        createElement("small",{text:exercise[1]})
+      );
+      head.append(
+        createElement("span",{className:"sportWorkoutExerciseIndex",text:String(index+1)}),
+        copy
+      );
+
+      const fields = createElement("div",{className:"sportWorkoutFields"});
+      [["set",exercise[2],"Set"],["reps",exercise[3],"Tekrar"],["kg","","Kg"]].forEach(([key,value,label]) => {
+        const wrap = createElement("div",{className:"sportWorkoutField"});
+        const input = createElement("input",{
+          type:"number",
+          attributes:{
+            min:"0",
+            inputmode:"decimal",
+            "data-workout-field":key,
+            value
+          }
+        });
+        wrap.append(createElement("label",{text:label}),input);
+        fields.appendChild(wrap);
+      });
+
+      const done = createElement("button",{
+        className:"sportWorkoutDone",
+        type:"button",
+        text:"Tamamlandı",
+        attributes:{"aria-pressed":"false"}
+      });
+      done.addEventListener("click",() => {
+        const pressed = done.getAttribute("aria-pressed") === "true";
+        done.setAttribute("aria-pressed",pressed ? "false" : "true");
+        done.textContent = pressed ? "Tamamlandı" : "✓ Tamamlandı";
+      });
+
+      card.append(head,fields,done);
+      shell.appendChild(card);
+    });
+
+    const finish = createElement("button",{
+      className:"sportPrimaryAction",
+      type:"button",
+      text:"Antrenmanı bitir"
+    });
+    finish.addEventListener("click",() => {
+      const exercises = Array.from(shell.querySelectorAll("[data-workout-exercise]")).map((card,index) => {
+        const template = sportExerciseTemplates(day[0])[index];
+        const get = key => card.querySelector(`[data-workout-field="${key}"]`)?.value || "";
+        return {
+          exerciseId:`sport-exercise-${dayIndex}-${index}`,
+          name:template[0],
+          muscle:template[1],
+          image:null,
+          sets:Number(get("set")) || 0,
+          reps:Number(get("reps")) || 0,
+          kg:Number(get("kg")) || 0,
+          completed:card.querySelector(".sportWorkoutDone")?.getAttribute("aria-pressed") === "true"
+        };
+      });
+
+      saveWorkoutLog({
+        id:`workout-${Date.now()}`,
+        date:new Date().toISOString(),
+        dayIndex,
+        dayTitle:day[0],
+        durationMinutes:Math.max(1,Math.round((Date.now()-startedAt)/60000)),
+        exercises
+      });
+
+      finish.textContent = "✓ Kaydedildi";
+      setTimeout(() => {
+        buildTodayWorkoutUI(panel,true);
+        resetHealthScroll();
+      },350);
+    });
+
+    shell.append(
+      createElement("p",{className:"sportWorkoutMeta",text:"Set, tekrar ve ağırlık bilgilerini ihtiyacın kadar doldur."}),
+      finish
+    );
+    panel.append(header,shell);
+    resetHealthScroll();
+  }
+
+  function buildTodayWorkoutUI(panel, force = false) {
+    if (!panel) return;
+    if (panel.dataset.todayReady === "true" && !force) return;
+    panel.dataset.todayReady = "true";
+    panel.replaceChildren();
+
+    const header = createElement("header",{className:"sportSubviewHeader"});
+    header.append(
+      createElement("h2",{text:"Bugünkü Antrenman"}),
+      createElement("p",{text:"Programından bir gün seç ve antrenmana başla."})
+    );
+
+    const program = readSportProgram();
+    const shell = createElement("div",{className:"sportWorkoutShell"});
+
+    if (!program) {
+      const card = createElement("div",{className:"sportFoundationCard"});
+      card.append(
+        createElement("strong",{text:"Önce programını oluştur"}),
+        createElement("p",{text:"Programım bölümünde birkaç seçim yaptıktan sonra antrenman günlerin burada görünecek."})
+      );
+      const go = createElement("button",{className:"sportPrimaryAction",type:"button",text:"Programım'a git"});
+      go.addEventListener("click",() => showSportSection("program"));
+      shell.append(card,go);
+    } else {
+      const picker = createElement("div",{className:"sportWorkoutDayPicker"});
+      defaultProgramDays(Number(program.days)).forEach((day,index) => {
+        const button = createElement("button",{
+          className:"sportWorkoutDayButton",
+          type:"button"
+        });
+        const copy = createElement("span",{className:"sportDayCopy"});
+        copy.append(
+          createElement("strong",{text:`${index+1}. Gün · ${day[0]}`}),
+          createElement("small",{text:day[1]})
+        );
+        button.append(
+          createElement("span",{className:"sportDayNumber",text:String(index+1)}),
+          copy,
+          createElement("span",{className:"healthHubArrow",text:"›",attributes:{"aria-hidden":"true"}})
+        );
+        button.addEventListener("click",() => openSportWorkoutDay(index));
+        picker.appendChild(button);
+      });
+      shell.appendChild(picker);
+    }
+
+    panel.append(header,shell);
+  }
+
   function buildSportProgramUI(panel) {
     if (!panel || panel.dataset.programReady === "true") return;
     panel.dataset.programReady = "true";
@@ -1496,6 +1742,7 @@
       };
       saveSportProgram(program);
       renderSportProgram(panel, program);
+      buildTodayWorkoutUI(sportPanels.today, true);
     });
 
     const existing = readSportProgram();
@@ -1543,6 +1790,10 @@
         })(),
         createElement("span", {className:"healthHubArrow", text:"›", attributes:{"aria-hidden":"true"}})
       );
+      card.addEventListener("click",() => {
+        showSportSection("today",{focus:false});
+        openSportWorkoutDay(index);
+      });
       dayList.appendChild(card);
     });
 
@@ -1604,12 +1855,17 @@
         id:"sportProgramPanel",
         attributes:{hidden:""}
       }),
-      today: makeSportPanel("sportTodayPanel","Bugünkü Antrenman","Isınma, ana bölüm ve soğuma akışı.","Antrenman kayıt ekranı"),
+      today: createElement("section",{
+        className:"sportSubview",
+        id:"sportTodayPanel",
+        attributes:{hidden:""}
+      }),
       exercises: makeSportPanel("sportExercisesPanel","Hareketler","Aletli hareketler görsel kartlarla gösterilecek.","Görsel hareket kütüphanesi"),
       progress: makeSportPanel("sportProgressPanel","Gelişim","Set, tekrar, ağırlık, süre ve geçmiş gelişimi.","Gelişim ve geçmiş görünümü")
     };
     Object.values(sportPanels).forEach(panel => sportPanel.appendChild(panel));
     buildSportProgramUI(sportPanels.program);
+    buildTodayWorkoutUI(sportPanels.today);
 
     cards.addEventListener("click", event => {
       const button = event.target.closest("[data-sport-hub-open]");
