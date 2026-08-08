@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 8;
-  const RULESET_ID = "today:health:hub:v9";
+  const API_VERSION = 9;
+  const RULESET_ID = "today:health:hub:v10";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -996,6 +996,22 @@
       }
 
 
+      /* NUT-014.4 — Görsel Hareket Kütüphanesi */
+      .sportLibraryFilters{display:flex;gap:7px;overflow-x:auto;padding:1px 0 5px;scrollbar-width:none}
+      .sportLibraryFilters::-webkit-scrollbar{display:none}
+      .sportLibraryFilter{flex:0 0 auto;min-height:38px;padding:7px 12px;border:1px solid var(--stroke);border-radius:999px;background:rgba(255,255,255,.025);color:var(--muted);font:inherit;font-size:11px;font-weight:800}
+      .sportLibraryFilter[aria-pressed="true"]{background:rgba(255,255,255,.12);color:var(--text)}
+      .sportLibraryGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+      .sportLibraryCard{overflow:hidden;padding:0;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.035);color:var(--text);font:inherit;text-align:left}
+      .sportLibraryVisual{height:112px;display:grid;place-items:center;background:rgba(8,15,28,.38)}
+      .sportLibraryVisual img{width:100%;height:100%;object-fit:contain;padding:12px}
+      .sportLibraryCopy{display:block;padding:11px}.sportLibraryCopy strong{display:block;font-size:13px}.sportLibraryCopy small{display:block;margin-top:4px;color:var(--muted);font-size:10px}
+      .sportExerciseDetail{display:grid;gap:13px;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+      .sportExerciseDetailVisual{height:210px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:22px;background:rgba(8,15,28,.38)}
+      .sportExerciseDetailVisual img{width:100%;height:100%;object-fit:contain;padding:20px}
+      .sportExerciseDetailInfo{padding:15px;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.035)}
+      .sportExerciseDetailInfo strong{display:block;font-size:16px}.sportExerciseDetailInfo p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+
       /* NUT-014.3 — Bugünkü Antrenman */
       .sportWorkoutShell{display:grid;gap:12px;padding-bottom:calc(112px + env(safe-area-inset-bottom))}
       .sportWorkoutShell[hidden]{display:none!important}
@@ -1390,6 +1406,23 @@
     return templates[days] || templates[3];
   }
 
+  const SPORT_EXERCISE_LIBRARY = [
+    {id:"chest-press",name:"Chest Press",muscle:"Göğüs",category:"Göğüs",equipment:"Makine",image:"./assets/sport/chest-press.svg"},
+    {id:"lat-pulldown",name:"Lat Pulldown",muscle:"Sırt",category:"Sırt",equipment:"Cable",image:"./assets/sport/lat-pulldown.svg"},
+    {id:"cable-row",name:"Seated Cable Row",muscle:"Sırt",category:"Sırt",equipment:"Cable",image:"./assets/sport/cable-row.svg"},
+    {id:"t-bar-row",name:"T-Bar Row",muscle:"Sırt",category:"Sırt",equipment:"Makine",image:"./assets/sport/t-bar-row.svg"},
+    {id:"shoulder-press",name:"Shoulder Press",muscle:"Omuz",category:"Omuz",equipment:"Makine",image:"./assets/sport/shoulder-press.svg"},
+    {id:"face-pull",name:"Face Pull",muscle:"Arka omuz",category:"Omuz",equipment:"Cable",image:"./assets/sport/face-pull.svg"},
+    {id:"triceps-pushdown",name:"Triceps Pushdown",muscle:"Triceps",category:"Kol",equipment:"Cable",image:"./assets/sport/triceps-pushdown.svg"},
+    {id:"biceps-curl",name:"Biceps Curl",muscle:"Biceps",category:"Kol",equipment:"Dumbbell",image:"./assets/sport/biceps-curl.svg"},
+    {id:"leg-press",name:"Leg Press",muscle:"Bacak",category:"Bacak",equipment:"Makine",image:"./assets/sport/leg-press.svg"},
+    {id:"leg-curl",name:"Leg Curl",muscle:"Arka bacak",category:"Bacak",equipment:"Makine",image:"./assets/sport/leg-curl.svg"},
+    {id:"leg-extension",name:"Leg Extension",muscle:"Ön bacak",category:"Bacak",equipment:"Makine",image:"./assets/sport/leg-extension.svg"},
+    {id:"calf-raise",name:"Calf Raise",muscle:"Baldır",category:"Bacak",equipment:"Makine",image:"./assets/sport/calf-raise.svg"}
+  ];
+  function sportLibraryItem(id){return SPORT_EXERCISE_LIBRARY.find(item=>item.id===id)||null}
+  function exerciseIdFromName(name){const n=String(name||"").toLowerCase();return SPORT_EXERCISE_LIBRARY.find(item=>item.name.toLowerCase()===n)?.id||null}
+
   function sportExerciseTemplates(dayTitle) {
     const name = String(dayTitle || "");
     if (name.includes("Göğüs") || name.includes("Üst Vücut")) {
@@ -1529,10 +1562,10 @@
         const template = sportExerciseTemplates(day[0])[index];
         const get = key => card.querySelector(`[data-workout-field="${key}"]`)?.value || "";
         return {
-          exerciseId:`sport-exercise-${dayIndex}-${index}`,
+          exerciseId:exerciseIdFromName(template[0]) || `sport-exercise-${dayIndex}-${index}`,
           name:template[0],
           muscle:template[1],
-          image:null,
+          image:sportLibraryItem(exerciseIdFromName(template[0]))?.image || null,
           sets:Number(get("set")) || 0,
           reps:Number(get("reps")) || 0,
           kg:Number(get("kg")) || 0,
@@ -1562,6 +1595,32 @@
     );
     panel.append(header,shell);
     resetHealthScroll();
+  }
+
+  function renderSportLibrary(panel,activeCategory="Tümü"){
+    if(!panel)return; panel.replaceChildren();
+    const header=createElement("header",{className:"sportSubviewHeader"});
+    header.append(createElement("h2",{text:"Hareketler"}),createElement("p",{text:"Hareketi ve ekipmanı görerek seç."}));
+    const filters=createElement("div",{className:"sportLibraryFilters"});
+    ["Tümü","Göğüs","Sırt","Omuz","Kol","Bacak"].forEach(category=>{
+      const b=createElement("button",{className:"sportLibraryFilter",type:"button",text:category,attributes:{"aria-pressed":category===activeCategory?"true":"false"}});
+      b.addEventListener("click",()=>renderSportLibrary(panel,category));filters.appendChild(b);
+    });
+    const grid=createElement("div",{className:"sportLibraryGrid"});
+    SPORT_EXERCISE_LIBRARY.filter(item=>activeCategory==="Tümü"||item.category===activeCategory).forEach(item=>{
+      const card=createElement("button",{className:"sportLibraryCard",type:"button"});
+      const visual=createElement("span",{className:"sportLibraryVisual"});const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img);
+      const copy=createElement("span",{className:"sportLibraryCopy"});copy.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
+      card.append(visual,copy);card.addEventListener("click",()=>renderSportExerciseDetail(panel,item));grid.appendChild(card);
+    });
+    panel.append(header,filters,grid);resetHealthScroll();
+  }
+  function renderSportExerciseDetail(panel,item){
+    panel.replaceChildren();const header=createElement("header",{className:"sportSubviewHeader"});header.append(createElement("h2",{text:item.name}),createElement("p",{text:`${item.muscle} · ${item.equipment}`}));
+    const detail=createElement("div",{className:"sportExerciseDetail"});const visual=createElement("div",{className:"sportExerciseDetailVisual"});const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img);
+    const info=createElement("div",{className:"sportExerciseDetailInfo"});info.append(createElement("strong",{text:"Hareket özeti"}),createElement("p",{text:"Kontrollü tempo kullan. Ayrıntılı form rehberi sonraki görsel içerik paketlerinde genişletilecek."}));
+    const back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Hareketlere dön"});back.addEventListener("click",()=>renderSportLibrary(panel,"Tümü"));
+    detail.append(visual,info,back);panel.append(header,detail);resetHealthScroll();
   }
 
   function buildTodayWorkoutUI(panel, force = false) {
@@ -1860,12 +1919,13 @@
         id:"sportTodayPanel",
         attributes:{hidden:""}
       }),
-      exercises: makeSportPanel("sportExercisesPanel","Hareketler","Aletli hareketler görsel kartlarla gösterilecek.","Görsel hareket kütüphanesi"),
+      exercises: createElement("section",{className:"sportSubview",id:"sportExercisesPanel",attributes:{hidden:""}}),
       progress: makeSportPanel("sportProgressPanel","Gelişim","Set, tekrar, ağırlık, süre ve geçmiş gelişimi.","Gelişim ve geçmiş görünümü")
     };
     Object.values(sportPanels).forEach(panel => sportPanel.appendChild(panel));
     buildSportProgramUI(sportPanels.program);
     buildTodayWorkoutUI(sportPanels.today);
+    renderSportLibrary(sportPanels.exercises);
 
     cards.addEventListener("click", event => {
       const button = event.target.closest("[data-sport-hub-open]");
