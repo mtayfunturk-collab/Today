@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 4;
-  const RULESET_ID = "today:health:hub:v5";
+  const API_VERSION = 5;
+  const RULESET_ID = "today:health:hub:v6";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -695,6 +695,135 @@
         display: none !important;
       }
 
+      /* NUT-013.4 — Öğün ekle minimal düzen */
+      #mealAddPanel {
+        padding-bottom: calc(124px + env(safe-area-inset-bottom));
+      }
+
+      #mealAddPanel .mealSubviewHeader {
+        padding-bottom: 10px;
+      }
+
+      #healthMealForm {
+        display: grid;
+        gap: 14px;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      #healthMealForm > .healthSectionHead,
+      #healthMealForm > header {
+        display: none !important;
+      }
+
+      #healthMealForm .healthField,
+      #healthMealForm label {
+        min-width: 0;
+      }
+
+      #healthMealForm input,
+      #healthMealForm select,
+      #healthMealForm textarea {
+        width: 100%;
+        min-width: 0;
+      }
+
+      #healthMealType,
+      #healthMealName {
+        min-height: 50px;
+        border-radius: 15px;
+      }
+
+      .todayMealPrimaryCard,
+      .todayMealLibraryCard {
+        width: 100%;
+        padding: 16px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.035);
+      }
+
+      .todayMealPrimaryCard {
+        display: grid;
+        gap: 13px;
+      }
+
+      .todayMealLibraryToggle {
+        width: 100%;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 15px;
+        background: rgba(255,255,255,.035);
+        color: var(--text);
+        font: inherit;
+        font-weight: 800;
+        text-align: left;
+      }
+
+      .todayMealLibraryToggle span:last-child {
+        color: var(--muted);
+        font-size: 20px;
+        transition: transform .16s ease;
+      }
+
+      .todayMealLibraryToggle[aria-expanded="true"] span:last-child {
+        transform: rotate(90deg);
+      }
+
+      .todayMealLibraryCard[hidden] {
+        display: none !important;
+      }
+
+      .todayMealLibraryCard {
+        display: grid;
+        gap: 12px;
+      }
+
+      .todayMealLibraryCard fieldset {
+        border: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-width: 0;
+      }
+
+      .todayMealLibraryCard .healthLibraryControls,
+      .todayMealLibraryCard .healthLibraryPicker {
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+      }
+
+      #btnHealthMealSubmit {
+        width: 100%;
+        min-height: 56px;
+        margin: 2px 0 18px !important;
+        border-radius: 17px !important;
+        position: relative;
+        z-index: 2;
+      }
+
+      #mealAddPanel + * {
+        scroll-margin-bottom: 120px;
+      }
+
+      @media (max-width: 420px) {
+        #mealAddPanel {
+          padding-bottom: calc(132px + env(safe-area-inset-bottom));
+        }
+
+        .todayMealPrimaryCard,
+        .todayMealLibraryCard {
+          padding: 14px;
+        }
+      }
+
       @media (max-width: 420px) {
         .inner { padding: 18px !important; }
         .healthHub { gap: 11px; }
@@ -1202,6 +1331,7 @@
     const mealForm = document.getElementById("healthMealForm");
     if (mealForm && mealPanels.add) {
       mealPanels.add.appendChild(mealForm);
+      simplifyMealAddForm();
     }
 
     const waterTitle = document.getElementById("healthWaterTitle");
@@ -1549,6 +1679,131 @@
     );
     panel.appendChild(header);
     return panel;
+  }
+
+  function simplifyMealAddForm() {
+    const form = document.getElementById("healthMealForm");
+    if (!form || form.dataset.todayMinimalReady === "true") return;
+
+    const mealType = document.getElementById("healthMealType");
+    const mealName = document.getElementById("healthMealName");
+    const librarySearch = document.getElementById("healthLibrarySearch");
+    const libraryType = document.getElementById("healthLibraryType");
+    const libraryResults = document.getElementById("healthLibraryResults");
+    const librarySelected = document.getElementById("healthLibrarySelected");
+    const libraryNote = document.getElementById("healthLibraryNote");
+    const resultCount = document.getElementById("healthLibraryResultCount");
+    const selectedCount = document.getElementById("healthLibrarySelectedCount");
+    const submit = document.getElementById("btnHealthMealSubmit");
+
+    if (!mealType || !mealName || !submit) return;
+
+    form.dataset.todayMinimalReady = "true";
+
+    const primaryCard = createElement("section", {
+      className: "todayMealPrimaryCard"
+    });
+
+    const typeContainer =
+      mealType.closest(".healthField") ||
+      mealType.closest("label") ||
+      mealType.parentElement;
+
+    const nameContainer =
+      mealName.closest(".healthField") ||
+      mealName.closest("label") ||
+      mealName.parentElement;
+
+    [typeContainer, nameContainer]
+      .filter(Boolean)
+      .forEach(node => primaryCard.appendChild(node));
+
+    const toggle = createElement("button", {
+      className: "todayMealLibraryToggle",
+      id: "btnTodayMealLibraryToggle",
+      type: "button",
+      attributes: {
+        "aria-expanded": "false",
+        "aria-controls": "todayMealLibraryCard"
+      }
+    });
+    toggle.append(
+      createElement("span", { text: "Kütüphaneden ekle" }),
+      createElement("span", {
+        text: "›",
+        attributes: { "aria-hidden": "true" }
+      })
+    );
+
+    const libraryCard = createElement("section", {
+      className: "todayMealLibraryCard",
+      id: "todayMealLibraryCard",
+      attributes: { hidden: "" }
+    });
+
+    const candidates = [
+      librarySearch,
+      libraryType,
+      libraryResults,
+      librarySelected,
+      libraryNote,
+      resultCount,
+      selectedCount
+    ]
+      .filter(Boolean)
+      .map(node =>
+        node.closest("fieldset") ||
+        node.closest(".healthLibraryPicker") ||
+        node.closest(".healthField") ||
+        node.parentElement
+      )
+      .filter(Boolean);
+
+    const unique = [];
+    const seen = new Set();
+    candidates.forEach(node => {
+      if (!seen.has(node) && !unique.some(parent => parent.contains(node))) {
+        seen.add(node);
+        unique.push(node);
+      }
+    });
+
+    unique.forEach(node => libraryCard.appendChild(node));
+
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(open));
+      libraryCard.hidden = !open;
+
+      if (open && librarySearch) {
+        window.setTimeout(() => {
+          try {
+            librarySearch.focus({ preventScroll: true });
+          } catch (error) {
+            librarySearch.focus();
+          }
+        }, 0);
+      }
+    });
+
+    const oldChildren = Array.from(form.children);
+    oldChildren.forEach(node => {
+      if (
+        node !== primaryCard &&
+        node !== toggle &&
+        node !== libraryCard &&
+        node !== submit &&
+        !primaryCard.contains(node) &&
+        !libraryCard.contains(node)
+      ) {
+        node.hidden = true;
+        node.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    form.prepend(primaryCard);
+    primaryCard.after(toggle, libraryCard);
+    form.appendChild(submit);
   }
 
   function buildMealHub(mealsPanel) {
