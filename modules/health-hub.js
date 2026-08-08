@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 9;
-  const RULESET_ID = "today:health:hub:v10";
+  const API_VERSION = 10;
+  const RULESET_ID = "today:health:hub:v11";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -996,6 +996,34 @@
       }
 
 
+      /* NUT-014.5 — Gelişim & Antrenman Geçmişi */
+      .sportProgressShell{display:grid;gap:12px;padding-bottom:calc(118px + env(safe-area-inset-bottom))}
+      .sportProgressStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+      .sportProgressStat{min-width:0;padding:13px 8px;border:1px solid var(--stroke);border-radius:17px;background:rgba(255,255,255,.035);text-align:center}
+      .sportProgressStat strong{display:block;font-size:19px;line-height:1.1}
+      .sportProgressStat span{display:block;margin-top:5px;color:var(--muted);font-size:9px;line-height:1.25}
+      .sportProgressSectionTitle{margin:5px 2px 0;font-size:14px}
+      .sportProgressEmpty{padding:20px 16px;border:1px solid var(--stroke);border-radius:19px;background:rgba(255,255,255,.03);text-align:center}
+      .sportProgressEmpty strong{display:block;font-size:15px}
+      .sportProgressEmpty p{margin:7px auto 0;max-width:31ch;color:var(--muted);font-size:11px;line-height:1.5}
+      .sportHistoryList{display:grid;gap:9px}
+      .sportHistoryCard{width:100%;display:flex;align-items:center;gap:11px;padding:13px;border:1px solid var(--stroke);border-radius:17px;background:rgba(255,255,255,.035);color:var(--text);font:inherit;text-align:left}
+      .sportHistoryDate{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:14px;font-size:10px;font-weight:900;text-align:center;line-height:1.2}
+      .sportHistoryCopy{min-width:0;flex:1}
+      .sportHistoryCopy strong{display:block;font-size:13px}
+      .sportHistoryCopy small{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.35}
+      .sportHistoryDetail{display:grid;gap:10px;padding-bottom:calc(118px + env(safe-area-inset-bottom))}
+      .sportHistorySummary{padding:15px;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.04);text-align:center}
+      .sportHistorySummary strong{display:block;font-size:16px}
+      .sportHistorySummary span{display:block;margin-top:5px;color:var(--muted);font-size:11px}
+      .sportHistoryExercise{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid var(--stroke);border-radius:16px;background:rgba(255,255,255,.03)}
+      .sportHistoryExerciseVisual{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:13px;background:rgba(8,15,28,.35);overflow:hidden}
+      .sportHistoryExerciseVisual img{width:100%;height:100%;object-fit:contain;padding:5px}
+      .sportHistoryExerciseVisual span{font-size:16px;font-weight:900}
+      .sportHistoryExerciseCopy{min-width:0;flex:1}
+      .sportHistoryExerciseCopy strong{display:block;font-size:12px}
+      .sportHistoryExerciseCopy small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.35}
+
       /* NUT-014.4 — Görsel Hareket Kütüphanesi */
       .sportLibraryFilters{display:flex;gap:7px;overflow-x:auto;padding:1px 0 5px;scrollbar-width:none}
       .sportLibraryFilters::-webkit-scrollbar{display:none}
@@ -1581,6 +1609,7 @@
         durationMinutes:Math.max(1,Math.round((Date.now()-startedAt)/60000)),
         exercises
       });
+      renderSportProgress(sportPanels.progress);
 
       finish.textContent = "✓ Kaydedildi";
       setTimeout(() => {
@@ -1594,6 +1623,142 @@
       finish
     );
     panel.append(header,shell);
+    resetHealthScroll();
+  }
+
+  function sportDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return {short:"—",long:"Tarih yok"};
+    return {
+      short: new Intl.DateTimeFormat("tr-TR",{day:"2-digit",month:"short"}).format(date),
+      long: new Intl.DateTimeFormat("tr-TR",{day:"numeric",month:"long",year:"numeric"}).format(date)
+    };
+  }
+
+  function startOfCurrentWeek() {
+    const now = new Date();
+    const day = (now.getDay() + 6) % 7;
+    const start = new Date(now);
+    start.setHours(0,0,0,0);
+    start.setDate(start.getDate() - day);
+    return start.getTime();
+  }
+
+  function renderSportProgress(panel) {
+    if (!panel) return;
+    panel.replaceChildren();
+
+    const header = createElement("header",{className:"sportSubviewHeader"});
+    header.append(
+      createElement("h2",{text:"Gelişim"}),
+      createElement("p",{text:"Yaptığın antrenmanları sade biçimde gör."})
+    );
+
+    const shell = createElement("div",{className:"sportProgressShell"});
+    const logs = readWorkoutLogs()
+      .slice()
+      .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const weekStart = startOfCurrentWeek();
+    const thisWeek = logs.filter(log => new Date(log.date).getTime() >= weekStart).length;
+    const last = logs[0] || null;
+
+    const stats = createElement("div",{className:"sportProgressStats"});
+    [
+      [String(logs.length),"Toplam"],
+      [String(thisWeek),"Bu hafta"],
+      [last ? sportDate(last.date).short : "—","Son antrenman"]
+    ].forEach(([value,label]) => {
+      const stat = createElement("div",{className:"sportProgressStat"});
+      stat.append(createElement("strong",{text:value}),createElement("span",{text:label}));
+      stats.appendChild(stat);
+    });
+    shell.appendChild(stats);
+
+    if (!logs.length) {
+      const empty = createElement("div",{className:"sportProgressEmpty"});
+      empty.append(
+        createElement("strong",{text:"Henüz antrenman kaydı yok"}),
+        createElement("p",{text:"Bugünkü Antrenman bölümünden ilk antrenmanını bitirdiğinde geçmişin burada oluşacak."})
+      );
+      const go = createElement("button",{className:"sportPrimaryAction",type:"button",text:"Bugünkü Antrenman"});
+      go.addEventListener("click",()=>showSportSection("today"));
+      shell.append(empty,go);
+    } else {
+      shell.appendChild(createElement("h3",{className:"sportProgressSectionTitle",text:"Antrenman Geçmişi"}));
+      const list = createElement("div",{className:"sportHistoryList"});
+      logs.forEach(log => {
+        const completed = Array.isArray(log.exercises) ? log.exercises.filter(x=>x.completed).length : 0;
+        const total = Array.isArray(log.exercises) ? log.exercises.length : 0;
+        const card = createElement("button",{className:"sportHistoryCard",type:"button"});
+        card.append(
+          createElement("span",{className:"sportHistoryDate",text:sportDate(log.date).short}),
+          (() => {
+            const copy=createElement("span",{className:"sportHistoryCopy"});
+            copy.append(
+              createElement("strong",{text:log.dayTitle || "Antrenman"}),
+              createElement("small",{text:`${completed}/${total} hareket · ${Number(log.durationMinutes)||0} dk`})
+            );
+            return copy;
+          })(),
+          createElement("span",{className:"healthHubArrow",text:"›",attributes:{"aria-hidden":"true"}})
+        );
+        card.addEventListener("click",()=>renderSportHistoryDetail(panel,log));
+        list.appendChild(card);
+      });
+      shell.appendChild(list);
+    }
+
+    panel.append(header,shell);
+    resetHealthScroll();
+  }
+
+  function renderSportHistoryDetail(panel,log) {
+    if (!panel) return;
+    panel.replaceChildren();
+
+    const header=createElement("header",{className:"sportSubviewHeader"});
+    header.append(
+      createElement("h2",{text:log.dayTitle || "Antrenman"}),
+      createElement("p",{text:sportDate(log.date).long})
+    );
+
+    const detail=createElement("div",{className:"sportHistoryDetail"});
+    const exercises=Array.isArray(log.exercises)?log.exercises:[];
+    const completed=exercises.filter(x=>x.completed).length;
+
+    const summary=createElement("div",{className:"sportHistorySummary"});
+    summary.append(
+      createElement("strong",{text:`${completed}/${exercises.length} hareket tamamlandı`}),
+      createElement("span",{text:`${Number(log.durationMinutes)||0} dakika`})
+    );
+    detail.appendChild(summary);
+
+    exercises.forEach(exercise=>{
+      const row=createElement("div",{className:"sportHistoryExercise"});
+      const visual=createElement("div",{className:"sportHistoryExerciseVisual"});
+      if(exercise.image){
+        const img=document.createElement("img");
+        img.src=exercise.image;
+        img.alt="";
+        visual.appendChild(img);
+      } else {
+        visual.appendChild(createElement("span",{text:exercise.completed?"✓":"·"}));
+      }
+      const copy=createElement("div",{className:"sportHistoryExerciseCopy"});
+      const kg=Number(exercise.kg)||0;
+      copy.append(
+        createElement("strong",{text:exercise.name || "Hareket"}),
+        createElement("small",{text:`${Number(exercise.sets)||0} set × ${Number(exercise.reps)||0} tekrar${kg ? ` · ${kg} kg` : ""}${exercise.completed ? " · Tamamlandı" : ""}`})
+      );
+      row.append(visual,copy);
+      detail.appendChild(row);
+    });
+
+    const back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Geçmişe dön"});
+    back.addEventListener("click",()=>renderSportProgress(panel));
+    detail.appendChild(back);
+
+    panel.append(header,detail);
     resetHealthScroll();
   }
 
@@ -1920,12 +2085,13 @@
         attributes:{hidden:""}
       }),
       exercises: createElement("section",{className:"sportSubview",id:"sportExercisesPanel",attributes:{hidden:""}}),
-      progress: makeSportPanel("sportProgressPanel","Gelişim","Set, tekrar, ağırlık, süre ve geçmiş gelişimi.","Gelişim ve geçmiş görünümü")
+      progress: createElement("section",{className:"sportSubview",id:"sportProgressPanel",attributes:{hidden:""}})
     };
     Object.values(sportPanels).forEach(panel => sportPanel.appendChild(panel));
     buildSportProgramUI(sportPanels.program);
     buildTodayWorkoutUI(sportPanels.today);
     renderSportLibrary(sportPanels.exercises);
+    renderSportProgress(sportPanels.progress);
 
     cards.addEventListener("click", event => {
       const button = event.target.closest("[data-sport-hub-open]");
