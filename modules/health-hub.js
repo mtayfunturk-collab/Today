@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 5;
-  const RULESET_ID = "today:health:hub:v6";
+  const API_VERSION = 6;
+  const RULESET_ID = "today:health:hub:v7";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -34,6 +34,9 @@
   let mealActiveSection = "hub";
   let mealPanels = {};
   let mealEntryObserver = null;
+  let sportActiveSection = "hub";
+  let sportHub = null;
+  let sportPanels = {};
 
   function createElement(tag, options = {}) {
     const element = document.createElement(tag);
@@ -813,6 +816,29 @@
         scroll-margin-bottom: 120px;
       }
 
+
+      /* NUT-014.1 — Spor ana ekranı */
+      .sportHub,.sportSubview{width:100%;max-width:100%}
+      .sportHub[hidden],.sportSubview[hidden]{display:none!important}
+      .sportHubHeader{text-align:center;padding:6px 4px 14px}
+      .sportHubMark{width:56px;height:56px;display:grid;place-items:center;margin:0 auto 10px;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.045);font-size:25px}
+      .sportHubIntro{max-width:34ch;margin:0 auto;color:var(--muted);font-size:13px;line-height:1.45}
+      .sportHubCards{display:grid;gap:11px}
+      .sportHubCard{width:100%;min-height:82px;display:flex;align-items:center;gap:13px;padding:14px;border:1px solid var(--stroke);border-radius:19px;background:rgba(255,255,255,.035);color:var(--text);text-align:left;font:inherit}
+      .sportHubCard:active{transform:scale(.992)}
+      .sportHubCardIcon{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:14px;background:rgba(255,255,255,.045);font-size:21px;font-weight:900}
+      .sportHubCardCopy{min-width:0;flex:1}
+      .sportHubCardCopy strong{display:block;font-size:16px;line-height:1.25}
+      .sportHubCardCopy small{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.4}
+      .sportSubview{min-height:min(58dvh,470px)}
+      .sportSubviewHeader{text-align:center;padding:8px 4px 14px}
+      .sportSubviewHeader h2{margin:0;font-size:21px}
+      .sportSubviewHeader p{margin:5px auto 0;max-width:34ch;color:var(--muted);font-size:12px;line-height:1.45}
+      .sportFoundationCard{width:100%;padding:18px;border:1px solid var(--stroke);border-radius:20px;background:rgba(255,255,255,.035)}
+      .sportFoundationCard strong{display:block;font-size:15px}
+      .sportFoundationCard p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+      .sportFoundationBadge{display:inline-flex;align-items:center;min-height:30px;margin-top:13px;padding:0 10px;border:1px solid var(--stroke);border-radius:999px;color:var(--muted);font-size:11px;font-weight:800}
+
       @media (max-width: 420px) {
         #mealAddPanel {
           padding-bottom: calc(132px + env(safe-area-inset-bottom));
@@ -964,7 +990,9 @@
 
     const labels = {
       hub: "Health",
-      sport: "Spor",
+      sport: sportActiveSection === "hub"
+        ? "Spor"
+        : ({program:"Programım",today:"Bugünkü Antrenman",exercises:"Hareketler",progress:"Gelişim"}[sportActiveSection] || "Spor"),
       nutrition: nutritionActiveSection === "hub"
         ? "Beslenme"
         : ({
@@ -1001,6 +1029,10 @@
     if (wellnessPanel) wellnessPanel.hidden = section !== "wellness";
 
     setTopbarMode(section);
+
+    if (section === "sport") {
+      showSportSection("hub", {focus:false});
+    }
 
     if (section === "nutrition") {
       Promise.resolve(window.TodayNutritionUI?.open?.())
@@ -1095,6 +1127,94 @@
     });
   }
 
+
+  function sportCard(section, icon, title, detail) {
+    const button = createElement("button", {
+      className: "sportHubCard",
+      type: "button",
+      attributes: {"data-sport-hub-open": section, "aria-label": `${title} bölümünü aç`}
+    });
+    const iconElement = createElement("span", {
+      className: "sportHubCardIcon", text: icon, attributes: {"aria-hidden": "true"}
+    });
+    const copy = createElement("span", {className: "sportHubCardCopy"});
+    copy.append(createElement("strong", {text: title}), createElement("small", {text: detail}));
+    button.append(iconElement, copy, createElement("span", {className: "healthHubArrow", text: "›", attributes: {"aria-hidden": "true"}}));
+    return button;
+  }
+
+  function makeSportPanel(id, title, detail, nextStep) {
+    const panel = createElement("section", {className: "sportSubview", id, attributes: {hidden: ""}});
+    const header = createElement("header", {className: "sportSubviewHeader"});
+    header.append(createElement("h2", {text: title}), createElement("p", {text: detail}));
+    const card = createElement("div", {className: "sportFoundationCard"});
+    card.append(
+      createElement("strong", {text: nextStep}),
+      createElement("p", {text: "Bu ekran NUT-014.1 ile navigasyona hazırlandı. Gerçek veri ve kayıt akışı sonraki Spor paketlerinde bağlanacak."}),
+      createElement("span", {className: "sportFoundationBadge", text: "Spor altyapısı hazır"})
+    );
+    panel.append(header, card);
+    return panel;
+  }
+
+  function buildSportHub() {
+    if (!sportPanel || sportHub) return;
+    sportPanel.replaceChildren();
+
+    sportHub = createElement("section", {className: "sportHub", id: "sportHub"});
+    const header = createElement("header", {className: "sportHubHeader"});
+    header.append(
+      createElement("div", {className: "sportHubMark", text: "↗", attributes: {"aria-hidden": "true"}}),
+      createElement("p", {className: "sportHubIntro", text: "Bugün hareketinde ne var?"})
+    );
+
+    const cards = createElement("div", {className: "sportHubCards"});
+    cards.append(
+      sportCard("program","▦","Programım","Haftalık planını ve antrenman günlerini gör."),
+      sportCard("today","▶","Bugünkü Antrenman","Bugünün hareketlerini sırayla uygula."),
+      sportCard("exercises","◫","Hareketler","Görsel egzersiz ve alet kütüphanesini aç."),
+      sportCard("progress","↗","Gelişim","Antrenman geçmişini ve ilerlemeni gör.")
+    );
+
+    sportHub.append(header, cards);
+    sportPanel.appendChild(sportHub);
+
+    sportPanels = {
+      program: makeSportPanel("sportProgramPanel","Programım","Hedef, seviye, gün, süre ve ekipmana göre plan.","Program oluşturma akışı"),
+      today: makeSportPanel("sportTodayPanel","Bugünkü Antrenman","Isınma, ana bölüm ve soğuma akışı.","Antrenman kayıt ekranı"),
+      exercises: makeSportPanel("sportExercisesPanel","Hareketler","Aletli hareketler görsel kartlarla gösterilecek.","Görsel hareket kütüphanesi"),
+      progress: makeSportPanel("sportProgressPanel","Gelişim","Set, tekrar, ağırlık, süre ve geçmiş gelişimi.","Gelişim ve geçmiş görünümü")
+    };
+    Object.values(sportPanels).forEach(panel => sportPanel.appendChild(panel));
+
+    cards.addEventListener("click", event => {
+      const button = event.target.closest("[data-sport-hub-open]");
+      if (button) showSportSection(button.dataset.sportHubOpen);
+    });
+    showSportSection("hub", {focus:false});
+  }
+
+  function showSportSection(section, options = {}) {
+    const valid = ["hub","program","today","exercises","progress"];
+    if (!valid.includes(section)) section = "hub";
+    sportActiveSection = section;
+    if (sportHub) sportHub.hidden = section !== "hub";
+    Object.entries(sportPanels).forEach(([name,panel]) => { if (panel) panel.hidden = name !== section; });
+
+    const labels = {hub:"Spor",program:"Programım",today:"Bugünkü Antrenman",exercises:"Hareketler",progress:"Gelişim"};
+    const pill = healthView?.querySelector(".topbar .pill");
+    if (pill && activeSection === "sport") pill.textContent = labels[section] || "Spor";
+    resetHealthScroll();
+
+    if (options.focus !== false) {
+      const target = section === "hub" ? sportHub : sportPanels[section]?.querySelector("h2");
+      if (target) {
+        target.tabIndex = -1;
+        try { target.focus({preventScroll:true}); } catch(e) { target.focus(); }
+      }
+    }
+  }
+
   function wrapNutritionPanel() {
     const hero = healthView.querySelector(".healthHero");
     const dashboard = healthView.querySelector("#healthDashboard");
@@ -1126,6 +1246,17 @@
     backButton.addEventListener(
       "click",
       (event) => {
+        if (
+          activeSection === "sport" &&
+          sportActiveSection !== "hub"
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          showSportSection("hub");
+          return;
+        }
+
         if (
           activeSection === "nutrition" &&
           nutritionActiveSection === "meals" &&
@@ -2120,12 +2251,11 @@
     buildHub();
     nutritionPanel.parentNode.insertBefore(hub, nutritionPanel);
 
-    sportPanel = makePlaceholder(
-      "healthSportPanel",
-      "↗",
-      "Spor",
-      "Antrenman, hareket kütüphanesi, program ve ilerleme burada gelişecek."
-    );
+    sportPanel = createElement("section", {
+      className: "healthSubmodule",
+      id: "healthSportPanel",
+      attributes: {hidden: "", "aria-label": "Spor"}
+    });
 
     wellnessPanel = makePlaceholder(
       "healthWellnessPanel",
@@ -2137,6 +2267,7 @@
     nutritionPanel.parentNode.insertBefore(sportPanel, nutritionPanel.nextSibling);
     nutritionPanel.parentNode.insertBefore(wellnessPanel, sportPanel.nextSibling);
 
+    buildSportHub();
     buildNutritionHub();
     simplifyNutritionRecords();
     interceptBackButton();
@@ -2150,7 +2281,10 @@
   function getState() {
     return Object.freeze({
       initialized,
-      activeSection
+      activeSection,
+      sportActiveSection,
+      nutritionActiveSection,
+      mealActiveSection
     });
   }
 
@@ -2159,6 +2293,7 @@
     RULESET_ID,
     init,
     showSection,
+    showSportSection,
     getState
   });
 
