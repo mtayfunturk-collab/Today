@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 3;
-  const RULESET_ID = "today:health:hub:v4";
+  const API_VERSION = 4;
+  const RULESET_ID = "today:health:hub:v5";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -30,6 +30,10 @@
   let waterObserver = null;
   const WATER_GLASS_KEY = "today.health.water.glassMl";
   const WATER_TARGET_KEY = "today.health.water.targetMl";
+  let mealHub = null;
+  let mealActiveSection = "hub";
+  let mealPanels = {};
+  let mealEntryObserver = null;
 
   function createElement(tag, options = {}) {
     const element = document.createElement(tag);
@@ -560,6 +564,137 @@
         display: none !important;
       }
 
+      .todayWaterAdjust {
+        display: grid;
+        grid-template-columns: 52px minmax(0,1fr) 52px;
+        gap: 10px;
+        align-items: center;
+        width: min(100%, 290px);
+        margin: 13px auto 0;
+      }
+
+      .todayWaterAdjustButton {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--stroke);
+        border-radius: 50%;
+        background: rgba(255,255,255,.055);
+        color: var(--text);
+        font: inherit;
+        font-size: 25px;
+        font-weight: 750;
+      }
+
+      .todayWaterAdjustButton:disabled {
+        opacity: .35;
+      }
+
+      .todayWaterAdjustLabel {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .todayWaterAdjustLabel strong {
+        display: block;
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .mealHub,
+      .mealSubview {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .mealHub[hidden],
+      .mealSubview[hidden] {
+        display: none !important;
+      }
+
+      .mealHubHeader {
+        padding: 5px 4px 15px;
+        text-align: center;
+      }
+
+      .mealHubHeader p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .mealHubCards {
+        display: grid;
+        gap: 11px;
+      }
+
+      .mealHubCard {
+        width: 100%;
+        min-height: 78px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 19px;
+        background: rgba(255,255,255,.035);
+        color: var(--text);
+        text-align: left;
+        font: inherit;
+      }
+
+      .mealHubIcon {
+        width: 43px;
+        height: 43px;
+        flex: 0 0 43px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.04);
+        font-size: 22px;
+      }
+
+      .mealHubCopy {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .mealHubCopy strong {
+        display: block;
+        font-size: 16px;
+      }
+
+      .mealHubCopy small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .mealSubviewHeader {
+        padding: 4px 2px 12px;
+        text-align: center;
+      }
+
+      .mealSubviewHeader h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .mealSubviewHeader p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .mealCurrentOnly .healthListItem[data-today-entry-kind="water"] {
+        display: none !important;
+      }
+
       @media (max-width: 420px) {
         .inner { padding: 18px !important; }
         .healthHub { gap: 11px; }
@@ -864,11 +999,24 @@
       (event) => {
         if (
           activeSection === "nutrition" &&
+          nutritionActiveSection === "meals" &&
+          mealActiveSection !== "hub"
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          showMealSection("hub");
+          return;
+        }
+
+        if (
+          activeSection === "nutrition" &&
           nutritionActiveSection !== "hub"
         ) {
           event.preventDefault();
           event.stopPropagation();
           event.stopImmediatePropagation();
+          mealActiveSection = "hub";
           showNutritionSection("hub");
           return;
         }
@@ -1049,8 +1197,12 @@
     [mealsPanel, waterPanel, libraryPanel, historyPanel]
       .forEach(panel => dashboard.appendChild(panel));
 
+    buildMealHub(mealsPanel);
+
     const mealForm = document.getElementById("healthMealForm");
-    if (mealForm) mealsPanel.appendChild(mealForm);
+    if (mealForm && mealPanels.add) {
+      mealPanels.add.appendChild(mealForm);
+    }
 
     const waterTitle = document.getElementById("healthWaterTitle");
     const legacyWater = waterTitle?.closest("section");
@@ -1074,13 +1226,18 @@
     const healthStatus =
       document.getElementById("healthStatus");
 
+    if (entrySection && mealPanels.today) {
+      mealPanels.today.appendChild(entrySection);
+    }
+
     [
       summaryCard,
       currentOnlyNote,
-      entrySection,
       archivedSection,
       healthStatus
     ].filter(Boolean).forEach(node => historyPanel.appendChild(node));
+
+    observeMealEntries();
 
     const planSection =
       document.getElementById("healthPlanTitle")?.closest("section");
@@ -1144,12 +1301,41 @@
       })
     );
 
+    const adjust = createElement("div", {
+      className: "todayWaterAdjust"
+    });
+
+    const removeButton = createElement("button", {
+      className: "todayWaterAdjustButton",
+      id: "btnTodayRemoveWaterGlass",
+      type: "button",
+      text: "−",
+      attributes: { "aria-label": "Bir bardak suyu geri al" }
+    });
+
+    const adjustLabel = createElement("div", {
+      className: "todayWaterAdjustLabel"
+    });
+    adjustLabel.append(
+      createElement("strong", {
+        id: "todayWaterAdjustTitle",
+        text: "1 bardak"
+      }),
+      createElement("span", {
+        id: "todayWaterAdjustMl",
+        text: "350 ml"
+      })
+    );
+
     const addButton = createElement("button", {
-      className: "todayWaterAdd",
+      className: "todayWaterAdjustButton",
       id: "btnTodayAddWaterGlass",
       type: "button",
-      text: "+ 1 bardak"
+      text: "+",
+      attributes: { "aria-label": "Bir bardak su ekle" }
     });
+
+    adjust.append(removeButton, adjustLabel, addButton);
 
     const settings = createElement("div", {
       className: "todayWaterSettings"
@@ -1188,7 +1374,7 @@
     glassLabel.appendChild(glassSelect);
     targetLabel.appendChild(targetSelect);
     settings.append(glassLabel, targetLabel);
-    visual.append(glasses, summary, addButton, settings);
+    visual.append(glasses, summary, adjust, settings);
 
     const legacyWater = panel.querySelector(".nutritionLegacyWater");
     if (legacyWater) panel.insertBefore(visual, legacyWater);
@@ -1221,6 +1407,19 @@
       window.setTimeout(renderWaterVisual, 600);
     });
 
+    removeButton.addEventListener("click", async () => {
+      removeButton.disabled = true;
+      addButton.disabled = true;
+
+      try {
+        await removeLatestWaterGlass(Number(glassSelect.value));
+      } finally {
+        removeButton.disabled = false;
+        addButton.disabled = false;
+        renderWaterVisual();
+      }
+    });
+
     const summaryText = document.getElementById("healthSummaryText");
     if (summaryText && typeof MutationObserver === "function") {
       waterObserver = new MutationObserver(renderWaterVisual);
@@ -1234,12 +1433,260 @@
     renderWaterVisual();
   }
 
+  async function removeLatestWaterGlass(glassMl) {
+    const history = window.TodayNutritionHistory;
+    const calculations = window.TodayNutritionCalculations;
+    const ui = window.TodayNutritionUI;
+
+    if (
+      !history ||
+      typeof history.loadDay !== "function" ||
+      typeof history.archiveEntry !== "function" ||
+      !calculations ||
+      typeof calculations.convertMeasurement !== "function"
+    ) {
+      return false;
+    }
+
+    const dayKey = history.dayKeyFromDate(new Date());
+    const day = await history.loadDay(dayKey);
+    const hydration = (day.entries || [])
+      .filter(record =>
+        record?.type === "hydration_entry" &&
+        record.recordStatus === "active"
+      )
+      .sort((left, right) =>
+        Date.parse(right?.payload?.consumedAt || right?.createdAt || 0) -
+        Date.parse(left?.payload?.consumedAt || left?.createdAt || 0)
+      );
+
+    if (hydration.length === 0) {
+      return false;
+    }
+
+    const target = hydration.find(record => {
+      try {
+        const converted = calculations.convertMeasurement(
+          record.payload.amount,
+          "ml"
+        );
+        return (
+          typeof converted?.value === "number" &&
+          Math.abs(converted.value - glassMl) < 0.5
+        );
+      } catch (error) {
+        return false;
+      }
+    }) || hydration[0];
+
+    await history.archiveEntry(target.id, {
+      userInitiated: true,
+      userConfirmed: true,
+      confirmEntryArchive: true,
+      clientOperationId:
+        `water-minus-${Date.now().toString(36)}`
+    });
+
+    if (typeof ui?.refresh === "function") {
+      await ui.refresh({ announce: false });
+    } else if (typeof ui?.open === "function") {
+      await ui.open();
+    }
+
+    return true;
+  }
+
+  function mealCard(section, icon, title, detail) {
+    const button = createElement("button", {
+      className: "mealHubCard",
+      type: "button",
+      attributes: {
+        "data-meal-hub-open": section,
+        "aria-label": `${title} bölümünü aç`
+      }
+    });
+
+    const iconElement = createElement("span", {
+      className: "mealHubIcon",
+      text: icon,
+      attributes: { "aria-hidden": "true" }
+    });
+
+    const copy = createElement("span", {
+      className: "mealHubCopy"
+    });
+    copy.append(
+      createElement("strong", { text: title }),
+      createElement("small", { text: detail })
+    );
+
+    button.append(
+      iconElement,
+      copy,
+      createElement("span", {
+        className: "healthHubArrow",
+        text: "›",
+        attributes: { "aria-hidden": "true" }
+      })
+    );
+
+    return button;
+  }
+
+  function makeMealPanel(id, title, detail) {
+    const panel = createElement("section", {
+      className: "mealSubview",
+      id,
+      attributes: { hidden: "" }
+    });
+
+    const header = createElement("header", {
+      className: "mealSubviewHeader"
+    });
+    header.append(
+      createElement("h3", { text: title }),
+      createElement("p", { text: detail })
+    );
+    panel.appendChild(header);
+    return panel;
+  }
+
+  function buildMealHub(mealsPanel) {
+    if (!mealsPanel || mealHub) return;
+
+    mealHub = createElement("section", {
+      className: "mealHub",
+      id: "mealHub"
+    });
+
+    const header = createElement("header", {
+      className: "mealHubHeader"
+    });
+    header.appendChild(
+      createElement("p", {
+        text: "Bugün ne yedin?"
+      })
+    );
+
+    const cards = createElement("div", {
+      className: "mealHubCards"
+    });
+    cards.append(
+      mealCard("add", "+", "Öğün ekle", "Kahvaltı, öğle, akşam veya ara öğün"),
+      mealCard("today", "≡", "Bugünkü öğünler", "Bugün kaydettiğin öğünleri gör"),
+      mealCard("history", "◷", "Geçmiş", "Önceki günlerin öğünlerine git")
+    );
+
+    mealHub.append(header, cards);
+    mealsPanel.appendChild(mealHub);
+
+    const addPanel = makeMealPanel(
+      "mealAddPanel",
+      "Öğün ekle",
+      "Yalnız ihtiyacın olan alanları doldur."
+    );
+    const todayPanel = makeMealPanel(
+      "mealTodayPanel",
+      "Bugünkü öğünler",
+      "Bugün kaydettiğin öğünler."
+    );
+    todayPanel.classList.add("mealCurrentOnly");
+
+    mealPanels = {
+      add: addPanel,
+      today: todayPanel
+    };
+
+    mealsPanel.append(addPanel, todayPanel);
+
+    cards.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-meal-hub-open]");
+      if (!button) return;
+
+      if (button.dataset.mealHubOpen === "history") {
+        showNutritionSection("history");
+        return;
+      }
+
+      showMealSection(button.dataset.mealHubOpen);
+    });
+
+    showMealSection("hub", { focus: false });
+  }
+
+  function classifyMealEntryItems() {
+    const list = document.getElementById("healthEntryList");
+    if (!list) return;
+
+    list.querySelectorAll(".healthListItem").forEach(item => {
+      const title = item.querySelector(".healthListTitle")?.textContent || "";
+      item.dataset.todayEntryKind =
+        /^(Su|Sıvı)\s*·/i.test(title.trim())
+          ? "water"
+          : "meal";
+    });
+  }
+
+  function observeMealEntries() {
+    const list = document.getElementById("healthEntryList");
+    if (!list || mealEntryObserver || typeof MutationObserver !== "function") {
+      classifyMealEntryItems();
+      return;
+    }
+
+    mealEntryObserver = new MutationObserver(classifyMealEntryItems);
+    mealEntryObserver.observe(list, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+    classifyMealEntryItems();
+  }
+
+  function showMealSection(section, options = {}) {
+    const valid = ["hub", "add", "today"];
+    if (!valid.includes(section)) section = "hub";
+    mealActiveSection = section;
+
+    if (mealHub) mealHub.hidden = section !== "hub";
+
+    Object.entries(mealPanels).forEach(([name, panel]) => {
+      if (panel) panel.hidden = name !== section;
+    });
+
+    const pill = healthView?.querySelector(".topbar .pill");
+    if (pill && nutritionActiveSection === "meals") {
+      pill.textContent = section === "hub"
+        ? "Öğünler"
+        : section === "add"
+          ? "Öğün ekle"
+          : "Bugünkü öğünler";
+    }
+
+    classifyMealEntryItems();
+    resetHealthScroll();
+
+    if (options.focus !== false) {
+      const target = section === "hub"
+        ? mealHub
+        : mealPanels[section]?.querySelector("h3");
+      if (target) {
+        target.tabIndex = -1;
+        try { target.focus({ preventScroll: true }); }
+        catch (error) { target.focus(); }
+      }
+    }
+  }
+
   function renderWaterVisual() {
     const glasses = document.getElementById("todayWaterGlasses");
     const count = document.getElementById("todayWaterGlassCount");
     const amount = document.getElementById("todayWaterMl");
     const glassSelect = document.getElementById("todayWaterGlassMl");
     const targetSelect = document.getElementById("todayWaterTargetMl");
+    const adjustTitle = document.getElementById("todayWaterAdjustTitle");
+    const adjustMl = document.getElementById("todayWaterAdjustMl");
+    const removeButton = document.getElementById("btnTodayRemoveWaterGlass");
     if (!glasses || !count || !amount || !glassSelect || !targetSelect) return;
 
     const state = window.TodayNutritionUI?.getState?.();
@@ -1250,6 +1697,10 @@
     const fullGlasses = Math.floor(totalMl / glassMl);
     const partialMl = totalMl % glassMl;
     const dimensions = waterGlassScale(glassMl);
+
+    if (adjustTitle) adjustTitle.textContent = "1 bardak";
+    if (adjustMl) adjustMl.textContent = `${glassMl} ml`;
+    if (removeButton) removeButton.disabled = totalMl <= 0;
 
     glasses.replaceChildren();
 
@@ -1298,6 +1749,10 @@
       history: "Geçmiş"
     };
     if (pill) pill.textContent = labels[section] || "Beslenme";
+
+    if (section === "meals") {
+      showMealSection("hub", { focus: false });
+    }
 
     renderWaterVisual();
     resetHealthScroll();
