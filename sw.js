@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-041";
+const VERSION = "today-v2-foundation-042";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -48,6 +48,45 @@ const APP_SHELL = [
   "./modules/nutrition-consumption-editor.js",
   "./modules/nutrition-library-ui.js",
   "./modules/health-hub.js",
+
+  "./assets/sport/chest-press.svg",
+  "./assets/sport/bench-press.svg",
+  "./assets/sport/incline-dumbbell-press.svg",
+  "./assets/sport/cable-fly.svg",
+  "./assets/sport/lat-pulldown.svg",
+  "./assets/sport/cable-row.svg",
+  "./assets/sport/t-bar-row.svg",
+  "./assets/sport/one-arm-row.svg",
+  "./assets/sport/shoulder-press.svg",
+  "./assets/sport/lateral-raise.svg",
+  "./assets/sport/face-pull.svg",
+  "./assets/sport/rear-delt-fly.svg",
+  "./assets/sport/triceps-pushdown.svg",
+  "./assets/sport/biceps-curl.svg",
+  "./assets/sport/hammer-curl.svg",
+  "./assets/sport/overhead-triceps.svg",
+  "./assets/sport/leg-press.svg",
+  "./assets/sport/leg-curl.svg",
+  "./assets/sport/leg-extension.svg",
+  "./assets/sport/calf-raise.svg",
+  "./assets/sport/goblet-squat.svg",
+  "./assets/sport/brisk-walk.svg",
+  "./assets/sport/treadmill-run.svg",
+  "./assets/sport/cycling.svg",
+  "./assets/sport/elliptical.svg",
+  "./assets/sport/jump-rope.svg",
+  "./assets/sport/jumping-jack.svg",
+  "./assets/sport/bodyweight-squat.svg",
+  "./assets/sport/push-up.svg",
+  "./assets/sport/mountain-climber.svg",
+  "./assets/sport/burpee.svg",
+  "./assets/sport/plank.svg",
+  "./assets/sport/dead-bug.svg",
+  "./assets/sport/crunch.svg",
+  "./assets/sport/russian-twist.svg",
+  "./assets/sport/hip-mobility.svg",
+  "./assets/sport/shoulder-mobility.svg",
+  "./assets/sport/full-stretch.svg",
   "./modules/router.js",
   "./modules/module-registry.js",
   "./modules/startup-manager.js",
