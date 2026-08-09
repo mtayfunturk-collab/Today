@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 16;
-  const RULESET_ID = "today:health:hub:nut-014.7.5";
+  const API_VERSION = 17;
+  const RULESET_ID = "today:health:hub:nut-014.7.6";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -1048,17 +1048,20 @@
       .sportHistoryExerciseCopy small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.35}
 
       /* NUT-014.4 — Görsel Hareket Kütüphanesi */
-      .sportLibraryFilters{display:flex;gap:7px;overflow-x:auto;padding:1px 0 5px;scrollbar-width:none}
+      .sportLibraryFilters{display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:2px 1px 7px;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
       .sportLibraryFilters::-webkit-scrollbar{display:none}
       .sportLibraryFilter{flex:0 0 auto;min-height:38px;padding:7px 12px;border:1px solid var(--stroke);border-radius:999px;background:rgba(255,255,255,.025);color:var(--muted);font:inherit;font-size:11px;font-weight:800}
       .sportLibraryFilter[aria-pressed="true"]{background:rgba(255,255,255,.12);color:var(--text)}
-      .sportLibraryGrid{display:grid;grid-template-columns:1fr;gap:12px;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
-      .sportLibraryCard{overflow:hidden;padding:0;border:1px solid var(--stroke);border-radius:22px;background:rgba(255,255,255,.035);color:var(--text);font:inherit;text-align:left}
-      .sportLibraryVisual{height:220px;display:grid;place-items:center;background:rgba(8,15,28,.38)}
-      .sportLibraryVisual img{width:100%;height:100%;object-fit:contain;padding:14px}
-      .sportLibraryCopy{display:block;padding:14px 15px 15px;text-align:center}.sportLibraryCopy strong{display:block;font-size:15px}.sportLibraryCopy small{display:block;margin-top:5px;color:var(--muted);font-size:11px}
-      .sportSubviewHeader{text-align:center}
-      @media (min-width:480px){.sportLibraryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.sportLibraryVisual{height:190px}}
+      .sportLibraryGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:100%;padding-bottom:calc(132px + env(safe-area-inset-bottom))}
+      .sportLibraryCard{min-width:0;overflow:hidden;padding:0;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.035);color:var(--text);font:inherit;text-align:left}
+      .sportLibraryVisual{aspect-ratio:4/3;width:100%;display:grid;place-items:center;overflow:hidden;background:rgba(8,15,28,.38)}
+      .sportLibraryVisual img{display:block;width:100%;height:100%;object-fit:cover;padding:0}
+      .sportLibraryCopy{display:block;min-width:0;padding:10px 8px 11px;text-align:center}.sportLibraryCopy strong{display:block;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.25}.sportLibraryCopy small{display:block;margin-top:4px;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:9px;line-height:1.25}
+      .sportSubviewHeader{text-align:center;margin-inline:auto;max-width:100%}
+      .sportSubviewHeader h3,.sportSubviewHeader p{text-align:center}
+      #sportExerciseLibraryView,#sportExercisePickerView{width:100%;max-width:100%;overflow-x:hidden}
+      @media (max-width:359px){.sportLibraryGrid{gap:8px}.sportLibraryCopy strong{font-size:11px}.sportLibraryVisual{aspect-ratio:1/1}}
+      @media (min-width:600px){.sportLibraryGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.sportLibraryCopy strong{font-size:13px}}
       .sportExerciseDetail{display:grid;gap:13px;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
       .sportExerciseDetailVisual{height:210px;display:grid;place-items:center;border:1px solid var(--stroke);border-radius:22px;background:rgba(8,15,28,.38)}
       .sportExerciseDetailVisual img{width:100%;height:100%;object-fit:contain;padding:20px}
@@ -1461,44 +1464,44 @@
   }
 
   const SPORT_EXERCISE_LIBRARY = [
-    {id:"chest-press",name:"Chest Press",muscle:"Göğüs",category:"Göğüs",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/chest-press.svg"},
-    {id:"bench-press",name:"Bench Press",muscle:"Göğüs",category:"Göğüs",equipment:"Barbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/bench-press.svg"},
-    {id:"incline-dumbbell-press",name:"Incline Dumbbell Press",muscle:"Üst göğüs",category:"Göğüs",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/incline-dumbbell-press.svg"},
-    {id:"cable-fly",name:"Cable Fly",muscle:"Göğüs",category:"Göğüs",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/cable-fly.svg"},
-    {id:"lat-pulldown",name:"Lat Pulldown",muscle:"Sırt",category:"Sırt",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/lat-pulldown.svg"},
-    {id:"cable-row",name:"Seated Cable Row",muscle:"Sırt",category:"Sırt",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/cable-row.svg"},
-    {id:"t-bar-row",name:"T-Bar Row",muscle:"Sırt",category:"Sırt",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/t-bar-row.svg"},
-    {id:"one-arm-row",name:"One Arm Dumbbell Row",muscle:"Sırt",category:"Sırt",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/one-arm-row.svg"},
-    {id:"shoulder-press",name:"Shoulder Press",muscle:"Omuz",category:"Omuz",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/shoulder-press.svg"},
-    {id:"lateral-raise",name:"Lateral Raise",muscle:"Yan omuz",category:"Omuz",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/lateral-raise.svg"},
-    {id:"face-pull",name:"Face Pull",muscle:"Arka omuz",category:"Omuz",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/face-pull.svg"},
-    {id:"rear-delt-fly",name:"Rear Delt Fly",muscle:"Arka omuz",category:"Omuz",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/rear-delt-fly.svg"},
-    {id:"triceps-pushdown",name:"Triceps Pushdown",muscle:"Triceps",category:"Kol",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/triceps-pushdown.svg"},
-    {id:"biceps-curl",name:"Biceps Curl",muscle:"Biceps",category:"Kol",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/biceps-curl.svg"},
-    {id:"hammer-curl",name:"Hammer Curl",muscle:"Biceps · Ön kol",category:"Kol",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/hammer-curl.svg"},
-    {id:"overhead-triceps",name:"Overhead Triceps Extension",muscle:"Triceps",category:"Kol",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/overhead-triceps.svg"},
-    {id:"leg-press",name:"Leg Press",muscle:"Bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-press.svg"},
-    {id:"leg-curl",name:"Leg Curl",muscle:"Arka bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-curl.svg"},
-    {id:"leg-extension",name:"Leg Extension",muscle:"Ön bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-extension.svg"},
-    {id:"calf-raise",name:"Calf Raise",muscle:"Baldır",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/calf-raise.svg"},
-    {id:"goblet-squat",name:"Goblet Squat",muscle:"Bacak · Kalça",category:"Bacak",equipment:"Dumbbell",type:"strength",goals:["muscle","strength","general"],image:"./assets/sport/goblet-squat.svg"},
-    {id:"brisk-walk",name:"Tempolu Yürüyüş",muscle:"Kardiyo",category:"Kardiyo",equipment:"Ekipmansız",type:"cardio",goals:["condition","general"],image:"./assets/sport/brisk-walk.svg"},
-    {id:"treadmill-run",name:"Koşu Bandı",muscle:"Kardiyo",category:"Kardiyo",equipment:"Koşu bandı",type:"cardio",goals:["condition","general"],image:"./assets/sport/treadmill-run.svg"},
-    {id:"cycling",name:"Bisiklet",muscle:"Kardiyo",category:"Kardiyo",equipment:"Bisiklet",type:"cardio",goals:["condition","general"],image:"./assets/sport/cycling.svg"},
-    {id:"elliptical",name:"Eliptik",muscle:"Kardiyo",category:"Kardiyo",equipment:"Eliptik",type:"cardio",goals:["condition","general"],image:"./assets/sport/elliptical.svg"},
-    {id:"jump-rope",name:"İp Atlama",muscle:"Kardiyo",category:"Kardiyo",equipment:"İp",type:"cardio",goals:["condition"],image:"./assets/sport/jump-rope.svg"},
-    {id:"jumping-jack",name:"Jumping Jack",muscle:"Tüm vücut",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/jumping-jack.svg"},
-    {id:"bodyweight-squat",name:"Vücut Ağırlığı Squat",muscle:"Bacak",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/bodyweight-squat.svg"},
-    {id:"push-up",name:"Şınav",muscle:"Göğüs · Triceps",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/push-up.svg"},
-    {id:"mountain-climber",name:"Mountain Climber",muscle:"Karın · Kardiyo",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition"],image:"./assets/sport/mountain-climber.svg"},
-    {id:"burpee",name:"Burpee",muscle:"Tüm vücut",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition"],image:"./assets/sport/burpee.svg"},
-    {id:"plank",name:"Plank",muscle:"Karın",category:"Karın",equipment:"Ekipmansız",type:"timed",goals:["condition","general"],image:"./assets/sport/plank.svg"},
-    {id:"dead-bug",name:"Dead Bug",muscle:"Karın",category:"Karın",equipment:"Ekipmansız",type:"bodyweight",goals:["general"],image:"./assets/sport/dead-bug.svg"},
-    {id:"crunch",name:"Crunch",muscle:"Karın",category:"Karın",equipment:"Ekipmansız",type:"bodyweight",goals:["muscle","general"],image:"./assets/sport/crunch.svg"},
-    {id:"russian-twist",name:"Russian Twist",muscle:"Karın · Oblik",category:"Karın",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/russian-twist.svg"},
-    {id:"hip-mobility",name:"Kalça Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/hip-mobility.svg"},
-    {id:"shoulder-mobility",name:"Omuz Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/shoulder-mobility.svg"},
-    {id:"full-stretch",name:"Tüm Vücut Esneme",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/full-stretch.svg"},
+    {id:"chest-press",name:"Chest Press",muscle:"Göğüs",category:"Göğüs",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/chest-press.jpg"},
+    {id:"bench-press",name:"Bench Press",muscle:"Göğüs",category:"Göğüs",equipment:"Barbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/bench-press.jpg"},
+    {id:"incline-dumbbell-press",name:"Incline Dumbbell Press",muscle:"Üst göğüs",category:"Göğüs",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/incline-dumbbell-press.jpg"},
+    {id:"cable-fly",name:"Cable Fly",muscle:"Göğüs",category:"Göğüs",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/cable-fly.jpg"},
+    {id:"lat-pulldown",name:"Lat Pulldown",muscle:"Sırt",category:"Sırt",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/lat-pulldown.jpg"},
+    {id:"cable-row",name:"Seated Cable Row",muscle:"Sırt",category:"Sırt",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/cable-row.jpg"},
+    {id:"t-bar-row",name:"T-Bar Row",muscle:"Sırt",category:"Sırt",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/t-bar-row.jpg"},
+    {id:"one-arm-row",name:"One Arm Dumbbell Row",muscle:"Sırt",category:"Sırt",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/one-arm-row.jpg"},
+    {id:"shoulder-press",name:"Shoulder Press",muscle:"Omuz",category:"Omuz",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/shoulder-press.jpg"},
+    {id:"lateral-raise",name:"Lateral Raise",muscle:"Yan omuz",category:"Omuz",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/lateral-raise.jpg"},
+    {id:"face-pull",name:"Face Pull",muscle:"Arka omuz",category:"Omuz",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/face-pull.jpg"},
+    {id:"rear-delt-fly",name:"Rear Delt Fly",muscle:"Arka omuz",category:"Omuz",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/rear-delt-fly.jpg"},
+    {id:"triceps-pushdown",name:"Triceps Pushdown",muscle:"Triceps",category:"Kol",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/triceps-pushdown.jpg"},
+    {id:"biceps-curl",name:"Biceps Curl",muscle:"Biceps",category:"Kol",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/biceps-curl.jpg"},
+    {id:"hammer-curl",name:"Hammer Curl",muscle:"Biceps · Ön kol",category:"Kol",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/hammer-curl.jpg"},
+    {id:"overhead-triceps",name:"Overhead Triceps Extension",muscle:"Triceps",category:"Kol",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/overhead-triceps.jpg"},
+    {id:"leg-press",name:"Leg Press",muscle:"Bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-press.jpg"},
+    {id:"leg-curl",name:"Leg Curl",muscle:"Arka bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-curl.jpg"},
+    {id:"leg-extension",name:"Leg Extension",muscle:"Ön bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-extension.jpg"},
+    {id:"calf-raise",name:"Calf Raise",muscle:"Baldır",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/calf-raise.jpg"},
+    {id:"goblet-squat",name:"Goblet Squat",muscle:"Bacak · Kalça",category:"Bacak",equipment:"Dumbbell",type:"strength",goals:["muscle","strength","general"],image:"./assets/sport/goblet-squat.jpg"},
+    {id:"brisk-walk",name:"Tempolu Yürüyüş",muscle:"Kardiyo",category:"Kardiyo",equipment:"Ekipmansız",type:"cardio",goals:["condition","general"],image:"./assets/sport/brisk-walk.jpg"},
+    {id:"treadmill-run",name:"Koşu Bandı",muscle:"Kardiyo",category:"Kardiyo",equipment:"Koşu bandı",type:"cardio",goals:["condition","general"],image:"./assets/sport/treadmill-run.jpg"},
+    {id:"cycling",name:"Bisiklet",muscle:"Kardiyo",category:"Kardiyo",equipment:"Bisiklet",type:"cardio",goals:["condition","general"],image:"./assets/sport/cycling.jpg"},
+    {id:"elliptical",name:"Eliptik",muscle:"Kardiyo",category:"Kardiyo",equipment:"Eliptik",type:"cardio",goals:["condition","general"],image:"./assets/sport/elliptical.jpg"},
+    {id:"jump-rope",name:"İp Atlama",muscle:"Kardiyo",category:"Kardiyo",equipment:"İp",type:"cardio",goals:["condition"],image:"./assets/sport/jump-rope.jpg"},
+    {id:"jumping-jack",name:"Jumping Jack",muscle:"Tüm vücut",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/jumping-jack.jpg"},
+    {id:"bodyweight-squat",name:"Vücut Ağırlığı Squat",muscle:"Bacak",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/bodyweight-squat.jpg"},
+    {id:"push-up",name:"Şınav",muscle:"Göğüs · Triceps",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/push-up.jpg"},
+    {id:"mountain-climber",name:"Mountain Climber",muscle:"Karın · Kardiyo",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition"],image:"./assets/sport/mountain-climber.jpg"},
+    {id:"burpee",name:"Burpee",muscle:"Tüm vücut",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition"],image:"./assets/sport/burpee.jpg"},
+    {id:"plank",name:"Plank",muscle:"Karın",category:"Karın",equipment:"Ekipmansız",type:"timed",goals:["condition","general"],image:"./assets/sport/plank.jpg"},
+    {id:"dead-bug",name:"Dead Bug",muscle:"Karın",category:"Karın",equipment:"Ekipmansız",type:"bodyweight",goals:["general"],image:"./assets/sport/dead-bug.jpg"},
+    {id:"crunch",name:"Crunch",muscle:"Karın",category:"Karın",equipment:"Ekipmansız",type:"bodyweight",goals:["muscle","general"],image:"./assets/sport/crunch.jpg"},
+    {id:"russian-twist",name:"Russian Twist",muscle:"Karın · Oblik",category:"Karın",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],image:"./assets/sport/russian-twist.jpg"},
+    {id:"hip-mobility",name:"Kalça Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/hip-mobility.jpg"},
+    {id:"shoulder-mobility",name:"Omuz Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/shoulder-mobility.jpg"},
+    {id:"full-stretch",name:"Tüm Vücut Esneme",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/full-stretch.jpg"},
   ];
   function sportLibraryItem(id){return SPORT_EXERCISE_LIBRARY.find(item=>item.id===id)||null}
   function exerciseIdFromName(name){const n=String(name||"").toLowerCase();return SPORT_EXERCISE_LIBRARY.find(item=>item.name.toLowerCase()===n)?.id||null}
