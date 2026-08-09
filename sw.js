@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-052";
+const VERSION = "today-v2-foundation-053";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -48,6 +48,7 @@ const APP_SHELL = [
   "./modules/nutrition-consumption-editor.js",
   "./modules/nutrition-library-ui.js",
   "./modules/health-hub.js",
+  "./modules/sky-hub.js",
 
   "./assets/sport/bench-press.jpg",
   "./assets/sport/incline-dumbbell-press.jpg",
