@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 14;
-  const RULESET_ID = "today:health:hub:v15";
+  const API_VERSION = 15;
+  const RULESET_ID = "today:health:hub:nut-014.7.4";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -1429,47 +1429,62 @@
     return section;
   }
 
-  function defaultProgramDays(days) {
-    const templates = {
-      2: [
-        ["Tüm Vücut A","6 hareket"],
-        ["Tüm Vücut B","6 hareket"]
-      ],
-      3: [
-        ["Göğüs · Omuz · Triceps","6 hareket"],
-        ["Sırt · Biceps","6 hareket"],
-        ["Bacak · Core","7 hareket"]
-      ],
-      4: [
-        ["Üst Vücut A","6 hareket"],
-        ["Alt Vücut A","6 hareket"],
-        ["Üst Vücut B","6 hareket"],
-        ["Alt Vücut B","6 hareket"]
-      ],
-      5: [
-        ["Göğüs · Triceps","6 hareket"],
-        ["Sırt · Biceps","6 hareket"],
-        ["Bacak","7 hareket"],
-        ["Omuz · Core","6 hareket"],
-        ["Tüm Vücut","6 hareket"]
-      ]
+  function defaultProgramDays(days, goal = readSportProgram()?.goal || "muscle") {
+    const strength = {
+      2:[["Tüm Vücut Güç A","5 temel hareket"],["Tüm Vücut Güç B","5 temel hareket"]],
+      3:[["İtiş Gücü","5 hareket"],["Çekiş Gücü","5 hareket"],["Alt Vücut Güç","5 hareket"]],
+      4:[["Üst Vücut Güç A","5 hareket"],["Alt Vücut Güç A","5 hareket"],["Üst Vücut Güç B","5 hareket"],["Alt Vücut Güç B","5 hareket"]],
+      5:[["Göğüs · Triceps Güç","5 hareket"],["Sırt · Biceps Güç","5 hareket"],["Bacak Güç","5 hareket"],["Omuz · Core Güç","5 hareket"],["Tüm Vücut Güç","5 hareket"]]
     };
-    return templates[days] || templates[3];
+    const muscle = {
+      2:[["Tüm Vücut A","6 hareket"],["Tüm Vücut B","6 hareket"]],
+      3:[["Göğüs · Omuz · Triceps","6 hareket"],["Sırt · Biceps","6 hareket"],["Bacak · Core","7 hareket"]],
+      4:[["Üst Vücut A","6 hareket"],["Alt Vücut A","6 hareket"],["Üst Vücut B","6 hareket"],["Alt Vücut B","6 hareket"]],
+      5:[["Göğüs · Triceps","6 hareket"],["Sırt · Biceps","6 hareket"],["Bacak","7 hareket"],["Omuz · Core","6 hareket"],["Tüm Vücut","6 hareket"]]
+    };
+    const condition = {
+      2:[["Kardiyo · Interval","5 aktivite"],["Kondisyon · Core","6 aktivite"]],
+      3:[["Interval Kardiyo","5 aktivite"],["Fonksiyonel Kondisyon","6 aktivite"],["Dayanıklılık Kardiyo","5 aktivite"]],
+      4:[["Kısa Interval","5 aktivite"],["Fonksiyonel Devre","6 aktivite"],["Tempo Kardiyo","5 aktivite"],["Core · Mobilite","6 aktivite"]],
+      5:[["Interval Kardiyo","5 aktivite"],["Fonksiyonel Devre","6 aktivite"],["Tempo Kardiyo","5 aktivite"],["Core · Mobilite","6 aktivite"],["Aktif Toparlanma","5 aktivite"]]
+    };
+    const general = {
+      2:[["Genel Hareket A","6 aktivite"],["Genel Hareket B","6 aktivite"]],
+      3:[["Hareket · Core","6 aktivite"],["Kardiyo · Mobilite","6 aktivite"],["Tüm Vücut","6 aktivite"]],
+      4:[["Hareket A","6 aktivite"],["Kardiyo","5 aktivite"],["Hareket B","6 aktivite"],["Mobilite · Core","6 aktivite"]],
+      5:[["Hareket A","6 aktivite"],["Kardiyo","5 aktivite"],["Hareket B","6 aktivite"],["Mobilite · Core","6 aktivite"],["Aktif Gün","5 aktivite"]]
+    };
+    const maps = {strength, muscle, condition, general};
+    return (maps[goal] || muscle)[days] || (maps[goal] || muscle)[3];
   }
 
   const SPORT_EXERCISE_LIBRARY = [
-    {id:"chest-press",name:"Chest Press",muscle:"Göğüs",category:"Göğüs",equipment:"Makine",image:"./assets/sport/chest-press.svg"},
-    {id:"lat-pulldown",name:"Lat Pulldown",muscle:"Sırt",category:"Sırt",equipment:"Cable",image:"./assets/sport/lat-pulldown.svg"},
-    {id:"cable-row",name:"Seated Cable Row",muscle:"Sırt",category:"Sırt",equipment:"Cable",image:"./assets/sport/cable-row.svg"},
-    {id:"t-bar-row",name:"T-Bar Row",muscle:"Sırt",category:"Sırt",equipment:"Makine",image:"./assets/sport/t-bar-row.svg"},
-    {id:"shoulder-press",name:"Shoulder Press",muscle:"Omuz",category:"Omuz",equipment:"Makine",image:"./assets/sport/shoulder-press.svg"},
-    {id:"face-pull",name:"Face Pull",muscle:"Arka omuz",category:"Omuz",equipment:"Cable",image:"./assets/sport/face-pull.svg"},
-    {id:"triceps-pushdown",name:"Triceps Pushdown",muscle:"Triceps",category:"Kol",equipment:"Cable",image:"./assets/sport/triceps-pushdown.svg"},
-    {id:"biceps-curl",name:"Biceps Curl",muscle:"Biceps",category:"Kol",equipment:"Dumbbell",image:"./assets/sport/biceps-curl.svg"},
-    {id:"leg-press",name:"Leg Press",muscle:"Bacak",category:"Bacak",equipment:"Makine",image:"./assets/sport/leg-press.svg"},
-    {id:"leg-curl",name:"Leg Curl",muscle:"Arka bacak",category:"Bacak",equipment:"Makine",image:"./assets/sport/leg-curl.svg"},
-    {id:"leg-extension",name:"Leg Extension",muscle:"Ön bacak",category:"Bacak",equipment:"Makine",image:"./assets/sport/leg-extension.svg"},
-    {id:"calf-raise",name:"Calf Raise",muscle:"Baldır",category:"Bacak",equipment:"Makine",image:"./assets/sport/calf-raise.svg"}
+    {id:"chest-press",name:"Chest Press",muscle:"Göğüs",category:"Göğüs",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/chest-press.svg"},
+    {id:"lat-pulldown",name:"Lat Pulldown",muscle:"Sırt",category:"Sırt",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/lat-pulldown.svg"},
+    {id:"cable-row",name:"Seated Cable Row",muscle:"Sırt",category:"Sırt",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/cable-row.svg"},
+    {id:"t-bar-row",name:"T-Bar Row",muscle:"Sırt",category:"Sırt",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/t-bar-row.svg"},
+    {id:"shoulder-press",name:"Shoulder Press",muscle:"Omuz",category:"Omuz",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/shoulder-press.svg"},
+    {id:"face-pull",name:"Face Pull",muscle:"Arka omuz",category:"Omuz",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/face-pull.svg"},
+    {id:"triceps-pushdown",name:"Triceps Pushdown",muscle:"Triceps",category:"Kol",equipment:"Cable",type:"strength",goals:["muscle","strength"],image:"./assets/sport/triceps-pushdown.svg"},
+    {id:"biceps-curl",name:"Biceps Curl",muscle:"Biceps",category:"Kol",equipment:"Dumbbell",type:"strength",goals:["muscle","strength"],image:"./assets/sport/biceps-curl.svg"},
+    {id:"leg-press",name:"Leg Press",muscle:"Bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-press.svg"},
+    {id:"leg-curl",name:"Leg Curl",muscle:"Arka bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-curl.svg"},
+    {id:"leg-extension",name:"Leg Extension",muscle:"Ön bacak",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/leg-extension.svg"},
+    {id:"calf-raise",name:"Calf Raise",muscle:"Baldır",category:"Bacak",equipment:"Makine",type:"strength",goals:["muscle","strength"],image:"./assets/sport/calf-raise.svg"},
+    {id:"brisk-walk",name:"Tempolu Yürüyüş",muscle:"Kardiyo",category:"Kardiyo",equipment:"Ekipmansız",type:"cardio",goals:["condition","general"],icon:"🚶"},
+    {id:"treadmill-run",name:"Koşu Bandı",muscle:"Kardiyo",category:"Kardiyo",equipment:"Koşu bandı",type:"cardio",goals:["condition","general"],icon:"🏃"},
+    {id:"cycling",name:"Bisiklet",muscle:"Kardiyo",category:"Kardiyo",equipment:"Bisiklet",type:"cardio",goals:["condition","general"],icon:"🚴"},
+    {id:"elliptical",name:"Eliptik",muscle:"Kardiyo",category:"Kardiyo",equipment:"Eliptik",type:"cardio",goals:["condition","general"],icon:"🏃"},
+    {id:"jump-rope",name:"İp Atlama",muscle:"Kardiyo",category:"Kardiyo",equipment:"İp",type:"cardio",goals:["condition"],icon:"⏱"},
+    {id:"jumping-jack",name:"Jumping Jack",muscle:"Tüm vücut",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],icon:"🤸"},
+    {id:"bodyweight-squat",name:"Vücut Ağırlığı Squat",muscle:"Bacak",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],icon:"🧍"},
+    {id:"push-up",name:"Şınav",muscle:"Göğüs · Triceps",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition","general"],icon:"💪"},
+    {id:"mountain-climber",name:"Mountain Climber",muscle:"Core · Kardiyo",category:"Fonksiyonel",equipment:"Ekipmansız",type:"bodyweight",goals:["condition"],icon:"🧗"},
+    {id:"plank",name:"Plank",muscle:"Core",category:"Core",equipment:"Ekipmansız",type:"timed",goals:["condition","general"],icon:"🧘"},
+    {id:"dead-bug",name:"Dead Bug",muscle:"Core",category:"Core",equipment:"Ekipmansız",type:"bodyweight",goals:["general"],icon:"🧘"},
+    {id:"hip-mobility",name:"Kalça Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],icon:"🤸"},
+    {id:"shoulder-mobility",name:"Omuz Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],icon:"🙆"},
+    {id:"full-stretch",name:"Tüm Vücut Esneme",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],icon:"🧘"}
   ];
   function sportLibraryItem(id){return SPORT_EXERCISE_LIBRARY.find(item=>item.id===id)||null}
   function exerciseIdFromName(name){const n=String(name||"").toLowerCase();return SPORT_EXERCISE_LIBRARY.find(item=>item.name.toLowerCase()===n)?.id||null}
@@ -1542,7 +1557,7 @@
     const program = readSportProgram();
     if (!panel || !program) return;
 
-    const days = defaultProgramDays(Number(program.days));
+    const days = defaultProgramDays(Number(program.days), program.goal);
     const day = days[dayIndex] || days[0];
     const settings = daySettings(dayIndex,day[0]);
     panel.replaceChildren();
@@ -1680,9 +1695,13 @@
   }
 
   function defaultExerciseIdsForDay(dayTitle) {
-    return sportExerciseTemplates(dayTitle)
-      .map(item=>exerciseIdFromName(item[0]))
-      .filter(Boolean);
+    const goal = readSportProgram()?.goal || "muscle";
+    const byGoal = {
+      condition:["treadmill-run","cycling","jump-rope","jumping-jack","mountain-climber","plank"],
+      general:["brisk-walk","bodyweight-squat","push-up","dead-bug","hip-mobility","full-stretch"]
+    };
+    if (byGoal[goal]) return byGoal[goal].slice();
+    return sportExerciseTemplates(dayTitle).map(item=>exerciseIdFromName(item[0])).filter(Boolean);
   }
 
   function exerciseIdsForDay(dayIndex,dayTitle) {
@@ -1699,7 +1718,7 @@
 
   function renderSportProgramDayEditor(panel,dayIndex) {
     const program=readSportProgram();if(!panel||!program)return;
-    const days=defaultProgramDays(Number(program.days)),day=days[dayIndex]||days[0],settings=daySettings(dayIndex,day[0]);panel.replaceChildren();
+    const days=defaultProgramDays(Number(program.days), program.goal),day=days[dayIndex]||days[0],settings=daySettings(dayIndex,day[0]);panel.replaceChildren();
     const header=createElement("header",{className:"sportSubviewHeader"});header.append(createElement("h2",{text:`${dayIndex+1}. Gün`}),createElement("p",{text:settings.title}));
     const editor=createElement("div",{className:"sportProgramDayEditor"});
     const titleEditor=createElement("div",{className:"sportDayTitleEditor"}),titleInput=createElement("input",{className:"sportDayTitleInput",type:"text",attributes:{value:settings.title,maxlength:"48","aria-label":"Program günü adı"}}),titleSave=createElement("button",{className:"sportDayTitleSave",type:"button",text:"Kaydet"});
@@ -1715,37 +1734,34 @@
       const remove=createElement("button",{className:"sportProgramRemove",type:"button",text:"×"});remove.addEventListener("click",()=>{setExerciseIdsForDay(dayIndex,exerciseIdsForDay(dayIndex,day[0]).filter(x=>x!==id));renderSportProgramDayEditor(panel,dayIndex);buildTodayWorkoutUI(sportPanels.today,true)});side.append(moves,remove);row.append(thumb,body,side);list.appendChild(row)});
     const actions=createElement("div",{className:"sportProgramEditorActions"}),add=createElement("button",{className:"sportPrimaryAction",type:"button",text:"Hareket ekle"}),workout=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Bu antrenmanı aç"}),back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Programıma dön"});
     add.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,"Tümü"));workout.addEventListener("click",()=>{showSportSection("today",{focus:false});openSportWorkoutDay(dayIndex)});back.addEventListener("click",()=>{
-      const setup=panel.querySelector("#sportProgramSetup");
-      const summary=panel.querySelector("#sportProgramSummary");
-      if(setup && summary){
-        panel.replaceChildren();
-        panel.dataset.programReady="false";
-        buildSportProgramUI(panel);
-        const freshSetup=panel.querySelector("#sportProgramSetup");
-        const freshSummary=panel.querySelector("#sportProgramSummary");
-        if(freshSummary) freshSummary.hidden=true;
-        if(freshSetup) freshSetup.hidden=false;
-      }
+      panel.replaceChildren();
+      panel.dataset.programReady="false";
+      buildSportProgramUI(panel);
+      const freshSetup=panel.querySelector("#sportProgramSetup");
+      const freshSummary=panel.querySelector("#sportProgramSummary");
+      if(freshSummary) freshSummary.hidden=true;
+      if(freshSetup) freshSetup.hidden=false;
+      sportProgramDraft={goal:null,level:null,days:null,duration:null,location:null,equipment:[]};
       resetHealthScroll();
     });actions.append(add,workout,back);editor.append(titleEditor,list,actions);panel.append(header,editor);resetHealthScroll();
   }
 
   function renderSportLibrarySelector(panel,dayIndex,activeCategory="Tümü") {
     const program=readSportProgram(); if(!program)return;
-    const days=defaultProgramDays(Number(program.days)); const day=days[dayIndex]||days[0];
+    const days=defaultProgramDays(Number(program.days), program.goal); const day=days[dayIndex]||days[0];
     panel.replaceChildren();
     const header=createElement("header",{className:"sportSubviewHeader"});
     header.append(createElement("h2",{text:"Hareket ekle"}),createElement("p",{text:`${dayIndex+1}. Gün · ${day[0]}`}));
     const filters=createElement("div",{className:"sportLibraryFilters"});
-    ["Tümü","Göğüs","Sırt","Omuz","Kol","Bacak"].forEach(category=>{
+    ["Tümü","Göğüs","Sırt","Omuz","Kol","Bacak","Kardiyo","Fonksiyonel","Core","Mobilite"].forEach(category=>{
       const b=createElement("button",{className:"sportLibraryFilter",type:"button",text:category,attributes:{"aria-pressed":category===activeCategory?"true":"false"}});
       b.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,category));filters.appendChild(b);
     });
     const selected=new Set(exerciseIdsForDay(dayIndex,day[0]));
     const grid=createElement("div",{className:"sportLibraryGrid"});
-    SPORT_EXERCISE_LIBRARY.filter(item=>activeCategory==="Tümü"||item.category===activeCategory).forEach(item=>{
+    SPORT_EXERCISE_LIBRARY.filter(item=>{const goal=readSportProgram()?.goal;return (!goal||!item.goals||item.goals.includes(goal))&&(activeCategory==="Tümü"||item.category===activeCategory)}).forEach(item=>{
       const card=createElement("button",{className:"sportLibraryCard sportLibrarySelectCard",type:"button"});
-      const visual=createElement("span",{className:"sportLibraryVisual"});const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img);
+      const visual=createElement("span",{className:"sportLibraryVisual"});if(item.image){const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img)}else{visual.appendChild(createElement("span",{text:item.icon||"●",attributes:{"aria-hidden":"true"}}))}
       const badge=createElement("span",{className:"sportLibraryAddBadge",text:selected.has(item.id)?"✓":"+"});
       visual.appendChild(badge);
       const copy=createElement("span",{className:"sportLibraryCopy"});copy.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
@@ -1906,14 +1922,14 @@
     const header=createElement("header",{className:"sportSubviewHeader"});
     header.append(createElement("h2",{text:"Hareketler"}),createElement("p",{text:"Hareketi ve ekipmanı görerek seç."}));
     const filters=createElement("div",{className:"sportLibraryFilters"});
-    ["Tümü","Göğüs","Sırt","Omuz","Kol","Bacak"].forEach(category=>{
+    ["Tümü","Göğüs","Sırt","Omuz","Kol","Bacak","Kardiyo","Fonksiyonel","Core","Mobilite"].forEach(category=>{
       const b=createElement("button",{className:"sportLibraryFilter",type:"button",text:category,attributes:{"aria-pressed":category===activeCategory?"true":"false"}});
       b.addEventListener("click",()=>renderSportLibrary(panel,category));filters.appendChild(b);
     });
     const grid=createElement("div",{className:"sportLibraryGrid"});
-    SPORT_EXERCISE_LIBRARY.filter(item=>activeCategory==="Tümü"||item.category===activeCategory).forEach(item=>{
+    SPORT_EXERCISE_LIBRARY.filter(item=>{const goal=readSportProgram()?.goal;return (!goal||!item.goals||item.goals.includes(goal))&&(activeCategory==="Tümü"||item.category===activeCategory)}).forEach(item=>{
       const card=createElement("button",{className:"sportLibraryCard",type:"button"});
-      const visual=createElement("span",{className:"sportLibraryVisual"});const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img);
+      const visual=createElement("span",{className:"sportLibraryVisual"});if(item.image){const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img)}else{visual.appendChild(createElement("span",{text:item.icon||"●",attributes:{"aria-hidden":"true"}}))}
       const copy=createElement("span",{className:"sportLibraryCopy"});copy.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
       card.append(visual,copy);card.addEventListener("click",()=>renderSportExerciseDetail(panel,item));grid.appendChild(card);
     });
@@ -1921,7 +1937,7 @@
   }
   function renderSportExerciseDetail(panel,item){
     panel.replaceChildren();const header=createElement("header",{className:"sportSubviewHeader"});header.append(createElement("h2",{text:item.name}),createElement("p",{text:`${item.muscle} · ${item.equipment}`}));
-    const detail=createElement("div",{className:"sportExerciseDetail"});const visual=createElement("div",{className:"sportExerciseDetailVisual"});const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img);
+    const detail=createElement("div",{className:"sportExerciseDetail"});const visual=createElement("div",{className:"sportExerciseDetailVisual"});if(item.image){const img=document.createElement("img");img.src=item.image;img.alt=`${item.name} hareket görseli`;visual.appendChild(img)}else{visual.appendChild(createElement("span",{text:item.icon||"●",attributes:{"aria-hidden":"true"}}))}
     const info=createElement("div",{className:"sportExerciseDetailInfo"});info.append(createElement("strong",{text:"Hareket özeti"}),createElement("p",{text:"Kontrollü tempo kullan. Ayrıntılı form rehberi sonraki görsel içerik paketlerinde genişletilecek."}));
     const back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Hareketlere dön"});back.addEventListener("click",()=>renderSportLibrary(panel,"Tümü"));
     detail.append(visual,info,back);panel.append(header,detail);resetHealthScroll();
@@ -1953,7 +1969,7 @@
       shell.append(card,go);
     } else {
       const picker = createElement("div",{className:"sportWorkoutDayPicker"});
-      defaultProgramDays(Number(program.days)).forEach((day,index) => {
+      defaultProgramDays(Number(program.days), program.goal).forEach((day,index) => {
         const currentSettings=daySettings(index,day[0]),currentIds=exerciseIdsForDay(index,day[0]);
         const button = createElement("button",{
           className:"sportWorkoutDayButton",
@@ -2136,7 +2152,7 @@
     );
 
     const dayList = createElement("div", {className:"sportDayList"});
-    defaultProgramDays(Number(program.days)).forEach((day,index) => {
+    defaultProgramDays(Number(program.days), program.goal).forEach((day,index) => {
       const currentSettings=daySettings(index,day[0]),currentIds=exerciseIdsForDay(index,day[0]);
       const card = createElement("button", {
         className:"sportDayCard",
