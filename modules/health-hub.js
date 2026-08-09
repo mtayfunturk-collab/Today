@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 22;
-  const RULESET_ID = "today:health:hub:nut-015.3";
+  const API_VERSION = 23;
+  const RULESET_ID = "today:health:hub:nut-015.4";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -46,6 +46,7 @@
   const SPORT_DAY_SETTINGS_KEY = "today.health.sport.daySettings.v1";
   const WELLNESS_SLEEP_KEY = "today.health.wellness.sleep.v1";
   const WELLNESS_ENERGY_KEY = "today.health.wellness.energy.v1";
+  const WELLNESS_SYMPTOMS_KEY = "today.health.wellness.symptoms.v1";
   let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
@@ -1106,6 +1107,180 @@
 
 
 
+
+
+      /* NUT-015.4 — Belirtiler & Notlar */
+      .symptomTracker {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: calc(126px + env(safe-area-inset-bottom));
+      }
+
+      .symptomCard {
+        width: 100%;
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.03);
+      }
+
+      .symptomCard[hidden] {
+        display: none !important;
+      }
+
+      .symptomCardTitle {
+        margin: 0 0 11px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .symptomHint {
+        margin: -4px 0 11px;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.45;
+        text-align: center;
+      }
+
+      .symptomGrid {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 8px;
+      }
+
+      .symptomChoice {
+        min-width: 0;
+        min-height: 48px;
+        padding: 9px 8px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1.25;
+      }
+
+      .symptomChoice[aria-pressed="true"] {
+        background: rgba(255,255,255,.12);
+        border-color: color-mix(in srgb,var(--text) 46%,transparent);
+      }
+
+      .symptomChoice[data-symptom="none"] {
+        grid-column: 1 / -1;
+      }
+
+      .symptomSeverityGrid {
+        display: grid;
+        grid-template-columns: repeat(5,minmax(0,1fr));
+        gap: 7px;
+      }
+
+      .symptomSeverity {
+        min-width: 0;
+        min-height: 44px;
+        border: 1px solid var(--stroke);
+        border-radius: 13px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .symptomSeverity[aria-pressed="true"] {
+        background: rgba(255,255,255,.12);
+        border-color: color-mix(in srgb,var(--text) 46%,transparent);
+      }
+
+      .symptomInput,
+      .symptomNote {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+      }
+
+      .symptomInput {
+        min-height: 46px;
+        padding: 10px 12px;
+      }
+
+      .symptomNote {
+        min-height: 88px;
+        resize: vertical;
+        padding: 11px 12px;
+        line-height: 1.45;
+      }
+
+      .symptomSave {
+        width: 100%;
+        min-height: 52px;
+        border: 1px solid var(--text);
+        border-radius: 16px;
+        background: #f5f7ff;
+        color: #0b1323;
+        font: inherit;
+        font-weight: 900;
+      }
+
+      .symptomSave:disabled {
+        opacity: .38;
+      }
+
+      .symptomSavedSummary {
+        display: grid;
+        gap: 7px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 18px;
+        background: rgba(255,255,255,.035);
+        text-align: center;
+      }
+
+      .symptomSavedSummary[hidden] {
+        display: none !important;
+      }
+
+      .symptomSavedSummary strong {
+        font-size: 15px;
+      }
+
+      .symptomSavedSummary span {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .symptomStatus {
+        min-height: 18px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 10px;
+        text-align: center;
+      }
+
+      @media (max-width:360px) {
+        .symptomGrid {
+          gap: 7px;
+        }
+
+        .symptomChoice {
+          padding-inline: 5px;
+          font-size: 10px;
+        }
+
+        .symptomSeverityGrid {
+          gap: 5px;
+        }
+      }
 
       /* NUT-015.3 — Enerji & Beden */
       .energyTracker {
@@ -2368,6 +2543,303 @@
     resetHealthScroll();
   }
 
+
+  function readSymptomRecords() {
+    try {
+      const raw = localStorage.getItem(WELLNESS_SYMPTOMS_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveSymptomRecord(record) {
+    try {
+      const records = readSymptomRecords();
+      const next = records.filter(item => item.dayKey !== record.dayKey);
+      next.unshift(record);
+      localStorage.setItem(WELLNESS_SYMPTOMS_KEY, JSON.stringify(next.slice(0,180)));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function renderSymptomsPanel(panel) {
+    if (!panel) return;
+    panel.replaceChildren();
+
+    const header = createElement("header", {className:"wellnessSubviewHeader"});
+    header.append(
+      createElement("h2", {text:"Belirtiler & Notlar"}),
+      createElement("p", {text:"Bir şey varsa seç. Yoksa da bunu fark etmiş ol."})
+    );
+
+    const tracker = createElement("div", {className:"symptomTracker"});
+    const todayKey = wellnessDayKey();
+    const existing = readSymptomRecords().find(item => item.dayKey === todayKey) || null;
+
+    const symptomLabels = {
+      none:"Belirti yok",
+      headache:"Baş ağrısı",
+      muscleJoint:"Kas / eklem",
+      stomach:"Mide",
+      fatigue:"Halsizlik",
+      throat:"Boğaz",
+      cramp:"Kramp",
+      other:"Başka bir şey"
+    };
+
+    let selected = new Set(Array.isArray(existing?.symptoms) ? existing.symptoms : []);
+    let severity = Number(existing?.severity) || null;
+
+    const selectionCard = createElement("section", {className:"symptomCard"});
+    selectionCard.append(
+      createElement("h3", {className:"symptomCardTitle", text:"Bugün ne fark ettin?"}),
+      createElement("p", {
+        className:"symptomHint",
+        text:"Birden fazla belirti seçebilirsin."
+      })
+    );
+
+    const grid = createElement("div", {className:"symptomGrid"});
+    const symptomButtons = new Map();
+
+    const options = [
+      ["none","Belirti yok"],
+      ["headache","Baş ağrısı"],
+      ["muscleJoint","Kas / eklem"],
+      ["stomach","Mide"],
+      ["fatigue","Halsizlik"],
+      ["throat","Boğaz"],
+      ["cramp","Kramp"],
+      ["other","Başka bir şey"]
+    ];
+
+    options.forEach(([value,label]) => {
+      const button = createElement("button", {
+        className:"symptomChoice",
+        type:"button",
+        text:label,
+        attributes:{
+          "data-symptom":value,
+          "aria-pressed": selected.has(value) ? "true" : "false"
+        }
+      });
+
+      button.addEventListener("click", () => {
+        if (value === "none") {
+          selected.clear();
+          selected.add("none");
+        } else {
+          selected.delete("none");
+          if (selected.has(value)) selected.delete(value);
+          else selected.add(value);
+        }
+
+        symptomButtons.forEach((node,key) => {
+          node.setAttribute("aria-pressed", selected.has(key) ? "true" : "false");
+        });
+
+        updateConditionalUI();
+        updateSaveState();
+      });
+
+      symptomButtons.set(value,button);
+      grid.appendChild(button);
+    });
+
+    selectionCard.appendChild(grid);
+
+    const severityCard = createElement("section", {className:"symptomCard"});
+    severityCard.append(
+      createElement("h3", {className:"symptomCardTitle", text:"En belirgin şiddet"}),
+      createElement("p", {
+        className:"symptomHint",
+        text:"1 hafif · 5 çok belirgin"
+      })
+    );
+
+    const severityGrid = createElement("div", {className:"symptomSeverityGrid"});
+    const severityButtons = [];
+    [1,2,3,4,5].forEach(value => {
+      const button = createElement("button", {
+        className:"symptomSeverity",
+        type:"button",
+        text:String(value),
+        attributes:{"aria-pressed": severity === value ? "true" : "false"}
+      });
+
+      button.addEventListener("click", () => {
+        severity = value;
+        severityButtons.forEach((node,index) => {
+          node.setAttribute("aria-pressed", index + 1 === value ? "true" : "false");
+        });
+        updateSaveState();
+      });
+
+      severityButtons.push(button);
+      severityGrid.appendChild(button);
+    });
+    severityCard.appendChild(severityGrid);
+
+    const areaCard = createElement("section", {className:"symptomCard"});
+    areaCard.appendChild(
+      createElement("h3", {className:"symptomCardTitle", text:"Nerede?"})
+    );
+    const area = createElement("input", {
+      className:"symptomInput",
+      type:"text",
+      attributes:{
+        maxlength:"80",
+        placeholder:"İsteğe bağlı — örn. sağ omuz, mide…",
+        "aria-label":"Belirti veya ağrı bölgesi"
+      }
+    });
+    area.value = existing?.bodyArea || "";
+    areaCard.appendChild(area);
+
+    const customCard = createElement("section", {
+      className:"symptomCard",
+      attributes:{hidden:""}
+    });
+    customCard.appendChild(
+      createElement("h3", {className:"symptomCardTitle", text:"Başka ne fark ettin?"})
+    );
+    const custom = createElement("input", {
+      className:"symptomInput",
+      type:"text",
+      attributes:{
+        maxlength:"100",
+        placeholder:"Kısaca yaz…",
+        "aria-label":"Diğer belirti"
+      }
+    });
+    custom.value = existing?.customSymptom || "";
+    custom.addEventListener("input", updateSaveState);
+    customCard.appendChild(custom);
+
+    const noteCard = createElement("section", {className:"symptomCard"});
+    noteCard.appendChild(
+      createElement("h3", {className:"symptomCardTitle", text:"Beden notu"})
+    );
+    const note = createElement("textarea", {
+      className:"symptomNote",
+      attributes:{
+        maxlength:"280",
+        placeholder:"İstersen kısa bir not ekle…",
+        "aria-label":"Beden notu"
+      }
+    });
+    note.value = existing?.note || "";
+    noteCard.appendChild(note);
+
+    const savedSummary = createElement("div", {
+      className:"symptomSavedSummary",
+      attributes: existing ? {} : {hidden:""}
+    });
+    const savedTitle = createElement("strong", {text:"Bugünün kaydı var"});
+    const savedDetail = createElement("span", {text:""});
+    savedSummary.append(savedTitle, savedDetail);
+
+    const status = createElement("p", {className:"symptomStatus", text:""});
+    const save = createElement("button", {
+      className:"symptomSave",
+      type:"button",
+      text: existing ? "Kaydı güncelle" : "Kaydet",
+      attributes:{disabled:""}
+    });
+
+    function hasActualSymptoms() {
+      return [...selected].some(value => value !== "none");
+    }
+
+    function updateConditionalUI() {
+      const actual = hasActualSymptoms();
+      severityCard.hidden = !actual;
+      areaCard.hidden = !actual;
+      customCard.hidden = !selected.has("other");
+
+      if (!actual) {
+        severity = null;
+        severityButtons.forEach(node => node.setAttribute("aria-pressed","false"));
+      }
+    }
+
+    function updateSaveState() {
+      const hasSelection = selected.size > 0;
+      const actual = hasActualSymptoms();
+      const otherReady = !selected.has("other") || custom.value.trim().length > 0;
+      const severityReady = !actual || Number.isFinite(severity);
+      save.disabled = !(hasSelection && otherReady && severityReady);
+    }
+
+    function refreshSummary(record) {
+      if (!record) {
+        savedSummary.hidden = true;
+        return;
+      }
+
+      savedSummary.hidden = false;
+      const names = (record.symptoms || []).map(value => {
+        if (value === "other" && record.customSymptom) return record.customSymptom;
+        return symptomLabels[value] || value;
+      });
+
+      let detail = names.length ? names.join(" · ") : "Kayıt";
+      if (record.severity) detail += ` · Şiddet ${record.severity}/5`;
+      if (record.bodyArea) detail += ` · ${record.bodyArea}`;
+      savedDetail.textContent = detail;
+    }
+
+    save.addEventListener("click", () => {
+      if (save.disabled) return;
+
+      const record = {
+        id: existing?.id || `symptoms-${Date.now()}`,
+        dayKey: todayKey,
+        date: new Date().toISOString(),
+        symptoms: [...selected],
+        severity: hasActualSymptoms() ? severity : null,
+        bodyArea: hasActualSymptoms() ? area.value.trim() : "",
+        customSymptom: selected.has("other") ? custom.value.trim() : "",
+        note: note.value.trim()
+      };
+
+      if (!saveSymptomRecord(record)) {
+        status.textContent = "Kayıt kaydedilemedi.";
+        return;
+      }
+
+      refreshSummary(record);
+      save.textContent = "✓ Kaydedildi";
+      status.textContent = "Bugünün sağlık notu güncellendi.";
+
+      window.setTimeout(() => {
+        save.textContent = "Kaydı güncelle";
+      }, 900);
+    });
+
+    updateConditionalUI();
+    updateSaveState();
+    refreshSummary(existing);
+
+    tracker.append(
+      savedSummary,
+      selectionCard,
+      severityCard,
+      areaCard,
+      customCard,
+      noteCard,
+      save,
+      status
+    );
+
+    panel.append(header, tracker);
+    resetHealthScroll();
+  }
+
   function wellnessCard(section, icon, title, detail, options = {}) {
     const button = createElement("button", {
       className: options.history
@@ -2512,13 +2984,11 @@
         id:"wellnessEnergyPanel",
         attributes:{hidden:""}
       }),
-      symptoms: makeWellnessFoundationPanel(
-        "wellnessSymptomsPanel",
-        "Belirtiler & Notlar",
-        "Belirti, ağrı veya beden notunu kaydet.",
-        "+",
-        "Belirti kaydı NUT-015.4'te geliyor"
-      ),
+      symptoms: createElement("section", {
+        className:"wellnessSubview",
+        id:"wellnessSymptomsPanel",
+        attributes:{hidden:""}
+      }),
       history: makeWellnessFoundationPanel(
         "wellnessHistoryPanel",
         "Geçmiş",
@@ -2534,6 +3004,7 @@
 
     renderSleepPanel(wellnessPanels.sleep);
     renderEnergyPanel(wellnessPanels.energy);
+    renderSymptomsPanel(wellnessPanels.symptoms);
 
     wellnessPanel.addEventListener("click", event => {
       const button = event.target.closest("[data-wellness-open]");
@@ -2556,6 +3027,10 @@
 
     if (section === "energy" && wellnessPanels.energy) {
       renderEnergyPanel(wellnessPanels.energy);
+    }
+
+    if (section === "symptoms" && wellnessPanels.symptoms) {
+      renderSymptomsPanel(wellnessPanels.symptoms);
     }
 
     if (wellnessHub) wellnessHub.hidden = section !== "hub";
