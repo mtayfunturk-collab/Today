@@ -1561,7 +1561,8 @@
       .filter(Boolean);
 
     workoutExercises.forEach((libraryExercise,index) => {
-      const defaults=exerciseDefaults(dayIndex,libraryExercise.id);\n      const exercise=[libraryExercise.name,libraryExercise.muscle,String(defaults.sets),String(defaults.reps)];
+      const defaults=exerciseDefaults(dayIndex,libraryExercise.id);
+      const exercise=[libraryExercise.name,libraryExercise.muscle,String(defaults.sets),String(defaults.reps)];
       const card = createElement("section",{
         className:"sportWorkoutExercise",
         attributes:{"data-workout-exercise":String(index),"data-exercise-id":libraryExercise.id}
