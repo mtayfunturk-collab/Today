@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><g fill="none" stroke="#eef2ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M55 42v118m0-70h52"/><circle cx="182" cy="82" r="17"/><path d="M182 99l-20 45m20-28 43 10m-63 18-40 20m40-20 40 20M107 90l55 26"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" role="img" aria-label="Seated Cable Row">
+<rect width="320" height="260" rx="28" fill="#0d1728"/>
+<g transform="translate(110 10)" fill="none" stroke="#f2f5fb" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="50" cy="58" r="18" fill="#f2f5fb" stroke="none"/>
+<polyline points="50,90 50,155"/><polyline points="20,105 50,125 80,105"/><polyline points="50,155 25,205"/><polyline points="50,155 78,200"/>
+</g>
+<text x="160" y="238" text-anchor="middle" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Seated Cable Row</text>
+</svg>

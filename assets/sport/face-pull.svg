@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><g fill="none" stroke="#eef2ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M62 36v128m0-82h70"/><circle cx="188" cy="83" r="17"/><path d="M188 100v48m0-28-42-25m42 25 35-28m-35 56-25 27m25-27 25 27M132 82l42 12"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" role="img" aria-label="Face Pull">
+<rect width="320" height="260" rx="28" fill="#0d1728"/>
+<g transform="translate(110 10)" fill="none" stroke="#f2f5fb" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="50" cy="58" r="18" fill="#f2f5fb" stroke="none"/>
+<polyline points="50,92 50,155"/><polyline points="18,72 50,105 82,72"/><polyline points="50,155 30,205"/><polyline points="50,155 70,205"/>
+</g>
+<text x="160" y="238" text-anchor="middle" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Face Pull</text>
+</svg>

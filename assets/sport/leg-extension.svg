@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><g fill="none" stroke="#eef2ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M88 66v88h64"/><circle cx="140" cy="73" r="15"/><path d="M145 88l22 46m0 0 58 20M167 134l32-5"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" role="img" aria-label="Leg Extension">
+<rect width="320" height="260" rx="28" fill="#0d1728"/>
+<g transform="translate(110 10)" fill="none" stroke="#f2f5fb" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="50" cy="58" r="18" fill="#f2f5fb" stroke="none"/>
+<polyline points="50,92 50,150"/><polyline points="28,110 50,128 72,110"/><polyline points="50,150 25,185 18,215"/><polyline points="50,150 75,185 82,215"/>
+</g>
+<text x="160" y="238" text-anchor="middle" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Leg Extension</text>
+</svg>

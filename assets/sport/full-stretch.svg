@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 260" role="img" aria-label="Tüm Vücut Esneme">
+<rect width="320" height="260" rx="28" fill="#0d1728"/>
+<g transform="translate(110 10)" fill="none" stroke="#f2f5fb" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="50" cy="58" r="18" fill="#f2f5fb" stroke="none"/>
+<polyline points="50,88 50,155"/><polyline points="18,98 50,120 82,98"/><polyline points="50,155 25,205"/><polyline points="50,155 75,205"/>
+</g>
+<text x="160" y="238" text-anchor="middle" fill="#f2f5fb" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Tüm Vücut Esneme</text>
+</svg>
