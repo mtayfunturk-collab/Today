@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 17;
-  const RULESET_ID = "today:health:hub:nut-014.7.6";
+  const API_VERSION = 18;
+  const RULESET_ID = "today:health:hub:nut-014.7.8";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -1055,7 +1055,7 @@
       .sportLibraryGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:100%;padding-bottom:calc(132px + env(safe-area-inset-bottom))}
       .sportLibraryCard{min-width:0;overflow:hidden;padding:0;border:1px solid var(--stroke);border-radius:18px;background:rgba(255,255,255,.035);color:var(--text);font:inherit;text-align:left}
       .sportLibraryVisual{aspect-ratio:4/3;width:100%;display:grid;place-items:center;overflow:hidden;background:rgba(8,15,28,.38)}
-      .sportLibraryVisual img{display:block;width:100%;height:100%;object-fit:cover;padding:0}
+      .sportLibraryVisual img{display:block;width:100%;height:100%;object-fit:contain;padding:0}
       .sportLibraryCopy{display:block;min-width:0;padding:10px 8px 11px;text-align:center}.sportLibraryCopy strong{display:block;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.25}.sportLibraryCopy small{display:block;margin-top:4px;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:9px;line-height:1.25}
       .sportSubviewHeader{text-align:center;margin-inline:auto;max-width:100%}
       .sportSubviewHeader h3,.sportSubviewHeader p{text-align:center}
@@ -1502,6 +1502,20 @@
     {id:"hip-mobility",name:"Kalça Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/hip-mobility.jpg"},
     {id:"shoulder-mobility",name:"Omuz Mobilitesi",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/shoulder-mobility.jpg"},
     {id:"full-stretch",name:"Tüm Vücut Esneme",muscle:"Mobilite",category:"Mobilite",equipment:"Ekipmansız",type:"mobility",goals:["general","condition"],image:"./assets/sport/full-stretch.jpg"},
+    {id:"arnold-press",name:"Arnold Press",muscle:"Omuz",category:"Omuz",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/arnold-press.jpg"},
+    {id:"barbell-row",name:"Barbell Row",muscle:"Sırt",category:"Sırt",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/barbell-row.jpg"},
+    {id:"bicycle-crunch",name:"Bicycle Crunch",muscle:"Karın",category:"Karın",equipment:"Uygun ekipman",type:"bodyweight",goals:["muscle","strength","condition","general"],image:"./assets/sport/bicycle-crunch.jpg"},
+    {id:"deadlift",name:"Deadlift",muscle:"Sırt",category:"Sırt",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/deadlift.jpg"},
+    {id:"decline-bench-press",name:"Decline Bench Press",muscle:"Göğüs",category:"Göğüs",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/decline-bench-press.jpg"},
+    {id:"dumbbell-pullover",name:"Dumbbell Pullover",muscle:"Göğüs",category:"Göğüs",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/dumbbell-pullover.jpg"},
+    {id:"front-raise",name:"Front Raise",muscle:"Omuz",category:"Omuz",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/front-raise.jpg"},
+    {id:"hanging-leg-raise",name:"Hanging Leg Raise",muscle:"Omuz",category:"Omuz",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/hanging-leg-raise.jpg"},
+    {id:"leg-raise",name:"Leg Raise",muscle:"Omuz",category:"Omuz",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/leg-raise.jpg"},
+    {id:"pec-deck-fly",name:"Pec Deck Fly",muscle:"Göğüs",category:"Göğüs",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/pec-deck-fly.jpg"},
+    {id:"pull-up",name:"Pull Up",muscle:"Sırt",category:"Sırt",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/pull-up.jpg"},
+    {id:"shrug",name:"Shrug",muscle:"Omuz",category:"Omuz",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/shrug.jpg"},
+    {id:"straight-arm-pulldown",name:"Straight Arm Pulldown",muscle:"Sırt",category:"Sırt",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/straight-arm-pulldown.jpg"},
+    {id:"upright-row",name:"Upright Row",muscle:"Sırt",category:"Sırt",equipment:"Uygun ekipman",type:"strength",goals:["muscle","strength","condition","general"],image:"./assets/sport/upright-row.jpg"},
   ];
   function sportLibraryItem(id){return SPORT_EXERCISE_LIBRARY.find(item=>item.id===id)||null}
   function exerciseIdFromName(name){const n=String(name||"").toLowerCase();return SPORT_EXERCISE_LIBRARY.find(item=>item.name.toLowerCase()===n)?.id||null}
