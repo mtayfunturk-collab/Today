@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 12;
-  const RULESET_ID = "today:health:hub:v13";
+  const API_VERSION = 13;
+  const RULESET_ID = "today:health:hub:v14";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -1714,7 +1714,7 @@
       down.addEventListener("click",()=>{const n=[...ids];[n[index+1],n[index]]=[n[index],n[index+1]];setExerciseIdsForDay(dayIndex,n);renderSportProgramDayEditor(panel,dayIndex);buildTodayWorkoutUI(sportPanels.today,true)});moves.append(up,down);
       const remove=createElement("button",{className:"sportProgramRemove",type:"button",text:"×"});remove.addEventListener("click",()=>{setExerciseIdsForDay(dayIndex,exerciseIdsForDay(dayIndex,day[0]).filter(x=>x!==id));renderSportProgramDayEditor(panel,dayIndex);buildTodayWorkoutUI(sportPanels.today,true)});side.append(moves,remove);row.append(thumb,body,side);list.appendChild(row)});
     const actions=createElement("div",{className:"sportProgramEditorActions"}),add=createElement("button",{className:"sportPrimaryAction",type:"button",text:"Hareket ekle"}),workout=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Bu antrenmanı aç"}),back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Programıma dön"});
-    add.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,"Tümü"));workout.addEventListener("click",()=>{showSportSection("today",{focus:false});openSportWorkoutDay(dayIndex)});back.addEventListener("click",()=>renderSportProgram(panel,program));actions.append(add,workout,back);editor.append(titleEditor,list,actions);panel.append(header,editor);resetHealthScroll();
+    add.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,"Tümü"));workout.addEventListener("click",()=>{showSportSection("today",{focus:false});openSportWorkoutDay(dayIndex)});back.addEventListener("click",()=>{ buildSportProgramUI(); resetHealthScroll(); });actions.append(add,workout,back);editor.append(titleEditor,list,actions);panel.append(header,editor);resetHealthScroll();
   }
 
   function renderSportLibrarySelector(panel,dayIndex,activeCategory="Tümü") {
