@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 19;
-  const RULESET_ID = "today:health:hub:nut-014.7.8.1";
+  const API_VERSION = 20;
+  const RULESET_ID = "today:health:hub:nut-015.1";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -22,6 +22,9 @@
   let nutritionPanel = null;
   let sportPanel = null;
   let wellnessPanel = null;
+  let wellnessHub = null;
+  let wellnessActiveSection = "hub";
+  let wellnessPanels = {};
   let backButton = null;
   let styleElement = null;
   let nutritionHub = null;
@@ -1099,6 +1102,241 @@
         }
       }
 
+
+      /* NUT-015.1 — Sağlık ana ekranı */
+      .wellnessHub,
+      .wellnessSubview {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .wellnessHub[hidden],
+      .wellnessSubview[hidden] {
+        display: none !important;
+      }
+
+      .wellnessHub {
+        display: grid;
+        gap: 13px;
+        padding-bottom: calc(118px + env(safe-area-inset-bottom));
+      }
+
+      .wellnessHubHeader {
+        width: 100%;
+        padding: 6px 4px 12px;
+        text-align: center;
+      }
+
+      .wellnessHubMark {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 19px;
+        background: rgba(255,255,255,.04);
+      }
+
+      .wellnessHubMark .healthCrescentSvg {
+        width: 34px;
+        height: 34px;
+      }
+
+      .wellnessHubTitle {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        overflow: hidden !important;
+        clip: rect(0 0 0 0) !important;
+        clip-path: inset(50%) !important;
+        white-space: nowrap !important;
+      }
+
+      .wellnessHubIntro {
+        max-width: 34ch;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .wellnessHubCards {
+        display: grid;
+        gap: 11px;
+        width: 100%;
+      }
+
+      .wellnessHubCard {
+        width: 100%;
+        min-width: 0;
+        min-height: 84px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 19px;
+        background: rgba(255,255,255,.035);
+        color: var(--text);
+        text-align: left;
+        font: inherit;
+      }
+
+      .wellnessHubCard:active {
+        transform: scale(.992);
+      }
+
+      .wellnessHubCardIcon {
+        width: 45px;
+        height: 45px;
+        flex: 0 0 45px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--stroke);
+        border-radius: 15px;
+        background: rgba(255,255,255,.04);
+        color: var(--text);
+        font-size: 21px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .wellnessHubCardCopy {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .wellnessHubCardCopy strong {
+        display: block;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+
+      .wellnessHubCardCopy small {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .wellnessHistoryButton {
+        width: 100%;
+        min-height: 58px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 18px;
+        background: rgba(255,255,255,.022);
+        color: var(--text);
+        font: inherit;
+        text-align: left;
+      }
+
+      .wellnessHistoryButton .wellnessHubCardIcon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+        border-radius: 13px;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .wellnessHistoryButton .wellnessHubCardCopy strong {
+        font-size: 14px;
+      }
+
+      .wellnessHistoryButton .wellnessHubCardCopy small {
+        font-size: 10px;
+      }
+
+      .wellnessSubview {
+        display: grid;
+        gap: 12px;
+        padding-bottom: calc(118px + env(safe-area-inset-bottom));
+      }
+
+      .wellnessSubviewHeader {
+        padding: 7px 4px 13px;
+        text-align: center;
+      }
+
+      .wellnessSubviewHeader h2 {
+        margin: 0;
+        font-size: 21px;
+      }
+
+      .wellnessSubviewHeader p {
+        max-width: 34ch;
+        margin: 5px auto 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .wellnessFoundationCard {
+        width: 100%;
+        padding: 21px 17px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.03);
+        text-align: center;
+      }
+
+      .wellnessFoundationMark {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 11px;
+        border: 1px solid var(--stroke);
+        border-radius: 15px;
+        background: rgba(255,255,255,.035);
+        font-size: 21px;
+      }
+
+      .wellnessFoundationCard strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .wellnessFoundationCard p {
+        max-width: 32ch;
+        margin: 7px auto 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      .wellnessFoundationBadge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 29px;
+        margin-top: 13px;
+        padding: 0 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+      }
+
+      @media (max-width:420px) {
+        .wellnessHub {
+          gap: 10px;
+          padding-bottom: calc(126px + env(safe-area-inset-bottom));
+        }
+
+        .wellnessHubCard {
+          min-height: 80px;
+          padding: 13px;
+        }
+      }
+
       @media (max-width: 420px) {
         .inner { padding: 18px !important; }
         .healthHub { gap: 11px; }
@@ -1250,7 +1488,14 @@
             library: "Kütüphanem",
             history: "Geçmiş"
           }[nutritionActiveSection] || "Beslenme"),
-      wellness: "Sağlık"
+      wellness: wellnessActiveSection === "hub"
+        ? "Sağlık"
+        : ({
+            sleep:"Uyku & Toparlanma",
+            energy:"Enerji & Beden",
+            symptoms:"Belirtiler & Notlar",
+            history:"Geçmiş"
+          }[wellnessActiveSection] || "Sağlık")
     };
 
     pill.textContent = labels[section] || labels.hub;
@@ -1291,15 +1536,21 @@
       showNutritionSection("hub", { focus: false });
     }
 
+    if (section === "wellness") {
+      showWellnessSection("hub", {focus:false});
+    }
+
     if (options.focus !== false) {
       const focusTarget =
         section === "hub"
           ? hub?.querySelector(".healthHubTitle")
-          : healthView?.querySelector(
-              section === "nutrition"
-                ? "#healthTitle"
-                : `#health${section === "sport" ? "Sport" : "Wellness"}PanelTitle`
-            );
+          : section === "nutrition"
+            ? healthView?.querySelector("#healthTitle")
+            : section === "wellness"
+              ? (wellnessActiveSection === "hub"
+                  ? wellnessHub
+                  : wellnessPanels[wellnessActiveSection]?.querySelector("h2"))
+              : healthView?.querySelector("#healthSportPanelTitle");
 
       if (focusTarget) {
         focusTarget.tabIndex = -1;
@@ -1376,6 +1627,226 @@
     });
   }
 
+
+
+  function wellnessCard(section, icon, title, detail, options = {}) {
+    const button = createElement("button", {
+      className: options.history
+        ? "wellnessHistoryButton"
+        : "wellnessHubCard",
+      type: "button",
+      attributes: {
+        "data-wellness-open": section,
+        "aria-label": `${title} bölümünü aç`
+      }
+    });
+
+    const iconElement = createElement("span", {
+      className: "wellnessHubCardIcon",
+      text: icon,
+      attributes: {"aria-hidden":"true"}
+    });
+
+    const copy = createElement("span", {className:"wellnessHubCardCopy"});
+    copy.append(
+      createElement("strong", {text:title}),
+      createElement("small", {text:detail})
+    );
+
+    button.append(
+      iconElement,
+      copy,
+      createElement("span", {
+        className:"healthHubArrow",
+        text:"›",
+        attributes:{"aria-hidden":"true"}
+      })
+    );
+    return button;
+  }
+
+  function makeWellnessFoundationPanel(id, title, detail, icon, nextStep) {
+    const panel = createElement("section", {
+      className:"wellnessSubview",
+      id,
+      attributes:{hidden:""}
+    });
+
+    const header = createElement("header", {className:"wellnessSubviewHeader"});
+    header.append(
+      createElement("h2", {text:title}),
+      createElement("p", {text:detail})
+    );
+
+    const card = createElement("div", {className:"wellnessFoundationCard"});
+    card.append(
+      createElement("div", {
+        className:"wellnessFoundationMark",
+        text:icon,
+        attributes:{"aria-hidden":"true"}
+      }),
+      createElement("strong", {text:nextStep}),
+      createElement("p", {
+        text:"Bu alanın navigasyonu NUT-015.1 ile hazırlandı. Veri girişi sonraki Sağlık paketinde bağlanacak."
+      }),
+      createElement("span", {
+        className:"wellnessFoundationBadge",
+        text:"Sağlık altyapısı hazır"
+      })
+    );
+
+    panel.append(header, card);
+    return panel;
+  }
+
+  function buildWellnessHub() {
+    if (!wellnessPanel || wellnessHub) return;
+    wellnessPanel.replaceChildren();
+
+    wellnessHub = createElement("section", {
+      className:"wellnessHub",
+      id:"wellnessHub",
+      attributes:{"aria-labelledby":"wellnessHubTitle"}
+    });
+
+    const header = createElement("header", {className:"wellnessHubHeader"});
+    const mark = createElement("div", {
+      className:"wellnessHubMark",
+      attributes:{"aria-hidden":"true"}
+    });
+    mark.appendChild(createCrescentIcon());
+
+    header.append(
+      mark,
+      createElement("h1", {
+        className:"wellnessHubTitle",
+        id:"wellnessHubTitle",
+        text:"Sağlık"
+      }),
+      createElement("p", {
+        className:"wellnessHubIntro",
+        text:"Bugün bedeninde neyi fark ettin?"
+      })
+    );
+
+    const cards = createElement("div", {className:"wellnessHubCards"});
+    cards.append(
+      wellnessCard(
+        "sleep",
+        "☾",
+        "Uyku & Toparlanma",
+        "Uyku, dinlenme ve toparlanma."
+      ),
+      wellnessCard(
+        "energy",
+        "◉",
+        "Enerji & Beden",
+        "Enerji, yorgunluk ve beden hissi."
+      ),
+      wellnessCard(
+        "symptoms",
+        "+",
+        "Belirtiler & Notlar",
+        "Belirti, ağrı ve beden notları."
+      )
+    );
+
+    const history = wellnessCard(
+      "history",
+      "◷",
+      "Geçmiş",
+      "Önceki sağlık kayıtlarını gör.",
+      {history:true}
+    );
+
+    wellnessHub.append(header, cards, history);
+    wellnessPanel.appendChild(wellnessHub);
+
+    wellnessPanels = {
+      sleep: makeWellnessFoundationPanel(
+        "wellnessSleepPanel",
+        "Uyku & Toparlanma",
+        "Uyku, dinlenme ve toparlanmanı fark et.",
+        "☾",
+        "Uyku kaydı NUT-015.2'de geliyor"
+      ),
+      energy: makeWellnessFoundationPanel(
+        "wellnessEnergyPanel",
+        "Enerji & Beden",
+        "Bugünkü enerji ve beden hissini fark et.",
+        "◉",
+        "Enerji kaydı NUT-015.3'te geliyor"
+      ),
+      symptoms: makeWellnessFoundationPanel(
+        "wellnessSymptomsPanel",
+        "Belirtiler & Notlar",
+        "Belirti, ağrı veya beden notunu kaydet.",
+        "+",
+        "Belirti kaydı NUT-015.4'te geliyor"
+      ),
+      history: makeWellnessFoundationPanel(
+        "wellnessHistoryPanel",
+        "Geçmiş",
+        "Önceki sağlık kayıtlarını sade biçimde gör.",
+        "◷",
+        "Sağlık geçmişi NUT-015.5'te geliyor"
+      )
+    };
+
+    Object.values(wellnessPanels).forEach(panel => {
+      wellnessPanel.appendChild(panel);
+    });
+
+    wellnessPanel.addEventListener("click", event => {
+      const button = event.target.closest("[data-wellness-open]");
+      if (!button) return;
+      showWellnessSection(button.dataset.wellnessOpen);
+    });
+
+    showWellnessSection("hub", {focus:false});
+  }
+
+  function showWellnessSection(section, options = {}) {
+    const valid = ["hub","sleep","energy","symptoms","history"];
+    if (!valid.includes(section)) section = "hub";
+
+    wellnessActiveSection = section;
+
+    if (wellnessHub) wellnessHub.hidden = section !== "hub";
+    Object.entries(wellnessPanels).forEach(([name,panel]) => {
+      if (panel) panel.hidden = name !== section;
+    });
+
+    const labels = {
+      hub:"Sağlık",
+      sleep:"Uyku & Toparlanma",
+      energy:"Enerji & Beden",
+      symptoms:"Belirtiler & Notlar",
+      history:"Geçmiş"
+    };
+
+    const pill = healthView?.querySelector(".topbar .pill");
+    if (pill && activeSection === "wellness") {
+      pill.textContent = labels[section] || "Sağlık";
+    }
+
+    resetHealthScroll();
+
+    if (options.focus !== false) {
+      const target = section === "hub"
+        ? wellnessHub
+        : wellnessPanels[section]?.querySelector("h2");
+
+      if (target) {
+        target.tabIndex = -1;
+        try {
+          target.focus({preventScroll:true});
+        } catch (error) {
+          target.focus();
+        }
+      }
+    }
+  }
 
   function sportCard(section, icon, title, detail) {
     const button = createElement("button", {
@@ -2366,6 +2837,17 @@
           event.stopPropagation();
           event.stopImmediatePropagation();
           showSportSection("hub");
+          return;
+        }
+
+        if (
+          activeSection === "wellness" &&
+          wellnessActiveSection !== "hub"
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          showWellnessSection("hub");
           return;
         }
 
@@ -3369,17 +3851,17 @@
       attributes: {hidden: "", "aria-label": "Spor"}
     });
 
-    wellnessPanel = makePlaceholder(
-      "healthWellnessPanel",
-      "",
-      "Sağlık",
-      "Uyku, enerji, semptomlar ve beden notları burada gelişecek."
-    );
+    wellnessPanel = createElement("section", {
+      className:"healthSubmodule",
+      id:"healthWellnessPanel",
+      attributes:{hidden:"", "aria-label":"Sağlık"}
+    });
 
     nutritionPanel.parentNode.insertBefore(sportPanel, nutritionPanel.nextSibling);
     nutritionPanel.parentNode.insertBefore(wellnessPanel, sportPanel.nextSibling);
 
     buildSportHub();
+    buildWellnessHub();
     buildNutritionHub();
     simplifyNutritionRecords();
     interceptBackButton();
@@ -3395,6 +3877,7 @@
       initialized,
       activeSection,
       sportActiveSection,
+      wellnessActiveSection,
       nutritionActiveSection,
       mealActiveSection
     });
@@ -3406,6 +3889,7 @@
     init,
     showSection,
     showSportSection,
+    showWellnessSection,
     getState
   });
 
