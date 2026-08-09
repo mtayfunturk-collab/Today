@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-050";
+const VERSION = "today-v2-foundation-051";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
