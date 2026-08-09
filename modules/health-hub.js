@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 21;
-  const RULESET_ID = "today:health:hub:nut-015.2";
+  const API_VERSION = 22;
+  const RULESET_ID = "today:health:hub:nut-015.3";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -45,6 +45,7 @@
   const SPORT_CUSTOM_DAYS_KEY = "today.health.sport.customDays.v1";
   const SPORT_DAY_SETTINGS_KEY = "today.health.sport.daySettings.v1";
   const WELLNESS_SLEEP_KEY = "today.health.wellness.sleep.v1";
+  const WELLNESS_ENERGY_KEY = "today.health.wellness.energy.v1";
   let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
@@ -1105,6 +1106,124 @@
 
 
 
+
+      /* NUT-015.3 — Enerji & Beden */
+      .energyTracker {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: calc(126px + env(safe-area-inset-bottom));
+      }
+
+      .energyCard {
+        width: 100%;
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.03);
+      }
+
+      .energyCardTitle {
+        margin: 0 0 11px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .energyChoiceGrid {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(0,1fr));
+        gap: 8px;
+      }
+
+      .energyChoice {
+        min-width: 0;
+        min-height: 48px;
+        padding: 9px 6px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1.25;
+      }
+
+      .energyChoice[aria-pressed="true"] {
+        background: rgba(255,255,255,.12);
+        border-color: color-mix(in srgb,var(--text) 46%,transparent);
+      }
+
+      .energyNote {
+        width: 100%;
+        min-width: 0;
+        min-height: 88px;
+        resize: vertical;
+        padding: 11px 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        line-height: 1.45;
+      }
+
+      .energySave {
+        width: 100%;
+        min-height: 52px;
+        border: 1px solid var(--text);
+        border-radius: 16px;
+        background: #f5f7ff;
+        color: #0b1323;
+        font: inherit;
+        font-weight: 900;
+      }
+
+      .energySave:disabled {
+        opacity: .38;
+      }
+
+      .energySavedSummary {
+        display: grid;
+        gap: 7px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 18px;
+        background: rgba(255,255,255,.035);
+        text-align: center;
+      }
+
+      .energySavedSummary[hidden] {
+        display: none !important;
+      }
+
+      .energySavedSummary strong {
+        font-size: 15px;
+      }
+
+      .energySavedSummary span {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .energyStatus {
+        min-height: 18px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 10px;
+        text-align: center;
+      }
+
+      @media (max-width:360px) {
+        .energyChoice {
+          font-size: 10px;
+          padding-inline: 4px;
+        }
+      }
+
       /* NUT-015.2 — Uyku & Toparlanma */
       .sleepTracker {
         display: grid;
@@ -2048,6 +2167,207 @@
     resetHealthScroll();
   }
 
+
+  function readEnergyRecords() {
+    try {
+      const raw = localStorage.getItem(WELLNESS_ENERGY_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveEnergyRecord(record) {
+    try {
+      const records = readEnergyRecords();
+      const next = records.filter(item => item.dayKey !== record.dayKey);
+      next.unshift(record);
+      localStorage.setItem(WELLNESS_ENERGY_KEY, JSON.stringify(next.slice(0,180)));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function renderEnergyPanel(panel) {
+    if (!panel) return;
+    panel.replaceChildren();
+
+    const header = createElement("header", {className:"wellnessSubviewHeader"});
+    header.append(
+      createElement("h2", {text:"Enerji & Beden"}),
+      createElement("p", {text:"Bugün bedeninin nasıl hissettirdiğini fark et."})
+    );
+
+    const tracker = createElement("div", {className:"energyTracker"});
+    const todayKey = wellnessDayKey();
+    const existing = readEnergyRecords().find(item => item.dayKey === todayKey) || null;
+
+    let energy = existing?.energy || null;
+    let fatigue = existing?.fatigue || null;
+    let body = existing?.body || null;
+
+    function makeChoiceCard(title, values, currentValue, onChange) {
+      const card = createElement("section", {className:"energyCard"});
+      card.appendChild(createElement("h3", {className:"energyCardTitle", text:title}));
+
+      const grid = createElement("div", {className:"energyChoiceGrid"});
+      values.forEach(([value,label]) => {
+        const button = createElement("button", {
+          className:"energyChoice",
+          type:"button",
+          text:label,
+          attributes:{
+            "data-energy-value":value,
+            "aria-pressed": value === currentValue ? "true" : "false"
+          }
+        });
+
+        button.addEventListener("click", () => {
+          grid.querySelectorAll(".energyChoice").forEach(node => {
+            node.setAttribute("aria-pressed","false");
+          });
+          button.setAttribute("aria-pressed","true");
+          onChange(value);
+          updateSaveState();
+        });
+
+        grid.appendChild(button);
+      });
+
+      card.appendChild(grid);
+      return card;
+    }
+
+    const energyCard = makeChoiceCard(
+      "Enerjin nasıl?",
+      [["low","Düşük"],["balanced","Dengeli"],["high","Yüksek"]],
+      energy,
+      value => { energy = value; }
+    );
+
+    const fatigueCard = makeChoiceCard(
+      "Yorgunluk var mı?",
+      [["high","Fazla"],["some","Biraz"],["none","Yok"]],
+      fatigue,
+      value => { fatigue = value; }
+    );
+
+    const bodyCard = makeChoiceCard(
+      "Bedenin nasıl hissettiriyor?",
+      [["tense","Gergin"],["neutral","Normal"],["relaxed","Rahat"]],
+      body,
+      value => { body = value; }
+    );
+
+    const noteCard = createElement("section", {className:"energyCard"});
+    noteCard.appendChild(
+      createElement("h3", {className:"energyCardTitle", text:"Kısa not"})
+    );
+    const note = createElement("textarea", {
+      className:"energyNote",
+      attributes:{
+        maxlength:"240",
+        placeholder:"İstersen bir şey ekle…",
+        "aria-label":"Enerji ve beden kısa notu"
+      }
+    });
+    note.value = existing?.note || "";
+    noteCard.appendChild(note);
+
+    const savedSummary = createElement("div", {
+      className:"energySavedSummary",
+      attributes: existing ? {} : {hidden:""}
+    });
+    const savedTitle = createElement("strong", {text:"Bugünün kaydı var"});
+    const savedDetail = createElement("span", {text:""});
+    savedSummary.append(savedTitle, savedDetail);
+
+    const status = createElement("p", {className:"energyStatus", text:""});
+    const save = createElement("button", {
+      className:"energySave",
+      type:"button",
+      text: existing ? "Kaydı güncelle" : "Kaydet",
+      attributes:{disabled:""}
+    });
+
+    const energyLabels = {
+      low:"Düşük",
+      balanced:"Dengeli",
+      high:"Yüksek"
+    };
+
+    const fatigueLabels = {
+      high:"Fazla yorgunluk",
+      some:"Biraz yorgunluk",
+      none:"Yorgunluk yok"
+    };
+
+    const bodyLabels = {
+      tense:"Gergin",
+      neutral:"Normal",
+      relaxed:"Rahat"
+    };
+
+    const refreshSummary = record => {
+      if (!record) {
+        savedSummary.hidden = true;
+        return;
+      }
+      savedSummary.hidden = false;
+      savedDetail.textContent =
+        `${energyLabels[record.energy] || "Enerji yok"} · ${fatigueLabels[record.fatigue] || "Yorgunluk yok"} · ${bodyLabels[record.body] || "Beden hissi yok"}`;
+    };
+
+    function updateSaveState() {
+      save.disabled = !(energy && fatigue && body);
+    }
+
+    save.addEventListener("click", () => {
+      if (save.disabled) return;
+
+      const record = {
+        id: existing?.id || `energy-${Date.now()}`,
+        dayKey: todayKey,
+        date: new Date().toISOString(),
+        energy,
+        fatigue,
+        body,
+        note: note.value.trim()
+      };
+
+      if (!saveEnergyRecord(record)) {
+        status.textContent = "Kayıt kaydedilemedi.";
+        return;
+      }
+
+      refreshSummary(record);
+      save.textContent = "✓ Kaydedildi";
+      status.textContent = "Bugünün enerji ve beden kaydı güncellendi.";
+
+      window.setTimeout(() => {
+        save.textContent = "Kaydı güncelle";
+      }, 900);
+    });
+
+    updateSaveState();
+    refreshSummary(existing);
+
+    tracker.append(
+      savedSummary,
+      energyCard,
+      fatigueCard,
+      bodyCard,
+      noteCard,
+      save,
+      status
+    );
+
+    panel.append(header, tracker);
+    resetHealthScroll();
+  }
+
   function wellnessCard(section, icon, title, detail, options = {}) {
     const button = createElement("button", {
       className: options.history
@@ -2187,13 +2507,11 @@
         id:"wellnessSleepPanel",
         attributes:{hidden:""}
       }),
-      energy: makeWellnessFoundationPanel(
-        "wellnessEnergyPanel",
-        "Enerji & Beden",
-        "Bugünkü enerji ve beden hissini fark et.",
-        "◉",
-        "Enerji kaydı NUT-015.3'te geliyor"
-      ),
+      energy: createElement("section", {
+        className:"wellnessSubview",
+        id:"wellnessEnergyPanel",
+        attributes:{hidden:""}
+      }),
       symptoms: makeWellnessFoundationPanel(
         "wellnessSymptomsPanel",
         "Belirtiler & Notlar",
@@ -2215,6 +2533,7 @@
     });
 
     renderSleepPanel(wellnessPanels.sleep);
+    renderEnergyPanel(wellnessPanels.energy);
 
     wellnessPanel.addEventListener("click", event => {
       const button = event.target.closest("[data-wellness-open]");
@@ -2233,6 +2552,10 @@
 
     if (section === "sleep" && wellnessPanels.sleep) {
       renderSleepPanel(wellnessPanels.sleep);
+    }
+
+    if (section === "energy" && wellnessPanels.energy) {
+      renderEnergyPanel(wellnessPanels.energy);
     }
 
     if (wellnessHub) wellnessHub.hidden = section !== "hub";
