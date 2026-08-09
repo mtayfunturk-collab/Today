@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 11;
-  const RULESET_ID = "today:health:hub:v12";
+  const API_VERSION = 12;
+  const RULESET_ID = "today:health:hub:v13";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -40,6 +40,7 @@
   const SPORT_PROGRAM_KEY = "today.health.sport.program.v1";
   const SPORT_WORKOUT_LOG_KEY = "today.health.sport.workouts.v1";
   const SPORT_CUSTOM_DAYS_KEY = "today.health.sport.customDays.v1";
+  const SPORT_DAY_SETTINGS_KEY = "today.health.sport.daySettings.v1";
   let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
@@ -997,6 +998,15 @@
       }
 
 
+      /* NUT-014.7 — Program günü ayarları */
+      .sportDayTitleEditor{display:grid;grid-template-columns:1fr auto;gap:8px}
+      .sportDayTitleInput{min-width:0;min-height:44px;padding:9px 11px;border:1px solid var(--stroke);border-radius:13px;background:rgba(255,255,255,.025);color:var(--text);font:inherit;font-weight:800}
+      .sportDayTitleSave{min-width:72px;border:1px solid var(--stroke);border-radius:13px;background:rgba(255,255,255,.08);color:var(--text);font:inherit;font-weight:850}
+      .sportProgramExerciseControls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+      .sportProgramExerciseField{display:grid;gap:4px}.sportProgramExerciseField label{color:var(--muted);font-size:9px;font-weight:800}
+      .sportProgramExerciseField input{width:100%;min-height:38px;padding:7px;border:1px solid var(--stroke);border-radius:11px;background:rgba(255,255,255,.025);color:var(--text);font:inherit;text-align:center}
+      .sportProgramMoveButtons{display:flex;gap:5px}.sportProgramMove{width:34px;height:34px;border:1px solid var(--stroke);border-radius:10px;background:rgba(255,255,255,.025);color:var(--text);font:inherit;font-weight:900}
+
       /* NUT-014.6 — Programım ↔ Hareket Kütüphanesi */
       .sportProgramDayEditor{display:grid;gap:11px;padding-bottom:calc(118px + env(safe-area-inset-bottom))}
       .sportProgramExerciseList{display:grid;gap:8px}
@@ -1534,12 +1544,13 @@
 
     const days = defaultProgramDays(Number(program.days));
     const day = days[dayIndex] || days[0];
+    const settings = daySettings(dayIndex,day[0]);
     panel.replaceChildren();
 
     const header = createElement("header",{className:"sportSubviewHeader"});
     header.append(
       createElement("h2",{text:`${dayIndex + 1}. Gün`}),
-      createElement("p",{text:day[0]})
+      createElement("p",{text:settings.title})
     );
 
     const shell = createElement("div",{className:"sportWorkoutShell"});
@@ -1550,7 +1561,7 @@
       .filter(Boolean);
 
     workoutExercises.forEach((libraryExercise,index) => {
-      const exercise = [libraryExercise.name,libraryExercise.muscle,"3","10"];
+      const defaults=exerciseDefaults(dayIndex,libraryExercise.id);\n      const exercise=[libraryExercise.name,libraryExercise.muscle,String(defaults.sets),String(defaults.reps)];
       const card = createElement("section",{
         className:"sportWorkoutExercise",
         attributes:{"data-workout-exercise":String(index),"data-exercise-id":libraryExercise.id}
@@ -1624,7 +1635,7 @@
         id:`workout-${Date.now()}`,
         date:new Date().toISOString(),
         dayIndex,
-        dayTitle:day[0],
+        dayTitle:settings.title,
         durationMinutes:Math.max(1,Math.round((Date.now()-startedAt)/60000)),
         exercises
       });
@@ -1644,6 +1655,13 @@
     panel.append(header,shell);
     resetHealthScroll();
   }
+
+  function readSportDaySettings(){try{const raw=localStorage.getItem(SPORT_DAY_SETTINGS_KEY);const p=raw?JSON.parse(raw):{};return p&&typeof p==="object"?p:{}}catch(e){return {}}}
+  function saveSportDaySettings(data){try{localStorage.setItem(SPORT_DAY_SETTINGS_KEY,JSON.stringify(data));return true}catch(e){return false}}
+  function daySettings(dayIndex,fallbackTitle){const all=readSportDaySettings(),c=all[String(dayIndex)]||{};return {title:c.title||fallbackTitle,exercises:c.exercises&&typeof c.exercises==="object"?c.exercises:{}}}
+  function updateDaySettings(dayIndex,patch){const all=readSportDaySettings(),key=String(dayIndex);all[key]={...(all[key]||{}),...patch};saveSportDaySettings(all)}
+  function exerciseDefaults(dayIndex,exerciseId){const item=readSportDaySettings()[String(dayIndex)]?.exercises?.[exerciseId]||{};return {sets:Number(item.sets)||3,reps:Number(item.reps)||10}}
+  function updateExerciseDefaults(dayIndex,exerciseId,patch){const all=readSportDaySettings(),key=String(dayIndex);all[key]=all[key]||{};all[key].exercises=all[key].exercises||{};all[key].exercises[exerciseId]={...(all[key].exercises[exerciseId]||{}),...patch};saveSportDaySettings(all)}
 
   function readSportCustomDays() {
     try {
@@ -1679,54 +1697,23 @@
   }
 
   function renderSportProgramDayEditor(panel,dayIndex) {
-    const program=readSportProgram();
-    if(!panel||!program)return;
-    const days=defaultProgramDays(Number(program.days));
-    const day=days[dayIndex]||days[0];
-    panel.replaceChildren();
-
-    const header=createElement("header",{className:"sportSubviewHeader"});
-    header.append(
-      createElement("h2",{text:`${dayIndex+1}. Gün`}),
-      createElement("p",{text:day[0]})
-    );
-
+    const program=readSportProgram();if(!panel||!program)return;
+    const days=defaultProgramDays(Number(program.days)),day=days[dayIndex]||days[0],settings=daySettings(dayIndex,day[0]);panel.replaceChildren();
+    const header=createElement("header",{className:"sportSubviewHeader"});header.append(createElement("h2",{text:`${dayIndex+1}. Gün`}),createElement("p",{text:settings.title}));
     const editor=createElement("div",{className:"sportProgramDayEditor"});
-    const list=createElement("div",{className:"sportProgramExerciseList"});
-    const ids=exerciseIdsForDay(dayIndex,day[0]);
-
-    if(!ids.length){
-      const empty=createElement("div",{className:"sportProgressEmpty"});
-      empty.append(createElement("strong",{text:"Bu güne hareket eklenmedi"}),createElement("p",{text:"Görsel kütüphaneden istediğin hareketleri ekleyebilirsin."}));
-      list.appendChild(empty);
-    } else {
-      ids.forEach(id=>{
-        const item=sportLibraryItem(id);
-        if(!item)return;
-        const row=createElement("div",{className:"sportProgramExerciseRow"});
-        const thumb=createElement("div",{className:"sportProgramExerciseThumb"});
-        const img=document.createElement("img");img.src=item.image;img.alt="";thumb.appendChild(img);
-        const copy=createElement("div",{className:"sportProgramExerciseCopy"});
-        copy.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
-        const remove=createElement("button",{className:"sportProgramRemove",type:"button",text:"×",attributes:{"aria-label":`${item.name} hareketini çıkar`}});
-        remove.addEventListener("click",()=>{
-          setExerciseIdsForDay(dayIndex,exerciseIdsForDay(dayIndex,day[0]).filter(x=>x!==id));
-          renderSportProgramDayEditor(panel,dayIndex);
-          buildTodayWorkoutUI(sportPanels.today,true);
-        });
-        row.append(thumb,copy,remove);list.appendChild(row);
-      });
-    }
-
-    const actions=createElement("div",{className:"sportProgramEditorActions"});
-    const add=createElement("button",{className:"sportPrimaryAction",type:"button",text:"Hareket ekle"});
-    add.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,"Tümü"));
-    const workout=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Bu antrenmanı aç"});
-    workout.addEventListener("click",()=>{showSportSection("today",{focus:false});openSportWorkoutDay(dayIndex)});
-    const back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Programıma dön"});
-    back.addEventListener("click",()=>renderSportProgram(panel,program));
-    actions.append(add,workout,back);
-    editor.append(list,actions);panel.append(header,editor);resetHealthScroll();
+    const titleEditor=createElement("div",{className:"sportDayTitleEditor"}),titleInput=createElement("input",{className:"sportDayTitleInput",type:"text",attributes:{value:settings.title,maxlength:"48","aria-label":"Program günü adı"}}),titleSave=createElement("button",{className:"sportDayTitleSave",type:"button",text:"Kaydet"});
+    titleSave.addEventListener("click",()=>{updateDaySettings(dayIndex,{title:titleInput.value.trim()||day[0]});renderSportProgramDayEditor(panel,dayIndex)});titleEditor.append(titleInput,titleSave);
+    const list=createElement("div",{className:"sportProgramExerciseList"}),ids=exerciseIdsForDay(dayIndex,day[0]);
+    if(!ids.length){const empty=createElement("div",{className:"sportProgressEmpty"});empty.append(createElement("strong",{text:"Bu güne hareket eklenmedi"}),createElement("p",{text:"Görsel kütüphaneden istediğin hareketleri ekleyebilirsin."}));list.appendChild(empty)}
+    else ids.forEach((id,index)=>{const item=sportLibraryItem(id);if(!item)return;const d=exerciseDefaults(dayIndex,id),row=createElement("div",{className:"sportProgramExerciseRow"}),thumb=createElement("div",{className:"sportProgramExerciseThumb"}),img=document.createElement("img");img.src=item.image;img.alt="";thumb.appendChild(img);
+      const body=createElement("div",{className:"sportProgramExerciseCopy"});body.append(createElement("strong",{text:item.name}),createElement("small",{text:`${item.muscle} · ${item.equipment}`}));
+      const controls=createElement("div",{className:"sportProgramExerciseControls"});[["sets","Set",d.sets],["reps","Tekrar",d.reps]].forEach(([key,label,value])=>{const w=createElement("div",{className:"sportProgramExerciseField"}),input=createElement("input",{type:"number",attributes:{min:"1",max:"99",value:String(value),inputmode:"numeric"}});input.addEventListener("change",()=>{updateExerciseDefaults(dayIndex,id,{[key]:Math.max(1,Number(input.value)||1)});buildTodayWorkoutUI(sportPanels.today,true)});w.append(createElement("label",{text:label}),input);controls.appendChild(w)});body.appendChild(controls);
+      const side=createElement("div"),moves=createElement("div",{className:"sportProgramMoveButtons"}),up=createElement("button",{className:"sportProgramMove",type:"button",text:"↑"}),down=createElement("button",{className:"sportProgramMove",type:"button",text:"↓"});up.disabled=index===0;down.disabled=index===ids.length-1;
+      up.addEventListener("click",()=>{const n=[...ids];[n[index-1],n[index]]=[n[index],n[index-1]];setExerciseIdsForDay(dayIndex,n);renderSportProgramDayEditor(panel,dayIndex);buildTodayWorkoutUI(sportPanels.today,true)});
+      down.addEventListener("click",()=>{const n=[...ids];[n[index+1],n[index]]=[n[index],n[index+1]];setExerciseIdsForDay(dayIndex,n);renderSportProgramDayEditor(panel,dayIndex);buildTodayWorkoutUI(sportPanels.today,true)});moves.append(up,down);
+      const remove=createElement("button",{className:"sportProgramRemove",type:"button",text:"×"});remove.addEventListener("click",()=>{setExerciseIdsForDay(dayIndex,exerciseIdsForDay(dayIndex,day[0]).filter(x=>x!==id));renderSportProgramDayEditor(panel,dayIndex);buildTodayWorkoutUI(sportPanels.today,true)});side.append(moves,remove);row.append(thumb,body,side);list.appendChild(row)});
+    const actions=createElement("div",{className:"sportProgramEditorActions"}),add=createElement("button",{className:"sportPrimaryAction",type:"button",text:"Hareket ekle"}),workout=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Bu antrenmanı aç"}),back=createElement("button",{className:"sportSecondaryAction",type:"button",text:"Programıma dön"});
+    add.addEventListener("click",()=>renderSportLibrarySelector(panel,dayIndex,"Tümü"));workout.addEventListener("click",()=>{showSportSection("today",{focus:false});openSportWorkoutDay(dayIndex)});back.addEventListener("click",()=>renderSportProgram(panel,program));actions.append(add,workout,back);editor.append(titleEditor,list,actions);panel.append(header,editor);resetHealthScroll();
   }
 
   function renderSportLibrarySelector(panel,dayIndex,activeCategory="Tümü") {
@@ -1953,6 +1940,7 @@
     } else {
       const picker = createElement("div",{className:"sportWorkoutDayPicker"});
       defaultProgramDays(Number(program.days)).forEach((day,index) => {
+        const currentSettings=daySettings(index,day[0]),currentIds=exerciseIdsForDay(index,day[0]);
         const button = createElement("button",{
           className:"sportWorkoutDayButton",
           type:"button"
@@ -2135,10 +2123,11 @@
 
     const dayList = createElement("div", {className:"sportDayList"});
     defaultProgramDays(Number(program.days)).forEach((day,index) => {
+      const currentSettings=daySettings(index,day[0]),currentIds=exerciseIdsForDay(index,day[0]);
       const card = createElement("button", {
         className:"sportDayCard",
         type:"button",
-        attributes:{"aria-label":`${index+1}. gün ${day[0]}`}
+        attributes:{"aria-label":`${index+1}. gün ${currentSettings.title}`}
       });
       card.append(
         createElement("span", {className:"sportDayNumber", text:String(index+1)}),
