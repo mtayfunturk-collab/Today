@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 24;
-  const RULESET_ID = "today:health:hub:nut-015.5";
+  const API_VERSION = 25;
+  const RULESET_ID = "today:health:hub:nut-015.6";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
