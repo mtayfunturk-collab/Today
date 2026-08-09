@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 23;
-  const RULESET_ID = "today:health:hub:nut-015.4";
+  const API_VERSION = 24;
+  const RULESET_ID = "today:health:hub:nut-015.5";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -1108,6 +1108,198 @@
 
 
 
+
+
+      /* NUT-015.5 — Sağlık Geçmişi */
+      .wellnessHistoryView {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: calc(126px + env(safe-area-inset-bottom));
+      }
+
+      .wellnessHistoryFilters {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(0,1fr));
+        gap: 8px;
+        width: 100%;
+      }
+
+      .wellnessHistoryFilter {
+        min-width: 0;
+        min-height: 42px;
+        padding: 8px 6px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      .wellnessHistoryFilter[aria-pressed="true"] {
+        background: rgba(255,255,255,.12);
+        border-color: color-mix(in srgb,var(--text) 46%,transparent);
+      }
+
+      .wellnessHistorySummary {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(0,1fr));
+        gap: 8px;
+        width: 100%;
+      }
+
+      .wellnessHistoryStat {
+        min-width: 0;
+        min-height: 83px;
+        display: grid;
+        align-content: center;
+        gap: 5px;
+        padding: 10px 7px;
+        border: 1px solid var(--stroke);
+        border-radius: 17px;
+        background: rgba(255,255,255,.03);
+        text-align: center;
+      }
+
+      .wellnessHistoryStat strong {
+        font-size: 14px;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+
+      .wellnessHistoryStat span {
+        color: var(--muted);
+        font-size: 9px;
+        line-height: 1.3;
+      }
+
+      .wellnessHistoryTimeline {
+        display: grid;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .wellnessHistoryDay {
+        width: 100%;
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 19px;
+        background: rgba(255,255,255,.03);
+      }
+
+      .wellnessHistoryDayHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 11px;
+      }
+
+      .wellnessHistoryDayHeader strong {
+        font-size: 13px;
+      }
+
+      .wellnessHistoryDayHeader span {
+        color: var(--muted);
+        font-size: 9px;
+      }
+
+      .wellnessHistoryEntries {
+        display: grid;
+        gap: 8px;
+      }
+
+      .wellnessHistoryEntry {
+        display: grid;
+        grid-template-columns: 31px minmax(0,1fr);
+        gap: 9px;
+        align-items: start;
+        min-width: 0;
+        padding: 9px 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.022);
+      }
+
+      .wellnessHistoryEntryIcon {
+        width: 31px;
+        height: 31px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--stroke);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .wellnessHistoryEntryCopy {
+        min-width: 0;
+      }
+
+      .wellnessHistoryEntryCopy strong {
+        display: block;
+        font-size: 11px;
+        line-height: 1.3;
+      }
+
+      .wellnessHistoryEntryCopy span,
+      .wellnessHistoryEntryCopy small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 9px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      .wellnessHistoryNote {
+        margin-top: 5px !important;
+        color: var(--text) !important;
+        opacity: .82;
+      }
+
+      .wellnessHistoryEmpty {
+        display: grid;
+        place-items: center;
+        min-height: 180px;
+        padding: 20px 16px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.025);
+        text-align: center;
+      }
+
+      .wellnessHistoryEmpty strong {
+        font-size: 15px;
+      }
+
+      .wellnessHistoryEmpty p {
+        max-width: 31ch;
+        margin: 7px auto 0;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      @media (max-width:360px) {
+        .wellnessHistorySummary {
+          gap: 6px;
+        }
+
+        .wellnessHistoryStat {
+          min-height: 78px;
+          padding-inline: 5px;
+        }
+
+        .wellnessHistoryStat strong {
+          font-size: 12px;
+        }
+      }
 
       /* NUT-015.4 — Belirtiler & Notlar */
       .symptomTracker {
@@ -2840,6 +3032,288 @@
     resetHealthScroll();
   }
 
+
+  function parseWellnessDayKey(dayKey) {
+    if (!dayKey) return null;
+    const date = new Date(`${dayKey}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function formatWellnessHistoryDate(dayKey) {
+    const date = parseWellnessDayKey(dayKey);
+    if (!date) return dayKey || "";
+    try {
+      return new Intl.DateTimeFormat("tr-TR", {
+        day:"numeric",
+        month:"short",
+        weekday:"short"
+      }).format(date);
+    } catch (error) {
+      return dayKey;
+    }
+  }
+
+  function wellnessDaysAgo(dayKey) {
+    const date = parseWellnessDayKey(dayKey);
+    if (!date) return Infinity;
+    const today = parseWellnessDayKey(wellnessDayKey());
+    return Math.floor((today - date) / 86400000);
+  }
+
+  function collectWellnessHistory() {
+    const days = new Map();
+
+    const ensure = dayKey => {
+      if (!days.has(dayKey)) {
+        days.set(dayKey, {
+          dayKey,
+          sleep:null,
+          energy:null,
+          symptoms:null
+        });
+      }
+      return days.get(dayKey);
+    };
+
+    readSleepRecords().forEach(record => {
+      if (record?.dayKey) ensure(record.dayKey).sleep = record;
+    });
+
+    readEnergyRecords().forEach(record => {
+      if (record?.dayKey) ensure(record.dayKey).energy = record;
+    });
+
+    readSymptomRecords().forEach(record => {
+      if (record?.dayKey) ensure(record.dayKey).symptoms = record;
+    });
+
+    return [...days.values()].sort((a,b) => b.dayKey.localeCompare(a.dayKey));
+  }
+
+  function filterWellnessHistory(days, range) {
+    if (range === "all") return days;
+    const limit = range === "30" ? 30 : 7;
+    return days.filter(day => {
+      const diff = wellnessDaysAgo(day.dayKey);
+      return diff >= 0 && diff < limit;
+    });
+  }
+
+  function mostCommonEnergyLabel(records) {
+    const counts = {low:0,balanced:0,high:0};
+    records.forEach(record => {
+      if (record?.energy && Object.prototype.hasOwnProperty.call(counts,record.energy)) {
+        counts[record.energy] += 1;
+      }
+    });
+
+    const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+    if (!entries.length || entries[0][1] === 0) return "—";
+    return {
+      low:"Düşük",
+      balanced:"Dengeli",
+      high:"Yüksek"
+    }[entries[0][0]] || "—";
+  }
+
+  function renderWellnessHistoryPanel(panel, requestedRange = null) {
+    if (!panel) return;
+    panel.replaceChildren();
+
+    const previousRange = requestedRange || panel.dataset.range || "7";
+    panel.dataset.range = previousRange;
+
+    const header = createElement("header", {className:"wellnessSubviewHeader"});
+    header.append(
+      createElement("h2", {text:"Geçmiş"}),
+      createElement("p", {
+        text:"Uyku, enerji ve beden kayıtlarını aynı zaman çizgisinde gör."
+      })
+    );
+
+    const view = createElement("div", {className:"wellnessHistoryView"});
+    const filters = createElement("div", {
+      className:"wellnessHistoryFilters",
+      attributes:{"aria-label":"Sağlık geçmişi zaman aralığı"}
+    });
+
+    [
+      ["7","Son 7 gün"],
+      ["30","Son 30 gün"],
+      ["all","Tümü"]
+    ].forEach(([value,label]) => {
+      const button = createElement("button", {
+        className:"wellnessHistoryFilter",
+        type:"button",
+        text:label,
+        attributes:{
+          "aria-pressed": previousRange === value ? "true" : "false"
+        }
+      });
+
+      button.addEventListener("click", () => {
+        panel.dataset.range = value;
+        renderWellnessHistoryPanel(panel,value);
+      });
+
+      filters.appendChild(button);
+    });
+
+    const allDays = collectWellnessHistory();
+    const days = filterWellnessHistory(allDays,previousRange);
+
+    const sleepRecords = days.map(day => day.sleep).filter(Boolean);
+    const energyRecords = days.map(day => day.energy).filter(Boolean);
+    const symptomRecords = days.map(day => day.symptoms).filter(Boolean);
+
+    const avgSleep = sleepRecords.length
+      ? Math.round(
+          sleepRecords.reduce((sum,record) => sum + (Number(record.durationMinutes) || 0),0)
+          / sleepRecords.length
+        )
+      : null;
+
+    const symptomDays = symptomRecords.filter(record =>
+      Array.isArray(record.symptoms) &&
+      record.symptoms.some(value => value !== "none")
+    ).length;
+
+    const summary = createElement("div", {className:"wellnessHistorySummary"});
+
+    [
+      [formatSleepDuration(avgSleep),"Ort. uyku"],
+      [mostCommonEnergyLabel(energyRecords),"En sık enerji"],
+      [String(symptomDays),"Belirti günü"]
+    ].forEach(([value,label]) => {
+      const card = createElement("div", {className:"wellnessHistoryStat"});
+      card.append(
+        createElement("strong", {text:value || "—"}),
+        createElement("span", {text:label})
+      );
+      summary.appendChild(card);
+    });
+
+    const timeline = createElement("div", {className:"wellnessHistoryTimeline"});
+
+    if (!days.length) {
+      const empty = createElement("div", {className:"wellnessHistoryEmpty"});
+      const copy = createElement("div");
+      copy.append(
+        createElement("strong", {text:"Henüz kayıt yok"}),
+        createElement("p", {
+          text:"Uyku, enerji veya belirti kaydı yaptıkça burada sade bir zaman çizgisi oluşacak."
+        })
+      );
+      empty.appendChild(copy);
+      timeline.appendChild(empty);
+    } else {
+      const qualityLabels = {bad:"Kötü",okay:"Orta",good:"İyi"};
+      const recoveryLabels = {low:"Dinlenmedim",okay:"Normal",good:"Dinlendim"};
+      const energyLabels = {low:"Düşük",balanced:"Dengeli",high:"Yüksek"};
+      const fatigueLabels = {high:"Fazla",some:"Biraz",none:"Yok"};
+      const bodyLabels = {tense:"Gergin",neutral:"Normal",relaxed:"Rahat"};
+      const symptomLabels = {
+        none:"Belirti yok",
+        headache:"Baş ağrısı",
+        muscleJoint:"Kas / eklem",
+        stomach:"Mide",
+        fatigue:"Halsizlik",
+        throat:"Boğaz",
+        cramp:"Kramp",
+        other:"Başka bir şey"
+      };
+
+      const appendEntry = (container,icon,title,detail,note) => {
+        const entry = createElement("div", {className:"wellnessHistoryEntry"});
+        const iconEl = createElement("div", {
+          className:"wellnessHistoryEntryIcon",
+          text:icon,
+          attributes:{"aria-hidden":"true"}
+        });
+
+        const copy = createElement("div", {className:"wellnessHistoryEntryCopy"});
+        copy.append(
+          createElement("strong", {text:title}),
+          createElement("span", {text:detail})
+        );
+
+        if (note) {
+          copy.appendChild(
+            createElement("small", {
+              className:"wellnessHistoryNote",
+              text:note
+            })
+          );
+        }
+
+        entry.append(iconEl,copy);
+        container.appendChild(entry);
+      };
+
+      days.forEach(day => {
+        const card = createElement("article", {className:"wellnessHistoryDay"});
+        const cardHeader = createElement("div", {className:"wellnessHistoryDayHeader"});
+        const dateText = formatWellnessHistoryDate(day.dayKey);
+        const todayText = day.dayKey === wellnessDayKey() ? "Bugün" : day.dayKey;
+
+        cardHeader.append(
+          createElement("strong", {text:dateText}),
+          createElement("span", {text:todayText})
+        );
+
+        const entries = createElement("div", {className:"wellnessHistoryEntries"});
+
+        if (day.sleep) {
+          appendEntry(
+            entries,
+            "☾",
+            "Uyku & Toparlanma",
+            `${formatSleepDuration(Number(day.sleep.durationMinutes))} · ${qualityLabels[day.sleep.quality] || "—"} · ${recoveryLabels[day.sleep.recovery] || "—"}`,
+            day.sleep.note || ""
+          );
+        }
+
+        if (day.energy) {
+          appendEntry(
+            entries,
+            "◉",
+            "Enerji & Beden",
+            `${energyLabels[day.energy.energy] || "—"} enerji · Yorgunluk ${fatigueLabels[day.energy.fatigue] || "—"} · ${bodyLabels[day.energy.body] || "—"}`,
+            day.energy.note || ""
+          );
+        }
+
+        if (day.symptoms) {
+          const names = (day.symptoms.symptoms || []).map(value => {
+            if (value === "other" && day.symptoms.customSymptom) {
+              return day.symptoms.customSymptom;
+            }
+            return symptomLabels[value] || value;
+          });
+
+          let detail = names.length ? names.join(" · ") : "Kayıt";
+          if (day.symptoms.severity) detail += ` · ${day.symptoms.severity}/5`;
+          if (day.symptoms.bodyArea) detail += ` · ${day.symptoms.bodyArea}`;
+
+          appendEntry(
+            entries,
+            "+",
+            "Belirtiler & Notlar",
+            detail,
+            day.symptoms.note || ""
+          );
+        }
+
+        card.append(cardHeader,entries);
+        timeline.appendChild(card);
+      });
+    }
+
+    view.append(filters,summary,timeline);
+    panel.append(header,view);
+    resetHealthScroll();
+  }
+
   function wellnessCard(section, icon, title, detail, options = {}) {
     const button = createElement("button", {
       className: options.history
@@ -2989,13 +3463,11 @@
         id:"wellnessSymptomsPanel",
         attributes:{hidden:""}
       }),
-      history: makeWellnessFoundationPanel(
-        "wellnessHistoryPanel",
-        "Geçmiş",
-        "Önceki sağlık kayıtlarını sade biçimde gör.",
-        "◷",
-        "Sağlık geçmişi NUT-015.5'te geliyor"
-      )
+      history: createElement("section", {
+        className:"wellnessSubview",
+        id:"wellnessHistoryPanel",
+        attributes:{hidden:""}
+      })
     };
 
     Object.values(wellnessPanels).forEach(panel => {
@@ -3005,6 +3477,7 @@
     renderSleepPanel(wellnessPanels.sleep);
     renderEnergyPanel(wellnessPanels.energy);
     renderSymptomsPanel(wellnessPanels.symptoms);
+    renderWellnessHistoryPanel(wellnessPanels.history);
 
     wellnessPanel.addEventListener("click", event => {
       const button = event.target.closest("[data-wellness-open]");
@@ -3031,6 +3504,13 @@
 
     if (section === "symptoms" && wellnessPanels.symptoms) {
       renderSymptomsPanel(wellnessPanels.symptoms);
+    }
+
+    if (section === "history" && wellnessPanels.history) {
+      renderWellnessHistoryPanel(
+        wellnessPanels.history,
+        wellnessPanels.history.dataset.range || "7"
+      );
     }
 
     if (wellnessHub) wellnessHub.hidden = section !== "hub";
