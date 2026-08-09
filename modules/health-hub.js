@@ -11,8 +11,8 @@
 (function () {
   "use strict";
 
-  const API_VERSION = 20;
-  const RULESET_ID = "today:health:hub:nut-015.1";
+  const API_VERSION = 21;
+  const RULESET_ID = "today:health:hub:nut-015.2";
   const VIEW_SELECTOR = '[data-view="health"]';
 
   let initialized = false;
@@ -44,6 +44,7 @@
   const SPORT_WORKOUT_LOG_KEY = "today.health.sport.workouts.v1";
   const SPORT_CUSTOM_DAYS_KEY = "today.health.sport.customDays.v1";
   const SPORT_DAY_SETTINGS_KEY = "today.health.sport.daySettings.v1";
+  const WELLNESS_SLEEP_KEY = "today.health.wellness.sleep.v1";
   let sportProgramDraft = null;
 
   function createElement(tag, options = {}) {
@@ -1103,6 +1104,177 @@
       }
 
 
+
+      /* NUT-015.2 — Uyku & Toparlanma */
+      .sleepTracker {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: calc(126px + env(safe-area-inset-bottom));
+      }
+
+      .sleepCard {
+        width: 100%;
+        min-width: 0;
+        padding: 15px;
+        border: 1px solid var(--stroke);
+        border-radius: 20px;
+        background: rgba(255,255,255,.03);
+      }
+
+      .sleepCardTitle {
+        margin: 0 0 11px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .sleepTimeGrid {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 9px;
+      }
+
+      .sleepField {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .sleepField span {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+      }
+
+      .sleepField input,
+      .sleepNote {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+      }
+
+      .sleepField input {
+        min-height: 46px;
+        padding: 9px 10px;
+        text-align: center;
+      }
+
+      .sleepDuration {
+        display: grid;
+        place-items: center;
+        min-height: 62px;
+        margin-top: 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 16px;
+        background: rgba(255,255,255,.022);
+        text-align: center;
+      }
+
+      .sleepDuration strong {
+        display: block;
+        font-size: 20px;
+      }
+
+      .sleepDuration span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .sleepChoiceGrid {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(0,1fr));
+        gap: 8px;
+      }
+
+      .sleepChoice {
+        min-width: 0;
+        min-height: 46px;
+        padding: 8px 6px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: rgba(255,255,255,.025);
+        color: var(--text);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .sleepChoice[aria-pressed="true"] {
+        background: rgba(255,255,255,.12);
+        border-color: color-mix(in srgb,var(--text) 46%,transparent);
+      }
+
+      .sleepNote {
+        min-height: 88px;
+        resize: vertical;
+        padding: 11px 12px;
+        line-height: 1.45;
+      }
+
+      .sleepSave {
+        width: 100%;
+        min-height: 52px;
+        border: 1px solid var(--text);
+        border-radius: 16px;
+        background: #f5f7ff;
+        color: #0b1323;
+        font: inherit;
+        font-weight: 900;
+      }
+
+      .sleepSave:disabled {
+        opacity: .38;
+      }
+
+      .sleepSavedSummary {
+        display: grid;
+        gap: 7px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 18px;
+        background: rgba(255,255,255,.035);
+        text-align: center;
+      }
+
+      .sleepSavedSummary[hidden] {
+        display: none !important;
+      }
+
+      .sleepSavedSummary strong {
+        font-size: 15px;
+      }
+
+      .sleepSavedSummary span {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .sleepStatus {
+        min-height: 18px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 10px;
+        text-align: center;
+      }
+
+      @media (max-width:360px) {
+        .sleepTimeGrid {
+          grid-template-columns: 1fr;
+        }
+
+        .sleepChoice {
+          font-size: 10px;
+        }
+      }
+
       /* NUT-015.1 — Sağlık ana ekranı */
       .wellnessHub,
       .wellnessSubview {
@@ -1629,6 +1801,253 @@
 
 
 
+
+  function wellnessDayKey(date = new Date()) {
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0,10);
+  }
+
+  function readSleepRecords() {
+    try {
+      const raw = localStorage.getItem(WELLNESS_SLEEP_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveSleepRecord(record) {
+    try {
+      const records = readSleepRecords();
+      const next = records.filter(item => item.dayKey !== record.dayKey);
+      next.unshift(record);
+      localStorage.setItem(WELLNESS_SLEEP_KEY, JSON.stringify(next.slice(0,180)));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function sleepMinutesBetween(bedtime, wakeTime) {
+    if (!bedtime || !wakeTime) return null;
+    const [bh,bm] = bedtime.split(":").map(Number);
+    const [wh,wm] = wakeTime.split(":").map(Number);
+    if (![bh,bm,wh,wm].every(Number.isFinite)) return null;
+    let start = bh * 60 + bm;
+    let end = wh * 60 + wm;
+    if (end <= start) end += 24 * 60;
+    const minutes = end - start;
+    return minutes > 0 && minutes <= 24 * 60 ? minutes : null;
+  }
+
+  function formatSleepDuration(minutes) {
+    if (!Number.isFinite(minutes) || minutes <= 0) return "—";
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (!mins) return `${hours} sa`;
+    return `${hours} sa ${mins} dk`;
+  }
+
+  function renderSleepPanel(panel) {
+    if (!panel) return;
+    panel.replaceChildren();
+
+    const header = createElement("header", {className:"wellnessSubviewHeader"});
+    header.append(
+      createElement("h2", {text:"Uyku & Toparlanma"}),
+      createElement("p", {text:"Dün geceyi birkaç dokunuşla kaydet."})
+    );
+
+    const tracker = createElement("div", {className:"sleepTracker"});
+    const todayKey = wellnessDayKey();
+    const existing = readSleepRecords().find(item => item.dayKey === todayKey) || null;
+
+    let quality = existing?.quality || null;
+    let recovery = existing?.recovery || null;
+
+    const timeCard = createElement("section", {className:"sleepCard"});
+    timeCard.appendChild(createElement("h3", {className:"sleepCardTitle", text:"Uyku zamanı"}));
+
+    const timeGrid = createElement("div", {className:"sleepTimeGrid"});
+    const bedtimeLabel = createElement("label", {className:"sleepField"});
+    bedtimeLabel.appendChild(createElement("span", {text:"Yatış"}));
+    const bedtime = createElement("input", {
+      type:"time",
+      attributes:{
+        value: existing?.bedtime || "",
+        "aria-label":"Yaklaşık yatış saati"
+      }
+    });
+    bedtimeLabel.appendChild(bedtime);
+
+    const wakeLabel = createElement("label", {className:"sleepField"});
+    wakeLabel.appendChild(createElement("span", {text:"Kalkış"}));
+    const wake = createElement("input", {
+      type:"time",
+      attributes:{
+        value: existing?.wakeTime || "",
+        "aria-label":"Yaklaşık kalkış saati"
+      }
+    });
+    wakeLabel.appendChild(wake);
+    timeGrid.append(bedtimeLabel, wakeLabel);
+
+    const duration = createElement("div", {className:"sleepDuration"});
+    const durationValue = createElement("strong", {text:"—"});
+    duration.append(
+      durationValue,
+      createElement("span", {text:"Yaklaşık uyku süresi"})
+    );
+
+    const updateDuration = () => {
+      const minutes = sleepMinutesBetween(bedtime.value, wake.value);
+      durationValue.textContent = formatSleepDuration(minutes);
+      updateSaveState();
+    };
+    bedtime.addEventListener("change", updateDuration);
+    wake.addEventListener("change", updateDuration);
+    timeCard.append(timeGrid, duration);
+
+    function makeChoiceCard(title, group, values, currentValue, onChange) {
+      const card = createElement("section", {className:"sleepCard"});
+      card.appendChild(createElement("h3", {className:"sleepCardTitle", text:title}));
+      const grid = createElement("div", {className:"sleepChoiceGrid"});
+      values.forEach(([value,label]) => {
+        const button = createElement("button", {
+          className:"sleepChoice",
+          type:"button",
+          text:label,
+          attributes:{
+            "data-sleep-group":group,
+            "data-sleep-value":value,
+            "aria-pressed": value === currentValue ? "true" : "false"
+          }
+        });
+        button.addEventListener("click", () => {
+          grid.querySelectorAll(".sleepChoice").forEach(node => {
+            node.setAttribute("aria-pressed","false");
+          });
+          button.setAttribute("aria-pressed","true");
+          onChange(value);
+          updateSaveState();
+        });
+        grid.appendChild(button);
+      });
+      card.appendChild(grid);
+      return card;
+    }
+
+    const qualityCard = makeChoiceCard(
+      "Nasıl uyudun?",
+      "quality",
+      [["bad","Kötü"],["okay","Orta"],["good","İyi"]],
+      quality,
+      value => { quality = value; }
+    );
+
+    const recoveryCard = makeChoiceCard(
+      "Uyandığında nasıl hissettin?",
+      "recovery",
+      [["low","Dinlenmedim"],["okay","Normal"],["good","Dinlendim"]],
+      recovery,
+      value => { recovery = value; }
+    );
+
+    const noteCard = createElement("section", {className:"sleepCard"});
+    noteCard.appendChild(createElement("h3", {className:"sleepCardTitle", text:"Kısa not"}));
+    const note = createElement("textarea", {
+      className:"sleepNote",
+      attributes:{
+        maxlength:"240",
+        placeholder:"İstersen bir şey ekle…",
+        "aria-label":"Uyku kısa notu"
+      }
+    });
+    note.value = existing?.note || "";
+    noteCard.appendChild(note);
+
+    const savedSummary = createElement("div", {
+      className:"sleepSavedSummary",
+      attributes: existing ? {} : {hidden:""}
+    });
+    const savedTitle = createElement("strong", {text:"Bugünün kaydı var"});
+    const savedDetail = createElement("span", {text:""});
+    savedSummary.append(savedTitle, savedDetail);
+
+    const status = createElement("p", {className:"sleepStatus", text:""});
+    const save = createElement("button", {
+      className:"sleepSave",
+      type:"button",
+      text: existing ? "Kaydı güncelle" : "Kaydet",
+      attributes:{disabled:""}
+    });
+
+    const qualityLabels = {bad:"Kötü",okay:"Orta",good:"İyi"};
+    const recoveryLabels = {low:"Dinlenmedim",okay:"Normal",good:"Dinlendim"};
+
+    const refreshSummary = record => {
+      if (!record) {
+        savedSummary.hidden = true;
+        return;
+      }
+      savedSummary.hidden = false;
+      const durationText = formatSleepDuration(record.durationMinutes);
+      savedDetail.textContent =
+        `${durationText} · ${qualityLabels[record.quality] || "Kalite yok"} · ${recoveryLabels[record.recovery] || "Toparlanma yok"}`;
+    };
+
+    function updateSaveState() {
+      const durationMinutes = sleepMinutesBetween(bedtime.value, wake.value);
+      const ready = Number.isFinite(durationMinutes) && quality && recovery;
+      save.disabled = !ready;
+    }
+
+    save.addEventListener("click", () => {
+      if (save.disabled) return;
+      const durationMinutes = sleepMinutesBetween(bedtime.value, wake.value);
+      const record = {
+        id: existing?.id || `sleep-${Date.now()}`,
+        dayKey: todayKey,
+        date: new Date().toISOString(),
+        bedtime: bedtime.value,
+        wakeTime: wake.value,
+        durationMinutes,
+        quality,
+        recovery,
+        note: note.value.trim()
+      };
+
+      if (!saveSleepRecord(record)) {
+        status.textContent = "Kayıt kaydedilemedi.";
+        return;
+      }
+
+      refreshSummary(record);
+      save.textContent = "✓ Kaydedildi";
+      status.textContent = "Bugünün uyku kaydı güncellendi.";
+      window.setTimeout(() => {
+        save.textContent = "Kaydı güncelle";
+      }, 900);
+    });
+
+    updateDuration();
+    refreshSummary(existing);
+
+    tracker.append(
+      savedSummary,
+      timeCard,
+      qualityCard,
+      recoveryCard,
+      noteCard,
+      save,
+      status
+    );
+
+    panel.append(header, tracker);
+    resetHealthScroll();
+  }
+
   function wellnessCard(section, icon, title, detail, options = {}) {
     const button = createElement("button", {
       className: options.history
@@ -1763,13 +2182,11 @@
     wellnessPanel.appendChild(wellnessHub);
 
     wellnessPanels = {
-      sleep: makeWellnessFoundationPanel(
-        "wellnessSleepPanel",
-        "Uyku & Toparlanma",
-        "Uyku, dinlenme ve toparlanmanı fark et.",
-        "☾",
-        "Uyku kaydı NUT-015.2'de geliyor"
-      ),
+      sleep: createElement("section", {
+        className:"wellnessSubview",
+        id:"wellnessSleepPanel",
+        attributes:{hidden:""}
+      }),
       energy: makeWellnessFoundationPanel(
         "wellnessEnergyPanel",
         "Enerji & Beden",
@@ -1797,6 +2214,8 @@
       wellnessPanel.appendChild(panel);
     });
 
+    renderSleepPanel(wellnessPanels.sleep);
+
     wellnessPanel.addEventListener("click", event => {
       const button = event.target.closest("[data-wellness-open]");
       if (!button) return;
@@ -1811,6 +2230,10 @@
     if (!valid.includes(section)) section = "hub";
 
     wellnessActiveSection = section;
+
+    if (section === "sleep" && wellnessPanels.sleep) {
+      renderSleepPanel(wellnessPanels.sleep);
+    }
 
     if (wellnessHub) wellnessHub.hidden = section !== "hub";
     Object.entries(wellnessPanels).forEach(([name,panel]) => {
