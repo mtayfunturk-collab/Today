@@ -1,6 +1,6 @@
 /**
  * Today App — Sky Hub
- * NUT-016.3 — Natal Harita Özeti
+ * NUT-016.4 — Bugünün Gökyüzü
  *
  * Amaç:
  * - Today Sky için kalıcı ana bilgi mimarisini kurmak
@@ -9,13 +9,14 @@
  * - Doğum bilgilerini ekleme, düzenleme ve açık onayla silme arayüzünü sunmak
  * - Harita Özeti ekranını cihaz içi hesap çekirdeğine bağlamak
  * - Profil durumunu cihaz içi Sky doğum profiliyle eşlemek
- * - Günlük transit, astrolojik yorum, konum izni ve dış ağ çağrısı eklememek
+ * - Canlı yerel saat ve an haritası yüzeyini Sky Moment Core'a bağlamak
+ * - Astrolojik yorum, otomatik konum izni ve dış ağ çağrısı eklememek
  */
 (function () {
   "use strict";
 
-  const API_VERSION = 3;
-  const RULESET_ID = "today:sky:hub:nut-016.3";
+  const API_VERSION = 4;
+  const RULESET_ID = "today:sky:hub:nut-016.4";
   const VIEW_SELECTOR = '[data-view="sky"]';
   const PROFILE_STATES = Object.freeze([
     "missing",
@@ -41,7 +42,7 @@
     today: Object.freeze({
       title: "Bugünün Gökyüzü",
       description:
-        "Güncel gökyüzünün sade günlük görünümü burada yer alacak.",
+        "Yerel saat, yükselen ve kişisel gezegenlerin canlı görünümü.",
       stage: "NUT-016.4",
       icon: "✦",
       requiresProfile: true
@@ -64,6 +65,7 @@
   let panelShell = null;
   let birthPanel = null;
   let natalUi = null;
+  let todayUi = null;
   let backButton = null;
   let profileApi = null;
   let interactionBound = false;
@@ -1518,6 +1520,7 @@
     panelShell.hidden = true;
     birthPanel.hidden = true;
     natalUi?.close?.();
+    todayUi?.close?.();
     skyView.setAttribute(
       "aria-labelledby",
       "skyTitle"
@@ -1544,10 +1547,12 @@
     hub.hidden = true;
     panelShell.hidden = [
       "birth",
-      "natal"
+      "natal",
+      "today"
     ].includes(panelId);
     birthPanel.hidden = panelId !== "birth";
     natalUi?.close?.();
+    todayUi?.close?.();
 
     if (panelId === "birth") {
       renderBirthPanel();
@@ -1577,6 +1582,18 @@
       updateNavigationIdentity(definition.title);
       resetScroll();
       return natalUi.open({
+        focus: options.focus !== false
+      });
+    }
+
+    if (panelId === "today") {
+      skyView.setAttribute(
+        "aria-labelledby",
+        "skyTodayTitle"
+      );
+      updateNavigationIdentity(definition.title);
+      resetScroll();
+      return todayUi.open({
         focus: options.focus !== false
       });
     }
@@ -1644,8 +1661,8 @@
       );
       primaryTitle.textContent = "Bugünün Gökyüzü";
       primaryDescription.textContent =
-        "Bugünün gökyüzü görünümü burada yer alacak.";
-      primaryMeta.textContent = "Günlük görünüm";
+        "Yerel saat, yükselen ve kişisel gezegenleri canlı gör.";
+      primaryMeta.textContent = "Canlı görünüm";
       if (birthDescription) {
         birthDescription.textContent =
           "Kayıtlı doğum bilgilerini görüntüle veya düzenle.";
@@ -1839,6 +1856,8 @@
         profileApi?.CONTRACT_VERSION || null,
       natalUiApiVersion:
         natalUi?.API_VERSION || null,
+      todayUiApiVersion:
+        todayUi?.API_VERSION || null,
       panelIds: Object.freeze(
         Object.keys(PANEL_DEFINITIONS)
       )
@@ -1858,6 +1877,7 @@
 
     profileApi = window.TodaySkyBirthProfile;
     natalUi = window.TodaySkyNatalUI;
+    todayUi = window.TodaySkyTodayUI;
     const requiredProfileMethods = [
       "getStatus",
       "getProfile",
@@ -1910,6 +1930,31 @@
       });
     }
 
+    const requiredTodayMethods = [
+      "init",
+      "open",
+      "close",
+      "refresh",
+      "getState"
+    ];
+    const missingTodayMethods =
+      requiredTodayMethods.filter(
+        methodName =>
+          !todayUi ||
+          typeof todayUi[methodName] !==
+            "function"
+      );
+
+    if (missingTodayMethods.length > 0) {
+      return Object.freeze({
+        initialized: false,
+        reason: "sky_today_ui_not_found",
+        missing: Object.freeze(
+          missingTodayMethods
+        )
+      });
+    }
+
     profileStatus =
       profileApi.getStatus().status;
 
@@ -1951,6 +1996,21 @@
         reason:
           natalResult.reason ||
           "sky_natal_ui_init_failed"
+      });
+    }
+
+    const todayResult = todayUi.init({
+      skyView,
+      bottomNav,
+      onRequestHub: () => showHub()
+    });
+
+    if (!todayResult.initialized) {
+      return Object.freeze({
+        initialized: false,
+        reason:
+          todayResult.reason ||
+          "sky_today_ui_init_failed"
       });
     }
 
