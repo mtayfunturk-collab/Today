@@ -1,25 +1,30 @@
 /**
  * Today App — Sky Birth Profile
- * NUT-016.2 — Doğum Bilgileri
+ * NUT-016.3 — Natal Harita Özeti
  *
  * Amaç:
  * - Doğum tarihi, saat doğruluğu ve doğum yerini doğrulamak
  * - Profili yalnız TodayStorage sınırı üzerinden cihaz içinde saklamak
  * - Yanlış kesinlik üretmeden bilinmeyen doğum saatini desteklemek
- * - Harita hesabı, konum izni, ağ çağrısı ve astrolojik yorum eklememek
+ * - Kullanıcının seçtiği çevrimdışı şehir eşleşmesini koordinat ve saat dilimiyle saklamak
+ * - Belirsiz tarihsel yerel saatlerde kullanıcının açık seçimini korumak
  */
 (function () {
   "use strict";
 
-  const API_VERSION = 1;
+  const API_VERSION = 2;
   const CONTRACT_VERSION = 1;
   const RULESET_ID =
-    "today:sky:birth-profile:nut-016.2";
+    "today:sky:birth-profile:nut-016.3";
   const PLACE_MAX_LENGTH = 120;
   const TIME_PRECISIONS = deepFreeze([
     "exact",
     "approximate",
     "unknown"
+  ]);
+  const TIME_DISAMBIGUATIONS = deepFreeze([
+    "earlier",
+    "later"
   ]);
 
   function createError(
@@ -300,6 +305,137 @@
     });
   }
 
+  function inspectPlaceResolution(
+    profileOrPlace
+  ) {
+    const place = profileOrPlace?.birthPlace ||
+      profileOrPlace;
+    const hasAnyResolutionValue = Boolean(
+      place &&
+      [
+        place.latitude,
+        place.longitude,
+        place.timezoneId,
+        place.geonameId
+      ].some(
+        value =>
+          value !== null &&
+          value !== undefined &&
+          value !== ""
+      )
+    );
+    const valid = Boolean(
+      place &&
+      Number.isInteger(place.geonameId) &&
+      Number.isFinite(place.latitude) &&
+      place.latitude >= -90 &&
+      place.latitude <= 90 &&
+      Number.isFinite(place.longitude) &&
+      place.longitude >= -180 &&
+      place.longitude <= 180 &&
+      typeof place.timezoneId === "string" &&
+      place.timezoneId.length > 0 &&
+      place.source === "geonames" &&
+      typeof place.catalogVersion === "string" &&
+      place.catalogVersion.length > 0
+    );
+
+    return freezeClone({
+      status: valid
+        ? "resolved"
+        : hasAnyResolutionValue
+          ? "invalid"
+          : "unresolved",
+      valid,
+      reason: valid
+        ? null
+        : hasAnyResolutionValue
+          ? "place_resolution_invalid"
+          : "place_not_resolved"
+    });
+  }
+
+  function validatePlaceCandidate(candidate) {
+    const label = normalizeWhitespace(
+      candidate?.label || candidate?.name
+    );
+    const value = {
+      geonameId: Number(candidate?.geonameId),
+      label,
+      name: normalizeWhitespace(candidate?.name),
+      countryCode: normalizeWhitespace(
+        candidate?.countryCode
+      ).toUpperCase(),
+      admin1Code:
+        normalizeWhitespace(
+          candidate?.admin1Code
+        ) || null,
+      latitude: Number(candidate?.latitude),
+      longitude: Number(candidate?.longitude),
+      population:
+        Number(candidate?.population) || 0,
+      timezoneId: normalizeWhitespace(
+        candidate?.timezoneId
+      ),
+      catalogVersion: normalizeWhitespace(
+        candidate?.catalogVersion
+      )
+    };
+    const errors = {};
+
+    if (
+      !Number.isInteger(value.geonameId) ||
+      value.geonameId <= 0
+    ) {
+      errors.geonameId =
+        "Şehir kaydı doğrulanamadı.";
+    }
+
+    if (!value.label || !value.name) {
+      errors.label =
+        "Şehir adı doğrulanamadı.";
+    }
+
+    if (!/^[A-Z]{2}$/.test(value.countryCode)) {
+      errors.countryCode =
+        "Ülke kodu doğrulanamadı.";
+    }
+
+    if (
+      !Number.isFinite(value.latitude) ||
+      value.latitude < -90 ||
+      value.latitude > 90
+    ) {
+      errors.latitude =
+        "Enlem doğrulanamadı.";
+    }
+
+    if (
+      !Number.isFinite(value.longitude) ||
+      value.longitude < -180 ||
+      value.longitude > 180
+    ) {
+      errors.longitude =
+        "Boylam doğrulanamadı.";
+    }
+
+    if (!value.timezoneId) {
+      errors.timezoneId =
+        "Saat dilimi doğrulanamadı.";
+    }
+
+    if (!value.catalogVersion) {
+      errors.catalogVersion =
+        "Şehir veri sürümü doğrulanamadı.";
+    }
+
+    return freezeClone({
+      valid: Object.keys(errors).length === 0,
+      value,
+      errors
+    });
+  }
+
   function getProfile() {
     const store = getStorage().loadStore();
     const profile = store.sky?.birthProfile;
@@ -370,12 +506,138 @@
       birthPlace: {
         label: value.birthPlace,
         source: "manual",
+        geonameId: null,
+        name: null,
+        countryCode: null,
+        admin1Code: null,
         latitude: null,
         longitude: null,
-        timezoneId: null
+        population: null,
+        timezoneId: null,
+        catalogVersion: null,
+        resolvedAt: null
       },
+      timeDisambiguation: null,
       createdAt:
         existing?.createdAt || now,
+      updatedAt: now
+    };
+
+    store.sky = {
+      ...(isPlainObject(store.sky)
+        ? store.sky
+        : {}),
+      profileContractVersion:
+        CONTRACT_VERSION,
+      birthProfile: profile,
+      updatedAt: now
+    };
+
+    storage.saveStore(store);
+    dispatchProfileChange("ready", now);
+
+    return freezeClone(profile);
+  }
+
+  function resolveBirthPlace(
+    candidate,
+    options = {}
+  ) {
+    assertUserAction(options);
+
+    const validation = validatePlaceCandidate(
+      candidate
+    );
+
+    if (!validation.valid) {
+      throw createError(
+        "TODAY-SKY-BIRTH-005",
+        "Doğum yeri eşleşmesi doğrulanamadı.",
+        { errors: validation.errors }
+      );
+    }
+
+    const storage = getStorage();
+    const store = storage.loadStore();
+    const storedProfile = store.sky?.birthProfile;
+
+    if (!inspectStoredProfile(storedProfile).valid) {
+      throw createError(
+        "TODAY-SKY-BIRTH-006",
+        "Şehir eşleşmesi için önce doğum bilgilerini kaydet."
+      );
+    }
+
+    const now = normalizeTimestamp(options.at);
+    const value = validation.value;
+    const profile = {
+      ...clone(storedProfile),
+      birthPlace: {
+        label: value.label,
+        source: "geonames",
+        geonameId: value.geonameId,
+        name: value.name,
+        countryCode: value.countryCode,
+        admin1Code: value.admin1Code,
+        latitude: value.latitude,
+        longitude: value.longitude,
+        population: value.population,
+        timezoneId: value.timezoneId,
+        catalogVersion: value.catalogVersion,
+        resolvedAt: now
+      },
+      timeDisambiguation: null,
+      updatedAt: now
+    };
+
+    store.sky = {
+      ...(isPlainObject(store.sky)
+        ? store.sky
+        : {}),
+      profileContractVersion:
+        CONTRACT_VERSION,
+      birthProfile: profile,
+      updatedAt: now
+    };
+
+    storage.saveStore(store);
+    dispatchProfileChange("ready", now);
+
+    return freezeClone(profile);
+  }
+
+  function setTimeDisambiguation(
+    choice,
+    options = {}
+  ) {
+    assertUserAction(options);
+
+    if (!TIME_DISAMBIGUATIONS.includes(choice)) {
+      throw createError(
+        "TODAY-SKY-BIRTH-007",
+        "Yerel saat karşılığını seç."
+      );
+    }
+
+    const storage = getStorage();
+    const store = storage.loadStore();
+    const storedProfile = store.sky?.birthProfile;
+
+    if (
+      !inspectStoredProfile(storedProfile).valid ||
+      !inspectPlaceResolution(storedProfile).valid ||
+      storedProfile.timePrecision === "unknown"
+    ) {
+      throw createError(
+        "TODAY-SKY-BIRTH-008",
+        "Saat karşılığı bu doğum profili için kaydedilemez."
+      );
+    }
+
+    const now = normalizeTimestamp(options.at);
+    const profile = {
+      ...clone(storedProfile),
+      timeDisambiguation: choice,
       updatedAt: now
     };
 
@@ -431,9 +693,14 @@
 
   function getStatus() {
     const profile = getProfile();
+    const placeResolution = profile
+      ? inspectPlaceResolution(profile)
+      : null;
 
     return freezeClone({
       status: profile ? "ready" : "missing",
+      placeStatus:
+        placeResolution?.status || "missing",
       contractVersion: CONTRACT_VERSION,
       updatedAt: profile?.updatedAt || null
     });
@@ -445,13 +712,18 @@
     RULESET_ID,
     PLACE_MAX_LENGTH,
     TIME_PRECISIONS,
+    TIME_DISAMBIGUATIONS,
     getTodayDateKey,
     normalizeDraft,
     validateDraft,
     inspectStoredProfile,
+    inspectPlaceResolution,
+    validatePlaceCandidate,
     profileToDraft,
     getProfile,
     saveProfile,
+    resolveBirthPlace,
+    setTimeDisambiguation,
     deleteProfile,
     getStatus
   });

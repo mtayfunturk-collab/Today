@@ -1,20 +1,21 @@
 /**
  * Today App — Sky Hub
- * NUT-016.2 — Doğum Bilgileri
+ * NUT-016.3 — Natal Harita Özeti
  *
  * Amaç:
  * - Today Sky için kalıcı ana bilgi mimarisini kurmak
  * - Bugünün Gökyüzü, Harita Özeti, Önemli Dönemler ve Doğum Bilgileri
  *   alanlarını tek Sky rotası altında toplamak
  * - Doğum bilgilerini ekleme, düzenleme ve açık onayla silme arayüzünü sunmak
+ * - Harita Özeti ekranını cihaz içi hesap çekirdeğine bağlamak
  * - Profil durumunu cihaz içi Sky doğum profiliyle eşlemek
- * - Astroloji hesap motoru, konum izni ve ağ çağrısı eklememek
+ * - Günlük transit, astrolojik yorum, konum izni ve dış ağ çağrısı eklememek
  */
 (function () {
   "use strict";
 
-  const API_VERSION = 2;
-  const RULESET_ID = "today:sky:hub:nut-016.2";
+  const API_VERSION = 3;
+  const RULESET_ID = "today:sky:hub:nut-016.3";
   const VIEW_SELECTOR = '[data-view="sky"]';
   const PROFILE_STATES = Object.freeze([
     "missing",
@@ -32,7 +33,7 @@
     natal: Object.freeze({
       title: "Harita Özeti",
       description:
-        "Güneş, Ay, yükselen ve temel harita yerleşimlerinin sade özeti burada yer alacak.",
+        "Güneş, Ay, yükselen ve temel harita yerleşimlerinin sade özeti.",
       stage: "NUT-016.3",
       icon: "◎",
       requiresProfile: true
@@ -62,6 +63,7 @@
   let hub = null;
   let panelShell = null;
   let birthPanel = null;
+  let natalUi = null;
   let backButton = null;
   let profileApi = null;
   let interactionBound = false;
@@ -920,7 +922,7 @@
       createElement("p", {
         className: "skyBirthIntro",
         text:
-          "Kişisel Sky görünümünün temel bilgilerini ekle. Hesaplama bu adımda yapılmaz."
+          "Kişisel Sky görünümünün temel bilgilerini ekle. Harita özeti, şehir eşleşmesi onaylandıktan sonra hazırlanır."
       }),
       createElement("span", {
         className: "skyBirthState",
@@ -1091,7 +1093,7 @@
         className: "skyBirthHelp",
         id: "skyBirthPlaceHelp",
         text:
-          "Şehir ve ülke adı yeterli; konum bu adımda otomatik çözülmez."
+          "Şehir ve ülke adı yeterli. Bilgiyi değiştirirsen Harita Özeti’nde şehir eşleşmesini yeniden doğrularsın."
       }),
       createElement("p", {
         className: "skyBirthError",
@@ -1515,6 +1517,7 @@
     hub.hidden = false;
     panelShell.hidden = true;
     birthPanel.hidden = true;
+    natalUi?.close?.();
     skyView.setAttribute(
       "aria-labelledby",
       "skyTitle"
@@ -1539,8 +1542,12 @@
 
     activePanel = panelId;
     hub.hidden = true;
-    panelShell.hidden = panelId === "birth";
+    panelShell.hidden = [
+      "birth",
+      "natal"
+    ].includes(panelId);
     birthPanel.hidden = panelId !== "birth";
+    natalUi?.close?.();
 
     if (panelId === "birth") {
       renderBirthPanel();
@@ -1560,6 +1567,18 @@
       }
 
       return true;
+    }
+
+    if (panelId === "natal") {
+      skyView.setAttribute(
+        "aria-labelledby",
+        "skyNatalTitle"
+      );
+      updateNavigationIdentity(definition.title);
+      resetScroll();
+      return natalUi.open({
+        focus: options.focus !== false
+      });
     }
 
     skyView.setAttribute(
@@ -1785,6 +1804,12 @@
           if (activePanel === "birth") {
             renderBirthPanel();
           }
+
+          if (activePanel === "natal") {
+            natalUi?.refresh?.({
+              focus: false
+            });
+          }
         }
       }
     );
@@ -1812,6 +1837,8 @@
       profileStatus,
       birthProfileContractVersion:
         profileApi?.CONTRACT_VERSION || null,
+      natalUiApiVersion:
+        natalUi?.API_VERSION || null,
       panelIds: Object.freeze(
         Object.keys(PANEL_DEFINITIONS)
       )
@@ -1830,6 +1857,7 @@
     }
 
     profileApi = window.TodaySkyBirthProfile;
+    natalUi = window.TodaySkyNatalUI;
     const requiredProfileMethods = [
       "getStatus",
       "getProfile",
@@ -1853,6 +1881,31 @@
         reason: "sky_birth_profile_not_found",
         missing: Object.freeze(
           missingProfileMethods
+        )
+      });
+    }
+
+    const requiredNatalMethods = [
+      "init",
+      "open",
+      "close",
+      "refresh",
+      "getState"
+    ];
+    const missingNatalMethods =
+      requiredNatalMethods.filter(
+        methodName =>
+          !natalUi ||
+          typeof natalUi[methodName] !==
+            "function"
+      );
+
+    if (missingNatalMethods.length > 0) {
+      return Object.freeze({
+        initialized: false,
+        reason: "sky_natal_ui_not_found",
+        missing: Object.freeze(
+          missingNatalMethods
         )
       });
     }
@@ -1884,6 +1937,22 @@
     skyView.insertBefore(hub, bottomNav);
     skyView.insertBefore(panelShell, bottomNav);
     skyView.insertBefore(birthPanel, bottomNav);
+
+    const natalResult = natalUi.init({
+      skyView,
+      bottomNav,
+      onRequestHub: () => showHub(),
+      onOpenBirth: () => openPanel("birth")
+    });
+
+    if (!natalResult.initialized) {
+      return Object.freeze({
+        initialized: false,
+        reason:
+          natalResult.reason ||
+          "sky_natal_ui_init_failed"
+      });
+    }
 
     bindInteractions();
     interceptBackButton();
