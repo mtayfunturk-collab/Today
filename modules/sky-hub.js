@@ -1,6 +1,6 @@
 /**
  * Today App — Sky Hub
- * NUT-016.5 — Önemli Dönemler
+ * NUT-016.6 — Core–Sky Bağlantısı
  *
  * Amaç:
  * - Today Sky için kalıcı ana bilgi mimarisini kurmak
@@ -11,13 +11,14 @@
  * - Profil durumunu cihaz içi Sky doğum profiliyle eşlemek
  * - Canlı yerel saat ve an haritası yüzeyini Sky Moment Core'a bağlamak
  * - Uzun dönem transit açılarını başlangıç, tam açı ve bitiş tarihleriyle sunmak
+ * - Core kayıtlarına isteğe bağlı ve yorumsuz Sky anlık görüntüsü bağlamak
  * - Astrolojik yorum, otomatik konum izni ve dış ağ çağrısı eklememek
  */
 (function () {
   "use strict";
 
-  const API_VERSION = 5;
-  const RULESET_ID = "today:sky:hub:nut-016.5";
+  const API_VERSION = 6;
+  const RULESET_ID = "today:sky:hub:nut-016.6";
   const VIEW_SELECTOR = '[data-view="sky"]';
   const PROFILE_STATES = Object.freeze([
     "missing",
@@ -55,6 +56,14 @@
       stage: "NUT-016.5",
       icon: "◌",
       requiresProfile: true
+    }),
+    coreLink: Object.freeze({
+      title: "Core–Sky Bağlantısı",
+      description:
+        "Core kaydına o anın hesaplanmış gökyüzünü isteğe bağlı bağla.",
+      stage: "NUT-016.6",
+      icon: "⇄",
+      requiresProfile: false
     })
   });
 
@@ -68,6 +77,7 @@
   let natalUi = null;
   let todayUi = null;
   let periodsUi = null;
+  let coreSkyUi = null;
   let backButton = null;
   let profileApi = null;
   let interactionBound = false;
@@ -820,6 +830,14 @@
           "Devam eden ve yaklaşan belirgin dönemler."
       }),
       createCard({
+        id: "skyCoreLinkCard",
+        panel: "coreLink",
+        icon: "⇄",
+        title: "Core–Sky Bağlantısı",
+        description:
+          "Core kaydınla o anın gökyüzünü yorumsuz bağla."
+      }),
+      createCard({
         id: "skyBirthCard",
         panel: "birth",
         icon: "○",
@@ -1524,6 +1542,7 @@
     natalUi?.close?.();
     todayUi?.close?.();
     periodsUi?.close?.();
+    coreSkyUi?.close?.();
     skyView.setAttribute(
       "aria-labelledby",
       "skyTitle"
@@ -1552,12 +1571,14 @@
       "birth",
       "natal",
       "today",
-      "periods"
+      "periods",
+      "coreLink"
     ].includes(panelId);
     birthPanel.hidden = panelId !== "birth";
     natalUi?.close?.();
     todayUi?.close?.();
     periodsUi?.close?.();
+    coreSkyUi?.close?.();
 
     if (panelId === "birth") {
       renderBirthPanel();
@@ -1611,6 +1632,18 @@
       updateNavigationIdentity(definition.title);
       resetScroll();
       return periodsUi.open({
+        focus: options.focus !== false
+      });
+    }
+
+    if (panelId === "coreLink") {
+      skyView.setAttribute(
+        "aria-labelledby",
+        "skyCoreLinkTitle"
+      );
+      updateNavigationIdentity(definition.title);
+      resetScroll();
+      return coreSkyUi.open({
         focus: options.focus !== false
       });
     }
@@ -1883,6 +1916,8 @@
         todayUi?.API_VERSION || null,
       periodsUiApiVersion:
         periodsUi?.API_VERSION || null,
+      coreSkyUiApiVersion:
+        coreSkyUi?.API_VERSION || null,
       panelIds: Object.freeze(
         Object.keys(PANEL_DEFINITIONS)
       )
@@ -1904,6 +1939,7 @@
     natalUi = window.TodaySkyNatalUI;
     todayUi = window.TodaySkyTodayUI;
     periodsUi = window.TodaySkyPeriodsUI;
+    coreSkyUi = window.TodayCoreSkyLinkUI;
     const requiredProfileMethods = [
       "getStatus",
       "getProfile",
@@ -2006,6 +2042,31 @@
       });
     }
 
+    const requiredCoreSkyMethods = [
+      "init",
+      "open",
+      "close",
+      "refresh",
+      "getState"
+    ];
+    const missingCoreSkyMethods =
+      requiredCoreSkyMethods.filter(
+        methodName =>
+          !coreSkyUi ||
+          typeof coreSkyUi[methodName] !==
+            "function"
+      );
+
+    if (missingCoreSkyMethods.length > 0) {
+      return Object.freeze({
+        initialized: false,
+        reason: "core_sky_link_ui_not_found",
+        missing: Object.freeze(
+          missingCoreSkyMethods
+        )
+      });
+    }
+
     profileStatus =
       profileApi.getStatus().status;
 
@@ -2078,6 +2139,35 @@
         reason:
           periodsResult.reason ||
           "sky_periods_ui_init_failed"
+      });
+    }
+
+    const coreSkyResult = coreSkyUi.init({
+      skyView,
+      bottomNav,
+      onRequestHub: () => showHub(),
+      onOpenToday: () => openPanel("today"),
+      onOpenCore: () =>
+        window.TodayModules.open("core", {
+          source: "core-sky-link"
+        }),
+      onOpenSelf: () => {
+        const result = window.TodayModules.open(
+          "sky",
+          { source: "core-sky-link" }
+        );
+        if (result?.success !== false) {
+          openPanel("coreLink");
+        }
+      }
+    });
+
+    if (!coreSkyResult.initialized) {
+      return Object.freeze({
+        initialized: false,
+        reason:
+          coreSkyResult.reason ||
+          "core_sky_link_ui_init_failed"
       });
     }
 
