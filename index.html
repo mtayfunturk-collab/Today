@@ -2405,10 +2405,12 @@ html[data-theme="light"] .healthSelect {
 <script src="./modules/sky-calculation-core.js"></script>
 <script src="./modules/sky-observation-context.js"></script>
 <script src="./modules/sky-moment-core.js"></script>
+<script src="./modules/core-sky-link.js"></script>
 <script src="./modules/sky-periods-core.js"></script>
 <script src="./modules/sky-natal-ui.js"></script>
 <script src="./modules/sky-today-ui.js"></script>
 <script src="./modules/sky-periods-ui.js"></script>
+<script src="./modules/core-sky-link-ui.js"></script>
 <script src="./modules/sky-hub.js"></script>
 <script src="./modules/router.js"></script>
 <script src="./modules/module-registry.js"></script>
@@ -2620,6 +2622,18 @@ const save = () => {
       }
     );
   }
+
+  window.dispatchEvent(
+    new window.CustomEvent(
+      "today:core-state-saved",
+      {
+        detail: Object.freeze({
+          at: new Date().toISOString(),
+          success: result.success
+        })
+      }
+    )
+  );
 
   return result;
 };
@@ -2955,6 +2969,11 @@ $("#btnStart").addEventListener("click", () => {
   $("#btnResetToday").addEventListener("click", () => {
     const k = todayKey();
     if(!canEditDate(k)) return;
+
+    window.TodayCoreSkyLink?.unlink?.(k, {
+      userInitiated: true,
+      reason: "core_reset"
+    });
 
     state.days[k] = { choice:"", color:"", note:"" };
     logChange(k, "Bugün sıfırlandı");
