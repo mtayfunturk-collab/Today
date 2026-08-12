@@ -1,6 +1,6 @@
 /**
  * Today App — Sky Hub
- * NUT-016.4 — Bugünün Gökyüzü
+ * NUT-016.5 — Önemli Dönemler
  *
  * Amaç:
  * - Today Sky için kalıcı ana bilgi mimarisini kurmak
@@ -10,13 +10,14 @@
  * - Harita Özeti ekranını cihaz içi hesap çekirdeğine bağlamak
  * - Profil durumunu cihaz içi Sky doğum profiliyle eşlemek
  * - Canlı yerel saat ve an haritası yüzeyini Sky Moment Core'a bağlamak
+ * - Uzun dönem transit açılarını başlangıç, tam açı ve bitiş tarihleriyle sunmak
  * - Astrolojik yorum, otomatik konum izni ve dış ağ çağrısı eklememek
  */
 (function () {
   "use strict";
 
-  const API_VERSION = 4;
-  const RULESET_ID = "today:sky:hub:nut-016.4";
+  const API_VERSION = 5;
+  const RULESET_ID = "today:sky:hub:nut-016.5";
   const VIEW_SELECTOR = '[data-view="sky"]';
   const PROFILE_STATES = Object.freeze([
     "missing",
@@ -50,7 +51,7 @@
     periods: Object.freeze({
       title: "Önemli Dönemler",
       description:
-        "Devam eden ve yaklaşan belirgin dönemlerin görünümü burada yer alacak.",
+        "Devam eden ve yaklaşan uzun dönem açılarını tarihleriyle gör.",
       stage: "NUT-016.5",
       icon: "◌",
       requiresProfile: true
@@ -66,6 +67,7 @@
   let birthPanel = null;
   let natalUi = null;
   let todayUi = null;
+  let periodsUi = null;
   let backButton = null;
   let profileApi = null;
   let interactionBound = false;
@@ -1521,6 +1523,7 @@
     birthPanel.hidden = true;
     natalUi?.close?.();
     todayUi?.close?.();
+    periodsUi?.close?.();
     skyView.setAttribute(
       "aria-labelledby",
       "skyTitle"
@@ -1548,11 +1551,13 @@
     panelShell.hidden = [
       "birth",
       "natal",
-      "today"
+      "today",
+      "periods"
     ].includes(panelId);
     birthPanel.hidden = panelId !== "birth";
     natalUi?.close?.();
     todayUi?.close?.();
+    periodsUi?.close?.();
 
     if (panelId === "birth") {
       renderBirthPanel();
@@ -1594,6 +1599,18 @@
       updateNavigationIdentity(definition.title);
       resetScroll();
       return todayUi.open({
+        focus: options.focus !== false
+      });
+    }
+
+    if (panelId === "periods") {
+      skyView.setAttribute(
+        "aria-labelledby",
+        "skyPeriodsTitle"
+      );
+      updateNavigationIdentity(definition.title);
+      resetScroll();
+      return periodsUi.open({
         focus: options.focus !== false
       });
     }
@@ -1827,6 +1844,12 @@
               focus: false
             });
           }
+
+          if (activePanel === "periods") {
+            periodsUi?.refresh?.({
+              focus: false
+            });
+          }
         }
       }
     );
@@ -1858,6 +1881,8 @@
         natalUi?.API_VERSION || null,
       todayUiApiVersion:
         todayUi?.API_VERSION || null,
+      periodsUiApiVersion:
+        periodsUi?.API_VERSION || null,
       panelIds: Object.freeze(
         Object.keys(PANEL_DEFINITIONS)
       )
@@ -1878,6 +1903,7 @@
     profileApi = window.TodaySkyBirthProfile;
     natalUi = window.TodaySkyNatalUI;
     todayUi = window.TodaySkyTodayUI;
+    periodsUi = window.TodaySkyPeriodsUI;
     const requiredProfileMethods = [
       "getStatus",
       "getProfile",
@@ -1955,6 +1981,31 @@
       });
     }
 
+    const requiredPeriodsMethods = [
+      "init",
+      "open",
+      "close",
+      "refresh",
+      "getState"
+    ];
+    const missingPeriodsMethods =
+      requiredPeriodsMethods.filter(
+        methodName =>
+          !periodsUi ||
+          typeof periodsUi[methodName] !==
+            "function"
+      );
+
+    if (missingPeriodsMethods.length > 0) {
+      return Object.freeze({
+        initialized: false,
+        reason: "sky_periods_ui_not_found",
+        missing: Object.freeze(
+          missingPeriodsMethods
+        )
+      });
+    }
+
     profileStatus =
       profileApi.getStatus().status;
 
@@ -2011,6 +2062,22 @@
         reason:
           todayResult.reason ||
           "sky_today_ui_init_failed"
+      });
+    }
+
+    const periodsResult = periodsUi.init({
+      skyView,
+      bottomNav,
+      onRequestHub: () => showHub(),
+      onOpenBirth: () => openPanel("birth")
+    });
+
+    if (!periodsResult.initialized) {
+      return Object.freeze({
+        initialized: false,
+        reason:
+          periodsResult.reason ||
+          "sky_periods_ui_init_failed"
       });
     }
 
