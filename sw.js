@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-057";
+const VERSION = "today-v2-foundation-058";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -57,10 +57,12 @@ const APP_SHELL = [
   "./modules/sky-calculation-core.js",
   "./modules/sky-observation-context.js",
   "./modules/sky-moment-core.js",
+  "./modules/core-sky-link.js",
   "./modules/sky-periods-core.js",
   "./modules/sky-natal-ui.js",
   "./modules/sky-today-ui.js",
   "./modules/sky-periods-ui.js",
+  "./modules/core-sky-link-ui.js",
   "./modules/sky-hub.js",
   "./data/sky-cities-15000.json",
 
