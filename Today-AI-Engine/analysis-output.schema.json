@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/analysis-output.schema.json",
+  "title": "Today Explainable Analysis v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "analysisId", "type", "summary", "suggestion", "evidence", "confidence", "uncertainty", "alternatives", "requiresUserApproval", "proposedActions"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "analysisId": { "type": "string", "minLength": 1 },
+    "type": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "suggestion": { "type": "string", "minLength": 1 },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "eventId", "reference"],
+        "properties": {
+          "source": { "enum": ["today-core", "today-health", "today-sky"] },
+          "eventId": { "type": "string", "minLength": 1 },
+          "reference": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "uncertainty": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "alternatives": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "requiresUserApproval": { "const": true },
+    "proposedActions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["actionId", "type", "label", "status"],
+        "properties": {
+          "actionId": { "type": "string", "minLength": 1 },
+          "type": { "enum": ["create-reminder", "create-calendar-event", "create-task", "draft-email"] },
+          "label": { "type": "string", "minLength": 1 },
+          "status": { "const": "pending-user-approval" }
+        }
+      }
+    }
+  }
+}
+

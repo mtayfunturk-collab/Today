@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/context-package.schema.json",
+  "title": "Today Context Package v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contextId",
+    "requestId",
+    "purpose",
+    "builtAt",
+    "processing",
+    "consentReceipt",
+    "window",
+    "sections",
+    "provenance",
+    "omissions",
+    "redactions",
+    "boundaries",
+    "counts"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "contextId": { "type": "string", "minLength": 1 },
+    "requestId": { "type": "string", "minLength": 1 },
+    "purpose": { "type": "string", "minLength": 1 },
+    "builtAt": { "type": "string", "format": "date-time" },
+    "processing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "externalRecipient", "retention"],
+      "properties": {
+        "mode": { "const": "device-only" },
+        "externalRecipient": { "type": "null" },
+        "retention": { "const": "request-scoped" }
+      }
+    },
+    "consentReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consentId", "granted", "grantedAt", "purpose"],
+      "properties": {
+        "consentId": { "type": "string", "minLength": 1 },
+        "granted": { "const": true },
+        "grantedAt": { "type": "string", "format": "date-time" },
+        "purpose": { "type": "string", "minLength": 1 }
+      }
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startDate", "endDate", "maxEventsPerSource"],
+      "properties": {
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "maxEventsPerSource": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core", "health", "symbolicContext"],
+      "properties": {
+        "core": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contextItem" }
+        },
+        "health": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contextItem" }
+        },
+        "symbolicContext": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "causalityClaim",
+            "scientificEvidence",
+            "items"
+          ],
+          "properties": {
+            "role": { "const": "symbolic-context-only" },
+            "causalityClaim": { "const": false },
+            "scientificEvidence": { "const": false },
+            "items": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/contextItem" }
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contextItemId", "eventId", "source", "eventType"],
+        "properties": {
+          "contextItemId": { "type": "string" },
+          "eventId": { "type": "string" },
+          "source": {
+            "enum": ["today-core", "today-health", "today-sky"]
+          },
+          "eventType": { "type": "string" }
+        }
+      }
+    },
+    "omissions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/filterRecord" }
+    },
+    "redactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventId", "source", "field", "reason"],
+        "properties": {
+          "eventId": { "type": "string" },
+          "source": {
+            "enum": ["today-core", "today-health", "today-sky"]
+          },
+          "field": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skyRole",
+        "skyCausalityAllowed",
+        "skyScientificEvidence",
+        "rawBirthDataIncluded",
+        "domAccessed",
+        "storageAccessed",
+        "externalTransfer",
+        "freeTextIncluded"
+      ],
+      "properties": {
+        "skyRole": { "const": "symbolic-context-only" },
+        "skyCausalityAllowed": { "const": false },
+        "skyScientificEvidence": { "const": false },
+        "rawBirthDataIncluded": { "const": false },
+        "domAccessed": { "const": false },
+        "storageAccessed": { "const": false },
+        "externalTransfer": { "const": false },
+        "freeTextIncluded": { "type": "boolean" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core", "health", "symbolicSky", "omitted", "redacted"],
+      "properties": {
+        "core": { "type": "integer", "minimum": 0 },
+        "health": { "type": "integer", "minimum": 0 },
+        "symbolicSky": { "type": "integer", "minimum": 0 },
+        "omitted": { "type": "integer", "minimum": 0 },
+        "redacted": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "contextItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contextItemId",
+        "eventId",
+        "source",
+        "eventType",
+        "localDate",
+        "createdAt",
+        "dataClasses",
+        "facts"
+      ],
+      "properties": {
+        "contextItemId": { "type": "string", "minLength": 1 },
+        "eventId": { "type": "string", "minLength": 1 },
+        "source": {
+          "enum": ["today-core", "today-health", "today-sky"]
+        },
+        "eventType": { "type": "string", "minLength": 1 },
+        "localDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "dataClasses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "facts": { "type": "object" }
+      }
+    },
+    "filterRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId", "source", "eventType", "reason"],
+      "properties": {
+        "eventId": { "type": "string" },
+        "source": {
+          "enum": ["today-core", "today-health", "today-sky", "unknown"]
+        },
+        "eventType": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    }
+  }
+}

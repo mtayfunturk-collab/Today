@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/approval-decision.schema.json",
+  "title": "Today Approval Decision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "decisionId", "analysisId", "actionId", "decision", "decidedAt"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "decisionId": { "type": "string", "minLength": 1 },
+    "analysisId": { "type": "string", "minLength": 1 },
+    "actionId": { "type": "string", "minLength": 1 },
+    "decision": { "enum": ["approved", "rejected", "edited"] },
+    "decidedAt": { "type": "string", "format": "date-time" },
+    "editedPayload": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "edited" } } },
+      "then": { "required": ["editedPayload"] }
+    }
+  ]
+}
+

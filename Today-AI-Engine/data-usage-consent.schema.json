@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/data-usage-consent.schema.json",
+  "title": "Today AI Data Usage Consent v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "consentId",
+    "purpose",
+    "granted",
+    "grantedAt",
+    "revokedAt",
+    "processing",
+    "permissions"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "consentId": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "granted": { "const": true },
+    "grantedAt": { "type": "string", "format": "date-time" },
+    "revokedAt": { "type": "null" },
+    "processing": { "$ref": "#/$defs/processing" },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core", "health", "sky"],
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/corePermission"
+        },
+        "health": {
+          "$ref": "#/$defs/healthPermission"
+        },
+        "sky": {
+          "$ref": "#/$defs/skyPermission"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "processing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "externalRecipient", "retention"],
+      "properties": {
+        "mode": { "const": "device-only" },
+        "externalRecipient": { "type": "null" },
+        "retention": { "const": "request-scoped" }
+      }
+    },
+    "corePermission": {
+      "allOf": [
+        { "$ref": "#/$defs/basePermission" },
+        {
+          "type": "object",
+          "properties": {
+            "dataClasses": {
+              "type": "array",
+              "items": {
+                "enum": ["daily-choice", "color", "note"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "healthPermission": {
+      "allOf": [
+        { "$ref": "#/$defs/basePermission" },
+        {
+          "type": "object",
+          "properties": {
+            "dataClasses": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "sleep",
+                  "energy",
+                  "symptoms",
+                  "activity",
+                  "hydration",
+                  "nutrition",
+                  "weight"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "skyPermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "dataClasses", "includeFreeText", "role"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "dataClasses": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["moment", "periods", "core-sky-snapshot"]
+          }
+        },
+        "includeFreeText": { "const": false },
+        "role": { "const": "symbolic-context-only" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "allowed": { "const": false } },
+            "required": ["allowed"]
+          },
+          "then": {
+            "properties": { "dataClasses": { "type": "array", "maxItems": 0 } }
+          },
+          "else": {
+            "properties": { "dataClasses": { "type": "array", "minItems": 1 } }
+          }
+        }
+      ]
+    },
+    "basePermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "dataClasses", "includeFreeText"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "dataClasses": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "includeFreeText": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "allowed": { "const": false } },
+            "required": ["allowed"]
+          },
+          "then": {
+            "properties": {
+              "dataClasses": { "type": "array", "maxItems": 0 },
+              "includeFreeText": { "const": false }
+            }
+          },
+          "else": {
+            "properties": { "dataClasses": { "type": "array", "minItems": 1 } }
+          }
+        }
+      ]
+    }
+  }
+}
