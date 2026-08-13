@@ -1,0 +1,35 @@
+{
+  "includedCounts": {
+    "core": 1,
+    "health": 4,
+    "symbolicSky": 1
+  },
+  "omissionReasons": [
+    "data-class-not-consented",
+    "duplicate-event-id",
+    "outside-request-window",
+    "raw-sky-input-excluded"
+  ],
+  "forbiddenContent": [
+    "SENTETIK_GIZLI_NOT_CONTEXTE_GIRMEMELI",
+    "SENTETIK_UYKU_NOTU_CONTEXTE_GIRMEMELI",
+    "SENTETIK_ENERJI_NOTU_CONTEXTE_GIRMEMELI",
+    "SENTETIK_BELIRTI_NOTU_CONTEXTE_GIRMEMELI",
+    "SENTETIK_EGZERSIZ_ADI_CONTEXTE_GIRMEMELI",
+    "synthetic-private-image.png",
+    "SENTETIK_BESLENME_NOTU_CONTEXTE_GIRMEMELI",
+    "SENTETIK_HASSAS_KONUM_CONTEXTE_GIRMEMELI",
+    "SENTETIK_GIZLI_TIMEZONE",
+    "SENTETIK_DOGUM_YERI_CONTEXTE_GIRMEMELI"
+  ],
+  "requiredBoundaries": {
+    "skyRole": "symbolic-context-only",
+    "skyCausalityAllowed": false,
+    "skyScientificEvidence": false,
+    "rawBirthDataIncluded": false,
+    "domAccessed": false,
+    "storageAccessed": false,
+    "externalTransfer": false,
+    "freeTextIncluded": false
+  }
+}
