@@ -1,5 +1,18 @@
 # Değişiklik Günlüğü
 
+## 0.4.0-approval — NUT-017.4 — 2026-08-14
+
+- Mevcut `approval-decision` v1 sözleşmesini kullanan saf ve deterministik karar işlemcisi eklendi.
+- Onay ve ret yalnız istek-süreli karar üretir; eylem yürütmez, Connect çağırmaz veya kalıcı audit yazmaz.
+- Düzenleme yalnız hatırlatma saatini kabul eder, yeni `pending-user-approval` taslağı üretir ve yeniden açık onay ister.
+- Today App öneri kartı sadeleştirildi; ham olay kimlikleri, NUT/kural kodları ve filtre gerekçe kodları kullanıcı yüzeyinden kaldırıldı.
+- Dayanak, güven, belirsizlik, seçenekler ve onay durumu iç sözleşmede korunurken kullanıcıya anlaşılır başlıklarla gösterildi.
+- Sky önerinin dayanağı, güven girdisi veya sağlık/duygu nedeni olmadan sembolik sınırda kaldı.
+- Host: Today App `2.12.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-063`.
+- Test sonucu: AI Engine `114/114`; NUT-017.4 App kapısı `61/61`; ilgili mevcut App grupları `142/142` başarılı.
+- Migration gereksinimi: Yok; yeni storage anahtarı veya ana veri biçimi eklenmedi.
+- Commit mesajı: `feat(ai): add request-scoped suggestion decisions (NUT-017.4)`
+
 ## Host düzeltmesi — NUT-017.3.2 — 2026-08-14
 
 - AI Engine kodu ve sözleşmeleri `0.3.1-analysis` olarak değişmeden kaldı.
