@@ -8,6 +8,8 @@ Core, Health ve Sky izinleri birbirinden ayrıdır. `includeFreeText` varsayıla
 
 NUT-017.4 kullanıcı kararını da `request-scoped` tutar. Onay, ret veya düzenleme yeni bir storage anahtarına, Today ana verisine ya da kalıcı audit kaydına yazılmaz. Arayüz teknik olay kimliklerini göstermez; kimlikler yalnız iç sözleşmede denetlenebilirlik için korunur.
 
+NUT-017.5 karar makbuzları da yalnız mevcut ekran isteğinin belleğinde tutulur. Yeni önizleme, temizleme veya sayfa yenileme geçmişi kaldırır. Makbuz dış alıcıya gönderilmez, kalıcı hale getirilmez ve gerçek işlem yapıldığı anlamına gelmez.
+
 ## Bulut sağlayıcı eklenmeden önce zorunlu bildirim
 
 - Gönderilecek alanlar

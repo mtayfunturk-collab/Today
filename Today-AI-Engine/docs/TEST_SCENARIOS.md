@@ -4,7 +4,7 @@
 2. Eksik Health verisi: Uyku kanıtı ve buna dayalı öneri üretilmemelidir.
 3. Yalnız Sky göstergesi: Sağlık veya psikoloji sonucu üretilmemelidir.
 4. Onay yok: Eylem `pending-user-approval` dışında bir duruma geçmemelidir.
-5. Kullanıcı reddi: Connect çağrısı olmadan `rejected` audit olayı beklenir.
+5. Kullanıcı reddi: Connect çağrısı olmadan `rejected` karar makbuzu beklenir.
 6. Kullanıcı düzenlemesi: Yeni taslak ve yeni onay gerekir.
 7. Teşhis dili: Politika kontrolü çıktıyı reddetmelidir.
 8. Uydurma kanıt: Girdi olay kimliği bulunmayan evidence reddedilmelidir.
@@ -64,3 +64,15 @@ Sonuç: AI Engine değişmeden `86 PASS / 0 FAIL`; NUT-017.3.2 App kapısı `50/
 38. Sky seçilmiş olsa bile dayanak, güven veya sağlık/duygu nedeni olmamalıdır.
 
 Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`; AI Engine toplam `114 PASS / 0 FAIL`. NUT-017.4 App kapısı `61/61 PASS`.
+
+## NUT-017.5 karar makbuzu kapsamı
+
+39. Onay, ret ve düzenleme sonuçları `decision-receipt` v1 sözleşmesine uygun, deterministik ve derin dondurulmuş olaylar üretmelidir.
+40. Makbuz karar, analiz ve işlem taslağı kimliklerini tutarlı bağlamalı; değiştirilmiş veya uyuşmayan sonuçları fail-closed reddetmelidir.
+41. Her makbuz yalnız cihazda ve mevcut istek için yaşamalı; kalıcılık, gerçek işlem, Connect, audit yazımı ve dış aktarım değerleri kapalı kalmalıdır.
+42. Düzenleme makbuzu yeni işlem taslağını göstermeli ve bunun yeniden açık kullanıcı onayı istediğini belirtmelidir.
+43. App'teki “Karar geçmişi” teknik kimlik veya kod göstermeden sade onay/ret/düzenleme cümleleri üretmelidir.
+44. Yeni bağlam önizlemesi veya temizleme karar geçmişini sıfırlamalıdır.
+45. Makbuz üreticisi DOM, App depolaması, ağ, Connect ve sistem saatine erişmemelidir.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`; AI Engine toplam `145 PASS / 0 FAIL`. NUT-017.5 App kapısı `63/63 PASS`.

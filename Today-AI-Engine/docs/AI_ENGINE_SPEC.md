@@ -37,6 +37,14 @@ Başarılı analiz çıktısındaki ilk işlem taslağı yalnız `pending-user-a
 
 Karar işlemcisi eylemi yürütmez ve kalıcı audit yazmaz. Kullanıcı arayüzü olay kimliklerini veya kural kodlarını göstermez; dayanak metnini, anlaşılır güven düzeyini, belirsizlikleri, diğer seçenekleri ve karar durumunu gösterir. Sayısal confidence ve provenance-bağlı olay kimlikleri denetlenebilir iç sözleşmede korunur.
 
+## NUT-017.5 karar makbuzu
+
+Başarılı kullanıcı kararı, `decision-receipt` v1 sözleşmesine bağlı bir `user-decision-recorded` olayı üretir. Makbuz karar, analiz ve işlem taslağı kimliklerini birbirine bağlar; zamanı karar sözleşmesindeki `decidedAt` alanından alır ve sistem saatine erişmez.
+
+Makbuzun kapsamı sabittir: yalnız cihazda, yalnız mevcut istek için ve kalıcı değildir. `actionExecuted`, `connectCalled`, `auditPersisted` ve `externalTransfer` her zaman `false` kalır. Düzenleme makbuzu yeni taslağın yeniden kullanıcı onayı istediğini ayrıca belirtir.
+
+App, makbuzları teknik kimlikler olmadan “Karar geçmişi” altında sade cümlelerle gösterir. Bu liste yeni bağlam önizlemesinde, temizlemede veya sayfa yenilendiğinde sıfırlanır. NUT-017.5 foundation audit writer'ı yeniden kurmaz ve gelecekteki kalıcı audit hattı yerine geçmez.
+
 ## Yasak çıktılar
 
 - Teşhis: “Depresyondasın”, “uyku bozukluğun var”.
@@ -46,3 +54,4 @@ Karar işlemcisi eylemi yürütmez ve kalıcı audit yazmaz. Kullanıcı arayüz
 - Sky göstergesini tıbbi/psikolojik nedensellik olarak kullanma.
 - Onay olmadan `approved`, `scheduled`, `sent` veya `completed` eylemi.
 - Düzenlemeyi otomatik onay sayma veya onay kararını gerçek eylem yapılmış gibi sunma.
+- Geçici karar makbuzunu kalıcı audit, Connect çağrısı veya tamamlanmış işlem gibi sunma.

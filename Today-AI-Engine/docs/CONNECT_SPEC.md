@@ -10,4 +10,6 @@ Kullanıcı düzenlerse özgün taslak korunur, yeni sürüm oluşturulur ve tek
 
 NUT-017.4 yalnız `approved`, `rejected` veya `edited` geçici kararını üretir. `approved` kararı Connect'e iletilmez; eylem yapılmış, planlanmış veya kaydedilmiş sayılmaz.
 
+NUT-017.5 bu geçici karardan yalnız istek-süreli bir makbuz üretir. Makbuz Connect komutu, yürütme yetkisi veya tamamlanmış işlem kanıtı değildir ve Connect'e iletilmez.
+
 Bu sürümde Connect adaptörü ve gerçek dış işlem yoktur.

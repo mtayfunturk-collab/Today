@@ -17,6 +17,7 @@
 - `analysis-request.schema.json`: Tek istekli Context Package, sabit analiz capability'si ve çağrı zamanını taşıyan analiz isteği.
 - `analysis-output.schema.json`: Açıklanabilir analiz ve onay bekleyen işlem taslakları.
 - `approval-decision.schema.json`: Kullanıcının onay, ret veya düzenleme kararını kaydeder.
+- `decision-receipt.schema.json`: Kararın izlenebilir fakat kalıcı olmayan, istek-süreli sonucunu kaydeder.
 - `data-usage-consent.schema.json`: Amaç, kaynak, veri sınıfı, serbest metin ve cihaz-içi işleme izni.
 - `context-build-request.schema.json`: Onay, tarih penceresi ve ortak olay zarflarını taşıyan deterministik build isteği.
 - `context-package.schema.json`: Minimize Core/Health bölümleri, ayrı sembolik Sky bağlamı, provenance, omission, redaction ve sınır beyanları.
@@ -48,3 +49,9 @@ NUT-017.3.1'de `no-matching-rule` hata ayrıntısı olarak eklenen `ruleEvaluati
 `approval-decision` v1 değiştirilmeden kullanılır. Her kayıt `decisionId`, `analysisId`, `actionId`, karar ve zamanı taşır. `edited` kararı `editedPayload` gerektirir; NUT-017.4'ün ilk dar uygulaması yalnız `HH:MM` biçimindeki `reminderTime` alanını kabul eder.
 
 Karar işlemcisi yalnız `pending-user-approval` durumundaki mevcut taslağı kabul eder. Düzenleme sonucu üretilen yeni taslak tekrar `pending-user-approval` kalır. Karar kaydı Engine/App ana verisine yazılmaz; karar zamanı UI tarafından açık kullanıcı etkileşimi sırasında verilir.
+
+## NUT-017.5 karar makbuzu
+
+`decision-receipt` v1; `receiptId`, `decisionId`, `analysisId`, `actionId`, sonuç, olay zamanı, aktör, işlem durumu, kapsam ve etki beyanlarını taşır. Düzenleme sonucunda `replacementActionId` zorunludur ve yeni taslağın yeniden onay istediği belirtilir.
+
+Makbuz üreticisi yalnız geçerli NUT-017.4 karar sonucunu kabul eder. Karar ve işlem taslağı kimlikleri/durumları uyuşmazsa fail-closed reddeder. Kapsam `device-only` ve `request-scoped`, `persistent=false`, dış alıcı `null`; eylem, Connect, kalıcı audit ve dış aktarım bayrakları `false` olmak zorundadır. Makbuz yeni bir Today App kayıt şekli veya storage anahtarı değildir.
