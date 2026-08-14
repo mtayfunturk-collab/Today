@@ -1,5 +1,18 @@
 # Değişiklik Günlüğü
 
+## 0.5.0-receipt — NUT-017.5 — 2026-08-14
+
+- Onay, ret ve düzenleme sonucunu `decision-receipt` v1 sözleşmesine dönüştüren saf ve deterministik makbuz üreticisi eklendi.
+- Makbuz karar, analiz ve işlem taslağı kimliklerini iç sözleşmede bağlar; kullanıcı yüzeyinde bu teknik kimlikler gösterilmez.
+- Her makbuz `device-only`, `request-scoped` ve `persistent=false` sınırını; işlem, Connect, kalıcı audit ve dış aktarım yapılmadığını açıkça taşır.
+- Today App'e yalnız ekran açıkken yaşayan, sade ve kapalı başlayan “Karar geçmişi” eklendi. Yeni önizleme veya temizleme bu geçmişi sıfırlar.
+- Düzenleme makbuzu yeni taslağın yeniden onay beklediğini gösterir; düzenlemeyi veya önceki onayı gerçek işlem saymaz.
+- Host: Today App `2.13.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-064`.
+- Test sonucu: AI Engine `145/145`; NUT-017.5 App kapısı `63/63`; ilgili mevcut App grupları `142/142` başarılı.
+- Önceden belgelenen platform tabanı değişmedi: static `25/30`, Service Worker event `23/36`, browser `47/48`; automation contract'ta beklenen workflow dosyası eksik.
+- Migration gereksinimi: Yok; yeni storage anahtarı veya ana veri biçimi eklenmedi.
+- Commit mesajı: `feat(ai): add request-scoped decision receipts (NUT-017.5)`
+
 ## 0.4.0-approval — NUT-017.4 — 2026-08-14
 
 - Mevcut `approval-decision` v1 sözleşmesini kullanan saf ve deterministik karar işlemcisi eklendi.
