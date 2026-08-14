@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-058";
+const VERSION = "today-v2-foundation-059";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -64,6 +64,11 @@ const APP_SHELL = [
   "./modules/sky-periods-ui.js",
   "./modules/core-sky-link-ui.js",
   "./modules/sky-hub.js",
+  "./modules/ai-context-source-adapters.js",
+  "./modules/ai-context-bridge.mjs",
+  "./modules/ai-context-ui.mjs",
+  "./Today-AI-Engine/src/context-builder.mjs",
+  "./Today-AI-Engine/src/data-usage-consent.mjs",
   "./data/sky-cities-15000.json",
 
   "./assets/sport/bench-press.jpg",
