@@ -31,6 +31,48 @@ Each entry should include:
 
 ---
 
+## Version 2.12.0 — NUT-017.4
+
+Date
+
+14 August 2026
+
+Phase
+
+AI suggestion decision checkpoint
+
+Status
+
+🟡 NUT-017.4 completed; product phase closure not claimed
+
+Summary
+
+- Reused the existing approval-decision v1 contract for request-scoped approve, reject and edit decisions.
+- Added a pure AI Engine decision processor and a DOM/storage/network-independent App bridge.
+- Made editing create a new pending reminder draft that requires another explicit approval.
+- Simplified the user surface and removed internal event IDs, NUT/rule IDs and filtering reason codes from visible copy.
+- Preserved evidence, confidence, uncertainty, alternatives and approval state while translating confidence into plain language.
+- Kept Sky symbolic and outside evidence, confidence and health/emotion causality.
+- Kept Connect execution, persistent audit, external transfer and permanent AI memory disabled.
+- Raised App to `2.12.0` and shell to `today-v2-foundation-063`; schema remains `2` with no migration or new storage key.
+
+Tests
+
+- AI Engine: **114/114 successful**.
+- NUT-017.4 App gate: **61/61 successful**.
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Browser baseline: **47/48**, preserving the pre-existing startup/empty-store expectation failure.
+
+Result
+
+The user can now approve, reject or edit a suggestion in clear language. The decision remains in memory for the current request and never implies that a reminder or external action has been performed.
+
+Commit
+
+`feat(ai): add request-scoped suggestion decisions (NUT-017.4)`
+
+---
+
 ## Version 2.11.2 — NUT-017.3.2
 
 Date

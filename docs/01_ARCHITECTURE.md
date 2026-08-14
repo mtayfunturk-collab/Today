@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.11.2
+Application Version: 2.12.0
 Data Schema: 2
-Active Shell: today-v2-foundation-062
+Active Shell: today-v2-foundation-063
 Last Updated: 14 August 2026
 
 ---
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.3.2 Health Context Recency Correction
+## NUT-017.4 Request-scoped Suggestion Decisions
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -145,16 +145,20 @@ read-only source adapters and the visible consent/context-preview surface.
 | Rule mismatch diagnosis | Today AI Engine NUT-017.3.1 | Shows only validated Core/sleep observations, date checks and controlled reasons; does not relax the rule |
 | Source event cap | Today App NUT-017.3.2 | Keeps the newest deterministic subset before restoring chronological output order; current Health records are not displaced by older records |
 | Symbolic Sky in analysis | Today AI Engine NUT-017.3.1 | Never used as evidence, confidence input, mismatch input or a health/emotion cause |
-| Proposed action | Existing output contract | Remains `pending-user-approval`; no approval gateway or Connect execution is invoked |
+| Proposed action | Existing output contract | Starts as `pending-user-approval` and is never executed by the analysis layer |
+| User decision | Today AI Engine NUT-017.4 | Reuses approval-decision v1 for approve/reject/edit; edit creates a new pending draft |
+| Decision UI | Today App NUT-017.4 | Shows plain-language evidence, confidence, uncertainty, options and decision state; hides internal IDs/codes |
+| Execution and audit | Separate future scope | Connect, execution, persistent audit and external transfer remain disabled |
 
-The active host integration is App `2.11.2`, schema `2`, shell
-`today-v2-foundation-062`. NUT-017.3.2 preserves the second explicit user command after
-the consent-gated context preview. It implements only the documented first
-rule (`Core C` plus sleep below six hours), invents no result when the rule does
-not match, registers no model/provider and starts no Connect operation. The App
-source adapter now retains the newest records when a source cap is reached. See
-`docs/NUT-017.3.2-IMPLEMENTATION.md` for the recency correction record; the source
-mapping remains in `docs/NUT-017.2-IMPLEMENTATION.md`.
+The active host integration is App `2.12.0`, schema `2`, shell
+`today-v2-foundation-063`. NUT-017.4 preserves the consent-gated context preview,
+the documented first rule (`Core C` plus sleep below six hours), and the
+NUT-017.3.2 newest-record selection fix. A user may approve, reject, or edit the
+reminder time. Editing never counts as approval and creates a new pending draft.
+All decisions remain device-only and request-scoped; no reminder is created,
+no audit is persisted, and no Connect operation starts. See
+`docs/NUT-017.4-IMPLEMENTATION.md`; the source mapping remains in
+`docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---
 
