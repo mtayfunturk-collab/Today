@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-063";
+const VERSION = "today-v2-foundation-064";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -73,6 +73,7 @@ const APP_SHELL = [
   "./Today-AI-Engine/src/data-usage-consent.mjs",
   "./Today-AI-Engine/src/daily-support-analyzer.mjs",
   "./Today-AI-Engine/src/approval-decision-processor.mjs",
+  "./Today-AI-Engine/src/decision-receipt-builder.mjs",
   "./data/sky-cities-15000.json",
 
   "./assets/sport/bench-press.jpg",
