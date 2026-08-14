@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.2 — AI CONTEXT CONSENT
+   NUT-017.3 — AI CONTEXT & EXPLAINABLE ANALYSIS
 ========================= */
 
 .aiContextPanel {
@@ -1367,7 +1367,9 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
   color: #a02c20;
 }
 
-.aiContextPreview {
+.aiContextPreview,
+.aiAnalysisRequest,
+.aiAnalysisOutput {
   margin-top: 12px;
   padding: 12px;
   border: 1px solid var(--stroke);
@@ -1376,22 +1378,45 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
   line-height: 1.5;
 }
 
-.aiContextPreview[hidden] {
+.aiContextPreview[hidden],
+.aiAnalysisRequest[hidden],
+.aiAnalysisOutput[hidden] {
   display: none;
 }
 
-.aiContextPreview h4 {
+.aiContextPreview h4,
+.aiAnalysisOutput h4,
+.aiAnalysisOutput h5 {
   margin: 0 0 8px;
   font-size: 13px;
 }
 
-.aiContextPreview ul {
+.aiAnalysisOutput h5 {
+  margin-top: 12px;
+}
+
+.aiContextPreview ul,
+.aiAnalysisOutput ul {
   margin: 0 0 8px;
   padding-left: 20px;
 }
 
-.aiContextPreview p {
+.aiContextPreview p,
+.aiAnalysisRequest p,
+.aiAnalysisOutput p {
   margin: 7px 0 0;
+}
+
+.aiAnalysisRequest {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.aiAnalysisRequest .smallBtns {
+  margin-top: 10px;
+}
+
+.aiAnalysisOutput {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--stroke));
 }
 
 /* =========================
@@ -2660,10 +2685,57 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                 <p id="aiContextBoundaries"></p>
                 <p id="aiContextFilters"></p>
                 <p>
-                  AI önerisi üretilmedi, Connect veya başka bir işlem
-                  başlatılmadı ve cihaz dışına aktarım yapılmadı.
+                  Bağlam önizlemesi tek başına öneri üretmez. Connect veya
+                  başka bir işlem başlatılmadı ve cihaz dışına aktarım
+                  yapılmadı.
                 </p>
               </div>
+
+              <div class="aiAnalysisRequest" id="aiAnalysisRequest" hidden>
+                <p>
+                  NUT-017.3 yalnız “Zordu bugün” ile 6 saatin altındaki uyku
+                  kaydı birlikte bulunduğunda sabit, cihaz-içi bir öneri
+                  hazırlayabilir. Sembolik Sky bu kurala katılmaz.
+                </p>
+                <div class="smallBtns">
+                  <button class="ghost" id="btnAiAnalysis" type="button">
+                    Açıklanabilir öneri oluştur
+                  </button>
+                </div>
+              </div>
+
+              <article
+                class="aiAnalysisOutput"
+                id="aiAnalysisOutput"
+                aria-labelledby="aiAnalysisTitle"
+                hidden
+              >
+                <h4 id="aiAnalysisTitle">Açıklanabilir öneri</h4>
+                <p><strong>Özet:</strong> <span id="aiAnalysisSummary"></span></p>
+                <p><strong>Öneri:</strong> <span id="aiAnalysisSuggestion"></span></p>
+
+                <h5>Dayanaklar</h5>
+                <ul id="aiAnalysisEvidence"></ul>
+
+                <p>
+                  <strong>Güven:</strong>
+                  <span id="aiAnalysisConfidence"></span>
+                </p>
+
+                <h5>Belirsizlikler</h5>
+                <ul id="aiAnalysisUncertainty"></ul>
+
+                <h5>Seçenekler</h5>
+                <ul id="aiAnalysisAlternatives"></ul>
+
+                <p id="aiAnalysisApproval"></p>
+                <ul id="aiAnalysisActions"></ul>
+                <p id="aiAnalysisSkyBoundary"></p>
+                <p>
+                  Bu adım Connect çağırmaz, taslağı yürütmez ve kararı
+                  kalıcı olarak kaydetmez.
+                </p>
+              </article>
             </section>
           </div>
         </div>
