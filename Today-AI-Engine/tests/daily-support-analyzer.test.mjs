@@ -59,8 +59,8 @@ export async function runDailySupportAnalyzerTests() {
     checks += 1;
   };
 
-  equal(ENGINE_VERSION, "0.3.0-analysis", "Engine sürümü NUT-017.3 olmalı");
-  equal(RULESET_ID, "today:daily-support:nut-017.3", "Kural kimliği sabit olmalı");
+  equal(ENGINE_VERSION, "0.3.1-analysis", "Engine sürümü NUT-017.3.1 olmalı");
+  equal(RULESET_ID, "today:daily-support:nut-017.3.1", "Kural kimliği sabit olmalı");
   check(
     requestSchema.required.includes("context") &&
       requestSchema.properties.capability.const === CAPABILITY,
@@ -136,17 +136,60 @@ export async function runDailySupportAnalyzerTests() {
   sixHours.context.sections.health.find(
     item => item.eventType === "sleep-record"
   ).facts.durationMinutes = 360;
+  const sixHoursResult = analyzeTodayContext(sixHours);
   equal(
-    analyzeTodayContext(sixHours).error.code,
+    sixHoursResult.error.code,
     "no-matching-rule",
     "6 saat sınırında öneri uydurulmamalı"
   );
+  deepEqual(
+    sixHoursResult.error.ruleEvaluation,
+    {
+      rulesetId: RULESET_ID,
+      matched: false,
+      required: {
+        coreChoice: "C",
+        sleepDuration: { operator: "less-than", minutes: 360 },
+        sameLocalDate: true
+      },
+      observed: {
+        core: {
+          eventId: "core-20400115",
+          localDate: "2040-01-15",
+          choice: "C"
+        },
+        sleep: {
+          eventId: "sleep-20400115",
+          localDate: "2040-01-15",
+          durationMinutes: 360
+        }
+      },
+      checks: {
+        coreChoice: true,
+        sleepDuration: false,
+        sameLocalDate: true
+      },
+      reasons: ["sleep-duration-not-below-threshold"]
+    },
+    "Eşleşmeme tanısı yalnız değerlendirilen kayıtları ve sabit koşulları göstermeli"
+  );
+  check(
+    Object.isFrozen(sixHoursResult.error.ruleEvaluation) &&
+      Object.isFrozen(sixHoursResult.error.ruleEvaluation.observed),
+    "Kural tanısı derin dondurulmalı"
+  );
   const noHardDay = clone(request);
   noHardDay.context.sections.core[0].facts.choice = "B";
+  const noHardDayResult = analyzeTodayContext(noHardDay);
   equal(
-    analyzeTodayContext(noHardDay).error.code,
+    noHardDayResult.error.code,
     "no-matching-rule",
     "Core C olmadan ilk kural çalışmamalı"
+  );
+  deepEqual(
+    noHardDayResult.error.ruleEvaluation.reasons,
+    ["core-choice-not-hard-day"],
+    "Core koşulunun eşleşmeme nedeni açık olmalı"
   );
   const newerNeutralDay = clone(request);
   const newerCore = clone(newerNeutralDay.context.sections.core[0]);
@@ -170,18 +213,41 @@ export async function runDailySupportAnalyzerTests() {
   differentDays.context.sections.health.find(
     item => item.eventType === "sleep-record"
   ).localDate = "2040-01-14";
+  const differentDaysResult = analyzeTodayContext(differentDays);
   equal(
-    analyzeTodayContext(differentDays).error.code,
+    differentDaysResult.error.code,
     "no-matching-rule",
     "Core ve uyku farklı yerel günlerdeyse günlük kural çalışmamalı"
+  );
+  deepEqual(
+    differentDaysResult.error.ruleEvaluation.reasons,
+    ["records-not-same-local-date"],
+    "Farklı yerel tarih nedeni açık olmalı"
+  );
+
+  const noSleep = clone(request);
+  noSleep.context.sections.health = noSleep.context.sections.health.filter(
+    item => item.eventType !== "sleep-record"
+  );
+  const noSleepResult = analyzeTodayContext(noSleep);
+  deepEqual(
+    noSleepResult.error.ruleEvaluation.reasons,
+    ["sleep-record-missing"],
+    "Uyku kaydı yokluğu açık olmalı"
   );
 
   const unsafeBoundary = clone(request);
   unsafeBoundary.context.boundaries.externalTransfer = true;
+  const unsafeBoundaryResult = analyzeTodayContext(unsafeBoundary);
   equal(
-    analyzeTodayContext(unsafeBoundary).error.code,
+    unsafeBoundaryResult.error.code,
     "invalid-analysis-request",
     "Cihaz dışı bağlam kapalı kalmalı"
+  );
+  equal(
+    Object.hasOwn(unsafeBoundaryResult.error, "ruleEvaluation"),
+    false,
+    "Geçersiz analiz isteği doğrulanmamış bağlam tanısı sızdırmamalı"
   );
   const causalSky = clone(request);
   causalSky.context.sections.symbolicContext.causalityClaim = true;

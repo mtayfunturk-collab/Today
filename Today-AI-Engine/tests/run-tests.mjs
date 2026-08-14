@@ -39,4 +39,4 @@ const nut017Checks = await runContextBuilderTests();
 console.log(`${nut017Checks}/${nut017Checks} NUT-017.1 bağlam ve onay kontrolü başarılı.`);
 
 const nut0173Checks = await runDailySupportAnalyzerTests();
-console.log(`${nut0173Checks}/${nut0173Checks} NUT-017.3 açıklanabilir analiz kontrolü başarılı.`);
+console.log(`${nut0173Checks}/${nut0173Checks} NUT-017.3.1 açıklanabilir analiz ve kural tanısı kontrolü başarılı.`);
