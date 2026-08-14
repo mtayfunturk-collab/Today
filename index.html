@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.6 — AI SUGGESTION, DECISION & PATTERN OBSERVATION
+   NUT-017.7 — AI SUGGESTION, PATTERN & REQUEST-SCOPED FEEDBACK
 ========================= */
 
 .aiContextPanel {
@@ -1548,6 +1548,44 @@ html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
 }
 
 html[data-theme="light"] .aiPatternStatus[data-state="error"] {
+  color: #a02c20;
+}
+
+.aiPatternFeedback {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.aiPatternFeedback p {
+  margin-top: 0;
+}
+
+.aiPatternFeedbackControls {
+  margin-top: 10px;
+}
+
+.aiPatternFeedbackControls[hidden] {
+  display: none;
+}
+
+.aiPatternFeedbackControls button[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--accent) 75%, var(--stroke));
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.aiPatternFeedbackStatus {
+  min-height: 18px;
+  margin-top: 9px;
+  color: var(--muted);
+}
+
+.aiPatternFeedbackStatus[data-state="error"] {
+  color: #ffb4ab;
+}
+
+html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
   color: #a02c20;
 }
 
@@ -2982,9 +3020,51 @@ html[data-theme="light"] .aiPatternStatus[data-state="error"] {
 
                 <p id="aiPatternApproval"></p>
                 <p id="aiPatternSkyBoundary"></p>
+
+                <div class="aiPatternFeedback">
+                  <p><strong>Bu gözlem sana uyuyor mu?</strong></p>
+                  <div
+                    class="smallBtns aiPatternFeedbackControls"
+                    id="aiPatternFeedbackControls"
+                    hidden
+                  >
+                    <button
+                      class="ghost"
+                      type="button"
+                      data-ai-pattern-feedback="resonates"
+                      aria-pressed="false"
+                    >
+                      Bana uyuyor
+                    </button>
+                    <button
+                      class="ghost"
+                      type="button"
+                      data-ai-pattern-feedback="does-not-resonate"
+                      aria-pressed="false"
+                    >
+                      Bana uymuyor
+                    </button>
+                    <button
+                      class="ghost"
+                      type="button"
+                      data-ai-pattern-feedback="unsure"
+                      aria-pressed="false"
+                    >
+                      Emin değilim
+                    </button>
+                  </div>
+                  <p
+                    class="aiPatternFeedbackStatus"
+                    id="aiPatternFeedbackStatus"
+                    role="status"
+                    aria-live="polite"
+                  ></p>
+                </div>
+
                 <p class="aiPrivacyNote">
-                  Bu gözlem yalnız bu ekranda tutulur. Herhangi bir işlem
-                  başlatılmaz ve cihaz dışına bilgi gönderilmez.
+                  Bu gözlem ve seçimin yalnız bu ekranda tutulur. Gözlem
+                  değiştirilmez, herhangi bir işlem başlatılmaz ve cihaz
+                  dışına bilgi gönderilmez.
                 </p>
               </article>
             </section>
