@@ -2,7 +2,7 @@
 
 Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan, arayüzden ve App'in depolama katmanından bağımsız bir sistem katmanıdır.
 
-`0.3.0-analysis`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1 Context Builder sınırını yeniden oluşturmadan NUT-017.3 cihaz-içi açıklanabilir analiz adımını ekler. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay veya kalıcı AI belleği içermez.
+`0.3.1-analysis`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1 Context Builder sınırını yeniden oluşturmadan NUT-017.3 analizinin eşleşmeme tanısını görünür kılar. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay veya kalıcı AI belleği içermez.
 
 ## İlkeler
 
@@ -17,11 +17,11 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 
 ## Durum
 
-- AI Engine sürümü: `0.3.0-analysis`
-- Today App entegrasyon tabanı: NUT-017.3, App `2.11.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-060`
+- AI Engine sürümü: `0.3.1-analysis`
+- Today App entegrasyon tabanı: NUT-017.3.1, App `2.11.1`, schema `2`, çevrimdışı kabuk `today-v2-foundation-061`
 - Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
-- AI Engine testi: `80 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1 + `29` NUT-017.3)
-- Durum: NUT-017.1 sınırı ve NUT-017.2 kaynak adaptörleri korunuyor; NUT-017.3 yalnız kullanıcı komutuyla ilk dar deterministik öneriyi üretiyor
+- AI Engine testi: `86 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1 + `35` NUT-017.3.1)
+- Durum: İlk dar kural değişmedi; eşleşmeyen durumda yalnız onaylı bağlamdan seçilen Core, uyku ve yerel tarih kontrolleri gerekçeli olarak gösteriliyor
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
@@ -36,6 +36,7 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 - `docs/NUT-017.1-IMPLEMENTATION.md`: adım uygulama raporu
 - `../docs/NUT-017.2-IMPLEMENTATION.md`: Today App host entegrasyonu ve doğrulama raporu
 - `../docs/NUT-017.3-IMPLEMENTATION.md`: açıklanabilir analiz host entegrasyonu ve doğrulama raporu
+- `../docs/NUT-017.3.1-IMPLEMENTATION.md`: eşleşmeme tanısı hata düzeltmesi ve doğrulama raporu
 
 ## Test
 

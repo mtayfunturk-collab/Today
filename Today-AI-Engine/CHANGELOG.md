@@ -1,5 +1,16 @@
 # Değişiklik Günlüğü
 
+## 0.3.1-analysis — NUT-017.3.1 — 2026-08-14
+
+- Sorun: `no-matching-rule` yalnız genel hata kodu döndürdüğü için gerçek App verisinde hangi Core, uyku veya tarih koşulunun geçmediği görülemiyordu.
+- Düzeltme: Engine, yalnız geçerli ve onaylı Context Package üzerinde en güncel Core/uyku gözlemlerini, sabit koşulları, üç denetim sonucunu ve makine-okunur gerekçeleri içeren derin dondurulmuş `ruleEvaluation` tanısı döndürür.
+- Güvenlik: Geçersiz analiz isteğine tanı eklenmez; doğrulanmamış bağlam alanı sızdırılmaz. Sky tanıya, dayanağa veya güven hesabına katılmaz.
+- Kural: `Core=C`, uyku `<360 dakika` ve aynı yerel tarih koşulları değiştirilmedi veya gevşetilmedi.
+- Host: Today App `2.11.1`, schema `2`, çevrimdışı kabuk `today-v2-foundation-061`.
+- Test sonucu: AI Engine `86/86`; NUT-017.3.1 App kapısı `49/49` başarılı.
+- Migration gereksinimi: Yok; Today App ana verisi ve depolama anahtarları değiştirilmedi.
+- Commit mesajı: `fix(ai): expose deterministic rule mismatch diagnostics (NUT-017.3.1)`
+
 ## 0.3.0-analysis — NUT-017.3 — 2026-08-14
 
 - Adım: Sağlayıcısız, cihaz-içi açıklanabilir analiz isteği ve sonuç önizlemesi.
