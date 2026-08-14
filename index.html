@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.5 — AI SUGGESTION, DECISION & RECEIPT
+   NUT-017.6 — AI SUGGESTION, DECISION & PATTERN OBSERVATION
 ========================= */
 
 .aiContextPanel {
@@ -1370,6 +1370,7 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 .aiContextPreview,
 .aiAnalysisRequest,
 .aiAnalysisOutput,
+.aiPatternOutput,
 .aiRuleEvaluation {
   margin-top: 12px;
   padding: 12px;
@@ -1382,6 +1383,7 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 .aiContextPreview[hidden],
 .aiAnalysisRequest[hidden],
 .aiAnalysisOutput[hidden],
+.aiPatternOutput[hidden],
 .aiRuleEvaluation[hidden],
 .aiDecisionControls[hidden],
 .aiEditPanel[hidden] {
@@ -1391,17 +1393,21 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 .aiContextPreview h4,
 .aiAnalysisOutput h4,
 .aiAnalysisOutput h5,
+.aiPatternOutput h4,
+.aiPatternOutput h5,
 .aiRuleEvaluation h5 {
   margin: 0 0 8px;
   font-size: 13px;
 }
 
-.aiAnalysisOutput h5 {
+.aiAnalysisOutput h5,
+.aiPatternOutput h5 {
   margin-top: 12px;
 }
 
 .aiContextPreview ul,
 .aiAnalysisOutput ul,
+.aiPatternOutput ul,
 .aiRuleEvaluation ul {
   margin: 0 0 8px;
   padding-left: 20px;
@@ -1410,6 +1416,7 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 .aiContextPreview p,
 .aiAnalysisRequest p,
 .aiAnalysisOutput p,
+.aiPatternOutput p,
 .aiRuleEvaluation p {
   margin: 7px 0 0;
 }
@@ -1426,7 +1433,13 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--stroke));
 }
 
-.aiAnalysisSummary {
+.aiPatternOutput {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--stroke));
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.aiAnalysisSummary,
+.aiPatternSummary {
   color: var(--text);
   font-size: 14px;
   font-weight: 800;
@@ -1522,6 +1535,20 @@ html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
 .aiPrivacyNote {
   color: var(--muted);
   font-size: 11px;
+}
+
+.aiPatternStatus {
+  min-height: 18px;
+  margin-top: 9px;
+  color: var(--muted);
+}
+
+.aiPatternStatus[data-state="error"] {
+  color: #ffb4ab;
+}
+
+html[data-theme="light"] .aiPatternStatus[data-state="error"] {
+  color: #a02c20;
 }
 
 .aiRuleEvaluation {
@@ -2805,15 +2832,25 @@ html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
 
               <div class="aiAnalysisRequest" id="aiAnalysisRequest" hidden>
                 <p>
-                  Bu ilk öneri, “Zordu bugün” seçimi ile aynı güne ait 6 saatin
-                  altındaki uyku kaydı birlikte bulunduğunda hazırlanır. Sky
-                  bu öneride kullanılmaz.
+                  Bugünkü öneriye bak, bugünün kaydını değerlendirir. Son 7
+                  güne bak ise “Zordu bugün” seçimi ile 6 saatin altındaki
+                  uykunun birlikte tekrar edip etmediğini inceler. Sky bu iki
+                  değerlendirmede de kullanılmaz.
                 </p>
                 <div class="smallBtns">
                   <button class="ghost" id="btnAiAnalysis" type="button">
-                    Öneriyi oluştur
+                    Bugünkü öneriye bak
+                  </button>
+                  <button class="ghost" id="btnAiPattern" type="button">
+                    Son 7 güne bak
                   </button>
                 </div>
+                <div
+                  class="aiPatternStatus"
+                  id="aiPatternStatus"
+                  role="status"
+                  aria-live="polite"
+                ></div>
                 <section
                   class="aiRuleEvaluation"
                   id="aiRuleEvaluation"
@@ -2913,6 +2950,41 @@ html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
                 <p class="aiPrivacyNote">
                   Kararın yalnız bu ekranda tutulur. Bu aşamada hatırlatıcı
                   oluşturulmaz ve cihaz dışına bilgi gönderilmez.
+                </p>
+              </article>
+
+              <article
+                class="aiPatternOutput"
+                id="aiPatternOutput"
+                aria-labelledby="aiPatternTitle"
+                hidden
+              >
+                <h4 id="aiPatternTitle">Son 7 günde gördüğüm tekrar</h4>
+                <p class="aiPatternSummary" id="aiPatternSummary"></p>
+
+                <h5>Neye dayanıyor?</h5>
+                <ul id="aiPatternEvidence"></ul>
+
+                <p>
+                  <strong>Gözlem gücü:</strong>
+                  <span id="aiPatternConfidence"></span>
+                </p>
+
+                <details class="aiAnalysisDetails">
+                  <summary>Aklında olsun</summary>
+                  <ul id="aiPatternUncertainty"></ul>
+                </details>
+
+                <details class="aiAnalysisDetails">
+                  <summary>Seçeneklerin</summary>
+                  <ul id="aiPatternAlternatives"></ul>
+                </details>
+
+                <p id="aiPatternApproval"></p>
+                <p id="aiPatternSkyBoundary"></p>
+                <p class="aiPrivacyNote">
+                  Bu gözlem yalnız bu ekranda tutulur. Herhangi bir işlem
+                  başlatılmaz ve cihaz dışına bilgi gönderilmez.
                 </p>
               </article>
             </section>
