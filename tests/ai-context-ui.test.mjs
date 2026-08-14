@@ -41,6 +41,7 @@ function localDateKey(date) {
 const observed = [];
 let holdNextRequest = false;
 let releaseHeldRequest = null;
+let observedSleepMinutes = 330;
 const today = localDateKey(new Date());
 globalThis.TodayAIContextSources = Object.freeze({
   async collectEvents(options) {
@@ -69,7 +70,7 @@ globalThis.TodayAIContextSources = Object.freeze({
           eventType: "sleep-record",
           createdAt: new Date(Date.now() - 120_000).toISOString(),
           localDate: today,
-          payload: Object.freeze({ durationMinutes: 330 })
+          payload: Object.freeze({ durationMinutes: observedSleepMinutes })
         })
       ]),
       warnings: Object.freeze([])
@@ -103,6 +104,7 @@ await test("Ayarlar içinde erişilebilir AI bağlam yüzeyi bulunur", () => {
   assert.equal(panel.getAttribute("aria-labelledby"), "aiContextTitle");
   assert.equal(document.querySelector("#aiContextStatus").getAttribute("role"), "status");
   assert.equal(document.querySelector("#aiConsentPurpose").textContent, ui.PURPOSE);
+  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.3.1");
 });
 
 await test("Varsayılan kapsam veri-minimum Core ve temel Health seçimidir", () => {
@@ -204,8 +206,31 @@ await test("Taslak onay bekler; sağlayıcı, Connect ve Sky nedenselliği kapal
   assert.equal(status.providerRegistered, false);
   assert.equal(status.actionStarted, false);
   assert.match(document.querySelector("#aiAnalysisApproval").textContent, /kullanıcı onayı bekliyor/);
-  assert.match(document.querySelector("#aiAnalysisActions").textContent, /NUT-017.3 bu taslağı yürütmez/);
+  assert.match(document.querySelector("#aiAnalysisActions").textContent, /NUT-017.3.1 bu taslağı yürütmez/);
   assert.match(document.querySelector("#aiAnalysisSkyBoundary").textContent, /Sky verisi bu analizde kullanılmadı/);
+});
+
+await test("Eşleşmeme tanısı değerlendirilen Core, uyku ve tarih koşullarını gösterir", async () => {
+  observedSleepMinutes = 420;
+  document.querySelector("#aiConsentConfirm").checked = true;
+  document.querySelector("#btnAiContextPreview").click();
+  await settle();
+  document.querySelector("#btnAiAnalysis").click();
+  await settle();
+
+  const diagnostic = document.querySelector("#aiRuleEvaluation");
+  assert.equal(diagnostic.hidden, false);
+  assert.equal(document.querySelector("#aiAnalysisOutput").hidden, true);
+  assert.match(diagnostic.textContent, /Core: .*Zordu bugün.*uygun ✓/);
+  assert.match(diagnostic.textContent, /Uyku: .*7 saat.*uygun değil ✕/);
+  assert.match(diagnostic.textContent, /Aynı yerel tarih: uygun ✓/);
+  assert.match(
+    document.querySelector("#aiRuleEvaluationSummary").textContent,
+    /6 saatin altında değil/
+  );
+  assert.match(document.querySelector("#aiContextStatus").textContent, /NUT-017.3.1/);
+  assert.equal(ui.getStatus().aiProposalGenerated, false);
+  observedSleepMinutes = 330;
 });
 
 await test("Kapsam değişikliği bellekteki ve hazırlanmakta olan önizlemeyi düşürür", async () => {
@@ -283,7 +308,7 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-060/);
+  assert.match(swSource, /today-v2-foundation-061/);
 });
 
 const failures = results.filter(result => !result.success);
@@ -293,7 +318,7 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.3 Consent & Analysis UI: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.3.1 Consent & Analysis UI: ${passed}/${results.length} başarılı`);
 
 if (originalGlobals.window === undefined) delete globalThis.window;
 else globalThis.window = originalGlobals.window;

@@ -22,7 +22,9 @@ for (const file of GROUPS) {
   });
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
   process.stdout.write(`\n=== ${file} ===\n${output}`);
-  const summary = output.match(/NUT-017\.(?:2|3) [^:]+: (\d+)\/(\d+) başarılı/);
+  const summary = output.match(
+    /NUT-017\.(?:2|3)(?:\.1)? [^:]+: (\d+)\/(\d+) başarılı/
+  );
   if (!summary || result.status !== 0 || summary[1] !== summary[2]) {
     failures.push({ file, status: result.status });
     continue;
@@ -32,8 +34,8 @@ for (const file of GROUPS) {
 }
 
 if (failures.length) {
-  console.error("\nNUT-017.3 Gate başarısız:", failures);
+  console.error("\nNUT-017.3.1 Gate başarısız:", failures);
   process.exitCode = 1;
 } else {
-  console.log(`\nNUT-017.3 Gate: ${passed}/${expected} başarılı`);
+  console.log(`\nNUT-017.3.1 Gate: ${passed}/${expected} başarılı`);
 }
