@@ -31,6 +31,48 @@ Each entry should include:
 
 ---
 
+## Version 2.15.0 — NUT-017.7
+
+Date
+
+14 August 2026
+
+Phase
+
+AI pattern feedback checkpoint
+
+Status
+
+🟡 NUT-017.7 completed; product phase closure not claimed
+
+Summary
+
+- Added versioned `pattern-feedback` and `pattern-feedback-receipt` v1 contracts.
+- Added a pure deterministic processor that accepts only three explicit user responses linked to a valid NUT-017.6 observation.
+- Rejected observations whose evidence, confidence, approval, causality, diagnosis, Sky, action or retention boundaries were changed.
+- Added “Bana uyuyor”, “Bana uymuyor” and “Emin değilim” to the successful seven-day observation card.
+- Kept technical feedback, receipt and observation identifiers out of the user surface.
+- Kept only the latest choice in memory for the current screen request; reset it on a new preview, clear or reload.
+- Kept observation/confidence changes, model learning, persistent memory, action execution, Connect, persistent audit and external transfer disabled.
+- Raised App to `2.15.0` and shell to `today-v2-foundation-066`; schema remains `2` with no migration or new storage key.
+
+Tests
+
+- AI Engine: **232/232 successful**.
+- NUT-017.7 App gate: **83/83 successful**.
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Existing platform baseline remained unchanged: static **25/30**, Service Worker event **23/36**, browser **47/48**; automation contract still lacks `.github/workflows/platform-regression.yml`.
+
+Result
+
+The user can tell Today whether the displayed seven-day observation feels applicable without turning that response into a learned fact, permanent preference or external action.
+
+Commit
+
+`feat(ai): add request-scoped pattern feedback (NUT-017.7)`
+
+---
+
 ## Version 2.14.0 — NUT-017.6
 
 Date
