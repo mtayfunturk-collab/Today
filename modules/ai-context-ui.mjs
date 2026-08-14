@@ -1,6 +1,6 @@
 /**
- * Today App — AI Context, Explainable Suggestion & Decision UI
- * NUT-017.5
+ * Today App — AI Context, Suggestion, Decision & Pattern Observation UI
+ * NUT-017.6
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -14,9 +14,12 @@ import {
 import {
   recordApprovalDecision
 } from "./ai-approval-bridge.mjs";
+import {
+  buildPatternPreview
+} from "./ai-pattern-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.5";
+export const RULESET_ID = "today:ai-context-ui:nut-017.6";
 export const PURPOSE =
   "Günlük denge için kişisel öneri hazırlama";
 
@@ -27,11 +30,13 @@ let currentAnalysis = null;
 let currentAction = null;
 let currentDecision = null;
 let currentReceipts = [];
+let currentPattern = null;
 let currentReminderTime = "22:30";
 let requestSequence = 0;
 let requestEpoch = 0;
 let decisionSequence = 0;
 let decisionBusy = false;
+let patternBusy = false;
 let initialized = false;
 
 const MAX_REQUEST_RECEIPTS = 20;
@@ -143,6 +148,39 @@ function clearRuleEvaluation(root) {
   if (evaluation) evaluation.hidden = true;
 }
 
+function setPatternStatus(root, message, state = "idle") {
+  const status = root.querySelector("#aiPatternStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.state = state;
+}
+
+function clearPattern(root) {
+  currentPattern = null;
+  patternBusy = false;
+  const button = root.querySelector("#btnAiPattern");
+  const output = root.querySelector("#aiPatternOutput");
+  const evidence = root.querySelector("#aiPatternEvidence");
+  const uncertainty = root.querySelector("#aiPatternUncertainty");
+  const alternatives = root.querySelector("#aiPatternAlternatives");
+  const textFields = [
+    "#aiPatternSummary",
+    "#aiPatternConfidence",
+    "#aiPatternApproval",
+    "#aiPatternSkyBoundary"
+  ].map(selector => root.querySelector(selector));
+
+  [evidence, uncertainty, alternatives]
+    .filter(Boolean)
+    .forEach(list => list.replaceChildren());
+  textFields.filter(Boolean).forEach(field => {
+    field.textContent = "";
+  });
+  if (output) output.hidden = true;
+  if (button) button.disabled = false;
+  setPatternStatus(root, "");
+}
+
 function clearDecision(root) {
   currentAction = null;
   currentDecision = null;
@@ -171,6 +209,7 @@ function clearDecision(root) {
 
 function clearAnalysis(root) {
   currentAnalysis = null;
+  clearPattern(root);
   clearDecision(root);
   clearRuleEvaluation(root);
   const request = root.querySelector("#aiAnalysisRequest");
@@ -331,6 +370,68 @@ function confidenceLabel(confidence) {
   return "Düşük";
 }
 
+function patternConfidenceLabel(level) {
+  if (level === "strong") return "Güçlü";
+  if (level === "moderate") return "Orta";
+  return "Sınırlı";
+}
+
+function patternDateLabel(localDate) {
+  const value = new Date(`${localDate}T12:00:00`);
+  if (Number.isNaN(value.getTime())) return localDate;
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "short"
+  }).format(value);
+}
+
+function renderPattern(root, observation, context) {
+  const output = root.querySelector("#aiPatternOutput");
+  const summary = root.querySelector("#aiPatternSummary");
+  const evidence = root.querySelector("#aiPatternEvidence");
+  const confidence = root.querySelector("#aiPatternConfidence");
+  const uncertainty = root.querySelector("#aiPatternUncertainty");
+  const alternatives = root.querySelector("#aiPatternAlternatives");
+  const approval = root.querySelector("#aiPatternApproval");
+  const skyBoundary = root.querySelector("#aiPatternSkyBoundary");
+  if (
+    !output || !summary || !evidence || !confidence || !uncertainty ||
+    !alternatives || !approval || !skyBoundary
+  ) return;
+
+  summary.textContent = observation.summary;
+  evidence.replaceChildren();
+  observation.evidence.forEach(entry => appendTextItem(
+    root.ownerDocument,
+    evidence,
+    `${patternDateLabel(entry.localDate)} · ${entry.core.reference} · ` +
+      entry.health.reference
+  ));
+  confidence.textContent =
+    `${patternConfidenceLabel(observation.confidence.level)}. ` +
+    `${observation.window.eligibleDays} karşılaştırılabilir gün ve ` +
+    `${observation.window.matchingDays} tekrar temel alındı; ` +
+    "doğruluk olasılığı değildir.";
+  uncertainty.replaceChildren();
+  observation.uncertainty.forEach(value => appendTextItem(
+    root.ownerDocument,
+    uncertainty,
+    value
+  ));
+  alternatives.replaceChildren();
+  observation.alternatives.forEach(value => appendTextItem(
+    root.ownerDocument,
+    alternatives,
+    value
+  ));
+  approval.textContent =
+    "Bu yalnız bir gözlem; onay vermen veya işlem yapman gerekmiyor.";
+  skyBoundary.textContent = context.counts.symbolicSky > 0
+    ? "Sky seçilmiş olsa da bu gözlemde kullanılmadı."
+    : "Sky bu gözlemde kullanılmadı.";
+  output.hidden = false;
+}
+
 function renderAnalysis(root, analysis, context) {
   const output = root.querySelector("#aiAnalysisOutput");
   const summary = root.querySelector("#aiAnalysisSummary");
@@ -392,7 +493,16 @@ function analysisIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `analysis:nut-017.5:${(hash >>> 0).toString(36)}`;
+  return `analysis:nut-017.6:${(hash >>> 0).toString(36)}`;
+}
+
+function patternIdFor(context) {
+  let hash = 2166136261;
+  for (const character of `${context.contextId}|${context.window.startDate}`) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `pattern:nut-017.6:${(hash >>> 0).toString(36)}`;
 }
 
 function decisionIdFor(analysisId, actionId) {
@@ -402,7 +512,7 @@ function decisionIdFor(analysisId, actionId) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `decision:nut-017.5:${(hash >>> 0).toString(36)}:${decisionSequence}`;
+  return `decision:nut-017.6:${(hash >>> 0).toString(36)}:${decisionSequence}`;
 }
 
 function setDecisionStatus(root, message, state = "idle") {
@@ -625,6 +735,79 @@ async function handleAnalysis(root) {
   }
 }
 
+async function handlePattern(root) {
+  if (!currentContext) {
+    setPatternStatus(
+      root,
+      "Önce kullanmak istediğin bilgileri onaylayıp önizle.",
+      "error"
+    );
+    return;
+  }
+  if (patternBusy) return;
+
+  const button = root.querySelector("#btnAiPattern");
+  const activeContext = currentContext;
+  const activeRequestEpoch = requestEpoch;
+  clearPattern(root);
+  patternBusy = true;
+  if (button) button.disabled = true;
+  setPatternStatus(root, "Son 7 gün inceleniyor…", "busy");
+
+  try {
+    const result = await Promise.resolve(buildPatternPreview({
+      observationId: patternIdFor(activeContext),
+      requestedAt: new Date().toISOString(),
+      context: activeContext
+    }));
+
+    if (
+      activeRequestEpoch !== requestEpoch ||
+      activeContext !== currentContext
+    ) return;
+
+    if (!result.success) {
+      const output = root.querySelector("#aiPatternOutput");
+      if (output) output.hidden = true;
+      const eligibleDays =
+        result.patternEvaluation?.counts?.eligibleDays ?? 0;
+      const message = result.errorCode ===
+        "TODAY-AI-PATTERN-INSUFFICIENT-DATA"
+        ? "Karşılaştırma için en az 3 günün hem günlük seçimi hem uyku " +
+          `kaydı olmalı. Şu an ${eligibleDays} gün var.`
+        : result.errorCode === "TODAY-AI-PATTERN-NO-RECURRENCE"
+          ? "Son 7 günde bu birliktelik en az iki kez görülmedi. " +
+            "Bu nedenle tekrar varmış gibi bir sonuç göstermedim."
+          : "Son 7 gün incelenemedi. Lütfen yeniden dene.";
+      setPatternStatus(
+        root,
+        message,
+        result.errorCode === "TODAY-AI-PATTERN-REQUEST" ? "error" : "idle"
+      );
+      return;
+    }
+
+    currentPattern = result.observation;
+    renderPattern(root, result.observation, activeContext);
+    setPatternStatus(root, "Son 7 günlük gözlem hazır.", "success");
+    setStatus(root, "Tekrarlar incelendi. Yorumlamak sana ait.", "success");
+  } catch (error) {
+    currentPattern = null;
+    const output = root.querySelector("#aiPatternOutput");
+    if (output) output.hidden = true;
+    setPatternStatus(
+      root,
+      "Son 7 gün incelenirken beklenmeyen bir hata oluştu.",
+      "error"
+    );
+  } finally {
+    if (activeRequestEpoch === requestEpoch) {
+      patternBusy = false;
+      if (button) button.disabled = false;
+    }
+  }
+}
+
 async function handlePreview(root) {
   const confirmation = root.querySelector("#aiConsentConfirm");
   const button = root.querySelector("#btnAiContextPreview");
@@ -715,6 +898,10 @@ export function getStatus() {
     hasPendingAction: Boolean(currentAction),
     receiptCount: currentReceipts.length,
     latestReceiptOutcome: currentReceipts.at(-1)?.outcome || null,
+    patternObservationGenerated: Boolean(currentPattern),
+    patternObservationId: currentPattern?.observationId || null,
+    patternApprovalRequired: false,
+    patternActionProposed: false,
     auditPersisted: false,
     actionStarted: false
   });
@@ -742,6 +929,10 @@ export function initAIContextUI(documentRef = document) {
   root.querySelector("#btnAiAnalysis")?.addEventListener(
     "click",
     () => handleAnalysis(root)
+  );
+  root.querySelector("#btnAiPattern")?.addEventListener(
+    "click",
+    () => handlePattern(root)
   );
   root.querySelector("#btnAiApprove")?.addEventListener(
     "click",
