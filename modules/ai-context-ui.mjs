@@ -1,6 +1,6 @@
 /**
  * Today App — AI Context Consent, Preview & Explainable Analysis UI
- * NUT-017.3
+ * NUT-017.3.1
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -13,7 +13,7 @@ import {
 } from "./ai-analysis-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.3";
+export const RULESET_ID = "today:ai-context-ui:nut-017.3.1";
 export const PURPOSE =
   "Günlük denge için açıklanabilir seçenekler hazırlama";
 
@@ -24,6 +24,26 @@ let currentAnalysis = null;
 let requestSequence = 0;
 let requestEpoch = 0;
 let initialized = false;
+
+const CHOICE_LABELS = Object.freeze({
+  A: "Bir şey oldu ama adı yok",
+  B: "Her şey çok net",
+  C: "Zordu bugün"
+});
+
+const RULE_REASON_LABELS = Object.freeze({
+  "core-record-missing": "Günlük Core kaydı bulunamadı.",
+  "core-choice-not-hard-day":
+    "En güncel Core seçimi “Zordu bugün” değil.",
+  "sleep-record-missing": "Uyku kaydı bulunamadı.",
+  "sleep-duration-missing": "En güncel uyku kaydında süre bulunamadı.",
+  "sleep-duration-not-positive":
+    "En güncel uyku süresi geçerli bir pozitif değer değil.",
+  "sleep-duration-not-below-threshold":
+    "En güncel uyku süresi 6 saatin altında değil.",
+  "records-not-same-local-date":
+    "En güncel Core ve uyku kayıtları aynı yerel tarihe ait değil."
+});
 
 function dateKey(date) {
   const year = date.getFullYear();
@@ -103,8 +123,18 @@ function setStatus(root, message, state = "idle") {
   status.dataset.state = state;
 }
 
+function clearRuleEvaluation(root) {
+  const evaluation = root.querySelector("#aiRuleEvaluation");
+  const items = root.querySelector("#aiRuleEvaluationItems");
+  const summary = root.querySelector("#aiRuleEvaluationSummary");
+  if (items) items.replaceChildren();
+  if (summary) summary.textContent = "";
+  if (evaluation) evaluation.hidden = true;
+}
+
 function clearAnalysis(root) {
   currentAnalysis = null;
+  clearRuleEvaluation(root);
   const request = root.querySelector("#aiAnalysisRequest");
   const output = root.querySelector("#aiAnalysisOutput");
   const evidence = root.querySelector("#aiAnalysisEvidence");
@@ -212,6 +242,68 @@ function appendTextItem(documentRef, list, value) {
   list.append(item);
 }
 
+function checkLabel(value) {
+  if (value === true) return "uygun ✓";
+  if (value === false) return "uygun değil ✕";
+  return "değerlendirilemedi —";
+}
+
+function durationLabel(minutes) {
+  if (!Number.isFinite(minutes)) return "süre bulunamadı";
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return remainder === 0
+    ? `${hours} saat`
+    : `${hours} saat ${remainder} dakika`;
+}
+
+function renderRuleEvaluation(root, evaluation) {
+  const panel = root.querySelector("#aiRuleEvaluation");
+  const items = root.querySelector("#aiRuleEvaluationItems");
+  const summary = root.querySelector("#aiRuleEvaluationSummary");
+  if (!panel || !items || !summary || !evaluation) {
+    clearRuleEvaluation(root);
+    return;
+  }
+
+  const core = evaluation.observed?.core || null;
+  const sleep = evaluation.observed?.sleep || null;
+  const coreChoice = core?.choice
+    ? CHOICE_LABELS[core.choice] || "tanınmayan seçim"
+    : "seçim bulunamadı";
+
+  items.replaceChildren();
+  appendTextItem(
+    root.ownerDocument,
+    items,
+    core
+      ? `Core: ${core.localDate} · ${coreChoice} · ${checkLabel(evaluation.checks?.coreChoice)}`
+      : `Core: kayıt bulunamadı · ${checkLabel(null)}`
+  );
+  appendTextItem(
+    root.ownerDocument,
+    items,
+    sleep
+      ? `Uyku: ${sleep.localDate} · ${durationLabel(sleep.durationMinutes)} · ${checkLabel(evaluation.checks?.sleepDuration)}`
+      : `Uyku: kayıt bulunamadı · ${checkLabel(null)}`
+  );
+  appendTextItem(
+    root.ownerDocument,
+    items,
+    `Aynı yerel tarih: ${checkLabel(evaluation.checks?.sameLocalDate)}`
+  );
+
+  const reasons = Array.isArray(evaluation.reasons)
+    ? evaluation.reasons.map(reason =>
+        RULE_REASON_LABELS[reason] || "Kural koşullarından biri karşılanmadı."
+      )
+    : [];
+  summary.textContent = reasons.length
+    ? `Eşleşmeme nedeni: ${reasons.join(" ")}`
+    : "Kural değerlendirmesi tamamlandı.";
+  panel.hidden = false;
+}
+
 function sourceLabel(source) {
   if (source === "today-core") return "Core";
   if (source === "today-health") return "Health";
@@ -265,7 +357,7 @@ function renderAnalysis(root, analysis, context) {
   analysis.proposedActions.forEach(action => appendTextItem(
     root.ownerDocument,
     actions,
-    `${action.label} — onay bekliyor; NUT-017.3 bu taslağı yürütmez.`
+    `${action.label} — onay bekliyor; NUT-017.3.1 bu taslağı yürütmez.`
   ));
   skyBoundary.textContent = context.counts.symbolicSky > 0
     ? "Sembolik Sky bağlamı pakette bulunuyor; önerinin dayanağına, güven hesabına veya sağlık/duygu yorumuna katılmadı."
@@ -279,7 +371,7 @@ function analysisIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `analysis:nut-017.3:${(hash >>> 0).toString(36)}`;
+  return `analysis:nut-017.3.1:${(hash >>> 0).toString(36)}`;
 }
 
 async function handleAnalysis(root) {
@@ -303,8 +395,16 @@ async function handleAnalysis(root) {
       currentAnalysis = null;
       const output = root.querySelector("#aiAnalysisOutput");
       if (output) output.hidden = true;
+      if (
+        result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH" &&
+        result.ruleEvaluation
+      ) {
+        renderRuleEvaluation(root, result.ruleEvaluation);
+      } else {
+        clearRuleEvaluation(root);
+      }
       const message = result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH"
-        ? "Seçili kayıtlarda ilk NUT-017.3 kuralı eşleşmedi; öneri uydurulmadı."
+        ? "NUT-017.3.1 kuralı eşleşmedi; kontrol edilen değerler aşağıda gösterildi."
         : "Analiz isteği güvenlik sınırlarında reddedildi.";
       setStatus(root, message, result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH"
         ? "idle"
@@ -313,6 +413,7 @@ async function handleAnalysis(root) {
     }
 
     currentAnalysis = result.analysis;
+    clearRuleEvaluation(root);
     renderAnalysis(root, result.analysis, currentContext);
     setStatus(
       root,
@@ -321,6 +422,7 @@ async function handleAnalysis(root) {
     );
   } catch (error) {
     currentAnalysis = null;
+    clearRuleEvaluation(root);
     const output = root.querySelector("#aiAnalysisOutput");
     if (output) output.hidden = true;
     setStatus(root, "Öneri hazırlanırken beklenmeyen hata oluştu.", "error");
