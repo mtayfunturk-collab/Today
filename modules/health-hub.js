@@ -5652,7 +5652,7 @@
           String(right.record?.id || "")
         )
       )
-      .slice(0, limitPerType)
+      .slice(-limitPerType)
       .map(entry => entry.record);
 
     return freezeContextCopy({

@@ -1,6 +1,6 @@
 /**
  * Today App — AI Context Source Adapters
- * NUT-017.2
+ * NUT-017.3.2
  *
  * App'in public Core, Health, Nutrition ve Core–Sky API'lerinden salt okunur
  * kayıt alır ve Today AI Engine input-event v1 zarflarına dönüştürür.
@@ -12,7 +12,7 @@
   const API_VERSION = 1;
   const CONTRACT_VERSION = 1;
   const RULESET_ID =
-    "today:ai-context-source-adapters:nut-017.2";
+    "today:ai-context-source-adapters:nut-017.3.2";
   const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
   function deepFreeze(value, seen = new Set()) {
@@ -365,6 +365,12 @@
       compareText(left.eventId, right.eventId);
   }
 
+  function selectLatestEvents(events, limit) {
+    return events
+      .sort(compareEvents)
+      .slice(-limit);
+  }
+
   async function collectEvents(options = {}) {
     const consent = options.consent;
     const window = options.window;
@@ -383,20 +389,18 @@
     }
 
     const warnings = [];
-    const core = collectCoreEvents(consent, window, requestedAt, warnings)
-      .sort(compareEvents)
-      .slice(0, window.maxEventsPerSource);
-    const health = (await collectHealthEvents(
-      consent,
-      window,
-      requestedAt,
-      warnings
-    ))
-      .sort(compareEvents)
-      .slice(0, window.maxEventsPerSource);
-    const sky = collectSkyEvents(consent, window, requestedAt, warnings)
-      .sort(compareEvents)
-      .slice(0, window.maxEventsPerSource);
+    const core = selectLatestEvents(
+      collectCoreEvents(consent, window, requestedAt, warnings),
+      window.maxEventsPerSource
+    );
+    const health = selectLatestEvents(
+      await collectHealthEvents(consent, window, requestedAt, warnings),
+      window.maxEventsPerSource
+    );
+    const sky = selectLatestEvents(
+      collectSkyEvents(consent, window, requestedAt, warnings),
+      window.maxEventsPerSource
+    );
     const events = [...core, ...health, ...sky].sort(compareEvents);
 
     return deepFreeze({
