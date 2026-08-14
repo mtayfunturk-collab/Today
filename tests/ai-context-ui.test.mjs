@@ -166,8 +166,8 @@ await test("Önizleme onay, sınır, dışlama ve aktarım durumunu görünür k
   assert.match(panelText, /Onay: bu istek için verildi/);
   assert.match(panelText, /Sky: yalnız sembolik bağlam/);
   assert.match(panelText, /0 kayıt dışlandı/);
-  assert.match(panelText, /AI önerisi üretilmedi/);
-  assert.match(panelText, /cihaz dışına aktarım yapılmadı/);
+  assert.match(panelText, /Bağlam önizlemesi tek başına öneri üretmez/);
+  assert.match(panelText, /cihaz dışına aktarım\s+yapılmadı/);
 });
 
 await test("Kullanılan onay aynı kapsam için otomatik yeniden kullanılamaz", () => {
@@ -179,6 +179,35 @@ await test("Kullanılan onay aynı kapsam için otomatik yeniden kullanılamaz",
   assert.equal(status.actionStarted, false);
 });
 
+await test("Analiz bağlamdan ayrı ve açık kullanıcı komutu bekler", async () => {
+  assert.equal(document.querySelector("#aiAnalysisRequest").hidden, false);
+  assert.equal(document.querySelector("#aiAnalysisOutput").hidden, true);
+  assert.equal(ui.getStatus().aiProposalGenerated, false);
+  document.querySelector("#btnAiAnalysis").click();
+  await settle();
+  assert.equal(document.querySelector("#aiAnalysisOutput").hidden, false);
+  assert.equal(ui.getStatus().aiProposalGenerated, true);
+});
+
+await test("Açıklanabilir çıktı dayanak, güven, belirsizlik ve seçenekleri gösterir", () => {
+  const evidence = document.querySelector("#aiAnalysisEvidence").textContent;
+  assert.match(evidence, /Core günlük seçimi: Zordu bugün/);
+  assert.match(evidence, /Uyku kaydı: 5 saat 30 dakika/);
+  assert.doesNotMatch(evidence, /Sky/);
+  assert.match(document.querySelector("#aiAnalysisConfidence").textContent, /%72/);
+  assert.ok(document.querySelector("#aiAnalysisUncertainty").childElementCount >= 2);
+  assert.ok(document.querySelector("#aiAnalysisAlternatives").childElementCount >= 3);
+});
+
+await test("Taslak onay bekler; sağlayıcı, Connect ve Sky nedenselliği kapalı kalır", () => {
+  const status = ui.getStatus();
+  assert.equal(status.providerRegistered, false);
+  assert.equal(status.actionStarted, false);
+  assert.match(document.querySelector("#aiAnalysisApproval").textContent, /kullanıcı onayı bekliyor/);
+  assert.match(document.querySelector("#aiAnalysisActions").textContent, /NUT-017.3 bu taslağı yürütmez/);
+  assert.match(document.querySelector("#aiAnalysisSkyBoundary").textContent, /Sky verisi bu analizde kullanılmadı/);
+});
+
 await test("Kapsam değişikliği bellekteki ve hazırlanmakta olan önizlemeyi düşürür", async () => {
   const sky = document.querySelector('[data-ai-context-source="sky"]');
   document.querySelector("#aiConsentConfirm").checked = true;
@@ -186,6 +215,7 @@ await test("Kapsam değişikliği bellekteki ve hazırlanmakta olan önizlemeyi 
   sky.dispatchEvent(new window.Event("change", { bubbles: true }));
   assert.equal(document.querySelector("#aiConsentConfirm").checked, false);
   assert.equal(document.querySelector("#aiContextPreview").hidden, true);
+  assert.equal(document.querySelector("#aiAnalysisOutput").hidden, true);
   assert.equal(ui.getStatus().hasRequestScopedContext, false);
   assert.match(document.querySelector("#aiContextStatus").textContent, /yeniden onay gerekir/);
 
@@ -213,6 +243,9 @@ await test("Temizle eylemi bağlamı, sayıları ve onay kutusunu temizler", asy
   assert.equal(ui.getStatus().hasRequestScopedContext, false);
   assert.equal(document.querySelector("#aiContextCounts").childElementCount, 0);
   assert.equal(document.querySelector("#aiContextPreview").hidden, true);
+  assert.equal(document.querySelector("#aiAnalysisOutput").hidden, true);
+  assert.equal(document.querySelector("#aiAnalysisSummary").textContent, "");
+  assert.equal(document.querySelector("#aiAnalysisEvidence").childElementCount, 0);
   assert.equal(document.querySelector("#aiConsentConfirm").checked, false);
 });
 
@@ -232,9 +265,11 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   for (const file of [
     "./modules/ai-context-source-adapters.js",
     "./modules/ai-context-bridge.mjs",
+    "./modules/ai-analysis-bridge.mjs",
     "./modules/ai-context-ui.mjs",
     "./Today-AI-Engine/src/context-builder.mjs",
-    "./Today-AI-Engine/src/data-usage-consent.mjs"
+    "./Today-AI-Engine/src/data-usage-consent.mjs",
+    "./Today-AI-Engine/src/daily-support-analyzer.mjs"
   ]) {
     assert.equal(swSource.includes(`"${file}"`), true, `${file} shell dışında`);
   }
@@ -243,12 +278,12 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 104);
+  assert.equal(shellFiles.length, 106);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-059/);
+  assert.match(swSource, /today-v2-foundation-060/);
 });
 
 const failures = results.filter(result => !result.success);
@@ -258,7 +293,7 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.2 Consent UI: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.3 Consent & Analysis UI: ${passed}/${results.length} başarılı`);
 
 if (originalGlobals.window === undefined) delete globalThis.window;
 else globalThis.window = originalGlobals.window;
