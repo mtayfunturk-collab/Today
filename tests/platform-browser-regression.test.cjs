@@ -317,6 +317,13 @@ async function createRuntime({
 
   scriptElements.forEach(
     scriptElement => {
+      // JSDOM koşucusu klasik betikleri window.eval ile çalıştırır.
+      // Gerçek tarayıcıda ayrı ESM yükleme hattına sahip module betikleri
+      // burada eval etmek, geçerli import sözdizimini hatalı gösterir.
+      if (scriptElement.type === "module") {
+        return;
+      }
+
       const source =
         scriptElement.getAttribute(
           "src"
