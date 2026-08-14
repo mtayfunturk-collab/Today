@@ -8,5 +8,6 @@ Durum akışı:
 
 Kullanıcı düzenlerse özgün taslak korunur, yeni sürüm oluşturulur ve tekrar açık onay istenir. Yetki kapsamı; servis, işlem türü, veri alanları ve süre ile sınırlanır ve geri alınabilir olur.
 
-Bu sürümde Connect adaptörü ve gerçek dış işlem yoktur.
+NUT-017.4 yalnız `approved`, `rejected` veya `edited` geçici kararını üretir. `approved` kararı Connect'e iletilmez; eylem yapılmış, planlanmış veya kaydedilmiş sayılmaz.
 
+Bu sürümde Connect adaptörü ve gerçek dış işlem yoktur.

@@ -23,7 +23,19 @@ Koşullar:
 
 Bu kural NUT-017.3'te `daily-support-analyzer.mjs` içinde saf ve deterministik olarak uygulanmıştır. İki koşul birlikte bulunmuyorsa `no-matching-rule` döner ve öneri uydurulmaz. Confidence sabit kuralın seçili iki dayanağı kapsama göstergesidir; doğruluk olasılığı veya sağlık skoru değildir.
 
+NUT-017.3.1, kuralı değiştirmeden `no-matching-rule` sonucuna güvenli `ruleEvaluation` tanısı ekler. Tanı; seçilen en güncel Core seçimini, uyku süresini, iki yerel tarihi ve her koşulun geçip geçmediğini gösterir. Geçersiz analiz isteğinde bu alan üretilmez. Tanı bir AI önerisi, teşhis, örüntü öğrenimi veya güven puanı değildir.
+
 Sky Context Package içinde bulunabilir ancak analizör Sky bölümünü okumadan Core ve Health adaylarını ayrı seçer. Sky hiçbir `evidence` kaydı, güven girdisi, sağlık/duygu açıklaması veya nedensellik iddiası üretemez.
+
+## NUT-017.4 kullanıcı kararı
+
+Başarılı analiz çıktısındaki ilk işlem taslağı yalnız `pending-user-approval` durumunda karar katmanına verilir. Kullanıcı:
+
+- Onaylarsa `approval-decision` v1 içinde `approved` kararı oluşur.
+- Reddederse `rejected` kararı oluşur ve işlem yapılmaz.
+- Hatırlatma saatini düzenlerse `edited` kararı ile yeni bir `pending-user-approval` taslağı oluşur; yeniden açık onay gerekir.
+
+Karar işlemcisi eylemi yürütmez ve kalıcı audit yazmaz. Kullanıcı arayüzü olay kimliklerini veya kural kodlarını göstermez; dayanak metnini, anlaşılır güven düzeyini, belirsizlikleri, diğer seçenekleri ve karar durumunu gösterir. Sayısal confidence ve provenance-bağlı olay kimlikleri denetlenebilir iç sözleşmede korunur.
 
 ## Yasak çıktılar
 
@@ -33,3 +45,4 @@ Sky Context Package içinde bulunabilir ancak analizör Sky bölümünü okumada
 - Olmayan kayda atıf.
 - Sky göstergesini tıbbi/psikolojik nedensellik olarak kullanma.
 - Onay olmadan `approved`, `scheduled`, `sent` veya `completed` eylemi.
+- Düzenlemeyi otomatik onay sayma veya onay kararını gerçek eylem yapılmış gibi sunma.

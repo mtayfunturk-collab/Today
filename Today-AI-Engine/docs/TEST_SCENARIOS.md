@@ -51,3 +51,16 @@ Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`;
 31 olaylık kaynak sınırı eski Health kayıtlarıyla dolmak üzereyken bugüne ait onaylı uyku olayı en yeni alt kümede korunmalıdır. Health public bağlam görünümü de kendi tür sınırında en yeni kayıtları seçmeli ve değişmez kopya döndürmelidir. Nihai olay dizisi sözleşme için kronolojik ve deterministik kalmalıdır.
 
 Sonuç: AI Engine değişmeden `86 PASS / 0 FAIL`; NUT-017.3.2 App kapısı `50/50 PASS`.
+
+## NUT-017.4 kullanıcı kararı kapsamı
+
+31. Geçerli onay mevcut `approval-decision` v1 alanlarıyla `approved` geçici karar üretmeli; eylem yürütülmemelidir.
+32. Ret `rejected` kararı üretmeli; yeni taslak veya dış işlem oluşturmamalıdır.
+33. `22:30` saat düzenlemesi `edited` kararı ve yeni `pending-user-approval` taslağı üretmelidir.
+34. Geçersiz saat, bilinmeyen alan, sonuçlanmış taslak ve sözleşme dışı karar fail-closed reddedilmelidir.
+35. Karar işlemcisi ve App köprüsü DOM, storage, ağ, Connect, sistem saati veya kalıcı audit kullanmamalıdır.
+36. UI onay, ret ve düzenleme sonrası yeniden onayı göstermeli; gerçek işlem yapılmadığını açıkça belirtmelidir.
+37. UI dayanak, güven, belirsizlik, seçenek ve karar durumunu korurken olay kimliği, NUT/kural kodu veya filtre gerekçe kodu göstermemelidir.
+38. Sky seçilmiş olsa bile dayanak, güven veya sağlık/duygu nedeni olmamalıdır.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`; AI Engine toplam `114 PASS / 0 FAIL`. NUT-017.4 App kapısı `61/61 PASS`.

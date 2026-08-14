@@ -40,3 +40,11 @@ Engine bilinmeyen büyük şema sürümünü işlemeyi reddeder. Hatalı tekil o
 `analysis-request` v1 yalnız `daily-support-suggestion` capability'sini kabul eder ve doğrudan `context-package` v1 referansı taşır. İstek zamanı bağlamın üretim zamanından önce olamaz. Analiz katmanı App olaylarını, DOM'u veya depolama anahtarlarını yeniden okumaz; yalnız verilen ve onay fişi içeren Context Package üzerinde çalışır.
 
 `analysis-output` v1 değiştirilmemiştir. Her başarılı çıktı gerçek `eventId` değerlerine bağlı `evidence`, 0–1 aralığında kural kapsamı `confidence`, görünür `uncertainty`, kullanıcı `alternatives`, `requiresUserApproval=true` ve yalnız `pending-user-approval` işlem taslakları taşır.
+
+NUT-017.3.1'de `no-matching-rule` hata ayrıntısı olarak eklenen `ruleEvaluation`, başarılı AI çıktı sözleşmesinin parçası değildir. Yalnız doğrulanmış Context Package'ten seçilen izinli Core/uyku gözlemlerini, sabit eşik ve aynı-tarih kontrollerini, kontrollü gerekçe kodlarını taşır. Geçersiz analiz isteğinde üretilmez.
+
+## NUT-017.4 onay kararı
+
+`approval-decision` v1 değiştirilmeden kullanılır. Her kayıt `decisionId`, `analysisId`, `actionId`, karar ve zamanı taşır. `edited` kararı `editedPayload` gerektirir; NUT-017.4'ün ilk dar uygulaması yalnız `HH:MM` biçimindeki `reminderTime` alanını kabul eder.
+
+Karar işlemcisi yalnız `pending-user-approval` durumundaki mevcut taslağı kabul eder. Düzenleme sonucu üretilen yeni taslak tekrar `pending-user-approval` kalır. Karar kaydı Engine/App ana verisine yazılmaz; karar zamanı UI tarafından açık kullanıcı etkileşimi sırasında verilir.

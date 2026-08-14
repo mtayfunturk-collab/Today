@@ -16,6 +16,8 @@ NUT-017.3.1 ile App `2.11.1`, Engine `0.3.1-analysis` ve `today-v2-foundation-06
 
 NUT-017.3.2 ile App `2.11.2` ve `today-v2-foundation-062` üzerinde yalnız host kaynak seçimi düzeltilmiştir. Kaynak başına sınır dolduğunda en eski olaylar yerine en yeni deterministik alt küme korunur; Engine `0.3.1-analysis`, sözleşmeler ve ilk kural değişmez. Böylece yeni uyku kaydı eski Health olaylarınca bağlam dışında bırakılamaz.
 
+NUT-017.4 ile App `2.12.0`, karar katmanı `0.4.0-approval` ve `today-v2-foundation-063` üzerinde mevcut `approval-decision` v1 sözleşmesine bağlı geçici kullanıcı kararı eklenmiştir. Onay ve ret eylem yürütmez. Düzenleme yeni bir onay-bekleyen taslak üretir. Karar bellekte yalnız bu istek için tutulur; Connect ve kalıcı audit yazımı kapalıdır.
+
 ## Sınırlar
 
 ```mermaid
@@ -24,8 +26,11 @@ flowchart TD
   B --> C["Deterministik Context Builder"]
   C --> D["Mevcut AI analiz hattı"]
   D --> E{"Kullanıcı onayı"}
-  E -->|"Onay / düzenleme"| F["Ayrı Connect katmanı"]
+  E -->|"Onay"| F["Geçici karar; işlem yok"]
+  E -->|"Düzenleme"| H["Yeni onay-bekleyen taslak"]
+  H --> E
   E -->|"Ret"| G["İşlem yok"]
+  F -. "gelecekte ayrı kapsam" .-> I["Connect katmanı"]
 ```
 
 ### Bileşenler
@@ -36,7 +41,7 @@ flowchart TD
 4. Policy guard: Sağlık, ruh sağlığı, finans, hukuk ve astroloji risk sınırlarını uygular.
 5. Analysis adapter: İlk aşamada deterministik kural motoru; ileride yerel/bulut model adaptörü.
 6. Explanation builder: Öneri, dayanak, güven ve belirsizlik üretir.
-7. Approval gateway: Önerilen eylemleri `pending-user-approval` durumunda tutar.
+7. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
 8. Audit event writer: Karar ve eylem durumlarını izlenebilir olaylar olarak üretir; App ana verisini doğrudan yazmaz.
 
 ## Entegrasyon etkisi
@@ -65,9 +70,17 @@ App köprüsü analiz sonucunu değiştirmez, sağlayıcı kaydetmez ve Connect 
 
 Today App adaptörü, onaylı her kaynak için olay sınırını Engine çağrısından önce uygular. Sınır aşıldığında en yeni alt küme seçilir ve dış sözleşmeye verilmeden önce tekrar kronolojik sıraya konur. Bu seçim saf, cihaz-içi ve deterministiktir. Engine bu mantığı, App depolama anahtarlarını veya DOM'u bilmez.
 
+## NUT-017.4 karar sınırı
+
+`processApprovalDecision(request)` yalnız mevcut `approval-decision` v1 alanlarını ve onay bekleyen eylem taslağını kabul eder. Onay `approved`, ret `rejected` geçici durumu üretir. Düzenleme yalnız hatırlatma saatini değiştirir, yeni bir `pending-user-approval` taslağı verir ve otomatik onay sayılmaz.
+
+App'teki `ai-approval-bridge.mjs` karar sonucunu değiştirmez ve DOM, depolama, ağ, Connect veya audit yazarı bilmez. DOM sahipliği `ai-context-ui.mjs` içinde kalır. Teknik olay kimlikleri ve kural kodları Engine içinde izlenebilirlik için korunurken kullanıcı yüzeyine çıkarılmaz. Kullanıcı dayanakları, anlaşılır güven düzeyini, belirsizlikleri, seçenekleri ve karar durumunu görür.
+
+Bu adım bir gerçek eylem gateway'i değildir: `executionRequested=false`, `auditPersisted=false`, `externalTransfer=false` sabittir. Onaylanan hatırlatıcıyı yürütmek gelecekte ayrı Connect kapsamı ve yeni açık işlem onayı gerektirir.
+
 ## Riskler
 
 - Health Hub'ın sürümsüz yerel kayıtları App adaptöründe formal olaylara çevrilmezse çift veri modeli oluşabilir.
 - Serbest metin notları gereğinden fazla kişisel veri taşıyabilir; varsayılan özetleme/çıkarma gerekir.
-- Güven puanı gerçek olasılık gibi algılanabilir; puanın anlamı ürün metninde açıklanmalıdır.
+- Güven puanı gerçek olasılık gibi algılanabilir; sayısal değer iç sözleşmede korunmalı, kullanıcıya anlaşılır düzey ve kesinlik uyarısıyla sunulmalıdır.
 - Sky verisi sağlık önerisinin kanıtı yapılamaz.

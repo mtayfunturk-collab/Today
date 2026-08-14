@@ -6,6 +6,8 @@ Veri cihazda kalır. NUT-017.1 yalnız `mode: device-only`, `externalRecipient: 
 
 Core, Health ve Sky izinleri birbirinden ayrıdır. `includeFreeText` varsayılan olarak `false` kalır; veri sınıfı izni tek başına not eklemek için yeterli değildir. Sky için serbest metin hiçbir durumda kabul edilmez.
 
+NUT-017.4 kullanıcı kararını da `request-scoped` tutar. Onay, ret veya düzenleme yeni bir storage anahtarına, Today ana verisine ya da kalıcı audit kaydına yazılmaz. Arayüz teknik olay kimliklerini göstermez; kimlikler yalnız iç sözleşmede denetlenebilirlik için korunur.
+
 ## Bulut sağlayıcı eklenmeden önce zorunlu bildirim
 
 - Gönderilecek alanlar
