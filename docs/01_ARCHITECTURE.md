@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.13.0
+Application Version: 2.14.0
 Data Schema: 2
-Active Shell: today-v2-foundation-064
+Active Shell: today-v2-foundation-065
 Last Updated: 14 August 2026
 
 ---
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.5 Request-scoped Decision Receipts
+## NUT-017.6 Explainable Seven-day Pattern Observation
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -150,17 +150,21 @@ read-only source adapters and the visible consent/context-preview surface.
 | Decision UI | Today App NUT-017.4 | Shows plain-language evidence, confidence, uncertainty, options and decision state; hides internal IDs/codes |
 | Decision receipt | Today AI Engine NUT-017.5 | Links the validated decision, analysis and draft internally; remains device-only, request-scoped and non-persistent |
 | Decision history | Today App NUT-017.5 | Shows only plain approve/reject/edit results for the current screen request; resets on a new preview or reload |
+| Seven-day pattern observer | Today AI Engine NUT-017.6 | Requires at least three comparable Core/sleep days and two same-day recurrences; produces a descriptive, non-causal observation |
+| Pattern observation UI | Today App NUT-017.6 | Shows plain-language evidence, observation strength, uncertainty, options and no-approval state; hides internal IDs/codes |
+| Sky in pattern observation | Today AI Engine NUT-017.6 | Never participates in matching, evidence, confidence or health/emotion causality |
 | Execution and persistent audit | Separate future scope | Connect, execution, persistent audit and external transfer remain disabled |
 
-The active host integration is App `2.13.0`, schema `2`, shell
-`today-v2-foundation-064`. NUT-017.5 preserves the consent-gated context preview,
+The active host integration is App `2.14.0`, schema `2`, shell
+`today-v2-foundation-065`. NUT-017.6 preserves the consent-gated context preview,
 the documented first rule (`Core C` plus sleep below six hours), and the
 NUT-017.3.2 newest-record selection fix. A user may approve, reject, or edit the
 reminder time. Editing never counts as approval and creates a new pending draft.
-Each valid decision now produces a versioned receipt and a plain-language entry
-visible only for the current screen request. No reminder is created, no audit is
-persisted, and no Connect operation starts. See
-`docs/NUT-017.5-IMPLEMENTATION.md`; the source mapping remains in
+The separate seven-day command observes only whether `Core C` and sleep below
+six hours recur on the same local dates. It makes no causal claim and proposes
+no action. Each valid decision still produces a request-scoped receipt. No
+reminder is created, no audit is persisted, and no Connect operation starts.
+See `docs/NUT-017.6-IMPLEMENTATION.md`; the source mapping remains in
 `docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---

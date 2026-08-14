@@ -31,6 +31,50 @@ Each entry should include:
 
 ---
 
+## Version 2.14.0 — NUT-017.6
+
+Date
+
+14 August 2026
+
+Phase
+
+AI multi-day pattern observation checkpoint
+
+Status
+
+🟡 NUT-017.6 completed; product phase closure not claimed
+
+Summary
+
+- Added versioned `pattern-observation-request` and `pattern-observation-output` v1 contracts.
+- Added a pure, deterministic seven-day observer for same-local-date Core `C` and sleep-below-six-hours recurrence.
+- Required at least three comparable Core/sleep days and at least two matching days; otherwise no pattern is invented.
+- Added provenance-linked evidence, observation strength, uncertainty, options and an explicit no-approval state.
+- Defined observation strength as window coverage plus recurrence, not a probability of truth.
+- Added a separate, plain-language “Son 7 güne bak” command and observation card.
+- Kept internal event IDs and NUT/ruleset/schema codes out of the user surface.
+- Kept Sky outside matching, evidence, confidence and health/emotion causality.
+- Kept action proposals, Connect, persistent audit, storage writes and external transfer disabled.
+- Raised App to `2.14.0` and shell to `today-v2-foundation-065`; schema remains `2` with no migration or new storage key.
+
+Tests
+
+- AI Engine: **185/185 successful**.
+- NUT-017.6 App gate: **73/73 successful**.
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Existing platform baseline remained unchanged: static **25/30**, Service Worker event **23/36**, browser **47/48**; automation contract still lacks `.github/workflows/platform-regression.yml`.
+
+Result
+
+The user can separately inspect whether the documented Core/sleep combination recurred during the last seven days. The output describes co-occurrence only; it does not claim cause, diagnosis, prediction or action.
+
+Commit
+
+`feat(ai): add explainable seven-day pattern observation (NUT-017.6)`
+
+---
+
 ## Version 2.13.0 — NUT-017.5
 
 Date
