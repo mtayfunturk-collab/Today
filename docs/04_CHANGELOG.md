@@ -31,6 +31,46 @@ Each entry should include:
 
 ---
 
+## Version 2.11.1 — NUT-017.3.1
+
+Date
+
+14 August 2026
+
+Phase
+
+AI Engine explainable-analysis correction
+
+Status
+
+🟡 NUT-017.3.1 completed; product phase closure not claimed
+
+Summary
+
+- Added deterministic mismatch diagnostics for the existing first rule.
+- Displayed the selected latest Core choice, sleep duration, local dates and controlled rejection reason.
+- Preserved the strict `Core=C`, sleep `<360 minutes`, same-local-date rule.
+- Kept invalid requests fail-closed without diagnostic data exposure.
+- Kept Sky outside evidence, confidence, diagnostics and health/emotion reasoning.
+- Raised App to `2.11.1` and shell to `today-v2-foundation-061`; schema remains `2` with no migration.
+
+Tests
+
+- AI Engine: **86/86 successful**.
+- NUT-017.3.1 App gate: **49/49 successful**.
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Browser baseline: **47/48**, preserving the pre-existing single failure.
+
+Result
+
+The previously opaque no-match result now explains exactly which approved rule input failed. No live model/provider, approval execution, audit write or Connect action was introduced.
+
+Commit
+
+`fix(ai): expose deterministic rule mismatch diagnostics (NUT-017.3.1)`
+
+---
+
 ## Version 2.11.0 — NUT-017.3
 
 Date
