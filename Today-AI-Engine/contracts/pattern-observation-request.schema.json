@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/pattern-observation-request.schema.json",
+  "title": "Today Pattern Observation Request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "observationId",
+    "capability",
+    "requestedAt",
+    "context"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "observationId": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$"
+    },
+    "capability": { "const": "core-sleep-recurrence" },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "context": { "$ref": "context-package.schema.json" }
+  }
+}

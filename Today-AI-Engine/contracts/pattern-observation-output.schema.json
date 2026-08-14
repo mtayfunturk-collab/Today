@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/pattern-observation-output.schema.json",
+  "title": "Today Explainable Pattern Observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "observationId",
+    "type",
+    "summary",
+    "window",
+    "evidence",
+    "confidence",
+    "uncertainty",
+    "alternatives",
+    "approval",
+    "boundaries"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "observationId": { "type": "string", "minLength": 1 },
+    "type": { "const": "core-sleep-recurrence" },
+    "summary": { "type": "string", "minLength": 1 },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startDate",
+        "endDate",
+        "totalDays",
+        "eligibleDays",
+        "matchingDays"
+      ],
+      "properties": {
+        "startDate": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "endDate": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "totalDays": { "const": 7 },
+        "eligibleDays": { "type": "integer", "minimum": 3, "maximum": 7 },
+        "matchingDays": { "type": "integer", "minimum": 2, "maximum": 7 }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["localDate", "core", "health"],
+        "properties": {
+          "localDate": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "core": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "eventId", "reference"],
+            "properties": {
+              "source": { "const": "today-core" },
+              "eventId": { "type": "string", "minLength": 1 },
+              "reference": { "type": "string", "minLength": 1 }
+            }
+          },
+          "health": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "eventId", "reference"],
+            "properties": {
+              "source": { "const": "today-health" },
+              "eventId": { "type": "string", "minLength": 1 },
+              "reference": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "level", "basis", "probabilityClaim"],
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 0.85 },
+        "level": { "enum": ["limited", "moderate", "strong"] },
+        "basis": { "const": "window-coverage-and-recurrence" },
+        "probabilityClaim": { "const": false }
+      }
+    },
+    "uncertainty": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "alternatives": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "status"],
+      "properties": {
+        "required": { "const": false },
+        "status": { "const": "not-required" }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interpretation",
+        "causalityClaim",
+        "diagnosis",
+        "skyUsed",
+        "processingMode",
+        "retention",
+        "externalRecipient",
+        "actionProposed"
+      ],
+      "properties": {
+        "interpretation": { "const": "descriptive-observation" },
+        "causalityClaim": { "const": false },
+        "diagnosis": { "const": false },
+        "skyUsed": { "const": false },
+        "processingMode": { "const": "device-only" },
+        "retention": { "const": "request-scoped" },
+        "externalRecipient": { "type": "null" },
+        "actionProposed": { "const": false }
+      }
+    }
+  }
+}
