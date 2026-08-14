@@ -14,6 +14,7 @@
 ## Sözleşmeler
 
 - `input-event.schema.json`: Core, Health ve Sky olaylarının ortak zarfı.
+- `analysis-request.schema.json`: Tek istekli Context Package, sabit analiz capability'si ve çağrı zamanını taşıyan analiz isteği.
 - `analysis-output.schema.json`: Açıklanabilir analiz ve onay bekleyen işlem taslakları.
 - `approval-decision.schema.json`: Kullanıcının onay, ret veya düzenleme kararını kaydeder.
 - `data-usage-consent.schema.json`: Amaç, kaynak, veri sınıfı, serbest metin ve cihaz-içi işleme izni.
@@ -33,3 +34,9 @@
 ## Versiyon politikası
 
 Engine bilinmeyen büyük şema sürümünü işlemeyi reddeder. Hatalı tekil olaylar paket içindeki `omissions` listesinde değersiz gerekçeye dönüşür; geçersiz onay ise tüm build işlemini durdurur. Migration, Today App veri katmanının sorumluluğudur; Engine ana veriyi migrate etmez.
+
+## NUT-017.3 analiz isteği
+
+`analysis-request` v1 yalnız `daily-support-suggestion` capability'sini kabul eder ve doğrudan `context-package` v1 referansı taşır. İstek zamanı bağlamın üretim zamanından önce olamaz. Analiz katmanı App olaylarını, DOM'u veya depolama anahtarlarını yeniden okumaz; yalnız verilen ve onay fişi içeren Context Package üzerinde çalışır.
+
+`analysis-output` v1 değiştirilmemiştir. Her başarılı çıktı gerçek `eventId` değerlerine bağlı `evidence`, 0–1 aralığında kural kapsamı `confidence`, görünür `uncertainty`, kullanıcı `alternatives`, `requiresUserApproval=true` ve yalnız `pending-user-approval` işlem taslakları taşır.

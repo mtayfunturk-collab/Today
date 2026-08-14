@@ -6,12 +6,12 @@ Her anlamlı öneri; özet, öneri, kanıt, güven düzeyi, belirsizlik, alterna
 
 NUT-017.1 `context-package` bir AI önerisi değil, analiz öncesi veri-minimum girdidir. Buna rağmen onayın kimliğini/durumunu, her öğenin provenance bilgisini, dışlama/redaksiyon gerekçelerini ve Sky sınırını görünür taşır. Analiz hattının `analysis-output` sözleşmesindeki dayanak, güven, belirsizlik, seçenekler ve onay alanları değişmemiştir.
 
-## İlk kural örneği
+## NUT-017.3 ilk kuralı
 
 Koşullar:
 
-- Core seçimi `C` (`Zordu bugün`)
-- Uyku 6 saatin altında
+- Aynı yerel gündeki en güncel Core seçimi `C` (`Zordu bugün`)
+- Aynı yerel gündeki en güncel uyku kaydı 6 saatin altında
 
 Çıktı:
 
@@ -20,6 +20,10 @@ Koşullar:
 - Core ve Health olaylarını ayrı kanıtlar olarak göster.
 - İş yükünün ve zorunlulukların bilinmediğini yaz.
 - Hatırlatıcıyı yalnızca taslak olarak üret.
+
+Bu kural NUT-017.3'te `daily-support-analyzer.mjs` içinde saf ve deterministik olarak uygulanmıştır. İki koşul birlikte bulunmuyorsa `no-matching-rule` döner ve öneri uydurulmaz. Confidence sabit kuralın seçili iki dayanağı kapsama göstergesidir; doğruluk olasılığı veya sağlık skoru değildir.
+
+Sky Context Package içinde bulunabilir ancak analizör Sky bölümünü okumadan Core ve Health adaylarını ayrı seçer. Sky hiçbir `evidence` kaydı, güven girdisi, sağlık/duygu açıklaması veya nedensellik iddiası üretemez.
 
 ## Yasak çıktılar
 

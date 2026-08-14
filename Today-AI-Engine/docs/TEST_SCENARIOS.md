@@ -23,3 +23,14 @@
 18. Runtime kaynaklarında DOM/depolama veya ağ çağrısı bulunmaz.
 
 Sonuç: Foundation `10/10`, NUT-017.1 `41/41`; toplam `51 PASS / 0 FAIL`.
+
+## NUT-017.3 ek kapsamı
+
+19. Core `C` ve 330 dakika uyku birlikteyken iki provenance-bağlı dayanakla mevcut `analysis-output` v1 üretilir.
+20. Uyku 360 dakika veya üstündeyse ya da Core seçimi `C` değilse `no-matching-rule` döner; çıktı uydurulmaz.
+21. Context sırası veya sembolik Sky içeriği değiştiğinde analiz ve güven değeri değişmez.
+22. Cihaz-dışı boundary, nedensellik iddialı sembolik bölüm ve gelecek zamanlı Context Package fail-closed reddedilir.
+23. Çıktı belirsizlik, alternatifler, `requiresUserApproval=true` ve `pending-user-approval` taslağı taşır.
+24. Analizör DOM, App depolaması, ağ, TodayAI/Connect veya sistem saatine erişmez.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3 `29/29`; toplam `80 PASS / 0 FAIL`.
