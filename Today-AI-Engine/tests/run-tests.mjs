@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runContextBuilderTests } from './context-builder.test.mjs';
+import { runDailySupportAnalyzerTests } from './daily-support-analyzer.test.mjs';
 
 const load = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 const inputs = await load('../fixtures/synthetic/daily-context.json');
@@ -36,3 +37,6 @@ console.log('10/10 sentetik sözleşme ve politika kontrolü başarılı.');
 
 const nut017Checks = await runContextBuilderTests();
 console.log(`${nut017Checks}/${nut017Checks} NUT-017.1 bağlam ve onay kontrolü başarılı.`);
+
+const nut0173Checks = await runDailySupportAnalyzerTests();
+console.log(`${nut0173Checks}/${nut0173Checks} NUT-017.3 açıklanabilir analiz kontrolü başarılı.`);
