@@ -1,5 +1,15 @@
 # Değişiklik Günlüğü
 
+## Host düzeltmesi — NUT-017.3.2 — 2026-08-14
+
+- AI Engine kodu ve sözleşmeleri `0.3.1-analysis` olarak değişmeden kaldı.
+- Today App kaynak adaptörünün sınırlandırılmış Health olaylarında en eski kayıtları tutması düzeltildi; artık en yeni deterministik alt küme korunur ve çıktı kronolojik sıraya geri getirilir.
+- Bugün kaydedilen uyku olayının yoğun eski Health bağlamı altında düşmediğini doğrulayan regresyon eklendi.
+- Host: Today App `2.11.2`, schema `2`, çevrimdışı kabuk `today-v2-foundation-062`.
+- Test sonucu: AI Engine `86/86`; NUT-017.3.2 App kapısı `50/50`; ilgili mevcut App grupları `142/142` başarılı. Platform browser tabanı, önceden belgelenen tek hata ile `47/48` kaldı.
+- Migration gereksinimi: Yok; kayıt biçimi ve depolama anahtarları değiştirilmedi.
+- Commit mesajı: `fix(ai): retain latest health context records (NUT-017.3.2)`
+
 ## 0.3.1-analysis — NUT-017.3.1 — 2026-08-14
 
 - Sorun: `no-matching-rule` yalnız genel hata kodu döndürdüğü için gerçek App verisinde hangi Core, uyku veya tarih koşulunun geçmediği görülemiyordu.
