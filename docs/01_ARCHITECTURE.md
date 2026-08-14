@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.12.0
+Application Version: 2.13.0
 Data Schema: 2
-Active Shell: today-v2-foundation-063
+Active Shell: today-v2-foundation-064
 Last Updated: 14 August 2026
 
 ---
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.4 Request-scoped Suggestion Decisions
+## NUT-017.5 Request-scoped Decision Receipts
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -148,16 +148,19 @@ read-only source adapters and the visible consent/context-preview surface.
 | Proposed action | Existing output contract | Starts as `pending-user-approval` and is never executed by the analysis layer |
 | User decision | Today AI Engine NUT-017.4 | Reuses approval-decision v1 for approve/reject/edit; edit creates a new pending draft |
 | Decision UI | Today App NUT-017.4 | Shows plain-language evidence, confidence, uncertainty, options and decision state; hides internal IDs/codes |
-| Execution and audit | Separate future scope | Connect, execution, persistent audit and external transfer remain disabled |
+| Decision receipt | Today AI Engine NUT-017.5 | Links the validated decision, analysis and draft internally; remains device-only, request-scoped and non-persistent |
+| Decision history | Today App NUT-017.5 | Shows only plain approve/reject/edit results for the current screen request; resets on a new preview or reload |
+| Execution and persistent audit | Separate future scope | Connect, execution, persistent audit and external transfer remain disabled |
 
-The active host integration is App `2.12.0`, schema `2`, shell
-`today-v2-foundation-063`. NUT-017.4 preserves the consent-gated context preview,
+The active host integration is App `2.13.0`, schema `2`, shell
+`today-v2-foundation-064`. NUT-017.5 preserves the consent-gated context preview,
 the documented first rule (`Core C` plus sleep below six hours), and the
 NUT-017.3.2 newest-record selection fix. A user may approve, reject, or edit the
 reminder time. Editing never counts as approval and creates a new pending draft.
-All decisions remain device-only and request-scoped; no reminder is created,
-no audit is persisted, and no Connect operation starts. See
-`docs/NUT-017.4-IMPLEMENTATION.md`; the source mapping remains in
+Each valid decision now produces a versioned receipt and a plain-language entry
+visible only for the current screen request. No reminder is created, no audit is
+persisted, and no Connect operation starts. See
+`docs/NUT-017.5-IMPLEMENTATION.md`; the source mapping remains in
 `docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---

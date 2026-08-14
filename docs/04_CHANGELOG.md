@@ -31,6 +31,48 @@ Each entry should include:
 
 ---
 
+## Version 2.13.0 — NUT-017.5
+
+Date
+
+14 August 2026
+
+Phase
+
+AI decision receipt checkpoint
+
+Status
+
+🟡 NUT-017.5 completed; product phase closure not claimed
+
+Summary
+
+- Added the versioned `decision-receipt` v1 contract and a pure deterministic receipt builder.
+- Linked each validated approve, reject or edit decision to its analysis and proposed action inside the internal contract.
+- Added a collapsed, plain-language “Karar geçmişi” visible only during the current screen request.
+- Reset the temporary history on a new preview, clear or page reload.
+- Kept internal receipt, decision, analysis and action IDs out of the user interface.
+- Kept edited drafts pending another explicit approval.
+- Kept action execution, Connect, persistent audit, storage writes and external transfer disabled.
+- Raised App to `2.13.0` and shell to `today-v2-foundation-064`; schema remains `2` with no migration or new storage key.
+
+Tests
+
+- AI Engine: **145/145 successful**.
+- NUT-017.5 App gate: **63/63 successful**.
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Existing platform baseline remained unchanged: static **25/30**, Service Worker event **23/36**, browser **47/48**; automation contract still lacks `.github/workflows/platform-regression.yml`.
+
+Result
+
+The user can see a concise receipt for each decision made during the current suggestion request. A receipt records intent only; it does not mean that a reminder or external action has happened and it is not persisted.
+
+Commit
+
+`feat(ai): add request-scoped decision receipts (NUT-017.5)`
+
+---
+
 ## Version 2.12.0 — NUT-017.4
 
 Date
