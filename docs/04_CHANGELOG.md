@@ -31,6 +31,47 @@ Each entry should include:
 
 ---
 
+## Version 2.11.2 — NUT-017.3.2
+
+Date
+
+14 August 2026
+
+Phase
+
+AI context source-adapter correction
+
+Status
+
+🟡 NUT-017.3.2 completed; product phase closure not claimed
+
+Summary
+
+- Fixed source-cap selection that retained the oldest Health events and could exclude a newly saved sleep record.
+- Changed bounded source selection to keep the newest deterministic subset and then restore chronological output order.
+- Changed the Health public context view to retain the newest records per type when its own limit is reached.
+- Added a regression in which an approved current sleep event must survive older Health-event pressure.
+- Kept the NUT-017.3.1 rule, diagnostics and AI Engine `0.3.1-analysis` unchanged.
+- Kept Sky symbolic and outside evidence, confidence, mismatch checks and health/emotion causality.
+- Raised App to `2.11.2` and shell to `today-v2-foundation-062`; schema remains `2` with no migration.
+
+Tests
+
+- AI Engine: **86/86 successful** (unchanged Engine).
+- NUT-017.3.2 App gate: **50/50 successful**.
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Browser baseline: **47/48**, preserving the pre-existing startup/empty-store expectation failure.
+
+Result
+
+The latest approved sleep record can no longer be displaced by older Health events solely because the per-source limit is reached. No live model/provider, approval execution, audit write or Connect action was introduced.
+
+Commit
+
+`fix(ai): retain latest health context records (NUT-017.3.2)`
+
+---
+
 ## Version 2.11.1 — NUT-017.3.1
 
 Date

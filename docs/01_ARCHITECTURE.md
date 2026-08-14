@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.11.1
+Application Version: 2.11.2
 Data Schema: 2
-Active Shell: today-v2-foundation-061
+Active Shell: today-v2-foundation-062
 Last Updated: 14 August 2026
 
 ---
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.3.1 Explainable Analysis Diagnostics
+## NUT-017.3.2 Health Context Recency Correction
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -143,15 +143,17 @@ read-only source adapters and the visible consent/context-preview surface.
 | Symbolic Sky section | Today AI Engine | Separate from Core/Health; causality and scientific-evidence claims disabled |
 | Explainable analysis | Today AI Engine NUT-017.3.1 | Provider-free deterministic rule; evidence, confidence, uncertainty, alternatives and approval state are mandatory |
 | Rule mismatch diagnosis | Today AI Engine NUT-017.3.1 | Shows only validated Core/sleep observations, date checks and controlled reasons; does not relax the rule |
+| Source event cap | Today App NUT-017.3.2 | Keeps the newest deterministic subset before restoring chronological output order; current Health records are not displaced by older records |
 | Symbolic Sky in analysis | Today AI Engine NUT-017.3.1 | Never used as evidence, confidence input, mismatch input or a health/emotion cause |
 | Proposed action | Existing output contract | Remains `pending-user-approval`; no approval gateway or Connect execution is invoked |
 
-The active host integration is App `2.11.1`, schema `2`, shell
-`today-v2-foundation-061`. NUT-017.3.1 preserves the second explicit user command after
+The active host integration is App `2.11.2`, schema `2`, shell
+`today-v2-foundation-062`. NUT-017.3.2 preserves the second explicit user command after
 the consent-gated context preview. It implements only the documented first
 rule (`Core C` plus sleep below six hours), invents no result when the rule does
-not match, registers no model/provider and starts no Connect operation. See
-`docs/NUT-017.3.1-IMPLEMENTATION.md` for the diagnostic verification record; the source
+not match, registers no model/provider and starts no Connect operation. The App
+source adapter now retains the newest records when a source cap is reached. See
+`docs/NUT-017.3.2-IMPLEMENTATION.md` for the recency correction record; the source
 mapping remains in `docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---
