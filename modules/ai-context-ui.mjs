@@ -1,6 +1,6 @@
 /**
  * Today App — AI Context, Explainable Suggestion & Decision UI
- * NUT-017.4
+ * NUT-017.5
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -16,7 +16,7 @@ import {
 } from "./ai-approval-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.4";
+export const RULESET_ID = "today:ai-context-ui:nut-017.5";
 export const PURPOSE =
   "Günlük denge için kişisel öneri hazırlama";
 
@@ -26,12 +26,15 @@ let currentContext = null;
 let currentAnalysis = null;
 let currentAction = null;
 let currentDecision = null;
+let currentReceipts = [];
 let currentReminderTime = "22:30";
 let requestSequence = 0;
 let requestEpoch = 0;
 let decisionSequence = 0;
 let decisionBusy = false;
 let initialized = false;
+
+const MAX_REQUEST_RECEIPTS = 20;
 
 const CHOICE_LABELS = Object.freeze({
   A: "Bir şey oldu ama adı yok",
@@ -143,6 +146,7 @@ function clearRuleEvaluation(root) {
 function clearDecision(root) {
   currentAction = null;
   currentDecision = null;
+  currentReceipts = [];
   currentReminderTime = "22:30";
   decisionBusy = false;
 
@@ -151,6 +155,8 @@ function clearDecision(root) {
   const decisionStatus = root.querySelector("#aiDecisionStatus");
   const reminderTime = root.querySelector("#aiReminderTime");
   const actionLabel = root.querySelector("#aiAnalysisActionLabel");
+  const receiptPanel = root.querySelector("#aiDecisionReceipt");
+  const receiptItems = root.querySelector("#aiDecisionReceiptItems");
   if (controls) controls.hidden = true;
   if (editPanel) editPanel.hidden = true;
   if (decisionStatus) {
@@ -159,6 +165,8 @@ function clearDecision(root) {
   }
   if (reminderTime) reminderTime.value = currentReminderTime;
   if (actionLabel) actionLabel.textContent = "";
+  if (receiptItems) receiptItems.replaceChildren();
+  if (receiptPanel) receiptPanel.hidden = true;
 }
 
 function clearAnalysis(root) {
@@ -384,7 +392,7 @@ function analysisIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `analysis:nut-017.4:${(hash >>> 0).toString(36)}`;
+  return `analysis:nut-017.5:${(hash >>> 0).toString(36)}`;
 }
 
 function decisionIdFor(analysisId, actionId) {
@@ -394,7 +402,7 @@ function decisionIdFor(analysisId, actionId) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `decision:nut-017.4:${(hash >>> 0).toString(36)}:${decisionSequence}`;
+  return `decision:nut-017.5:${(hash >>> 0).toString(36)}:${decisionSequence}`;
 }
 
 function setDecisionStatus(root, message, state = "idle") {
@@ -402,6 +410,40 @@ function setDecisionStatus(root, message, state = "idle") {
   if (!status) return;
   status.textContent = message;
   status.dataset.state = state;
+}
+
+function receiptTimeLabel(occurredAt) {
+  const value = new Date(occurredAt);
+  if (Number.isNaN(value.getTime())) return "";
+  return new Intl.DateTimeFormat("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(value);
+}
+
+function receiptText(receipt) {
+  const time = receiptTimeLabel(receipt.occurredAt);
+  const timePart = time ? ` · ${time}` : "";
+  if (receipt.outcome === "approved") {
+    return `Onaylandı${timePart} · İşlem yapılmadı.`;
+  }
+  if (receipt.outcome === "rejected") {
+    return `Reddedildi${timePart} · İşlem yapılmadı.`;
+  }
+  return `Düzenlendi${timePart} · Yeni taslak yeniden onay bekliyor.`;
+}
+
+function renderDecisionReceipts(root) {
+  const panel = root.querySelector("#aiDecisionReceipt");
+  const items = root.querySelector("#aiDecisionReceiptItems");
+  if (!panel || !items) return;
+  items.replaceChildren();
+  currentReceipts.forEach(receipt => appendTextItem(
+    root.ownerDocument,
+    items,
+    receiptText(receipt)
+  ));
+  panel.hidden = currentReceipts.length === 0;
 }
 
 function setDecisionButtonsDisabled(root, disabled) {
@@ -464,6 +506,11 @@ async function handleDecision(root, decision, editedPayload) {
     }
 
     currentDecision = result.decision;
+    currentReceipts = [
+      ...currentReceipts,
+      result.receipt
+    ].slice(-MAX_REQUEST_RECEIPTS);
+    renderDecisionReceipts(root);
     closeEditPanel(root);
     const controls = root.querySelector("#aiDecisionControls");
     const approval = root.querySelector("#aiAnalysisApproval");
@@ -666,6 +713,8 @@ export function getStatus() {
       ? "pending-user-approval"
       : currentDecision?.decision || null,
     hasPendingAction: Boolean(currentAction),
+    receiptCount: currentReceipts.length,
+    latestReceiptOutcome: currentReceipts.at(-1)?.outcome || null,
     auditPersisted: false,
     actionStarted: false
   });
