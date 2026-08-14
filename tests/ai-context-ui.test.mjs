@@ -14,6 +14,10 @@ const approvalBridgeSource = await readFile(
   new URL("../modules/ai-approval-bridge.mjs", import.meta.url),
   "utf8"
 );
+const patternBridgeSource = await readFile(
+  new URL("../modules/ai-pattern-bridge.mjs", import.meta.url),
+  "utf8"
+);
 const swSource = await readFile(
   new URL("../sw.js", import.meta.url),
   "utf8"
@@ -46,7 +50,15 @@ const observed = [];
 let holdNextRequest = false;
 let releaseHeldRequest = null;
 let observedSleepMinutes = 330;
+let includePatternHistory = false;
 const today = localDateKey(new Date());
+
+function dateBeforeToday(daysAgo) {
+  const value = new Date();
+  value.setDate(value.getDate() - daysAgo);
+  return localDateKey(value);
+}
+
 globalThis.TodayAIContextSources = Object.freeze({
   async collectEvents(options) {
     observed.push(options);
@@ -56,27 +68,57 @@ globalThis.TodayAIContextSources = Object.freeze({
         releaseHeldRequest = resolve;
       });
     }
+    const events = [
+      Object.freeze({
+        schemaVersion: 1,
+        eventId: "core:ui-synthetic",
+        source: "today-core",
+        eventType: "daily-checkin",
+        createdAt: new Date(Date.now() - 60_000).toISOString(),
+        localDate: today,
+        payload: Object.freeze({ choice: "C", color: "blue" })
+      }),
+      Object.freeze({
+        schemaVersion: 1,
+        eventId: "health:ui-synthetic",
+        source: "today-health",
+        eventType: "sleep-record",
+        createdAt: new Date(Date.now() - 120_000).toISOString(),
+        localDate: today,
+        payload: Object.freeze({ durationMinutes: observedSleepMinutes })
+      })
+    ];
+    if (includePatternHistory) {
+      [
+        [1, "C", 300],
+        [2, "C", 340],
+        [3, "B", 420]
+      ].forEach(([daysAgo, choice, durationMinutes]) => {
+        const localDate = dateBeforeToday(daysAgo);
+        events.push(
+          Object.freeze({
+            schemaVersion: 1,
+            eventId: `core:ui-pattern-${daysAgo}`,
+            source: "today-core",
+            eventType: "daily-checkin",
+            createdAt: `${localDate}T18:00:00.000Z`,
+            localDate,
+            payload: Object.freeze({ choice, color: "blue" })
+          }),
+          Object.freeze({
+            schemaVersion: 1,
+            eventId: `health:ui-pattern-${daysAgo}`,
+            source: "today-health",
+            eventType: "sleep-record",
+            createdAt: `${localDate}T07:00:00.000Z`,
+            localDate,
+            payload: Object.freeze({ durationMinutes })
+          })
+        );
+      });
+    }
     return Object.freeze({
-      events: Object.freeze([
-        Object.freeze({
-          schemaVersion: 1,
-          eventId: "core:ui-synthetic",
-          source: "today-core",
-          eventType: "daily-checkin",
-          createdAt: new Date(Date.now() - 60_000).toISOString(),
-          localDate: today,
-          payload: Object.freeze({ choice: "C", color: "blue" })
-        }),
-        Object.freeze({
-          schemaVersion: 1,
-          eventId: "health:ui-synthetic",
-          source: "today-health",
-          eventType: "sleep-record",
-          createdAt: new Date(Date.now() - 120_000).toISOString(),
-          localDate: today,
-          payload: Object.freeze({ durationMinutes: observedSleepMinutes })
-        })
-      ]),
+      events: Object.freeze(events),
       warnings: Object.freeze([])
     });
   }
@@ -117,7 +159,9 @@ await test("Ayarlar içinde erişilebilir AI bağlam yüzeyi bulunur", () => {
   assert.equal(panel.getAttribute("aria-labelledby"), "aiContextTitle");
   assert.equal(document.querySelector("#aiContextStatus").getAttribute("role"), "status");
   assert.equal(document.querySelector("#aiConsentPurpose").textContent, ui.PURPOSE);
-  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.5");
+  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.6");
+  assert.ok(document.querySelector("#btnAiPattern"));
+  assert.equal(document.querySelector("#aiPatternOutput").hidden, true);
 });
 
 await test("Varsayılan kapsam veri-minimum Core ve temel Health seçimidir", () => {
@@ -203,6 +247,17 @@ await test("Analiz bağlamdan ayrı ve açık kullanıcı komutu bekler", async 
   await settle();
   assert.equal(document.querySelector("#aiAnalysisOutput").hidden, false);
   assert.equal(ui.getStatus().aiProposalGenerated, true);
+});
+
+await test("Yetersiz gün varsa tekrar uydurulmadan sade açıklama gösterilir", async () => {
+  document.querySelector("#btnAiPattern").click();
+  await settle();
+  assert.equal(document.querySelector("#aiPatternOutput").hidden, true);
+  assert.match(document.querySelector("#aiPatternStatus").textContent, /en az 3 gün/);
+  assert.match(document.querySelector("#aiPatternStatus").textContent, /Şu an 1 gün var/);
+  assert.equal(ui.getStatus().patternObservationGenerated, false);
+  assert.equal(ui.getStatus().patternApprovalRequired, false);
+  assert.equal(ui.getStatus().patternActionProposed, false);
 });
 
 await test("Açıklanabilir çıktı dayanak, güven, belirsizlik ve seçenekleri gösterir", () => {
@@ -323,6 +378,38 @@ await test("Eşleşmeme tanısı değerlendirilen Core, uyku ve tarih koşullar�
   observedSleepMinutes = 330;
 });
 
+await test("Son 7 günlük tekrar sade, açıklanabilir ve eylemsiz gösterilir", async () => {
+  includePatternHistory = true;
+  document.querySelector("#aiConsentConfirm").checked = true;
+  document.querySelector("#btnAiContextPreview").click();
+  await settle();
+  document.querySelector("#btnAiPattern").click();
+  await settle();
+
+  const output = document.querySelector("#aiPatternOutput");
+  assert.equal(output.hidden, false);
+  assert.match(document.querySelector("#aiPatternSummary").textContent, /4 günün 3 gününde/);
+  assert.equal(document.querySelector("#aiPatternEvidence").childElementCount, 3);
+  assert.match(document.querySelector("#aiPatternEvidence").textContent, /Zordu bugün/);
+  assert.match(document.querySelector("#aiPatternEvidence").textContent, /Uyku:/);
+  assert.doesNotMatch(
+    document.querySelector("#aiPatternEvidence").textContent,
+    /core:|health:|eventId|pattern:/
+  );
+  assert.match(document.querySelector("#aiPatternConfidence").textContent, /Orta/);
+  assert.match(document.querySelector("#aiPatternConfidence").textContent, /doğruluk olasılığı değildir/);
+  assert.ok(document.querySelector("#aiPatternUncertainty").childElementCount >= 2);
+  assert.ok(document.querySelector("#aiPatternAlternatives").childElementCount >= 3);
+  assert.match(document.querySelector("#aiPatternApproval").textContent, /onay vermen veya işlem yapman gerekmiyor/);
+  assert.match(document.querySelector("#aiPatternSkyBoundary").textContent, /Sky bu gözlemde kullanılmadı/);
+  assert.doesNotMatch(output.textContent, /NUT-017|schemaVersion|rulesetId|observationId/);
+  assert.equal(ui.getStatus().patternObservationGenerated, true);
+  assert.equal(ui.getStatus().patternApprovalRequired, false);
+  assert.equal(ui.getStatus().patternActionProposed, false);
+  assert.equal(ui.getStatus().actionStarted, false);
+  includePatternHistory = false;
+});
+
 await test("Kapsam değişikliği bellekteki ve hazırlanmakta olan önizlemeyi düşürür", async () => {
   const sky = document.querySelector('[data-ai-context-source="sky"]');
   document.querySelector("#aiConsentConfirm").checked = true;
@@ -361,6 +448,9 @@ await test("Temizle eylemi bağlamı, sayıları ve onay kutusunu temizler", asy
   assert.equal(document.querySelector("#aiAnalysisOutput").hidden, true);
   assert.equal(document.querySelector("#aiAnalysisSummary").textContent, "");
   assert.equal(document.querySelector("#aiAnalysisEvidence").childElementCount, 0);
+  assert.equal(document.querySelector("#aiPatternEvidence").childElementCount, 0);
+  assert.equal(document.querySelector("#aiPatternOutput").hidden, true);
+  assert.equal(ui.getStatus().patternObservationGenerated, false);
   assert.equal(document.querySelector("#aiDecisionReceiptItems").childElementCount, 0);
   assert.equal(document.querySelector("#aiDecisionReceipt").hidden, true);
   assert.equal(ui.getStatus().receiptCount, 0);
@@ -369,7 +459,7 @@ await test("Temizle eylemi bağlamı, sayıları ve onay kutusunu temizler", asy
 
 await test("UI onayı veya seçilen bilgiler kalıcı depolamaya ya da ağa yazılmaz", () => {
   assert.equal(window.localStorage.length, 0);
-  for (const source of [uiSource, approvalBridgeSource]) {
+  for (const source of [uiSource, approvalBridgeSource, patternBridgeSource]) {
     assert.doesNotMatch(
       source,
       /(?:localStorage|sessionStorage|indexedDB|fetch\s*\(|XMLHttpRequest|WebSocket\s*\()/
@@ -387,12 +477,14 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
     "./modules/ai-context-bridge.mjs",
     "./modules/ai-analysis-bridge.mjs",
     "./modules/ai-approval-bridge.mjs",
+    "./modules/ai-pattern-bridge.mjs",
     "./modules/ai-context-ui.mjs",
     "./Today-AI-Engine/src/context-builder.mjs",
     "./Today-AI-Engine/src/data-usage-consent.mjs",
     "./Today-AI-Engine/src/daily-support-analyzer.mjs",
     "./Today-AI-Engine/src/approval-decision-processor.mjs",
-    "./Today-AI-Engine/src/decision-receipt-builder.mjs"
+    "./Today-AI-Engine/src/decision-receipt-builder.mjs",
+    "./Today-AI-Engine/src/pattern-observer.mjs"
   ]) {
     assert.equal(swSource.includes(`"${file}"`), true, `${file} shell dışında`);
   }
@@ -401,12 +493,12 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 109);
+  assert.equal(shellFiles.length, 111);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-064/);
+  assert.match(swSource, /today-v2-foundation-065/);
 });
 
 const failures = results.filter(result => !result.success);
@@ -416,7 +508,7 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.5 Consent, Analysis, Decision & Receipt UI: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.6 Consent, Analysis, Decision, Receipt & Pattern UI: ${passed}/${results.length} başarılı`);
 
 if (originalGlobals.window === undefined) delete globalThis.window;
 else globalThis.window = originalGlobals.window;
