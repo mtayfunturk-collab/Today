@@ -2,7 +2,7 @@
 
 Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan, arayüzden ve App'in depolama katmanından bağımsız bir sistem katmanıdır.
 
-`0.5.0-receipt`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1–17.4 sınırlarını yeniden oluşturmadan onay, ret ve düzenleme kararlarından sürümlü, istek-süreli karar makbuzları üretir. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay, kalıcı audit veya kalıcı AI belleği içermez.
+`0.6.0-pattern`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1–17.5 sınırlarını yeniden oluşturmadan son 7 günlük Core–uyku tekrarlarını açıklanabilir, betimleyici ve nedenselliksiz gözlemlere dönüştürür. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay, kalıcı audit veya kalıcı AI belleği içermez.
 
 ## İlkeler
 
@@ -17,12 +17,12 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 
 ## Durum
 
-- AI Engine karar makbuzu katmanı sürümü: `0.5.0-receipt`
-- Today App entegrasyon tabanı: NUT-017.5, App `2.13.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-064`
+- AI Engine örüntü gözlem katmanı sürümü: `0.6.0-pattern`
+- Today App entegrasyon tabanı: NUT-017.6, App `2.14.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-065`
 - Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
-- AI Engine testi: `145 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1 + `35` NUT-017.3.1 + `28` NUT-017.4 + `31` NUT-017.5)
-- Today App NUT-017.5 kapısı: `63 PASS / 0 FAIL`
-- Durum: İlk dar kural değişmedi. Kullanıcı kararı sürümlü bir makbuza dönüştürülür ve sade karar geçmişinde yalnız mevcut ekran isteği boyunca gösterilir. Düzenleme yeniden onay ister; hiçbir karar eylemi yürütmez veya kalıcı yazılmaz.
+- AI Engine testi: `185 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1 + `35` NUT-017.3.1 + `28` NUT-017.4 + `31` NUT-017.5 + `40` NUT-017.6)
+- Today App NUT-017.6 kapısı: `73 PASS / 0 FAIL`
+- Durum: İlk günlük öneri kuralı değişmedi. Ayrı “Son 7 güne bak” komutu, en az üç karşılaştırılabilir günün en az ikisinde Core `C` ile 6 saat altı uykunun birlikte görülmesini yalnız betimler. Sonuç dayanak, gözlem gücü, belirsizlik, seçenekler ve onay durumunu taşır; Sky, nedensellik ve eylem kapalıdır.
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
@@ -30,7 +30,7 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
 - `docs/`: ürün, mimari, güvenlik, entegrasyon ve faz belgeleri
 - `contracts/`: JSON Schema veri sözleşmeleri
-- `src/`: saf onay değerlendiricisi, deterministik Context Builder, sağlayıcısız günlük destek analizörü, geçici karar işlemcisi ve istek-süreli karar makbuzu üreticisi
+- `src/`: saf onay değerlendiricisi, deterministik Context Builder, sağlayıcısız günlük destek analizörü, geçici karar işlemcisi, istek-süreli karar makbuzu üreticisi ve çok günlük örüntü gözlemcisi
 - `fixtures/synthetic/`: yalnızca sentetik test kayıtları
 - `tests/`: bağımlılıksız sözleşme ve güvenlik testleri
 - `docs/APP_CONTRACT_MAPPING.md`: NUT-017.1 için salt okunur Today App 2.9.0 referans eşlemesi
@@ -41,6 +41,7 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 - `../docs/NUT-017.3.2-IMPLEMENTATION.md`: Health bağlamında en yeni kayıtların korunması düzeltmesi
 - `../docs/NUT-017.4-IMPLEMENTATION.md`: sade öneri ve onay/ret/düzenleme akışı
 - `../docs/NUT-017.5-IMPLEMENTATION.md`: sürümlü, geçici karar makbuzu ve sade karar geçmişi
+- `../docs/NUT-017.6-IMPLEMENTATION.md`: son 7 günlük, açıklanabilir ve nedenselliksiz Core–uyku tekrar gözlemi
 
 ## Test
 

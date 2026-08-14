@@ -1,5 +1,20 @@
 # Değişiklik Günlüğü
 
+## 0.6.0-pattern — NUT-017.6 — 2026-08-14
+
+- Son 7 günlük sürümlü Context Package üzerinde çalışan saf ve deterministik örüntü gözlemcisi eklendi.
+- İlk dar gözlem; en az 3 karşılaştırılabilir günün en az 2'sinde Core `C` ile 6 saatin altındaki uykunun aynı yerel günde birlikte görülmesini betimler.
+- Yeni `pattern-observation-request` ve `pattern-observation-output` v1 sözleşmeleri; dayanak, gözlem gücü, belirsizlik, seçenekler, onay durumu ve güvenlik sınırlarını zorunlu tutar.
+- Gözlem gücü yalnız pencere kapsamı ve tekrar oranıdır; doğruluk olasılığı, teşhis veya nedensellik değildir.
+- Sky gözlemde, dayanıklarda ve güven hesabında kullanılmaz; `causalityClaim=false` kalır.
+- Today App'e “Son 7 güne bak” komutu ve teknik kimlik/kod göstermeyen sade gözlem kartı eklendi.
+- Gözlem onay veya işlem taslağı üretmez; Connect, kalıcı audit, dış aktarım ve yeni storage anahtarı eklenmedi.
+- Host: Today App `2.14.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-065`.
+- Test sonucu: AI Engine `185/185`; NUT-017.6 App kapısı `73/73`; ilgili mevcut App grupları `142/142` başarılı.
+- Önceden belgelenen platform tabanı değişmedi: static `25/30`, Service Worker event `23/36`, browser `47/48`; automation contract'ta beklenen workflow dosyası eksik.
+- Migration gereksinimi: Yok; kayıt biçimi ve depolama anahtarları değiştirilmedi.
+- Commit mesajı: `feat(ai): add explainable seven-day pattern observation (NUT-017.6)`
+
 ## 0.5.0-receipt — NUT-017.5 — 2026-08-14
 
 - Onay, ret ve düzenleme sonucunu `decision-receipt` v1 sözleşmesine dönüştüren saf ve deterministik makbuz üreticisi eklendi.
