@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/analysis-request.schema.json",
+  "title": "Today Explainable Analysis Request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "analysisId",
+    "capability",
+    "requestedAt",
+    "context"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "analysisId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$"
+    },
+    "capability": { "const": "daily-support-suggestion" },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "context": { "$ref": "context-package.schema.json" }
+  }
+}
