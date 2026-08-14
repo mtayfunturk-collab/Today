@@ -1,5 +1,19 @@
 # Değişiklik Günlüğü
 
+## 0.7.0-feedback — NUT-017.7 — 2026-08-14
+
+- Geçerli `pattern-observation-output` v1 sonucuna bağlı üç seçenekli kullanıcı geri bildirimi eklendi: `resonates`, `does-not-resonate`, `unsure`.
+- Yeni `pattern-feedback` ve `pattern-feedback-receipt` v1 sözleşmeleri ile saf, deterministik geri bildirim işlemcisi eklendi.
+- İşlemci değiştirilmiş, nedensellik/teşhis/Sky/eylem sınırı açılmış veya sözleşme dışı gözlemi fail-closed reddeder.
+- Geri bildirim gözlemi, dayanakları veya güven düzeyini değiştirmez; model öğrenmesi, kalıcı hafıza, işlem, Connect, audit ve dış aktarım başlatmaz.
+- Today App başarılı örüntü kartında yalnız “Bana uyuyor”, “Bana uymuyor” ve “Emin değilim” seçeneklerini gösterir; teknik kimlik ve kodlar görünmez.
+- Seçim yalnız mevcut ekran isteğinde yaşar; yeni önizleme, temizleme veya sayfa yenileme ile düşer.
+- Host: Today App `2.15.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-066`.
+- Test sonucu: AI Engine `232/232`; NUT-017.7 App kapısı `83/83`; ilgili mevcut App grupları `142/142` başarılı.
+- Önceden belgelenen platform tabanı değişmedi: static `25/30`, Service Worker event `23/36`, browser `47/48`; automation contract'ta beklenen workflow dosyası eksik.
+- Migration gereksinimi: Yok; yeni storage anahtarı veya ana veri biçimi eklenmedi.
+- Commit mesajı: `feat(ai): add request-scoped pattern feedback (NUT-017.7)`
+
 ## 0.6.0-pattern — NUT-017.6 — 2026-08-14
 
 - Son 7 günlük sürümlü Context Package üzerinde çalışan saf ve deterministik örüntü gözlemcisi eklendi.
