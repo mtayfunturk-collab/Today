@@ -64,6 +64,27 @@
     return element;
   }
 
+  function freezeContextCopy(value) {
+    const copy = typeof structuredClone === "function"
+      ? structuredClone(value)
+      : JSON.parse(JSON.stringify(value));
+
+    const freeze = current => {
+      if (
+        !current ||
+        typeof current !== "object" ||
+        Object.isFrozen(current)
+      ) {
+        return current;
+      }
+
+      Object.values(current).forEach(freeze);
+      return Object.freeze(current);
+    };
+
+    return freeze(copy);
+  }
+
   function installLayoutStyles() {
     if (document.getElementById("todayHealthHubStyles")) return;
 
@@ -5584,6 +5605,71 @@
     });
   }
 
+  /**
+   * NUT-017.2 salt-okunur App adaptörü için Health kayıt görünümü.
+   * Depolama anahtarları bu API'nin dışına çıkmaz; kayıtlar kopyalanır,
+   * tarih penceresiyle sınırlandırılır ve hiçbir yazma yapılmaz.
+   */
+  function listContextRecords(options = {}) {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    const startDate = datePattern.test(options.startDate)
+      ? options.startDate
+      : "0000-01-01";
+    const endDate = datePattern.test(options.endDate)
+      ? options.endDate
+      : "9999-12-31";
+    const limitPerType = Math.floor(Math.min(
+      366,
+      Math.max(1, Number(options.limitPerType) || 31)
+    ));
+
+    const dayKeyFor = (record, fallbackField = "dayKey") => {
+      const direct = record?.[fallbackField];
+      if (datePattern.test(direct)) return direct;
+
+      const date = new Date(record?.date || "");
+      return Number.isNaN(date.getTime())
+        ? null
+        : wellnessDayKey(date);
+    };
+    const compareText = (left, right) =>
+      left < right ? -1 : left > right ? 1 : 0;
+
+    const select = (records, fallbackField) => records
+      .map(record => ({
+        record,
+        dayKey: dayKeyFor(record, fallbackField)
+      }))
+      .filter(entry =>
+        entry.dayKey &&
+        entry.dayKey >= startDate &&
+        entry.dayKey <= endDate
+      )
+      .sort((left, right) =>
+        compareText(left.dayKey, right.dayKey) ||
+        compareText(
+          String(left.record?.id || ""),
+          String(right.record?.id || "")
+        )
+      )
+      .slice(0, limitPerType)
+      .map(entry => entry.record);
+
+    return freezeContextCopy({
+      contractVersion: 1,
+      rulesetId: RULESET_ID,
+      window: {
+        startDate,
+        endDate,
+        limitPerType
+      },
+      sleep: select(readSleepRecords()),
+      energy: select(readEnergyRecords()),
+      symptoms: select(readSymptomRecords()),
+      workouts: select(readWorkoutLogs(), "dayKey")
+    });
+  }
+
   window.TodayHealthHub = Object.freeze({
     API_VERSION,
     RULESET_ID,
@@ -5591,6 +5677,7 @@
     showSection,
     showSportSection,
     showWellnessSection,
+    listContextRecords,
     getState
   });
 
