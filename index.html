@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.3 — AI CONTEXT & EXPLAINABLE ANALYSIS
+   NUT-017.3.1 — AI CONTEXT & RULE DIAGNOSTICS
 ========================= */
 
 .aiContextPanel {
@@ -1369,7 +1369,8 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
 .aiContextPreview,
 .aiAnalysisRequest,
-.aiAnalysisOutput {
+.aiAnalysisOutput,
+.aiRuleEvaluation {
   margin-top: 12px;
   padding: 12px;
   border: 1px solid var(--stroke);
@@ -1380,13 +1381,15 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
 .aiContextPreview[hidden],
 .aiAnalysisRequest[hidden],
-.aiAnalysisOutput[hidden] {
+.aiAnalysisOutput[hidden],
+.aiRuleEvaluation[hidden] {
   display: none;
 }
 
 .aiContextPreview h4,
 .aiAnalysisOutput h4,
-.aiAnalysisOutput h5 {
+.aiAnalysisOutput h5,
+.aiRuleEvaluation h5 {
   margin: 0 0 8px;
   font-size: 13px;
 }
@@ -1396,14 +1399,16 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 }
 
 .aiContextPreview ul,
-.aiAnalysisOutput ul {
+.aiAnalysisOutput ul,
+.aiRuleEvaluation ul {
   margin: 0 0 8px;
   padding-left: 20px;
 }
 
 .aiContextPreview p,
 .aiAnalysisRequest p,
-.aiAnalysisOutput p {
+.aiAnalysisOutput p,
+.aiRuleEvaluation p {
   margin: 7px 0 0;
 }
 
@@ -1417,6 +1422,14 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
 .aiAnalysisOutput {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--stroke));
+}
+
+.aiRuleEvaluation {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.aiRuleEvaluation h5 {
+  margin: 0 0 8px;
 }
 
 /* =========================
@@ -2693,7 +2706,7 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
               <div class="aiAnalysisRequest" id="aiAnalysisRequest" hidden>
                 <p>
-                  NUT-017.3 yalnız “Zordu bugün” ile 6 saatin altındaki uyku
+                  NUT-017.3.1 yalnız “Zordu bugün” ile 6 saatin altındaki uyku
                   kaydı birlikte bulunduğunda sabit, cihaz-içi bir öneri
                   hazırlayabilir. Sembolik Sky bu kurala katılmaz.
                 </p>
@@ -2702,6 +2715,16 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                     Açıklanabilir öneri oluştur
                   </button>
                 </div>
+                <section
+                  class="aiRuleEvaluation"
+                  id="aiRuleEvaluation"
+                  aria-labelledby="aiRuleEvaluationTitle"
+                  hidden
+                >
+                  <h5 id="aiRuleEvaluationTitle">Kural kontrolü</h5>
+                  <ul id="aiRuleEvaluationItems"></ul>
+                  <p id="aiRuleEvaluationSummary"></p>
+                </section>
               </div>
 
               <article
