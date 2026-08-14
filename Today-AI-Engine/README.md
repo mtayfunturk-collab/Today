@@ -18,10 +18,10 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 ## Durum
 
 - AI Engine sürümü: `0.2.0-context`
-- Today App referans tabanı: NUT-016.6, App `2.9.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-058`
+- Today App entegrasyon tabanı: NUT-017.2, App `2.10.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-059`
 - Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
 - AI Engine testi: `51 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1)
-- Durum: NUT-017.1 Engine tarafı hazır; Today App olay adaptörleri ve UI entegrasyonu henüz yapılmadı
+- Durum: NUT-017.1 Engine sınırı korunuyor; NUT-017.2 salt okunur App adaptörleri ve tek-istek onaylı bağlam önizlemesi hazır
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
@@ -32,8 +32,9 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 - `src/`: saf onay değerlendiricisi ve deterministik Context Builder
 - `fixtures/synthetic/`: yalnızca sentetik test kayıtları
 - `tests/`: bağımlılıksız sözleşme ve güvenlik testleri
-- `docs/APP_CONTRACT_MAPPING.md`: Today App 2.9.0 → AI Engine eşlemesi
+- `docs/APP_CONTRACT_MAPPING.md`: NUT-017.1 için salt okunur Today App 2.9.0 referans eşlemesi
 - `docs/NUT-017.1-IMPLEMENTATION.md`: adım uygulama raporu
+- `../docs/NUT-017.2-IMPLEMENTATION.md`: Today App host entegrasyonu ve doğrulama raporu
 
 ## Test
 

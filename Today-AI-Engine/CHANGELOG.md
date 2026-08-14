@@ -1,5 +1,16 @@
 # Değişiklik Günlüğü
 
+## Today App host entegrasyonu — NUT-017.2 — 2026-08-13
+
+- AI Engine sürümü ve NUT-017.1 sözleşmeleri `0.2.0-context` olarak korundu.
+- Today App `2.10.0` içinde public Core/Health/Nutrition/Core–Sky API'lerini kullanan salt okunur olay adaptörleri eklendi.
+- App Ayarlar yüzeyine kaydedilmeyen, tek önizleme isteğine bağlı veri kapsamı/onayı eklendi.
+- App köprüsü yalnız `buildTodayContext` ve veri kullanım onayı değerlendiricisini çağırır; AI sağlayıcısı veya Connect çağrısı yapmaz.
+- Sky varsayılan kapalıdır ve yalnız `symbolic-context-only` bölümüne girebilir; nedensellik kapalıdır.
+- Test sonucu: App NUT-017.2 `35/35`; AI Engine `51/51` başarılı.
+- Today App schema `2` olarak kaldı; migration yoktur.
+- Sonraki adım canlı model entegrasyonu değildir; açıklanabilir analiz isteği/çıktısı için ayrı NUT kapsamı ve açık kullanıcı kararı gerekir.
+
 ## 0.2.0-context — 2026-08-13
 
 - Adım: NUT-017.1 — Today Context Builder ve Veri Kullanım Onayı.
