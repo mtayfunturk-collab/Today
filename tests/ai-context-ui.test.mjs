@@ -308,7 +308,7 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-061/);
+  assert.match(swSource, /today-v2-foundation-062/);
 });
 
 const failures = results.filter(result => !result.success);
@@ -318,7 +318,7 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.3.1 Consent & Analysis UI: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.3.2 Consent & Analysis UI: ${passed}/${results.length} başarılı`);
 
 if (originalGlobals.window === undefined) delete globalThis.window;
 else globalThis.window = originalGlobals.window;

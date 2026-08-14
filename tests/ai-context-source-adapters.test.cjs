@@ -228,6 +228,10 @@ async function test(name, callback) {
     const { context } = createRuntime();
     assert.equal(context.TodayAIContextSources.API_VERSION, 1);
     assert.equal(context.TodayAIContextSources.CONTRACT_VERSION, 1);
+    assert.equal(
+      context.TodayAIContextSources.RULESET_ID,
+      "today:ai-context-source-adapters:nut-017.3.2"
+    );
     assert.equal(Object.isFrozen(context.TodayAIContextSources), true);
     assert.equal(typeof context.TodayAIContextSources.collectEvents, "function");
   });
@@ -351,6 +355,51 @@ async function test(name, callback) {
     assert.equal(calls.nutrition[0].limit, 2);
   });
 
+  await test("31 olaylık kaynak sınırı bugünkü uyku olayını korur", async () => {
+    const { context } = createRuntime();
+    const olderEnergy = Array.from({ length: 31 }, (_, index) => ({
+      id: `energy-old-${String(index).padStart(2, "0")}`,
+      dayKey: "2026-08-12",
+      date: `2026-08-12T08:${String(index).padStart(2, "0")}:00.000Z`,
+      energy: 2
+    }));
+    context.TodayHealthHub.listContextRecords = () => ({
+      sleep: [{
+        id: "sleep-today",
+        dayKey: "2026-08-13",
+        date: "2026-08-13T08:30:00.000Z",
+        durationMinutes: 330,
+        quality: "okay",
+        recovery: "low"
+      }],
+      energy: olderEnergy,
+      symptoms: [],
+      workouts: []
+    });
+
+    const result = await context.TodayAIContextSources.collectEvents({
+      consent: createConsent({
+        coreClasses: [],
+        healthClasses: ["sleep", "energy"]
+      }),
+      window: windowRequest,
+      requestedAt
+    });
+
+    const eventIds = clone(result.events).map(event => event.eventId);
+    assert.equal(result.counts.health, 31);
+    assert.equal(eventIds.includes("health:sleep:sleep-today"), true);
+    assert.equal(eventIds.includes("health:energy:energy-old-00"), false);
+    assert.deepEqual(
+      clone(result.events).map(event =>
+        `${event.localDate}|${event.createdAt}|${event.eventId}`
+      ),
+      clone(result.events).map(event =>
+        `${event.localDate}|${event.createdAt}|${event.eventId}`
+      ).sort()
+    );
+  });
+
   await test("Eksik App kaynakları veri uydurmak yerine görünür uyarı üretir", async () => {
     const { context } = createRuntime();
     delete context.TodayHealthHub;
@@ -395,7 +444,7 @@ async function test(name, callback) {
     assert.doesNotMatch(source, /today\.health\.|WELLNESS_.*_KEY|SPORT_.*_KEY/);
   });
 
-  await test("Gerçek Health public görünümü salt okunur ve değişmez kopya döndürür", () => {
+  await test("Gerçek Health public görünümü en yeni kayıtların değişmez kopyasını döndürür", () => {
     const dom = new JSDOM(
       "<!doctype html><html><body><div data-view='health'><div id='healthDashboard'></div></div></body></html>",
       { runScripts: "outside-only", url: "https://example.test/Today/" }
@@ -406,18 +455,46 @@ async function test(name, callback) {
     new vm.Script(healthSource, { filename: HEALTH_SOURCE_PATH })
       .runInContext(dom.getInternalVMContext());
 
+    dom.window.localStorage.setItem(
+      "today.health.wellness.sleep.v1",
+      JSON.stringify([
+        {
+          id: "sleep-2026-08-07",
+          dayKey: "2026-08-07",
+          date: "2026-08-07T08:00:00.000Z",
+          durationMinutes: 420
+        },
+        {
+          id: "sleep-2026-08-12",
+          dayKey: "2026-08-12",
+          date: "2026-08-12T08:00:00.000Z",
+          durationMinutes: 390
+        },
+        {
+          id: "sleep-2026-08-13",
+          dayKey: "2026-08-13",
+          date: "2026-08-13T08:00:00.000Z",
+          durationMinutes: 330
+        }
+      ])
+    );
+
     const before = dom.window.localStorage.length;
     const records = dom.window.TodayHealthHub.listContextRecords({
       startDate: "2026-08-07",
       endDate: "2026-08-13",
-      limitPerType: 7
+      limitPerType: 2
     });
     assert.equal(records.contractVersion, 1);
     assert.deepEqual(clone(records.window), {
       startDate: "2026-08-07",
       endDate: "2026-08-13",
-      limitPerType: 7
+      limitPerType: 2
     });
+    assert.deepEqual(
+      clone(records.sleep).map(record => record.dayKey),
+      ["2026-08-12", "2026-08-13"]
+    );
     assert.equal(Object.isFrozen(records), true);
     assert.equal(Object.isFrozen(records.sleep), true);
     assert.equal(dom.window.localStorage.length, before);
@@ -432,6 +509,6 @@ async function test(name, callback) {
   if (failures.length) process.exitCode = 1;
   const passed = results.length - failures.length;
   console.log(
-    `NUT-017.2 Source Adapters: ${passed}/${results.length} başarılı`
+    `NUT-017.3.2 Source Adapters: ${passed}/${results.length} başarılı`
   );
 })();

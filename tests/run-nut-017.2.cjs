@@ -21,7 +21,9 @@ for (const file of GROUPS) {
   });
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
   process.stdout.write(`\n=== ${file} ===\n${output}`);
-  const summary = output.match(/NUT-017\.(?:2|3) [^:]+: (\d+)\/(\d+) başarılı/);
+  const summary = output.match(
+    /NUT-017\.(?:2|3)(?:\.[12])? [^:]+: (\d+)\/(\d+) başarılı/
+  );
   if (!summary || result.status !== 0 || summary[1] !== summary[2]) {
     failures.push({ file, status: result.status });
     continue;
