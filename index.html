@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.4 — AI SUGGESTION & DECISION
+   NUT-017.5 — AI SUGGESTION, DECISION & RECEIPT
 ========================= */
 
 .aiContextPanel {
@@ -1504,6 +1504,15 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
 .aiDecisionStatus[data-state="error"] {
   color: #ffb4ab;
+}
+
+.aiDecisionReceipt[hidden] {
+  display: none;
+}
+
+.aiDecisionReceipt p {
+  color: var(--muted);
+  font-size: 11px;
 }
 
 html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
@@ -2887,6 +2896,17 @@ html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
                     role="status"
                     aria-live="polite"
                   ></p>
+                  <details
+                    class="aiAnalysisDetails aiDecisionReceipt"
+                    id="aiDecisionReceipt"
+                    hidden
+                  >
+                    <summary>Karar geçmişi</summary>
+                    <ul id="aiDecisionReceiptItems"></ul>
+                    <p>
+                      Bu geçmiş yalnız bu ekran açıkken tutulur.
+                    </p>
+                  </details>
                 </div>
 
                 <p id="aiAnalysisSkyBoundary"></p>
