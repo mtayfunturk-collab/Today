@@ -1,6 +1,6 @@
 /**
- * Today App — AI Context Consent & Preview UI
- * NUT-017.2
+ * Today App — AI Context Consent, Preview & Explainable Analysis UI
+ * NUT-017.3
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -8,15 +8,19 @@
 import {
   buildContextPreview
 } from "./ai-context-bridge.mjs";
+import {
+  buildAnalysisPreview
+} from "./ai-analysis-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.2";
+export const RULESET_ID = "today:ai-context-ui:nut-017.3";
 export const PURPOSE =
   "Günlük denge için açıklanabilir seçenekler hazırlama";
 
 const MAX_EVENTS_PER_SOURCE = 31;
 const WINDOW_DAYS = 7;
 let currentContext = null;
+let currentAnalysis = null;
 let requestSequence = 0;
 let requestEpoch = 0;
 let initialized = false;
@@ -99,11 +103,38 @@ function setStatus(root, message, state = "idle") {
   status.dataset.state = state;
 }
 
+function clearAnalysis(root) {
+  currentAnalysis = null;
+  const request = root.querySelector("#aiAnalysisRequest");
+  const output = root.querySelector("#aiAnalysisOutput");
+  const evidence = root.querySelector("#aiAnalysisEvidence");
+  const uncertainty = root.querySelector("#aiAnalysisUncertainty");
+  const alternatives = root.querySelector("#aiAnalysisAlternatives");
+  const actions = root.querySelector("#aiAnalysisActions");
+  const textFields = [
+    "#aiAnalysisSummary",
+    "#aiAnalysisSuggestion",
+    "#aiAnalysisConfidence",
+    "#aiAnalysisApproval",
+    "#aiAnalysisSkyBoundary"
+  ].map(selector => root.querySelector(selector));
+
+  [evidence, uncertainty, alternatives, actions]
+    .filter(Boolean)
+    .forEach(list => list.replaceChildren());
+  textFields.filter(Boolean).forEach(field => {
+    field.textContent = "";
+  });
+  if (request) request.hidden = true;
+  if (output) output.hidden = true;
+}
+
 function clearPreview(root, options = {}) {
   if (options.invalidate !== false) {
     requestEpoch += 1;
   }
   currentContext = null;
+  clearAnalysis(root);
   const preview = root.querySelector("#aiContextPreview");
   const counts = root.querySelector("#aiContextCounts");
   const boundaries = root.querySelector("#aiContextBoundaries");
@@ -171,6 +202,131 @@ function renderPreview(root, context, sourceWarnings = []) {
   }
   filters.textContent = `${details.join("; ")}.`;
   preview.hidden = false;
+  const analysisRequest = root.querySelector("#aiAnalysisRequest");
+  if (analysisRequest) analysisRequest.hidden = false;
+}
+
+function appendTextItem(documentRef, list, value) {
+  const item = documentRef.createElement("li");
+  item.textContent = value;
+  list.append(item);
+}
+
+function sourceLabel(source) {
+  if (source === "today-core") return "Core";
+  if (source === "today-health") return "Health";
+  return "Desteklenmeyen kaynak";
+}
+
+function renderAnalysis(root, analysis, context) {
+  const output = root.querySelector("#aiAnalysisOutput");
+  const summary = root.querySelector("#aiAnalysisSummary");
+  const suggestion = root.querySelector("#aiAnalysisSuggestion");
+  const evidence = root.querySelector("#aiAnalysisEvidence");
+  const confidence = root.querySelector("#aiAnalysisConfidence");
+  const uncertainty = root.querySelector("#aiAnalysisUncertainty");
+  const alternatives = root.querySelector("#aiAnalysisAlternatives");
+  const approval = root.querySelector("#aiAnalysisApproval");
+  const actions = root.querySelector("#aiAnalysisActions");
+  const skyBoundary = root.querySelector("#aiAnalysisSkyBoundary");
+  if (
+    !output || !summary || !suggestion || !evidence || !confidence ||
+    !uncertainty || !alternatives || !approval || !actions || !skyBoundary
+  ) return;
+
+  summary.textContent = analysis.summary;
+  suggestion.textContent = analysis.suggestion;
+  evidence.replaceChildren();
+  analysis.evidence.forEach(entry => appendTextItem(
+    root.ownerDocument,
+    evidence,
+    `${entry.reference} — ${sourceLabel(entry.source)} kaydı ${entry.eventId}`
+  ));
+  confidence.textContent = [
+    `%${Math.round(analysis.confidence * 100)}.`,
+    "Bu değer doğruluk olasılığı değil, sabit kuralın seçili dayanakları kapsama düzeyidir."
+  ].join(" ");
+  uncertainty.replaceChildren();
+  analysis.uncertainty.forEach(value => appendTextItem(
+    root.ownerDocument,
+    uncertainty,
+    value
+  ));
+  alternatives.replaceChildren();
+  analysis.alternatives.forEach(value => appendTextItem(
+    root.ownerDocument,
+    alternatives,
+    value
+  ));
+  approval.textContent = analysis.requiresUserApproval
+    ? "Onay durumu: işlem taslakları kullanıcı onayı bekliyor."
+    : "Onay durumu: işlem taslağı yok.";
+  actions.replaceChildren();
+  analysis.proposedActions.forEach(action => appendTextItem(
+    root.ownerDocument,
+    actions,
+    `${action.label} — onay bekliyor; NUT-017.3 bu taslağı yürütmez.`
+  ));
+  skyBoundary.textContent = context.counts.symbolicSky > 0
+    ? "Sembolik Sky bağlamı pakette bulunuyor; önerinin dayanağına, güven hesabına veya sağlık/duygu yorumuna katılmadı."
+    : "Sky verisi bu analizde kullanılmadı.";
+  output.hidden = false;
+}
+
+function analysisIdFor(context) {
+  let hash = 2166136261;
+  for (const character of context.contextId) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `analysis:nut-017.3:${(hash >>> 0).toString(36)}`;
+}
+
+async function handleAnalysis(root) {
+  if (!currentContext) {
+    setStatus(root, "Önce onaylı bağlam önizlemesi oluşturun.", "error");
+    return;
+  }
+
+  const button = root.querySelector("#btnAiAnalysis");
+  if (button) button.disabled = true;
+  setStatus(root, "Açıklanabilir öneri yalnız cihazda hazırlanıyor…", "busy");
+
+  try {
+    const result = await Promise.resolve(buildAnalysisPreview({
+      analysisId: analysisIdFor(currentContext),
+      requestedAt: new Date().toISOString(),
+      context: currentContext
+    }));
+
+    if (!result.success) {
+      currentAnalysis = null;
+      const output = root.querySelector("#aiAnalysisOutput");
+      if (output) output.hidden = true;
+      const message = result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH"
+        ? "Seçili kayıtlarda ilk NUT-017.3 kuralı eşleşmedi; öneri uydurulmadı."
+        : "Analiz isteği güvenlik sınırlarında reddedildi.";
+      setStatus(root, message, result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH"
+        ? "idle"
+        : "error");
+      return;
+    }
+
+    currentAnalysis = result.analysis;
+    renderAnalysis(root, result.analysis, currentContext);
+    setStatus(
+      root,
+      "Öneri hazır. Hiçbir işlem başlatılmadı; taslak kullanıcı onayı bekliyor.",
+      "success"
+    );
+  } catch (error) {
+    currentAnalysis = null;
+    const output = root.querySelector("#aiAnalysisOutput");
+    if (output) output.hidden = true;
+    setStatus(root, "Öneri hazırlanırken beklenmeyen hata oluştu.", "error");
+  } finally {
+    if (button) button.disabled = false;
+  }
 }
 
 async function handlePreview(root) {
@@ -227,7 +383,7 @@ async function handlePreview(root) {
     renderPreview(root, result.context, result.sourceWarnings);
     setStatus(
       root,
-      "Önizleme hazır. AI önerisi üretilmedi ve işlem başlatılmadı.",
+      "Önizleme hazır. Öneri yalnız aşağıdaki ayrı komutla üretilebilir.",
       "success"
     );
   } catch (error) {
@@ -252,9 +408,11 @@ export function getStatus() {
     initialized,
     hasRequestScopedContext: Boolean(currentContext),
     contextId: currentContext?.contextId || null,
+    analysisId: currentAnalysis?.analysisId || null,
     persistentConsent: false,
     externalTransfer: false,
-    aiProposalGenerated: false,
+    providerRegistered: false,
+    aiProposalGenerated: Boolean(currentAnalysis),
     actionStarted: false
   });
 }
@@ -277,6 +435,10 @@ export function initAIContextUI(documentRef = document) {
       if (confirmation) confirmation.checked = false;
       clearPreview(root);
     }
+  );
+  root.querySelector("#btnAiAnalysis")?.addEventListener(
+    "click",
+    () => handleAnalysis(root)
   );
   root.querySelectorAll(
     "[data-ai-context-class], [data-ai-context-free-text]"

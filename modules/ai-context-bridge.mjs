@@ -17,7 +17,7 @@ export const API_VERSION = 1;
 export const CONTRACT_VERSION = 1;
 export const RULESET_ID =
   "today:ai-context-bridge:nut-017.2";
-export const ENGINE_VERSION = "0.2.0-context";
+export const ENGINE_VERSION = "0.3.0-analysis";
 
 function deepFreeze(value, seen = new Set()) {
   if (!value || typeof value !== "object" || seen.has(value)) return value;
