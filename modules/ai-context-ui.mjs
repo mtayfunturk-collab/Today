@@ -1,6 +1,6 @@
 /**
- * Today App — AI Context, Suggestion, Decision & Pattern Observation UI
- * NUT-017.6
+ * Today App — AI Context, Suggestion, Decision & Pattern Feedback UI
+ * NUT-017.7
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -17,9 +17,12 @@ import {
 import {
   buildPatternPreview
 } from "./ai-pattern-bridge.mjs";
+import {
+  recordPatternFeedback
+} from "./ai-pattern-feedback-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.6";
+export const RULESET_ID = "today:ai-context-ui:nut-017.7";
 export const PURPOSE =
   "Günlük denge için kişisel öneri hazırlama";
 
@@ -31,12 +34,15 @@ let currentAction = null;
 let currentDecision = null;
 let currentReceipts = [];
 let currentPattern = null;
+let currentPatternFeedback = null;
 let currentReminderTime = "22:30";
 let requestSequence = 0;
 let requestEpoch = 0;
 let decisionSequence = 0;
+let feedbackSequence = 0;
 let decisionBusy = false;
 let patternBusy = false;
+let feedbackBusy = false;
 let initialized = false;
 
 const MAX_REQUEST_RECEIPTS = 20;
@@ -45,6 +51,12 @@ const CHOICE_LABELS = Object.freeze({
   A: "Bir şey oldu ama adı yok",
   B: "Her şey çok net",
   C: "Zordu bugün"
+});
+
+const PATTERN_FEEDBACK_LABELS = Object.freeze({
+  resonates: "Bana uyuyor",
+  "does-not-resonate": "Bana uymuyor",
+  unsure: "Emin değilim"
 });
 
 const RULE_REASON_LABELS = Object.freeze({
@@ -155,9 +167,29 @@ function setPatternStatus(root, message, state = "idle") {
   status.dataset.state = state;
 }
 
+function setPatternFeedbackStatus(root, message, state = "idle") {
+  const status = root.querySelector("#aiPatternFeedbackStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.state = state;
+}
+
+function clearPatternFeedback(root) {
+  currentPatternFeedback = null;
+  feedbackBusy = false;
+  const controls = root.querySelector("#aiPatternFeedbackControls");
+  controls?.querySelectorAll("[data-ai-pattern-feedback]").forEach(button => {
+    button.disabled = false;
+    button.setAttribute("aria-pressed", "false");
+  });
+  if (controls) controls.hidden = true;
+  setPatternFeedbackStatus(root, "");
+}
+
 function clearPattern(root) {
   currentPattern = null;
   patternBusy = false;
+  clearPatternFeedback(root);
   const button = root.querySelector("#btnAiPattern");
   const output = root.querySelector("#aiPatternOutput");
   const evidence = root.querySelector("#aiPatternEvidence");
@@ -394,6 +426,7 @@ function renderPattern(root, observation, context) {
   const alternatives = root.querySelector("#aiPatternAlternatives");
   const approval = root.querySelector("#aiPatternApproval");
   const skyBoundary = root.querySelector("#aiPatternSkyBoundary");
+  const feedbackControls = root.querySelector("#aiPatternFeedbackControls");
   if (
     !output || !summary || !evidence || !confidence || !uncertainty ||
     !alternatives || !approval || !skyBoundary
@@ -429,6 +462,8 @@ function renderPattern(root, observation, context) {
   skyBoundary.textContent = context.counts.symbolicSky > 0
     ? "Sky seçilmiş olsa da bu gözlemde kullanılmadı."
     : "Sky bu gözlemde kullanılmadı.";
+  clearPatternFeedback(root);
+  if (feedbackControls) feedbackControls.hidden = false;
   output.hidden = false;
 }
 
@@ -493,7 +528,7 @@ function analysisIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `analysis:nut-017.6:${(hash >>> 0).toString(36)}`;
+  return `analysis:nut-017.7:${(hash >>> 0).toString(36)}`;
 }
 
 function patternIdFor(context) {
@@ -502,7 +537,17 @@ function patternIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `pattern:nut-017.6:${(hash >>> 0).toString(36)}`;
+  return `pattern:nut-017.7:${(hash >>> 0).toString(36)}`;
+}
+
+function feedbackIdFor(observationId, response) {
+  feedbackSequence += 1;
+  let hash = 2166136261;
+  for (const character of `${observationId}|${response}|${feedbackSequence}`) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `feedback:nut-017.7:${(hash >>> 0).toString(36)}:${feedbackSequence}`;
 }
 
 function decisionIdFor(analysisId, actionId) {
@@ -512,7 +557,7 @@ function decisionIdFor(analysisId, actionId) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `decision:nut-017.6:${(hash >>> 0).toString(36)}:${decisionSequence}`;
+  return `decision:nut-017.7:${(hash >>> 0).toString(36)}:${decisionSequence}`;
 }
 
 function setDecisionStatus(root, message, state = "idle") {
@@ -808,6 +853,78 @@ async function handlePattern(root) {
   }
 }
 
+async function handlePatternFeedback(root, response) {
+  if (!currentPattern || !PATTERN_FEEDBACK_LABELS[response]) {
+    setPatternFeedbackStatus(
+      root,
+      "Önce son 7 günlük gözlemi hazırla.",
+      "error"
+    );
+    return;
+  }
+  if (feedbackBusy) return;
+
+  const activePattern = currentPattern;
+  const activeRequestEpoch = requestEpoch;
+  const buttons = [...root.querySelectorAll("[data-ai-pattern-feedback]")];
+  feedbackBusy = true;
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+  setPatternFeedbackStatus(root, "Seçimin alınıyor…", "busy");
+
+  try {
+    const result = await Promise.resolve(recordPatternFeedback({
+      feedbackId: feedbackIdFor(activePattern.observationId, response),
+      observation: activePattern,
+      response,
+      respondedAt: new Date().toISOString()
+    }));
+
+    if (
+      activeRequestEpoch !== requestEpoch ||
+      activePattern !== currentPattern
+    ) return;
+
+    if (!result.success) {
+      setPatternFeedbackStatus(
+        root,
+        "Seçimin alınamadı. Lütfen yeniden dene.",
+        "error"
+      );
+      return;
+    }
+
+    currentPatternFeedback = result.receipt;
+    buttons.forEach(button => {
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.aiPatternFeedback === response)
+      );
+    });
+    setPatternFeedbackStatus(
+      root,
+      `Geri bildirimin alındı: ${PATTERN_FEEDBACK_LABELS[response]}. ` +
+        "Yalnız bu ekran açıkken tutuluyor.",
+      "success"
+    );
+  } catch (error) {
+    currentPatternFeedback = null;
+    setPatternFeedbackStatus(
+      root,
+      "Seçimin alınırken beklenmeyen bir hata oluştu.",
+      "error"
+    );
+  } finally {
+    if (activeRequestEpoch === requestEpoch) {
+      feedbackBusy = false;
+      buttons.forEach(button => {
+        button.disabled = false;
+      });
+    }
+  }
+}
+
 async function handlePreview(root) {
   const confirmation = root.querySelector("#aiConsentConfirm");
   const button = root.querySelector("#btnAiContextPreview");
@@ -902,6 +1019,11 @@ export function getStatus() {
     patternObservationId: currentPattern?.observationId || null,
     patternApprovalRequired: false,
     patternActionProposed: false,
+    patternFeedbackRecorded: Boolean(currentPatternFeedback),
+    patternFeedbackResponse: currentPatternFeedback?.response || null,
+    patternFeedbackPersisted: false,
+    patternFeedbackChangedObservation: false,
+    modelUpdated: false,
     auditPersisted: false,
     actionStarted: false
   });
@@ -934,6 +1056,12 @@ export function initAIContextUI(documentRef = document) {
     "click",
     () => handlePattern(root)
   );
+  root.querySelectorAll("[data-ai-pattern-feedback]").forEach(button => {
+    button.addEventListener(
+      "click",
+      () => handlePatternFeedback(root, button.dataset.aiPatternFeedback)
+    );
+  });
   root.querySelector("#btnAiApprove")?.addEventListener(
     "click",
     () => handleDecision(root, "approved")
