@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/pattern-feedback-receipt.schema.json",
+  "title": "Today Request-scoped Pattern Feedback Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "eventType",
+    "feedbackId",
+    "observationId",
+    "response",
+    "respondedAt",
+    "actor",
+    "scope",
+    "effects",
+    "boundaries"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "receiptId": { "type": "string", "minLength": 1 },
+    "eventType": { "const": "pattern-feedback-recorded" },
+    "feedbackId": { "type": "string", "minLength": 1 },
+    "observationId": { "type": "string", "minLength": 1 },
+    "response": {
+      "enum": ["resonates", "does-not-resonate", "unsure"]
+    },
+    "respondedAt": { "type": "string", "format": "date-time" },
+    "actor": { "const": "user" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "processingMode",
+        "retention",
+        "persistent",
+        "externalRecipient"
+      ],
+      "properties": {
+        "processingMode": { "const": "device-only" },
+        "retention": { "const": "request-scoped" },
+        "persistent": { "const": false },
+        "externalRecipient": { "type": "null" }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observationChanged",
+        "confidenceChanged",
+        "modelUpdated",
+        "memoryWritten",
+        "actionExecuted",
+        "connectCalled",
+        "auditPersisted",
+        "externalTransfer"
+      ],
+      "properties": {
+        "observationChanged": { "const": false },
+        "confidenceChanged": { "const": false },
+        "modelUpdated": { "const": false },
+        "memoryWritten": { "const": false },
+        "actionExecuted": { "const": false },
+        "connectCalled": { "const": false },
+        "auditPersisted": { "const": false },
+        "externalTransfer": { "const": false }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["causalityClaim", "diagnosis", "skyUsed"],
+      "properties": {
+        "causalityClaim": { "const": false },
+        "diagnosis": { "const": false },
+        "skyUsed": { "const": false }
+      }
+    }
+  }
+}

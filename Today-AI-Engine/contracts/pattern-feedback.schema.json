@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/pattern-feedback.schema.json",
+  "title": "Today Pattern Feedback v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "feedbackId",
+    "observation",
+    "response",
+    "respondedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "feedbackId": { "type": "string", "minLength": 1 },
+    "observation": {
+      "$ref": "pattern-observation-output.schema.json"
+    },
+    "response": {
+      "enum": ["resonates", "does-not-resonate", "unsure"]
+    },
+    "respondedAt": { "type": "string", "format": "date-time" }
+  }
+}
