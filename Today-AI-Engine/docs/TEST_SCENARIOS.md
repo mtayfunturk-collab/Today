@@ -34,3 +34,20 @@ Sonuç: Foundation `10/10`, NUT-017.1 `41/41`; toplam `51 PASS / 0 FAIL`.
 24. Analizör DOM, App depolaması, ağ, TodayAI/Connect veya sistem saatine erişmez.
 
 Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3 `29/29`; toplam `80 PASS / 0 FAIL`.
+
+## NUT-017.3.1 ek kapsamı
+
+25. Uyku tam 360 dakika olduğunda tanı; Core koşulunu ve aynı tarih koşulunu başarılı, uyku eşiğini başarısız göstermelidir.
+26. Core seçimi `C` değilse kontrollü `core-choice-not-hard-day` gerekçesi dönmelidir.
+27. Uyku kaydı yoksa kontrollü `sleep-record-missing` gerekçesi dönmelidir.
+28. Core ve uyku farklı yerel tarihlerdeyse `records-not-same-local-date` gerekçesi dönmelidir.
+29. Geçersiz veya cihaz-dışı analiz isteğinde doğrulanmamış bağlam tanısı bulunmamalıdır.
+30. App UI Core seçimini, uyku süresini, yerel tarih denetimini ve Türkçe eşleşmeme nedenini göstermelidir.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`; toplam `86 PASS / 0 FAIL`. App kapısı `49/49` başarılıdır.
+
+## NUT-017.3.2 host regresyon kapsamı
+
+31 olaylık kaynak sınırı eski Health kayıtlarıyla dolmak üzereyken bugüne ait onaylı uyku olayı en yeni alt kümede korunmalıdır. Health public bağlam görünümü de kendi tür sınırında en yeni kayıtları seçmeli ve değişmez kopya döndürmelidir. Nihai olay dizisi sözleşme için kronolojik ve deterministik kalmalıdır.
+
+Sonuç: AI Engine değişmeden `86 PASS / 0 FAIL`; NUT-017.3.2 App kapısı `50/50 PASS`.

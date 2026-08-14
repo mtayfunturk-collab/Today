@@ -12,6 +12,10 @@ Bu referans eşlemenin host entegrasyonu NUT-017.2 ile Today App `2.10.0` ve `to
 
 NUT-017.3 ile App `2.11.0` ve `today-v2-foundation-060` üzerinde, onaylı bağlam önizlemesinden sonra ayrı kullanıcı komutuyla çalışan ilk açıklanabilir analiz eklenmiştir. Bu çalışma canlı/yerel model sağlayıcısı kaydetmez; mevcut foundation policy guard, explanation builder, approval gateway veya audit writer bileşenlerini yeniden oluşturmaz. Yeni saf analizör yalnız belgelenmiş ilk deterministik kuralı uygular ve mevcut `analysis-output` v1 sözleşmesini üretir.
 
+NUT-017.3.1 ile App `2.11.1`, Engine `0.3.1-analysis` ve `today-v2-foundation-061` üzerinde eşleşmeme tanısı eklenmiştir. İlk kuralın koşulları değişmez. Yalnız doğrulanmış Context Package içindeki en güncel Core ve uyku gözlemleri ile aynı yerel tarih denetimi App köprüsüne gerekçeli olarak döner. Geçersiz isteğe tanı üretilmez; Sky tanıya katılmaz.
+
+NUT-017.3.2 ile App `2.11.2` ve `today-v2-foundation-062` üzerinde yalnız host kaynak seçimi düzeltilmiştir. Kaynak başına sınır dolduğunda en eski olaylar yerine en yeni deterministik alt küme korunur; Engine `0.3.1-analysis`, sözleşmeler ve ilk kural değişmez. Böylece yeni uyku kaydı eski Health olaylarınca bağlam dışında bırakılamaz.
+
 ## Sınırlar
 
 ```mermaid
@@ -52,6 +56,14 @@ Today App'teki kaynak adaptörü Core için `TodayStorage`, Health için `TodayH
 `analyzeTodayContext(request)` yalnız `analysis-request` v1 nesnesini işler. Context Package cihaz-içi/istek-süreli sınırları, açık onay fişi, provenance ve ayrı sembolik Sky bölümüyle doğrulanır. İlk kural yalnız aynı yerel gündeki en güncel Core `C` kaydı ile 6 saatin altındaki en güncel uyku kaydını kullanır. Başarılı çıktı iki gerçek olay kimliğini dayanak gösterir; eşleşme yoksa fail-closed sonuç döner.
 
 App köprüsü analiz sonucunu değiştirmez, sağlayıcı kaydetmez ve Connect çağırmaz. UI sonucu yalnız ayrı kullanıcı komutundan sonra gösterir. İşlem taslağı `pending-user-approval` kalır; NUT-017.3 onay kararı toplamaz, audit olayı yazmaz ve eylemi yürütmez. Sky seçilmiş olsa bile dayanak, confidence veya sağlık/duygu yorumuna katılmaz.
+
+### NUT-017.3.1 eşleşmeme tanısı
+
+`no-matching-rule`, öneri yerine `ruleEvaluation` ayrıntısı taşıyabilir. Bu ayrıntı yalnız kuralın sabit gereksinimlerini, seçilen Core/uyku olay kimliklerini, yerel tarihleri, izinli seçim/süre değerlerini, üç boolean denetimi ve kontrollü gerekçe kodlarını içerir. App UI tanıyı kullanıcı diline çevirir; Engine hâlâ DOM, depolama veya ağ bilmez.
+
+### NUT-017.3.2 host kayıt seçimi
+
+Today App adaptörü, onaylı her kaynak için olay sınırını Engine çağrısından önce uygular. Sınır aşıldığında en yeni alt küme seçilir ve dış sözleşmeye verilmeden önce tekrar kronolojik sıraya konur. Bu seçim saf, cihaz-içi ve deterministiktir. Engine bu mantığı, App depolama anahtarlarını veya DOM'u bilmez.
 
 ## Riskler
 
