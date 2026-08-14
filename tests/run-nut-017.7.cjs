@@ -6,6 +6,9 @@ const GROUPS = Object.freeze([
   "tests/ai-context-source-adapters.test.cjs",
   "tests/ai-context-bridge.test.mjs",
   "tests/ai-analysis-bridge.test.mjs",
+  "tests/ai-approval-bridge.test.mjs",
+  "tests/ai-pattern-bridge.test.mjs",
+  "tests/ai-pattern-feedback-bridge.test.mjs",
   "tests/ai-context-ui.test.mjs"
 ]);
 
@@ -34,8 +37,8 @@ for (const file of GROUPS) {
 }
 
 if (failures.length) {
-  console.error("\nNUT-017.3.2 Gate başarısız:", failures);
+  console.error("\nNUT-017.7 Gate başarısız:", failures);
   process.exitCode = 1;
 } else {
-  console.log(`\nNUT-017.3.2 Gate: ${passed}/${expected} başarılı`);
+  console.log(`\nNUT-017.7 Gate: ${passed}/${expected} başarılı`);
 }

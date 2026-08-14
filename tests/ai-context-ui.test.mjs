@@ -18,6 +18,10 @@ const patternBridgeSource = await readFile(
   new URL("../modules/ai-pattern-bridge.mjs", import.meta.url),
   "utf8"
 );
+const patternFeedbackBridgeSource = await readFile(
+  new URL("../modules/ai-pattern-feedback-bridge.mjs", import.meta.url),
+  "utf8"
+);
 const swSource = await readFile(
   new URL("../sw.js", import.meta.url),
   "utf8"
@@ -159,9 +163,14 @@ await test("Ayarlar içinde erişilebilir AI bağlam yüzeyi bulunur", () => {
   assert.equal(panel.getAttribute("aria-labelledby"), "aiContextTitle");
   assert.equal(document.querySelector("#aiContextStatus").getAttribute("role"), "status");
   assert.equal(document.querySelector("#aiConsentPurpose").textContent, ui.PURPOSE);
-  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.6");
+  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.7");
   assert.ok(document.querySelector("#btnAiPattern"));
   assert.equal(document.querySelector("#aiPatternOutput").hidden, true);
+  assert.equal(
+    document.querySelectorAll("[data-ai-pattern-feedback]").length,
+    3
+  );
+  assert.equal(document.querySelector("#aiPatternFeedbackControls").hidden, true);
 });
 
 await test("Varsayılan kapsam veri-minimum Core ve temel Health seçimidir", () => {
@@ -406,8 +415,62 @@ await test("Son 7 günlük tekrar sade, açıklanabilir ve eylemsiz gösterilir"
   assert.equal(ui.getStatus().patternObservationGenerated, true);
   assert.equal(ui.getStatus().patternApprovalRequired, false);
   assert.equal(ui.getStatus().patternActionProposed, false);
+  assert.equal(ui.getStatus().patternFeedbackRecorded, false);
   assert.equal(ui.getStatus().actionStarted, false);
   includePatternHistory = false;
+});
+
+await test("Kullanıcı gözlemi üç sade seçenekten biriyle doğrulayabilir", async () => {
+  const controls = document.querySelector("#aiPatternFeedbackControls");
+  const buttons = [...controls.querySelectorAll("[data-ai-pattern-feedback]")];
+  assert.equal(controls.hidden, false);
+  assert.deepEqual(
+    buttons.map(button => button.textContent.trim()),
+    ["Bana uyuyor", "Bana uymuyor", "Emin değilim"]
+  );
+
+  buttons[0].click();
+  await settle();
+  assert.equal(ui.getStatus().patternFeedbackRecorded, true);
+  assert.equal(ui.getStatus().patternFeedbackResponse, "resonates");
+  assert.equal(ui.getStatus().patternFeedbackPersisted, false);
+  assert.equal(ui.getStatus().patternFeedbackChangedObservation, false);
+  assert.equal(ui.getStatus().modelUpdated, false);
+  assert.equal(buttons[0].getAttribute("aria-pressed"), "true");
+  assert.match(
+    document.querySelector("#aiPatternFeedbackStatus").textContent,
+    /Geri bildirimin alındı: Bana uyuyor/
+  );
+  assert.match(
+    document.querySelector("#aiPatternFeedbackStatus").textContent,
+    /Yalnız bu ekran açıkken tutuluyor/
+  );
+});
+
+await test("Geri bildirim değiştirilebilir ve yalnız son seçim görünür kalır", async () => {
+  const previousObservation = ui.getStatus().patternObservationId;
+  const button = document.querySelector(
+    '[data-ai-pattern-feedback="does-not-resonate"]'
+  );
+  button.click();
+  await settle();
+
+  assert.equal(ui.getStatus().patternFeedbackResponse, "does-not-resonate");
+  assert.equal(ui.getStatus().patternObservationId, previousObservation);
+  assert.equal(button.getAttribute("aria-pressed"), "true");
+  assert.equal(
+    document.querySelector('[data-ai-pattern-feedback="resonates"]')
+      .getAttribute("aria-pressed"),
+    "false"
+  );
+  assert.match(
+    document.querySelector("#aiPatternFeedbackStatus").textContent,
+    /Bana uymuyor/
+  );
+  assert.doesNotMatch(
+    document.querySelector("#aiPatternOutput").textContent,
+    /feedback:|receipt:|observationId|schemaVersion|NUT-017/
+  );
 });
 
 await test("Kapsam değişikliği bellekteki ve hazırlanmakta olan önizlemeyi düşürür", async () => {
@@ -451,6 +514,10 @@ await test("Temizle eylemi bağlamı, sayıları ve onay kutusunu temizler", asy
   assert.equal(document.querySelector("#aiPatternEvidence").childElementCount, 0);
   assert.equal(document.querySelector("#aiPatternOutput").hidden, true);
   assert.equal(ui.getStatus().patternObservationGenerated, false);
+  assert.equal(ui.getStatus().patternFeedbackRecorded, false);
+  assert.equal(ui.getStatus().patternFeedbackResponse, null);
+  assert.equal(document.querySelector("#aiPatternFeedbackControls").hidden, true);
+  assert.equal(document.querySelector("#aiPatternFeedbackStatus").textContent, "");
   assert.equal(document.querySelector("#aiDecisionReceiptItems").childElementCount, 0);
   assert.equal(document.querySelector("#aiDecisionReceipt").hidden, true);
   assert.equal(ui.getStatus().receiptCount, 0);
@@ -459,7 +526,12 @@ await test("Temizle eylemi bağlamı, sayıları ve onay kutusunu temizler", asy
 
 await test("UI onayı veya seçilen bilgiler kalıcı depolamaya ya da ağa yazılmaz", () => {
   assert.equal(window.localStorage.length, 0);
-  for (const source of [uiSource, approvalBridgeSource, patternBridgeSource]) {
+  for (const source of [
+    uiSource,
+    approvalBridgeSource,
+    patternBridgeSource,
+    patternFeedbackBridgeSource
+  ]) {
     assert.doesNotMatch(
       source,
       /(?:localStorage|sessionStorage|indexedDB|fetch\s*\(|XMLHttpRequest|WebSocket\s*\()/
@@ -478,13 +550,15 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
     "./modules/ai-analysis-bridge.mjs",
     "./modules/ai-approval-bridge.mjs",
     "./modules/ai-pattern-bridge.mjs",
+    "./modules/ai-pattern-feedback-bridge.mjs",
     "./modules/ai-context-ui.mjs",
     "./Today-AI-Engine/src/context-builder.mjs",
     "./Today-AI-Engine/src/data-usage-consent.mjs",
     "./Today-AI-Engine/src/daily-support-analyzer.mjs",
     "./Today-AI-Engine/src/approval-decision-processor.mjs",
     "./Today-AI-Engine/src/decision-receipt-builder.mjs",
-    "./Today-AI-Engine/src/pattern-observer.mjs"
+    "./Today-AI-Engine/src/pattern-observer.mjs",
+    "./Today-AI-Engine/src/pattern-feedback-processor.mjs"
   ]) {
     assert.equal(swSource.includes(`"${file}"`), true, `${file} shell dışında`);
   }
@@ -493,12 +567,12 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 111);
+  assert.equal(shellFiles.length, 113);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-065/);
+  assert.match(swSource, /today-v2-foundation-066/);
 });
 
 const failures = results.filter(result => !result.success);
@@ -508,7 +582,7 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.6 Consent, Analysis, Decision, Receipt & Pattern UI: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.7 Consent, Analysis, Decision, Pattern & Feedback UI: ${passed}/${results.length} başarılı`);
 
 if (originalGlobals.window === undefined) delete globalThis.window;
 else globalThis.window = originalGlobals.window;
