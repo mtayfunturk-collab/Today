@@ -60,6 +60,18 @@ Başarılı `pattern-observation-output` v1 şunları zorunlu taşır:
 
 Bu çıktı bir teşhis, öğrenilmiş kişisel model, gelecek tahmini veya “uyku zor güne neden oldu” iddiası değildir. Yalnız seçilen kayıtlarda iki durumun aynı günlerde tekrarlandığını betimler. Gözlem App belleğinde mevcut istek boyunca yaşar; karar makbuzu, Connect veya kalıcı audit üretmez.
 
+## NUT-017.7 kullanıcı doğrulaması
+
+Başarılı yedi günlük gözlemden sonra kullanıcı yalnız şu yanıtları verebilir:
+
+- Bana uyuyor (`resonates`)
+- Bana uymuyor (`does-not-resonate`)
+- Emin değilim (`unsure`)
+
+`pattern-feedback-processor.mjs` yanıtı yalnız geçerli ve değiştirilmemiş `pattern-observation-output` v1 ile kabul eder. Sonuç gözleme bağlı, sürümlü ve istek-süreli bir geri bildirim makbuzudur. Bu kayıt gözlemin dayanak, güven, belirsizlik, seçenek veya onay durumunu değiştirmez; yeni bir AI çıktısı ya da doğruluk etiketi üretmez.
+
+App yalnız seçenekleri ve son seçimin alındığını gösterir. Teknik kimlikler görünmez. Seçim yeni önizleme, temizleme veya sayfa yenileme ile düşer; model öğrenmesi, kişisel profil, kalıcı hafıza, audit, Connect, dış aktarım veya işlem başlatmaz.
+
 ## Yasak çıktılar
 
 - Teşhis: “Depresyondasın”, “uyku bozukluğun var”.
@@ -71,3 +83,4 @@ Bu çıktı bir teşhis, öğrenilmiş kişisel model, gelecek tahmini veya “u
 - Düzenlemeyi otomatik onay sayma veya onay kararını gerçek eylem yapılmış gibi sunma.
 - Geçici karar makbuzunu kalıcı audit, Connect çağrısı veya tamamlanmış işlem gibi sunma.
 - Birlikte görülen Core–uyku kayıtlarını nedensellik, teşhis veya kişilik hükmü gibi sunma.
+- Kullanıcı geri bildirimini öğrenilmiş gerçek, gözlemin doğruluğu, kalıcı tercih veya sonraki çıktıları değiştiren model eğitimi gibi sunma.

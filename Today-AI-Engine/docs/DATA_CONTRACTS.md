@@ -20,6 +20,8 @@
 - `decision-receipt.schema.json`: Kararın izlenebilir fakat kalıcı olmayan, istek-süreli sonucunu kaydeder.
 - `pattern-observation-request.schema.json`: Yedi günlük Context Package ve dar Core–uyku tekrar capability'sini taşır.
 - `pattern-observation-output.schema.json`: Çok günlük betimleyici gözlemin dayanak, güven, belirsizlik, seçenek, onay ve sınırlarını taşır.
+- `pattern-feedback.schema.json`: Kullanıcının geçerli örüntü gözlemine verdiği üç açık yanıttan birini ve yanıt zamanını taşır.
+- `pattern-feedback-receipt.schema.json`: Geri bildirimin gözleme bağlı, cihaz-içi ve kalıcı olmayan sonucunu taşır.
 - `data-usage-consent.schema.json`: Amaç, kaynak, veri sınıfı, serbest metin ve cihaz-içi işleme izni.
 - `context-build-request.schema.json`: Onay, tarih penceresi ve ortak olay zarflarını taşıyan deterministik build isteği.
 - `context-package.schema.json`: Minimize Core/Health bölümleri, ayrı sembolik Sky bağlamı, provenance, omission, redaction ve sınır beyanları.
@@ -63,3 +65,9 @@ Makbuz üreticisi yalnız geçerli NUT-017.4 karar sonucunu kabul eder. Karar ve
 `pattern-observation-request` v1 yalnız `core-sleep-recurrence` capability'sini, istek zamanını ve `context-package` v1'i kabul eder. Context penceresi tam 7 yerel gün olmalı; cihaz-içi, istek-süreli onay ve sembolik Sky sınırları bozulmamalıdır.
 
 `pattern-observation-output` v1; gözlem kimliği, özet, pencere sayıları, eşleşen günlere ait Core/Health dayanakları, gözlem gücü, belirsizlikler, seçenekler, onay durumu ve etki sınırlarını taşır. Sayısal güç puanı yalnız pencere kapsamı ile tekrar oranından türetilir ve `probabilityClaim=false` ile işaretlenir. Çıktı eylem taslağı içermez; `approval.status=not-required`, `causalityClaim=false`, `skyUsed=false` ve `actionProposed=false` sabittir.
+
+## NUT-017.7 örüntü geri bildirimi
+
+`pattern-feedback` v1; geri bildirim kimliği, sözleşmeye uygun örüntü gözlemi, `resonates`, `does-not-resonate` veya `unsure` yanıtı ve açık etkileşim zamanını taşır. İşlemci gözlemi yeniden üretmez; içeriğin dayanak, güven, onay ve güvenlik sınırlarını doğrulayarak değiştirilmiş gözlemi reddeder.
+
+`pattern-feedback-receipt` v1; geri bildirim ve gözlem kimliklerini, kullanıcı yanıtını, zamanı, kapsamı ve etkileri bağlar. Kapsam `device-only`, `request-scoped`, `persistent=false`, dış alıcı `null` olmak zorundadır. Gözlem/güven değişikliği, model güncellemesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım bayraklarının tümü `false` kalır. Makbuz Today App ana kaydı veya storage anahtarı değildir.

@@ -91,3 +91,16 @@ Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`,
 55. Gözlemci ve App köprüsü DOM, storage, ağ, model sağlayıcısı, Connect veya sistem saatine doğrudan erişmemelidir.
 
 Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`, NUT-017.6 örüntü `40/40`; AI Engine toplam `185 PASS / 0 FAIL`. NUT-017.6 App kapısı `73/73 PASS`.
+
+## NUT-017.7 örüntü geri bildirimi kapsamı
+
+56. `resonates`, `does-not-resonate` ve `unsure` yanıtlarının her biri yalnız geçerli bir örüntü gözlemiyle kabul edilmelidir.
+57. Makbuz geri bildirimi gerçek gözlem kimliğine bağlamalı; kullanıcı yanıtını ve açık etkileşim zamanını korumalıdır.
+58. Nedensellik, teşhis, Sky, eylem, dış alıcı, kalıcılık, onay veya güven sınırı değiştirilmiş gözlem fail-closed reddedilmelidir.
+59. Aynı geri bildirim isteği deterministik ve derin dondurulmuş sonuç vermelidir.
+60. Gözlem/güven değişikliği, model güncellemesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım etkileri kapalı kalmalıdır.
+61. İşlemci ve App köprüsü DOM, App storage, ağ, Connect veya sistem saatine doğrudan erişmemelidir.
+62. App yalnız “Bana uyuyor”, “Bana uymuyor” ve “Emin değilim” seçeneklerini göstermeli; teknik kimlik veya kod göstermemelidir.
+63. Kullanıcı son seçimini değiştirebilmeli; yeni önizleme veya temizleme geçici geri bildirimi sıfırlamalıdır.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`, NUT-017.6 örüntü `40/40`, NUT-017.7 geri bildirim `47/47`; AI Engine toplam `232 PASS / 0 FAIL`. NUT-017.7 App kapısı `83/83 PASS`.

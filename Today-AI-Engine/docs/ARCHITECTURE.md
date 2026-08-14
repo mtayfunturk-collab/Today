@@ -22,6 +22,8 @@ NUT-017.5 ile App `2.13.0`, karar makbuzu katmanı `0.5.0-receipt` ve `today-v2-
 
 NUT-017.6 ile App `2.14.0`, örüntü gözlem katmanı `0.6.0-pattern` ve `today-v2-foundation-065` üzerinde aynı onaylı Context Package'ten ayrı bir yedi günlük tekrar gözlemi eklenmiştir. En az üç aynı-gün Core/uyku çifti ve iki Core `C` + 6 saat altı uyku birlikteliği yoksa gözlem üretilmez. Çıktı nedensellik, teşhis, Sky dayanağı, onay veya eylem taşımaz; kullanıcıya teknik kimlikler olmadan sade bir kart olarak gösterilir.
 
+NUT-017.7 ile App `2.15.0`, geri bildirim katmanı `0.7.0-feedback` ve `today-v2-foundation-066` üzerinde kullanıcının başarılı örüntü gözlemini doğrulayabilmesi eklenmiştir. Üç açık yanıt geçerli gözleme bağlanır ve yalnız mevcut istek boyunca tutulur. Geri bildirim gözlemi veya güveni değiştirmez; öğrenme, kalıcı hafıza, Sky kullanımı, Connect ve işlem kapalı kalır.
+
 ## Sınırlar
 
 ```mermaid
@@ -31,6 +33,8 @@ flowchart TD
   C --> D["Mevcut AI analiz hattı"]
   C --> J["7 günlük örüntü gözlemcisi"]
   J --> K["Betimleyici gözlem; eylem yok"]
+  K --> L{"Kullanıcı geri bildirimi"}
+  L --> M["Geçici geri bildirim; öğrenme yok"]
   D --> E{"Kullanıcı onayı"}
   E -->|"Onay"| F["Geçici karar ve makbuz; işlem yok"]
   E -->|"Düzenleme"| H["Yeni onay-bekleyen taslak"]
@@ -48,9 +52,10 @@ flowchart TD
 5. Analysis adapter: İlk aşamada deterministik kural motoru; ileride yerel/bulut model adaptörü.
 6. Explanation builder: Öneri, dayanak, güven ve belirsizlik üretir.
 7. Pattern observer: NUT-017.6 son 7 günlük aynı-gün Core/uyku tekrarını betimler; nedensellik, teşhis veya eylem üretmez.
-8. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
-9. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
-10. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.6 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
+8. Pattern feedback processor: NUT-017.7 kullanıcının üç açık yanıtından sürümlü, istek-süreli bir makbuz üretir; gözlemi veya modeli değiştirmez.
+9. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
+10. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
+11. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.7 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
 
 ## Entegrasyon etkisi
 
@@ -97,6 +102,12 @@ Makbuzun kapsamı değiştirilemez: `device-only`, `request-scoped`, `persistent
 `observeTodayPattern(request)` yalnız `pattern-observation-request` v1 ve tam yedi günlük Context Package kabul eder. Her yerel tarihte en güncel `daily-checkin` ve `sleep-record` seçilir. Geçerli seçim/süre taşıyan en az üç aynı-gün çiftinden en az ikisi Core `C` ve 360 dakikanın altında uyku içeriyorsa `pattern-observation-output` v1 üretilir.
 
 Çıktının dayanakları yalnız eşleşen Core ve Health olaylarına bağlanır. Güven puanı pencere kapsamı ile tekrar oranından hesaplanır; olasılık değildir ve UI'da sade düzeye çevrilir. Sky Context Package'te bulunabilir fakat seçim, dayanak, güven veya tanıya katılmaz. Gözlem `approval.required=false` ve `actionProposed=false` taşır; App belleği dışında saklanmaz.
+
+## NUT-017.7 örüntü geri bildirimi sınırı
+
+`processPatternFeedback(request)` yalnız sözleşmeye uygun, eylemsiz ve nedenselliksiz `pattern-observation-output` v1 ile `resonates`, `does-not-resonate` veya `unsure` yanıtlarından birini kabul eder. Gözlemin güven, onay, Sky, işlem veya kalıcılık sınırı değiştirilmişse istek fail-closed reddedilir.
+
+Başarılı sonuç `pattern-feedback-receipt` v1 üretir ve kullanıcı yanıtını gerçek gözlem kimliğine bağlar. Makbuz yalnız cihazda ve mevcut istek boyunca yaşar. Gözlem ve güven değişikliği, model öğrenmesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım etkilerinin tamamı `false` kalır. App köprüsü DOM veya depolama bilmez; UI yalnız üç sade seçenek ile son seçimi gösterir ve teknik kimlikleri gizler.
 
 ## Riskler
 

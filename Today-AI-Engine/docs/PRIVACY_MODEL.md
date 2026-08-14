@@ -12,6 +12,8 @@ NUT-017.5 karar makbuzları da yalnız mevcut ekran isteğinin belleğinde tutul
 
 NUT-017.6 son 7 günlük gözlem için yeni veri toplamaz; aynı açık onayla hazırlanmış, minimize Context Package'i kullanır. Çıktı yalnız mevcut ekran isteğinde tutulur. Eşleşen günlerin iç dayanak kimlikleri kullanıcıya gösterilmez; Sky, serbest metin ve dış alıcı gözleme eklenmez.
 
+NUT-017.7 kullanıcı geri bildirimini yalnız mevcut gözlem isteğinin belleğinde tutar. Yanıt yeni bir kullanıcı profiline, modele, ana Today kaydına, storage anahtarına veya kalıcı audit'e yazılmaz; cihaz dışına aktarılmaz. Kullanıcı yeni önizleme hazırladığında, temizlediğinde veya sayfayı yenilediğinde seçim düşer. İç makbuz kimlikleri kullanıcı arayüzünde gösterilmez.
+
 ## Bulut sağlayıcı eklenmeden önce zorunlu bildirim
 
 - Gönderilecek alanlar
