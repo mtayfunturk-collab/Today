@@ -1,16 +1,16 @@
 /**
  * Today AI Engine — Explainable Daily Support Analyzer
- * NUT-017.3
+ * NUT-017.3.1
  *
  * Saf ve deterministik bir analiz fonksiyonudur. DOM, Today App depolaması,
  * ağ, model sağlayıcısı, Connect veya sistem saatine erişmez.
  */
 
-export const ENGINE_VERSION = "0.3.0-analysis";
+export const ENGINE_VERSION = "0.3.1-analysis";
 export const ANALYSIS_REQUEST_SCHEMA_VERSION = 1;
 export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 1;
 export const CAPABILITY = "daily-support-suggestion";
-export const RULESET_ID = "today:daily-support:nut-017.3";
+export const RULESET_ID = "today:daily-support:nut-017.3.1";
 
 const IDENTIFIER_PATTERN =
   /^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$/;
@@ -29,10 +29,10 @@ function deepFreeze(value, seen = new Set()) {
   return Object.freeze(value);
 }
 
-function failure(code) {
+function failure(code, details = {}) {
   return deepFreeze({
     ok: false,
-    error: { code }
+    error: { code, ...details }
   });
 }
 
@@ -159,7 +159,7 @@ function durationReference(minutes) {
     : `Uyku kaydı: ${hours} saat ${remainder} dakika`;
 }
 
-function matchingEvidence(context) {
+function ruleEvaluation(context) {
   const core = latest(
     context.sections.core,
     item => item.eventType === "daily-checkin"
@@ -169,15 +169,73 @@ function matchingEvidence(context) {
     item => item.eventType === "sleep-record"
   );
 
-  return core &&
-    core.facts.choice === "C" &&
-    sleep &&
-    sleep.localDate === core.localDate &&
-    Number.isFinite(sleep.facts.durationMinutes) &&
-    sleep.facts.durationMinutes > 0 &&
-    sleep.facts.durationMinutes < SHORT_SLEEP_MINUTES
-      ? { core, sleep }
-      : null;
+  const observedChoice = ["A", "B", "C"].includes(core?.facts.choice)
+    ? core.facts.choice
+    : null;
+  const observedDuration = Number.isFinite(sleep?.facts.durationMinutes)
+    ? sleep.facts.durationMinutes
+    : null;
+  const coreChoiceMatches = observedChoice === "C";
+  const sleepDurationMatches = observedDuration !== null &&
+    observedDuration > 0 &&
+    observedDuration < SHORT_SLEEP_MINUTES;
+  const sameLocalDate = core && sleep
+    ? core.localDate === sleep.localDate
+    : null;
+  const reasons = [];
+
+  if (!core) reasons.push("core-record-missing");
+  else if (!coreChoiceMatches) reasons.push("core-choice-not-hard-day");
+
+  if (!sleep) reasons.push("sleep-record-missing");
+  else if (observedDuration === null) reasons.push("sleep-duration-missing");
+  else if (observedDuration <= 0) reasons.push("sleep-duration-not-positive");
+  else if (!sleepDurationMatches) {
+    reasons.push("sleep-duration-not-below-threshold");
+  }
+
+  if (sameLocalDate === false) reasons.push("records-not-same-local-date");
+
+  const diagnostic = {
+    rulesetId: RULESET_ID,
+    matched: reasons.length === 0,
+    required: {
+      coreChoice: "C",
+      sleepDuration: {
+        operator: "less-than",
+        minutes: SHORT_SLEEP_MINUTES
+      },
+      sameLocalDate: true
+    },
+    observed: {
+      core: core
+        ? {
+            eventId: core.eventId,
+            localDate: core.localDate,
+            choice: observedChoice
+          }
+        : null,
+      sleep: sleep
+        ? {
+            eventId: sleep.eventId,
+            localDate: sleep.localDate,
+            durationMinutes: observedDuration
+          }
+        : null
+    },
+    checks: {
+      coreChoice: core ? coreChoiceMatches : null,
+      sleepDuration: sleep ? sleepDurationMatches : null,
+      sameLocalDate
+    },
+    reasons
+  };
+
+  return {
+    core,
+    sleep,
+    diagnostic: deepFreeze(diagnostic)
+  };
 }
 
 /**
@@ -189,9 +247,11 @@ export function analyzeTodayContext(request) {
     return failure("invalid-analysis-request");
   }
 
-  const matched = matchingEvidence(request.context);
-  if (!matched) {
-    return failure("no-matching-rule");
+  const evaluated = ruleEvaluation(request.context);
+  if (!evaluated.diagnostic.matched) {
+    return failure("no-matching-rule", {
+      ruleEvaluation: evaluated.diagnostic
+    });
   }
 
   const analysis = {
@@ -203,13 +263,13 @@ export function analyzeTodayContext(request) {
     evidence: [
       {
         source: "today-core",
-        eventId: matched.core.eventId,
+        eventId: evaluated.core.eventId,
         reference: "Core günlük seçimi: Zordu bugün"
       },
       {
         source: "today-health",
-        eventId: matched.sleep.eventId,
-        reference: durationReference(matched.sleep.facts.durationMinutes)
+        eventId: evaluated.sleep.eventId,
+        reference: durationReference(evaluated.sleep.facts.durationMinutes)
       }
     ],
     confidence: 0.72,
