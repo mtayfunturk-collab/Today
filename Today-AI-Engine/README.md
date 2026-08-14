@@ -2,7 +2,7 @@
 
 Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan, arayüzden ve App'in depolama katmanından bağımsız bir sistem katmanıdır.
 
-`0.2.0-context`, mevcut `0.1.0-foundation` mimarisini değiştirmeden NUT-017.1 Today Context Builder ve Veri Kullanım Onayı sınırını ekler. Canlı model, gerçek kullanıcı verisi, dış servis işlemi ve otomasyon içermez.
+`0.3.0-analysis`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1 Context Builder sınırını yeniden oluşturmadan NUT-017.3 cihaz-içi açıklanabilir analiz adımını ekler. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay veya kalıcı AI belleği içermez.
 
 ## İlkeler
 
@@ -17,11 +17,11 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 
 ## Durum
 
-- AI Engine sürümü: `0.2.0-context`
-- Today App entegrasyon tabanı: NUT-017.2, App `2.10.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-059`
+- AI Engine sürümü: `0.3.0-analysis`
+- Today App entegrasyon tabanı: NUT-017.3, App `2.11.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-060`
 - Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
-- AI Engine testi: `51 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1)
-- Durum: NUT-017.1 Engine sınırı korunuyor; NUT-017.2 salt okunur App adaptörleri ve tek-istek onaylı bağlam önizlemesi hazır
+- AI Engine testi: `80 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1 + `29` NUT-017.3)
+- Durum: NUT-017.1 sınırı ve NUT-017.2 kaynak adaptörleri korunuyor; NUT-017.3 yalnız kullanıcı komutuyla ilk dar deterministik öneriyi üretiyor
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
@@ -29,12 +29,13 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
 - `docs/`: ürün, mimari, güvenlik, entegrasyon ve faz belgeleri
 - `contracts/`: JSON Schema veri sözleşmeleri
-- `src/`: saf onay değerlendiricisi ve deterministik Context Builder
+- `src/`: saf onay değerlendiricisi, deterministik Context Builder ve sağlayıcısız günlük destek analizörü
 - `fixtures/synthetic/`: yalnızca sentetik test kayıtları
 - `tests/`: bağımlılıksız sözleşme ve güvenlik testleri
 - `docs/APP_CONTRACT_MAPPING.md`: NUT-017.1 için salt okunur Today App 2.9.0 referans eşlemesi
 - `docs/NUT-017.1-IMPLEMENTATION.md`: adım uygulama raporu
 - `../docs/NUT-017.2-IMPLEMENTATION.md`: Today App host entegrasyonu ve doğrulama raporu
+- `../docs/NUT-017.3-IMPLEMENTATION.md`: açıklanabilir analiz host entegrasyonu ve doğrulama raporu
 
 ## Test
 

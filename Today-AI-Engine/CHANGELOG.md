@@ -1,5 +1,19 @@
 # Değişiklik Günlüğü
 
+## 0.3.0-analysis — NUT-017.3 — 2026-08-14
+
+- Adım: Sağlayıcısız, cihaz-içi açıklanabilir analiz isteği ve sonuç önizlemesi.
+- Önceki sınırlar: `0.1.0-foundation` mimarisi ile NUT-017.1 Context Builder/onay modülleri korundu; policy guard, deterministic adapter, explanation builder, approval gateway, audit writer ve eski sentetik testler yeniden oluşturulmadı.
+- Yeni sözleşme: `analysis-request.schema.json` v1; yalnız `daily-support-suggestion` capability'si ve `context-package` v1 kabul edilir.
+- Mevcut çıktı: `analysis-output.schema.json` v1 değiştirilmeden dayanak, güven, belirsizlik, alternatifler ve onay durumu üretir.
+- İlk kural: Aynı yerel gündeki en güncel Core `C` kaydı ile 6 saatin altındaki en güncel uyku kaydı birlikteyse ihtiyatlı hafif-plan/uyku hazırlığı seçeneği sunulur; eşleşme yoksa çıktı uydurulmaz.
+- Sky sınırı: Sembolik Sky pakette bulunabilir fakat evidence, confidence veya sağlık/duygu yorumuna hiçbir etkisi yoktur.
+- İşlem sınırı: Hatırlatıcı yalnız `pending-user-approval` taslağıdır; approval gateway, audit writer ve Connect çağrılmaz.
+- Host: Today App `2.11.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-060`.
+- Test sonucu: AI Engine `80/80`; NUT-017.3 App kapısı `48/48` başarılı.
+- Migration gereksinimi: Yok; Today App ana verisi veya depolama anahtarları değiştirilmedi.
+- Commit mesajı: `feat(ai): add deterministic explainable analysis preview (NUT-017.3)`
+
 ## Today App host entegrasyonu — NUT-017.2 — 2026-08-13
 
 - AI Engine sürümü ve NUT-017.1 sözleşmeleri `0.2.0-context` olarak korundu.
