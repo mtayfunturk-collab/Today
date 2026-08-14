@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.3.1 — AI CONTEXT & RULE DIAGNOSTICS
+   NUT-017.4 — AI SUGGESTION & DECISION
 ========================= */
 
 .aiContextPanel {
@@ -1382,7 +1382,9 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 .aiContextPreview[hidden],
 .aiAnalysisRequest[hidden],
 .aiAnalysisOutput[hidden],
-.aiRuleEvaluation[hidden] {
+.aiRuleEvaluation[hidden],
+.aiDecisionControls[hidden],
+.aiEditPanel[hidden] {
   display: none;
 }
 
@@ -1422,6 +1424,95 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
 .aiAnalysisOutput {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--stroke));
+}
+
+.aiAnalysisSummary {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.aiAnalysisSuggestion {
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.aiAnalysisDetails {
+  margin-top: 10px;
+  border-top: 1px solid var(--stroke);
+  padding-top: 9px;
+}
+
+.aiAnalysisDetails summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.aiAnalysisDetails ul {
+  margin-top: 8px;
+}
+
+.aiDecisionBox {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.aiDecisionAction {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.aiDecisionControls {
+  margin-top: 10px;
+}
+
+.aiDecisionApprove {
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--stroke));
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.aiEditPanel {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--stroke);
+}
+
+.aiEditPanel label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.aiEditPanel input[type="time"] {
+  width: 100%;
+  min-height: 42px;
+}
+
+.aiDecisionStatus {
+  min-height: 18px;
+  margin-top: 9px;
+  color: var(--muted);
+}
+
+.aiDecisionStatus[data-state="error"] {
+  color: #ffb4ab;
+}
+
+html[data-theme="light"] .aiDecisionStatus[data-state="error"] {
+  color: #a02c20;
+}
+
+.aiPrivacyNote {
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .aiRuleEvaluation {
@@ -2541,15 +2632,15 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
               id="aiContextPanel"
               aria-labelledby="aiContextTitle"
             >
-              <h3 id="aiContextTitle">AI bağlam önizleme</h3>
+              <h3 id="aiContextTitle">Kişisel öneri</h3>
               <p class="aiContextPurpose">
-                Amaç: <span id="aiConsentPurpose">—</span>. Seçimler ve onay
-                kaydedilmez; yalnız bu önizleme isteği için kullanılır.
+                Amaç: <span id="aiConsentPurpose">—</span>. Hangi bilgilerin
+                kullanılacağını sen seçersin; seçimlerin kaydedilmez.
               </p>
 
               <div class="aiContextScopes">
                 <fieldset class="aiContextScopeGroup">
-                  <legend>Today Core</legend>
+                  <legend>Günlük kayıtlar</legend>
                   <label class="aiContextScope">
                     <input
                       type="checkbox"
@@ -2574,12 +2665,12 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                       data-ai-context-source="core"
                       data-ai-context-class="note"
                     />
-                    Core not metni (serbest metin)
+                    Günlük not metni
                   </label>
                 </fieldset>
 
                 <fieldset class="aiContextScopeGroup">
-                  <legend>Today Health</legend>
+                  <legend>Sağlık kayıtları</legend>
                   <label class="aiContextScope">
                     <input
                       type="checkbox"
@@ -2642,19 +2733,19 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                   </label>
                   <label class="aiContextScope">
                     <input type="checkbox" data-ai-context-free-text="health" />
-                    Health serbest metinleri
+                    Sağlık not metinleri
                   </label>
                 </fieldset>
 
                 <fieldset class="aiContextScopeGroup">
-                  <legend>Today Sky — sembolik</legend>
+                  <legend>Sky (sembolik)</legend>
                   <label class="aiContextScope">
                     <input
                       type="checkbox"
                       data-ai-context-source="sky"
                       data-ai-context-class="core-sky-snapshot"
                     />
-                    İsteğe bağlı Core–Sky anlık görüntüsü
+                    İsteğe bağlı Sky özeti
                   </label>
                   <p class="aiContextBoundary">
                     Varsayılan olarak kapalıdır. Yalnız kullanıcının bağladığı,
@@ -2666,16 +2757,16 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
 
               <label class="aiConsentConfirm">
                 <input type="checkbox" id="aiConsentConfirm" />
-                Bu kapsamın yalnız cihazda, yalnız bu önizleme isteği için
+                Seçtiğim bilgilerin yalnız cihazımda ve yalnız bu işlem için
                 kullanılmasını onaylıyorum.
               </label>
 
               <div class="smallBtns">
                 <button class="ghost" id="btnAiContextPreview" type="button">
-                  Bağlamı önizle
+                  Seçimi önizle
                 </button>
                 <button class="ghost" id="btnAiContextClear" type="button">
-                  Önizlemeyi temizle
+                  Temizle
                 </button>
               </div>
 
@@ -2693,26 +2784,25 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                 aria-labelledby="aiContextPreviewTitle"
                 hidden
               >
-                <h4 id="aiContextPreviewTitle">Kullanılacak bağlam</h4>
+                <h4 id="aiContextPreviewTitle">Kullanılacak bilgiler</h4>
                 <ul id="aiContextCounts"></ul>
                 <p id="aiContextBoundaries"></p>
                 <p id="aiContextFilters"></p>
                 <p>
-                  Bağlam önizlemesi tek başına öneri üretmez. Connect veya
-                  başka bir işlem başlatılmadı ve cihaz dışına aktarım
-                  yapılmadı.
+                  Henüz öneri veya başka bir işlem oluşturulmadı. Bilgiler
+                  cihazından çıkarılmadı.
                 </p>
               </div>
 
               <div class="aiAnalysisRequest" id="aiAnalysisRequest" hidden>
                 <p>
-                  NUT-017.3.1 yalnız “Zordu bugün” ile 6 saatin altındaki uyku
-                  kaydı birlikte bulunduğunda sabit, cihaz-içi bir öneri
-                  hazırlayabilir. Sembolik Sky bu kurala katılmaz.
+                  Bu ilk öneri, “Zordu bugün” seçimi ile aynı güne ait 6 saatin
+                  altındaki uyku kaydı birlikte bulunduğunda hazırlanır. Sky
+                  bu öneride kullanılmaz.
                 </p>
                 <div class="smallBtns">
                   <button class="ghost" id="btnAiAnalysis" type="button">
-                    Açıklanabilir öneri oluştur
+                    Öneriyi oluştur
                   </button>
                 </div>
                 <section
@@ -2721,7 +2811,7 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                   aria-labelledby="aiRuleEvaluationTitle"
                   hidden
                 >
-                  <h5 id="aiRuleEvaluationTitle">Kural kontrolü</h5>
+                  <h5 id="aiRuleEvaluationTitle">Neden öneri oluşmadı?</h5>
                   <ul id="aiRuleEvaluationItems"></ul>
                   <p id="aiRuleEvaluationSummary"></p>
                 </section>
@@ -2733,30 +2823,76 @@ html[data-theme="light"] .aiContextStatus[data-state="error"] {
                 aria-labelledby="aiAnalysisTitle"
                 hidden
               >
-                <h4 id="aiAnalysisTitle">Açıklanabilir öneri</h4>
-                <p><strong>Özet:</strong> <span id="aiAnalysisSummary"></span></p>
-                <p><strong>Öneri:</strong> <span id="aiAnalysisSuggestion"></span></p>
+                <h4 id="aiAnalysisTitle">Bugün için küçük bir öneri</h4>
+                <p class="aiAnalysisSummary" id="aiAnalysisSummary"></p>
+                <p class="aiAnalysisSuggestion" id="aiAnalysisSuggestion"></p>
 
-                <h5>Dayanaklar</h5>
+                <h5>Neye dayanıyor?</h5>
                 <ul id="aiAnalysisEvidence"></ul>
 
                 <p>
-                  <strong>Güven:</strong>
+                  <strong>Güven düzeyi:</strong>
                   <span id="aiAnalysisConfidence"></span>
                 </p>
 
-                <h5>Belirsizlikler</h5>
-                <ul id="aiAnalysisUncertainty"></ul>
+                <details class="aiAnalysisDetails">
+                  <summary>Aklında olsun</summary>
+                  <ul id="aiAnalysisUncertainty"></ul>
+                </details>
 
-                <h5>Seçenekler</h5>
-                <ul id="aiAnalysisAlternatives"></ul>
+                <details class="aiAnalysisDetails">
+                  <summary>Diğer seçenekler</summary>
+                  <ul id="aiAnalysisAlternatives"></ul>
+                </details>
 
-                <p id="aiAnalysisApproval"></p>
-                <ul id="aiAnalysisActions"></ul>
+                <div class="aiDecisionBox">
+                  <p id="aiAnalysisApproval"></p>
+                  <p class="aiDecisionAction">
+                    <strong id="aiAnalysisActionLabel"></strong>
+                  </p>
+                  <div
+                    class="smallBtns aiDecisionControls"
+                    id="aiDecisionControls"
+                    hidden
+                  >
+                    <button
+                      class="ghost aiDecisionApprove"
+                      id="btnAiApprove"
+                      type="button"
+                    >
+                      Onayla
+                    </button>
+                    <button class="ghost" id="btnAiReject" type="button">
+                      Reddet
+                    </button>
+                    <button class="ghost" id="btnAiEdit" type="button">
+                      Düzenle
+                    </button>
+                  </div>
+                  <div class="aiEditPanel" id="aiEditPanel" hidden>
+                    <label for="aiReminderTime">Hatırlatma saati</label>
+                    <input id="aiReminderTime" type="time" value="22:30" />
+                    <div class="smallBtns">
+                      <button class="ghost" id="btnAiEditSave" type="button">
+                        Yeni taslağı hazırla
+                      </button>
+                      <button class="ghost" id="btnAiEditCancel" type="button">
+                        Vazgeç
+                      </button>
+                    </div>
+                  </div>
+                  <p
+                    class="aiDecisionStatus"
+                    id="aiDecisionStatus"
+                    role="status"
+                    aria-live="polite"
+                  ></p>
+                </div>
+
                 <p id="aiAnalysisSkyBoundary"></p>
-                <p>
-                  Bu adım Connect çağırmaz, taslağı yürütmez ve kararı
-                  kalıcı olarak kaydetmez.
+                <p class="aiPrivacyNote">
+                  Kararın yalnız bu ekranda tutulur. Bu aşamada hatırlatıcı
+                  oluşturulmaz ve cihaz dışına bilgi gönderilmez.
                 </p>
               </article>
             </section>
