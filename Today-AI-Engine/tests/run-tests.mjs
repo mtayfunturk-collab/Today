@@ -4,6 +4,7 @@ import { runContextBuilderTests } from './context-builder.test.mjs';
 import { runDailySupportAnalyzerTests } from './daily-support-analyzer.test.mjs';
 import { runApprovalDecisionProcessorTests } from './approval-decision-processor.test.mjs';
 import { runDecisionReceiptBuilderTests } from './decision-receipt-builder.test.mjs';
+import { runPatternObserverTests } from './pattern-observer.test.mjs';
 
 const load = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 const inputs = await load('../fixtures/synthetic/daily-context.json');
@@ -48,3 +49,6 @@ console.log(`${nut0174Checks}/${nut0174Checks} NUT-017.4 geçici onay kararı ko
 
 const nut0175Checks = await runDecisionReceiptBuilderTests();
 console.log(`${nut0175Checks}/${nut0175Checks} NUT-017.5 karar makbuzu kontrolü başarılı.`);
+
+const nut0176Checks = await runPatternObserverTests();
+console.log(`${nut0176Checks}/${nut0176Checks} NUT-017.6 çok günlük örüntü gözlemi kontrolü başarılı.`);
