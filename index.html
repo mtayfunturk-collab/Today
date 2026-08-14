@@ -1265,6 +1265,136 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
+   NUT-017.2 — AI CONTEXT CONSENT
+========================= */
+
+.aiContextPanel {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--stroke);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .035);
+}
+
+.aiContextPanel h3,
+.aiContextPanel p {
+  margin-top: 0;
+}
+
+.aiContextPanel h3 {
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.aiContextPurpose {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.aiContextScopes {
+  display: grid;
+  gap: 10px;
+}
+
+.aiContextScopeGroup {
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+}
+
+.aiContextScopeGroup legend {
+  padding: 0 5px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.aiContextScope {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 9px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.aiContextScope input,
+.aiConsentConfirm input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.aiContextBoundary {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.aiConsentConfirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.aiContextStatus {
+  min-height: 20px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.aiContextStatus[data-state="error"] {
+  color: #ffb4ab;
+}
+
+html[data-theme="light"] .aiContextStatus[data-state="error"] {
+  color: #a02c20;
+}
+
+.aiContextPreview {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.aiContextPreview[hidden] {
+  display: none;
+}
+
+.aiContextPreview h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.aiContextPreview ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.aiContextPreview p {
+  margin: 7px 0 0;
+}
+
+/* =========================
    TB-009 — ACCESSIBILITY
 ========================= */
 
@@ -2367,6 +2497,174 @@ html[data-theme="light"] .healthSelect {
             <div class="mini" style="margin-top:12px;">
               Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur.
             </div>
+
+            <section
+              class="aiContextPanel"
+              id="aiContextPanel"
+              aria-labelledby="aiContextTitle"
+            >
+              <h3 id="aiContextTitle">AI bağlam önizleme</h3>
+              <p class="aiContextPurpose">
+                Amaç: <span id="aiConsentPurpose">—</span>. Seçimler ve onay
+                kaydedilmez; yalnız bu önizleme isteği için kullanılır.
+              </p>
+
+              <div class="aiContextScopes">
+                <fieldset class="aiContextScopeGroup">
+                  <legend>Today Core</legend>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="core"
+                      data-ai-context-class="daily-choice"
+                      checked
+                    />
+                    Günlük seçim
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="core"
+                      data-ai-context-class="color"
+                      checked
+                    />
+                    Günlük renk
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="core"
+                      data-ai-context-class="note"
+                    />
+                    Core not metni (serbest metin)
+                  </label>
+                </fieldset>
+
+                <fieldset class="aiContextScopeGroup">
+                  <legend>Today Health</legend>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="sleep"
+                      checked
+                    />
+                    Uyku
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="energy"
+                      checked
+                    />
+                    Enerji
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="activity"
+                      checked
+                    />
+                    Aktivite
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="hydration"
+                      checked
+                    />
+                    Su kayıtları
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="symptoms"
+                    />
+                    Belirti kayıtları
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="nutrition"
+                    />
+                    Beslenme özeti
+                  </label>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="health"
+                      data-ai-context-class="weight"
+                    />
+                    Kilo referansı
+                  </label>
+                  <label class="aiContextScope">
+                    <input type="checkbox" data-ai-context-free-text="health" />
+                    Health serbest metinleri
+                  </label>
+                </fieldset>
+
+                <fieldset class="aiContextScopeGroup">
+                  <legend>Today Sky — sembolik</legend>
+                  <label class="aiContextScope">
+                    <input
+                      type="checkbox"
+                      data-ai-context-source="sky"
+                      data-ai-context-class="core-sky-snapshot"
+                    />
+                    İsteğe bağlı Core–Sky anlık görüntüsü
+                  </label>
+                  <p class="aiContextBoundary">
+                    Varsayılan olarak kapalıdır. Yalnız kullanıcının bağladığı,
+                    yorumsuz sembolik kayıt alınır; sağlık veya duygunun nedeni
+                    sayılmaz.
+                  </p>
+                </fieldset>
+              </div>
+
+              <label class="aiConsentConfirm">
+                <input type="checkbox" id="aiConsentConfirm" />
+                Bu kapsamın yalnız cihazda, yalnız bu önizleme isteği için
+                kullanılmasını onaylıyorum.
+              </label>
+
+              <div class="smallBtns">
+                <button class="ghost" id="btnAiContextPreview" type="button">
+                  Bağlamı önizle
+                </button>
+                <button class="ghost" id="btnAiContextClear" type="button">
+                  Önizlemeyi temizle
+                </button>
+              </div>
+
+              <div
+                class="aiContextStatus"
+                id="aiContextStatus"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              ></div>
+
+              <div
+                class="aiContextPreview"
+                id="aiContextPreview"
+                aria-labelledby="aiContextPreviewTitle"
+                hidden
+              >
+                <h4 id="aiContextPreviewTitle">Kullanılacak bağlam</h4>
+                <ul id="aiContextCounts"></ul>
+                <p id="aiContextBoundaries"></p>
+                <p id="aiContextFilters"></p>
+                <p>
+                  AI önerisi üretilmedi, Connect veya başka bir işlem
+                  başlatılmadı ve cihaz dışına aktarım yapılmadı.
+                </p>
+              </div>
+            </section>
           </div>
         </div>
 
@@ -2412,6 +2710,8 @@ html[data-theme="light"] .healthSelect {
 <script src="./modules/sky-periods-ui.js"></script>
 <script src="./modules/core-sky-link-ui.js"></script>
 <script src="./modules/sky-hub.js"></script>
+<script src="./modules/ai-context-source-adapters.js"></script>
+<script type="module" src="./modules/ai-context-ui.mjs"></script>
 <script src="./modules/router.js"></script>
 <script src="./modules/module-registry.js"></script>
 <script src="./modules/startup-manager.js"></script>
