@@ -35,8 +35,8 @@ for (const file of GROUPS) {
 }
 
 if (failures.length) {
-  console.error("\nNUT-017.4 Gate başarısız:", failures);
+  console.error("\nNUT-017.5 Gate başarısız:", failures);
   process.exitCode = 1;
 } else {
-  console.log(`\nNUT-017.4 Gate: ${passed}/${expected} başarılı`);
+  console.log(`\nNUT-017.5 Gate: ${passed}/${expected} başarılı`);
 }

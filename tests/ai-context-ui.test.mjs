@@ -117,7 +117,7 @@ await test("Ayarlar içinde erişilebilir AI bağlam yüzeyi bulunur", () => {
   assert.equal(panel.getAttribute("aria-labelledby"), "aiContextTitle");
   assert.equal(document.querySelector("#aiContextStatus").getAttribute("role"), "status");
   assert.equal(document.querySelector("#aiConsentPurpose").textContent, ui.PURPOSE);
-  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.4");
+  assert.equal(ui.RULESET_ID, "today:ai-context-ui:nut-017.5");
 });
 
 await test("Varsayılan kapsam veri-minimum Core ve temel Health seçimidir", () => {
@@ -223,6 +223,8 @@ await test("Taslak anlaşılır karar seçenekleriyle onay bekler", () => {
   assert.equal(status.actionStarted, false);
   assert.equal(status.approvalState, "pending-user-approval");
   assert.equal(status.hasPendingAction, true);
+  assert.equal(status.receiptCount, 0);
+  assert.equal(document.querySelector("#aiDecisionReceipt").hidden, true);
   assert.equal(document.querySelector("#aiDecisionControls").hidden, false);
   assert.match(document.querySelector("#aiAnalysisApproval").textContent, /kullanmak ister misin/);
   assert.match(document.querySelector("#aiAnalysisActionLabel").textContent, /Uyku hazırlığını hatırla/);
@@ -243,6 +245,8 @@ await test("Düzenle yeni saatli taslak hazırlar ve yeniden onay ister", async 
   assert.equal(ui.getStatus().approvalState, "pending-user-approval");
   assert.equal(ui.getStatus().actionStarted, false);
   assert.equal(ui.getStatus().auditPersisted, false);
+  assert.equal(ui.getStatus().receiptCount, 1);
+  assert.equal(ui.getStatus().latestReceiptOutcome, "edited");
 });
 
 await test("Onay kararı görünür olur fakat hatırlatıcı çalıştırılmaz", async () => {
@@ -257,6 +261,21 @@ await test("Onay kararı görünür olur fakat hatırlatıcı çalıştırılmaz
   assert.match(document.querySelector("#aiDecisionStatus").textContent, /hatırlatıcı oluşturulmadı/);
 });
 
+await test("Karar geçmişi düzenleme ve onayı sade makbuzlarla gösterir", () => {
+  const panel = document.querySelector("#aiDecisionReceipt");
+  const items = document.querySelector("#aiDecisionReceiptItems");
+  assert.equal(panel.hidden, false);
+  assert.equal(items.childElementCount, 2);
+  assert.match(items.textContent, /Düzenlendi/);
+  assert.match(items.textContent, /Yeni taslak yeniden onay bekliyor/);
+  assert.match(items.textContent, /Onaylandı/);
+  assert.match(items.textContent, /İşlem yapılmadı/);
+  assert.doesNotMatch(items.textContent, /receipt:|decision:|action:|analysis:/);
+  assert.equal(ui.getStatus().receiptCount, 2);
+  assert.equal(ui.getStatus().latestReceiptOutcome, "approved");
+  assert.equal(ui.getStatus().auditPersisted, false);
+});
+
 await test("Ret kararı hiçbir işlem başlatmadan öneriyi kapatır", async () => {
   await buildMatchingAnalysis();
   document.querySelector("#btnAiReject").click();
@@ -268,6 +287,10 @@ await test("Ret kararı hiçbir işlem başlatmadan öneriyi kapatır", async ()
   assert.equal(document.querySelector("#aiDecisionControls").hidden, true);
   assert.match(document.querySelector("#aiAnalysisApproval").textContent, /kullanmamayı seçtin/);
   assert.match(document.querySelector("#aiDecisionStatus").textContent, /Hiçbir işlem yapılmadı/);
+  assert.equal(document.querySelector("#aiDecisionReceiptItems").childElementCount, 1);
+  assert.match(document.querySelector("#aiDecisionReceiptItems").textContent, /Reddedildi/);
+  assert.equal(ui.getStatus().receiptCount, 1);
+  assert.equal(ui.getStatus().latestReceiptOutcome, "rejected");
 });
 
 await test("Kullanıcı yüzeyi teknik kimlik ve sürüm kodu göstermez", () => {
@@ -338,6 +361,9 @@ await test("Temizle eylemi bağlamı, sayıları ve onay kutusunu temizler", asy
   assert.equal(document.querySelector("#aiAnalysisOutput").hidden, true);
   assert.equal(document.querySelector("#aiAnalysisSummary").textContent, "");
   assert.equal(document.querySelector("#aiAnalysisEvidence").childElementCount, 0);
+  assert.equal(document.querySelector("#aiDecisionReceiptItems").childElementCount, 0);
+  assert.equal(document.querySelector("#aiDecisionReceipt").hidden, true);
+  assert.equal(ui.getStatus().receiptCount, 0);
   assert.equal(document.querySelector("#aiConsentConfirm").checked, false);
 });
 
@@ -365,7 +391,8 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
     "./Today-AI-Engine/src/context-builder.mjs",
     "./Today-AI-Engine/src/data-usage-consent.mjs",
     "./Today-AI-Engine/src/daily-support-analyzer.mjs",
-    "./Today-AI-Engine/src/approval-decision-processor.mjs"
+    "./Today-AI-Engine/src/approval-decision-processor.mjs",
+    "./Today-AI-Engine/src/decision-receipt-builder.mjs"
   ]) {
     assert.equal(swSource.includes(`"${file}"`), true, `${file} shell dışında`);
   }
@@ -374,12 +401,12 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 108);
+  assert.equal(shellFiles.length, 109);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-063/);
+  assert.match(swSource, /today-v2-foundation-064/);
 });
 
 const failures = results.filter(result => !result.success);
@@ -389,7 +416,7 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.4 Consent, Analysis & Decision UI: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.5 Consent, Analysis, Decision & Receipt UI: ${passed}/${results.length} başarılı`);
 
 if (originalGlobals.window === undefined) delete globalThis.window;
 else globalThis.window = originalGlobals.window;

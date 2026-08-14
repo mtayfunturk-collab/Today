@@ -36,16 +36,18 @@ async function test(name, callback) {
   }
 }
 
-await test("Köprü cihaz-içi, geçici ve yürütmesiz durum bildirir", () => {
+await test("Köprü cihaz-içi, geçici, makbuzlu ve yürütmesiz durum bildirir", () => {
   const status = getStatus();
   assert.equal(status.ready, true);
-  assert.equal(status.engineVersion, "0.4.0-approval");
-  assert.equal(status.rulesetId, "today:ai-approval-bridge:nut-017.4");
+  assert.equal(status.engineVersion, "0.5.0-receipt");
+  assert.equal(status.approvalEngineVersion, "0.4.0-approval");
+  assert.equal(status.rulesetId, "today:ai-approval-bridge:nut-017.5");
   assert.equal(status.processingMode, "device-only");
   assert.equal(status.retention, "request-scoped");
   assert.equal(status.externalRecipient, null);
   assert.equal(status.connectEnabled, false);
   assert.equal(status.executionEnabled, false);
+  assert.equal(status.decisionReceiptEnabled, true);
   assert.equal(status.auditPersistenceEnabled, false);
   assert.equal(Object.isFrozen(status), true);
 });
@@ -56,6 +58,9 @@ await test("Geçerli onay mevcut karar sözleşmesiyle kayda dönüşür", () =>
   assert.equal(result.decision.schemaVersion, 1);
   assert.equal(result.decision.decision, "approved");
   assert.equal(result.actionState.status, "approved");
+  assert.equal(result.receipt.eventType, "user-decision-recorded");
+  assert.equal(result.receipt.outcome, "approved");
+  assert.equal(result.receipt.decisionId, result.decision.decisionId);
 });
 
 await test("Ret hiçbir eylem başlatmadan sonuçlanır", () => {
@@ -66,6 +71,7 @@ await test("Ret hiçbir eylem başlatmadan sonuçlanır", () => {
   assert.equal(result.success, true);
   assert.equal(result.actionState.status, "rejected");
   assert.equal(result.executionRequested, false);
+  assert.equal(result.receipt.outcome, "rejected");
 });
 
 await test("Düzenleme yeni ve yeniden onay bekleyen taslak üretir", () => {
@@ -78,6 +84,12 @@ await test("Düzenleme yeni ve yeniden onay bekleyen taslak üretir", () => {
   assert.equal(result.decision.decision, "edited");
   assert.equal(result.replacementAction.status, "pending-user-approval");
   assert.match(result.replacementAction.label, /21:45/);
+  assert.equal(result.receipt.outcome, "edited");
+  assert.equal(result.receipt.effects.replacementRequiresApproval, true);
+  assert.equal(
+    result.receipt.replacementActionId,
+    result.replacementAction.actionId
+  );
 });
 
 await test("Geçersiz karar fail-closed reddedilir", () => {
@@ -96,6 +108,19 @@ await test("Köprü kararı kalıcılaştırmaz, aktarmıyor ve yürütmüyor", 
   assert.equal(result.auditPersisted, false);
   assert.equal(result.externalTransfer, false);
   assert.equal(result.executionRequested, false);
+  assert.equal(result.receipt.scope.persistent, false);
+  assert.equal(result.receipt.scope.retention, "request-scoped");
+  assert.equal(result.receipt.effects.auditPersisted, false);
+  assert.equal(result.receipt.effects.connectCalled, false);
+});
+
+await test("Makbuz yalnız karar zamanını kullanır ve sonucu değiştirmez", () => {
+  const input = options();
+  const result = recordApprovalDecision(input);
+  assert.equal(result.receipt.occurredAt, input.decidedAt);
+  assert.equal(result.receipt.actionId, input.action.actionId);
+  assert.equal(result.receipt.actionStatus, "approved");
+  assert.equal(Object.isFrozen(result.receipt), true);
 });
 
 await test("Karar köprüsü DOM, storage, ağ, TodayAI veya Connect çağırmaz", () => {
@@ -112,4 +137,4 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.4 Approval Bridge: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.5 Approval & Receipt Bridge: ${passed}/${results.length} başarılı`);
