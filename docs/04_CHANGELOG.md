@@ -5,7 +5,7 @@ Document: Changelog
 Version: 1.0
 Status: Active
 Owner: Today Master Project
-Last Updated: 13 August 2026
+Last Updated: 14 August 2026
 
 ---
 
@@ -28,6 +28,67 @@ Each entry should include:
 ---
 
 # Version History
+
+---
+
+## Version 2.11.0 — NUT-017.3
+
+Date
+
+14 August 2026
+
+Phase
+
+AI Engine explainable analysis preparation
+
+Status
+
+🟡 NUT-017.3 completed; product phase closure not claimed
+
+Summary
+
+- Added a provider-free, deterministic and device-only daily support analyzer.
+- Added the versioned `analysis-request` contract while preserving the existing `analysis-output` contract.
+- Implemented only the documented first rule: Core `C` plus sleep below six hours.
+- Added a separate explicit command after the consent-gated context preview.
+- Rendered evidence, confidence, uncertainty, alternatives and approval state.
+- Kept Sky out of evidence, confidence and health/emotion reasoning even when symbolic context is selected.
+- Kept proposed actions at `pending-user-approval`; no approval gateway, audit writer or Connect execution was added.
+- Raised the offline shell from `today-v2-foundation-059` to `today-v2-foundation-060`.
+- Kept the Today data schema at `2`; no migration was added.
+
+Files Changed
+
+- `Today-AI-Engine/contracts/analysis-request.schema.json`
+- `Today-AI-Engine/src/daily-support-analyzer.mjs`
+- `Today-AI-Engine/tests/daily-support-analyzer.test.mjs`
+- `modules/ai-analysis-bridge.mjs`
+- `modules/ai-context-ui.mjs`
+- `index.html`
+- `sw.js`
+- `modules/version.js`
+- `modules/storage.js`
+- `tests/ai-analysis-bridge.test.mjs`
+- `tests/ai-context-ui.test.mjs`
+- `tests/run-nut-017.3.cjs`
+- `docs/NUT-017.3-IMPLEMENTATION.md`
+- AI Engine and Today architecture/changelog documents
+
+Tests
+
+- NUT-017.3 App gate: **48/48 successful**.
+- AI Engine: **80/80 successful** (`10` foundation + `41` context/consent + `29` explainable analysis).
+- Existing Adapter, Migration, Router, Startup and Service Worker Manager groups: **142/142 successful**.
+- Browser baseline: **47/48**, preserving the pre-existing single failure.
+- Legacy general gate: **1089/1116 individual checks successful**, but failed as a gate because the same four stale groups remain unresolved.
+
+Result
+
+NUT-017.3 successful. No phase closure claimed. No live model/provider or executable action was introduced.
+
+Commit
+
+`feat(ai): add deterministic explainable analysis preview (NUT-017.3)`
 
 ---
 

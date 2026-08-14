@@ -2,10 +2,10 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.10.0
+Application Version: 2.11.0
 Data Schema: 2
-Active Shell: today-v2-foundation-059
-Last Updated: 13 August 2026
+Active Shell: today-v2-foundation-060
+Last Updated: 14 August 2026
 
 ---
 
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.2 Context Integration
+## NUT-017.3 Explainable Analysis Integration
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -141,11 +141,17 @@ read-only source adapters and the visible consent/context-preview surface.
 | Data scope and one-request consent | Today App settings surface | Device-only, request-scoped, no external recipient |
 | Minimization and context package | Today AI Engine NUT-017.1 | Deterministic, provenance-linked, DOM/storage/network independent |
 | Symbolic Sky section | Today AI Engine | Separate from Core/Health; causality and scientific-evidence claims disabled |
-| AI proposal and action | Not active in NUT-017.2 | No provider registration and no Connect operation |
+| Explainable analysis | Today AI Engine NUT-017.3 | Provider-free deterministic rule; evidence, confidence, uncertainty, alternatives and approval state are mandatory |
+| Symbolic Sky in analysis | Today AI Engine NUT-017.3 | Never used as evidence, confidence input or a health/emotion cause |
+| Proposed action | Existing output contract | Remains `pending-user-approval`; no approval gateway or Connect execution is invoked |
 
-The active host integration is App `2.10.0`, schema `2`, shell
-`today-v2-foundation-059`. See `docs/NUT-017.2-IMPLEMENTATION.md` for the
-contract mapping and verification record.
+The active host integration is App `2.11.0`, schema `2`, shell
+`today-v2-foundation-060`. NUT-017.3 adds a second explicit user command after
+the consent-gated context preview. It implements only the documented first
+rule (`Core C` plus sleep below six hours), invents no result when the rule does
+not match, registers no model/provider and starts no Connect operation. See
+`docs/NUT-017.3-IMPLEMENTATION.md` for the verification record; the source
+mapping remains in `docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---
 
