@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/decision-receipt.schema.json",
+  "title": "Today Request-scoped Decision Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "eventType",
+    "decisionId",
+    "analysisId",
+    "actionId",
+    "outcome",
+    "occurredAt",
+    "actor",
+    "actionStatus",
+    "scope",
+    "effects"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "receiptId": { "type": "string", "minLength": 1 },
+    "eventType": { "const": "user-decision-recorded" },
+    "decisionId": { "type": "string", "minLength": 1 },
+    "analysisId": { "type": "string", "minLength": 1 },
+    "actionId": { "type": "string", "minLength": 1 },
+    "outcome": { "enum": ["approved", "rejected", "edited"] },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "actor": { "const": "user" },
+    "actionStatus": { "enum": ["approved", "rejected", "edited"] },
+    "replacementActionId": { "type": "string", "minLength": 1 },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["processingMode", "retention", "persistent", "externalRecipient"],
+      "properties": {
+        "processingMode": { "const": "device-only" },
+        "retention": { "const": "request-scoped" },
+        "persistent": { "const": false },
+        "externalRecipient": { "type": "null" }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actionExecuted",
+        "connectCalled",
+        "auditPersisted",
+        "externalTransfer",
+        "replacementRequiresApproval"
+      ],
+      "properties": {
+        "actionExecuted": { "const": false },
+        "connectCalled": { "const": false },
+        "auditPersisted": { "const": false },
+        "externalTransfer": { "const": false },
+        "replacementRequiresApproval": { "type": "boolean" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "const": "edited" } } },
+      "then": {
+        "required": ["replacementActionId"],
+        "properties": {
+          "actionStatus": { "const": "edited" },
+          "effects": {
+            "properties": {
+              "replacementRequiresApproval": { "const": true }
+            }
+          }
+        }
+      },
+      "else": {
+        "not": { "required": ["replacementActionId"] },
+        "properties": {
+          "effects": {
+            "properties": {
+              "replacementRequiresApproval": { "const": false }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
