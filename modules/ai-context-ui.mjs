@@ -1,6 +1,6 @@
 /**
- * Today App — AI Context Consent, Preview & Explainable Analysis UI
- * NUT-017.3.1
+ * Today App — AI Context, Explainable Suggestion & Decision UI
+ * NUT-017.4
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -11,18 +11,26 @@ import {
 import {
   buildAnalysisPreview
 } from "./ai-analysis-bridge.mjs";
+import {
+  recordApprovalDecision
+} from "./ai-approval-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.3.1";
+export const RULESET_ID = "today:ai-context-ui:nut-017.4";
 export const PURPOSE =
-  "Günlük denge için açıklanabilir seçenekler hazırlama";
+  "Günlük denge için kişisel öneri hazırlama";
 
 const MAX_EVENTS_PER_SOURCE = 31;
 const WINDOW_DAYS = 7;
 let currentContext = null;
 let currentAnalysis = null;
+let currentAction = null;
+let currentDecision = null;
+let currentReminderTime = "22:30";
 let requestSequence = 0;
 let requestEpoch = 0;
+let decisionSequence = 0;
+let decisionBusy = false;
 let initialized = false;
 
 const CHOICE_LABELS = Object.freeze({
@@ -32,17 +40,17 @@ const CHOICE_LABELS = Object.freeze({
 });
 
 const RULE_REASON_LABELS = Object.freeze({
-  "core-record-missing": "Günlük Core kaydı bulunamadı.",
+  "core-record-missing": "Bugün için günlük seçim bulunamadı.",
   "core-choice-not-hard-day":
-    "En güncel Core seçimi “Zordu bugün” değil.",
-  "sleep-record-missing": "Uyku kaydı bulunamadı.",
-  "sleep-duration-missing": "En güncel uyku kaydında süre bulunamadı.",
+    "Günlük seçim “Zordu bugün” değil.",
+  "sleep-record-missing": "Bugün için uyku kaydı bulunamadı.",
+  "sleep-duration-missing": "Uyku kaydında süre bulunamadı.",
   "sleep-duration-not-positive":
-    "En güncel uyku süresi geçerli bir pozitif değer değil.",
+    "Uyku süresi geçerli görünmüyor.",
   "sleep-duration-not-below-threshold":
-    "En güncel uyku süresi 6 saatin altında değil.",
+    "Uyku süresi 6 saatin altında değil.",
   "records-not-same-local-date":
-    "En güncel Core ve uyku kayıtları aynı yerel tarihe ait değil."
+    "Günlük seçim ve uyku kaydı aynı güne ait değil."
 });
 
 function dateKey(date) {
@@ -132,15 +140,36 @@ function clearRuleEvaluation(root) {
   if (evaluation) evaluation.hidden = true;
 }
 
+function clearDecision(root) {
+  currentAction = null;
+  currentDecision = null;
+  currentReminderTime = "22:30";
+  decisionBusy = false;
+
+  const controls = root.querySelector("#aiDecisionControls");
+  const editPanel = root.querySelector("#aiEditPanel");
+  const decisionStatus = root.querySelector("#aiDecisionStatus");
+  const reminderTime = root.querySelector("#aiReminderTime");
+  const actionLabel = root.querySelector("#aiAnalysisActionLabel");
+  if (controls) controls.hidden = true;
+  if (editPanel) editPanel.hidden = true;
+  if (decisionStatus) {
+    decisionStatus.textContent = "";
+    decisionStatus.dataset.state = "idle";
+  }
+  if (reminderTime) reminderTime.value = currentReminderTime;
+  if (actionLabel) actionLabel.textContent = "";
+}
+
 function clearAnalysis(root) {
   currentAnalysis = null;
+  clearDecision(root);
   clearRuleEvaluation(root);
   const request = root.querySelector("#aiAnalysisRequest");
   const output = root.querySelector("#aiAnalysisOutput");
   const evidence = root.querySelector("#aiAnalysisEvidence");
   const uncertainty = root.querySelector("#aiAnalysisUncertainty");
   const alternatives = root.querySelector("#aiAnalysisAlternatives");
-  const actions = root.querySelector("#aiAnalysisActions");
   const textFields = [
     "#aiAnalysisSummary",
     "#aiAnalysisSuggestion",
@@ -149,7 +178,7 @@ function clearAnalysis(root) {
     "#aiAnalysisSkyBoundary"
   ].map(selector => root.querySelector(selector));
 
-  [evidence, uncertainty, alternatives, actions]
+  [evidence, uncertainty, alternatives]
     .filter(Boolean)
     .forEach(list => list.replaceChildren());
   textFields.filter(Boolean).forEach(field => {
@@ -176,7 +205,7 @@ function clearPreview(root, options = {}) {
   if (preview) preview.hidden = true;
 
   if (!options.keepStatus) {
-    setStatus(root, "Önizleme belleği temizlendi.", "idle");
+    setStatus(root, "Önizleme temizlendi.", "idle");
   }
 }
 
@@ -184,10 +213,6 @@ function appendCount(documentRef, list, label, value) {
   const item = documentRef.createElement("li");
   item.textContent = `${label}: ${value}`;
   list.append(item);
-}
-
-function uniqueReasons(records) {
-  return [...new Set(records.map(entry => entry.reason))].sort();
 }
 
 function renderPreview(root, context, sourceWarnings = []) {
@@ -198,39 +223,29 @@ function renderPreview(root, context, sourceWarnings = []) {
   if (!preview || !counts || !boundaries || !filters) return;
 
   counts.replaceChildren();
-  appendCount(root.ownerDocument, counts, "Core", context.counts.core);
-  appendCount(root.ownerDocument, counts, "Health", context.counts.health);
+  appendCount(root.ownerDocument, counts, "Günlük kayıtlar", context.counts.core);
+  appendCount(root.ownerDocument, counts, "Sağlık kayıtları", context.counts.health);
   appendCount(
     root.ownerDocument,
     counts,
-    "Sembolik Sky",
+    "Sky (sembolik)",
     context.counts.symbolicSky
   );
 
   boundaries.textContent = [
-    "Onay: bu istek için verildi.",
-    "İşleme: yalnız cihazda; kalıcılık: yalnız bu istek.",
-    `Serbest metin: ${context.boundaries.freeTextIncluded ? "dahil" : "dahil değil"}.`,
-    "Sky: yalnız sembolik bağlam; sağlık/duygu nedeni değil."
+    "Seçtiğin bilgiler yalnız bu işlem için cihazında hazırlandı.",
+    `Serbest metin ${context.boundaries.freeTextIncluded ? "dahil edildi" : "dahil edilmedi"}.`,
+    "Sky yalnız sembolik kalır; sağlık veya duygu nedeni sayılmaz."
   ].join(" ");
 
-  const omissionReasons = uniqueReasons(context.omissions);
-  const redactionReasons = uniqueReasons(context.redactions);
-  const warningReasons = uniqueReasons(sourceWarnings);
-  const details = [
-    `${context.counts.omitted} kayıt dışlandı`,
-    `${context.counts.redacted} alan çıkarıldı`
-  ];
-  if (omissionReasons.length) {
-    details.push(`dışlama gerekçeleri: ${omissionReasons.join(", ")}`);
-  }
-  if (redactionReasons.length) {
-    details.push(`çıkarma gerekçeleri: ${redactionReasons.join(", ")}`);
-  }
-  if (warningReasons.length) {
-    details.push(`kaynak uyarıları: ${warningReasons.join(", ")}`);
-  }
-  filters.textContent = `${details.join("; ")}.`;
+  const warningText = sourceWarnings.length > 0
+    ? " Bazı kayıtlar okunamadığı için kullanılmadı."
+    : "";
+  filters.textContent = [
+    "Yalnız gerekli bilgiler kullanıldı.",
+    `${context.counts.omitted} kapsam dışı kayıt ve`,
+    `${context.counts.redacted} gereksiz alan öneriye dahil edilmedi.${warningText}`
+  ].join(" ");
   preview.hidden = false;
   const analysisRequest = root.querySelector("#aiAnalysisRequest");
   if (analysisRequest) analysisRequest.hidden = false;
@@ -240,12 +255,6 @@ function appendTextItem(documentRef, list, value) {
   const item = documentRef.createElement("li");
   item.textContent = value;
   list.append(item);
-}
-
-function checkLabel(value) {
-  if (value === true) return "uygun ✓";
-  if (value === false) return "uygun değil ✕";
-  return "değerlendirilemedi —";
 }
 
 function durationLabel(minutes) {
@@ -277,20 +286,24 @@ function renderRuleEvaluation(root, evaluation) {
     root.ownerDocument,
     items,
     core
-      ? `Core: ${core.localDate} · ${coreChoice} · ${checkLabel(evaluation.checks?.coreChoice)}`
-      : `Core: kayıt bulunamadı · ${checkLabel(null)}`
+      ? `Günlük seçim: ${coreChoice}`
+      : "Günlük seçim: bulunamadı"
   );
   appendTextItem(
     root.ownerDocument,
     items,
     sleep
-      ? `Uyku: ${sleep.localDate} · ${durationLabel(sleep.durationMinutes)} · ${checkLabel(evaluation.checks?.sleepDuration)}`
-      : `Uyku: kayıt bulunamadı · ${checkLabel(null)}`
+      ? `Uyku: ${durationLabel(sleep.durationMinutes)}`
+      : "Uyku: kayıt bulunamadı"
   );
   appendTextItem(
     root.ownerDocument,
     items,
-    `Aynı yerel tarih: ${checkLabel(evaluation.checks?.sameLocalDate)}`
+    evaluation.checks?.sameLocalDate === true
+      ? "Kayıtlar aynı güne ait."
+      : evaluation.checks?.sameLocalDate === false
+        ? "Kayıtlar farklı günlere ait."
+        : "Kayıt günleri karşılaştırılamadı."
   );
 
   const reasons = Array.isArray(evaluation.reasons)
@@ -299,15 +312,15 @@ function renderRuleEvaluation(root, evaluation) {
       )
     : [];
   summary.textContent = reasons.length
-    ? `Eşleşmeme nedeni: ${reasons.join(" ")}`
-    : "Kural değerlendirmesi tamamlandı.";
+    ? reasons.join(" ")
+    : "Gerekli koşullar kontrol edildi.";
   panel.hidden = false;
 }
 
-function sourceLabel(source) {
-  if (source === "today-core") return "Core";
-  if (source === "today-health") return "Health";
-  return "Desteklenmeyen kaynak";
+function confidenceLabel(confidence) {
+  if (confidence >= 0.8) return "Yüksek";
+  if (confidence >= 0.6) return "Orta";
+  return "Düşük";
 }
 
 function renderAnalysis(root, analysis, context) {
@@ -319,25 +332,27 @@ function renderAnalysis(root, analysis, context) {
   const uncertainty = root.querySelector("#aiAnalysisUncertainty");
   const alternatives = root.querySelector("#aiAnalysisAlternatives");
   const approval = root.querySelector("#aiAnalysisApproval");
-  const actions = root.querySelector("#aiAnalysisActions");
+  const actionLabel = root.querySelector("#aiAnalysisActionLabel");
+  const controls = root.querySelector("#aiDecisionControls");
+  const decisionStatus = root.querySelector("#aiDecisionStatus");
   const skyBoundary = root.querySelector("#aiAnalysisSkyBoundary");
   if (
     !output || !summary || !suggestion || !evidence || !confidence ||
-    !uncertainty || !alternatives || !approval || !actions || !skyBoundary
+    !uncertainty || !alternatives || !approval || !actionLabel ||
+    !controls || !decisionStatus || !skyBoundary
   ) return;
 
+  clearDecision(root);
   summary.textContent = analysis.summary;
   suggestion.textContent = analysis.suggestion;
   evidence.replaceChildren();
   analysis.evidence.forEach(entry => appendTextItem(
     root.ownerDocument,
     evidence,
-    `${entry.reference} — ${sourceLabel(entry.source)} kaydı ${entry.eventId}`
+    entry.reference
   ));
-  confidence.textContent = [
-    `%${Math.round(analysis.confidence * 100)}.`,
-    "Bu değer doğruluk olasılığı değil, sabit kuralın seçili dayanakları kapsama düzeyidir."
-  ].join(" ");
+  confidence.textContent = `${confidenceLabel(analysis.confidence)}. ` +
+    `Bu öneri ${analysis.evidence.length} seçili kayda dayanıyor; kesinlik değildir.`;
   uncertainty.replaceChildren();
   analysis.uncertainty.forEach(value => appendTextItem(
     root.ownerDocument,
@@ -350,18 +365,16 @@ function renderAnalysis(root, analysis, context) {
     alternatives,
     value
   ));
-  approval.textContent = analysis.requiresUserApproval
-    ? "Onay durumu: işlem taslakları kullanıcı onayı bekliyor."
-    : "Onay durumu: işlem taslağı yok.";
-  actions.replaceChildren();
-  analysis.proposedActions.forEach(action => appendTextItem(
-    root.ownerDocument,
-    actions,
-    `${action.label} — onay bekliyor; NUT-017.3.1 bu taslağı yürütmez.`
-  ));
+  currentAction = analysis.proposedActions[0] || null;
+  approval.textContent = currentAction
+    ? "Bu öneriyi kullanmak ister misin?"
+    : "Bu öneride onay bekleyen bir işlem yok.";
+  actionLabel.textContent = currentAction?.label || "";
+  controls.hidden = !currentAction;
+  decisionStatus.textContent = "";
   skyBoundary.textContent = context.counts.symbolicSky > 0
-    ? "Sembolik Sky bağlamı pakette bulunuyor; önerinin dayanağına, güven hesabına veya sağlık/duygu yorumuna katılmadı."
-    : "Sky verisi bu analizde kullanılmadı.";
+    ? "Sky seçilmiş olsa da bu öneride kullanılmadı."
+    : "Sky bu öneride kullanılmadı.";
   output.hidden = false;
 }
 
@@ -371,18 +384,151 @@ function analysisIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `analysis:nut-017.3.1:${(hash >>> 0).toString(36)}`;
+  return `analysis:nut-017.4:${(hash >>> 0).toString(36)}`;
+}
+
+function decisionIdFor(analysisId, actionId) {
+  decisionSequence += 1;
+  let hash = 2166136261;
+  for (const character of `${analysisId}|${actionId}|${decisionSequence}`) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `decision:nut-017.4:${(hash >>> 0).toString(36)}:${decisionSequence}`;
+}
+
+function setDecisionStatus(root, message, state = "idle") {
+  const status = root.querySelector("#aiDecisionStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.state = state;
+}
+
+function setDecisionButtonsDisabled(root, disabled) {
+  ["#btnAiApprove", "#btnAiReject", "#btnAiEdit", "#btnAiEditSave"]
+    .map(selector => root.querySelector(selector))
+    .filter(Boolean)
+    .forEach(button => {
+      button.disabled = disabled;
+    });
+}
+
+function closeEditPanel(root) {
+  const editPanel = root.querySelector("#aiEditPanel");
+  if (editPanel) editPanel.hidden = true;
+}
+
+function openEditPanel(root) {
+  if (!currentAction || decisionBusy) return;
+  const editPanel = root.querySelector("#aiEditPanel");
+  const reminderTime = root.querySelector("#aiReminderTime");
+  if (!editPanel || !reminderTime) return;
+  reminderTime.value = currentReminderTime;
+  editPanel.hidden = false;
+  setDecisionStatus(root, "Yeni hatırlatma saatini seç.");
+  reminderTime.focus();
+}
+
+async function handleDecision(root, decision, editedPayload) {
+  if (!currentAnalysis || !currentAction || decisionBusy) {
+    if (!decisionBusy) {
+      setDecisionStatus(root, "Önce bir öneri oluştur.", "error");
+    }
+    return;
+  }
+
+  decisionBusy = true;
+  setDecisionButtonsDisabled(root, true);
+  setDecisionStatus(root, "Kararın hazırlanıyor…", "busy");
+
+  try {
+    const result = await Promise.resolve(recordApprovalDecision({
+      decisionId: decisionIdFor(
+        currentAnalysis.analysisId,
+        currentAction.actionId
+      ),
+      analysisId: currentAnalysis.analysisId,
+      action: currentAction,
+      decision,
+      decidedAt: new Date().toISOString(),
+      ...(editedPayload === undefined ? {} : { editedPayload })
+    }));
+
+    if (!result.success) {
+      setDecisionStatus(
+        root,
+        "Karar işlenemedi. Lütfen yeniden dene.",
+        "error"
+      );
+      return;
+    }
+
+    currentDecision = result.decision;
+    closeEditPanel(root);
+    const controls = root.querySelector("#aiDecisionControls");
+    const approval = root.querySelector("#aiAnalysisApproval");
+    const actionLabel = root.querySelector("#aiAnalysisActionLabel");
+
+    if (decision === "edited") {
+      currentReminderTime = editedPayload.reminderTime;
+      currentAction = result.replacementAction;
+      if (actionLabel) actionLabel.textContent = currentAction.label;
+      if (approval) approval.textContent = "Güncellenen taslağı onaylamak ister misin?";
+      if (controls) controls.hidden = false;
+      setDecisionStatus(
+        root,
+        `Saat ${currentReminderTime} olarak değiştirildi. Yeni taslak onayını bekliyor.`,
+        "success"
+      );
+      setStatus(root, "Değişiklik hazır. Son karar sana ait.", "success");
+      return;
+    }
+
+    currentAction = null;
+    if (controls) controls.hidden = true;
+    if (decision === "approved") {
+      if (approval) approval.textContent = "Öneriyi onayladın.";
+      setDecisionStatus(
+        root,
+        "Onaylandı. Bu aşamada hatırlatıcı oluşturulmadı.",
+        "success"
+      );
+      setStatus(root, "Kararın alındı. Henüz hiçbir işlem yapılmadı.", "success");
+    } else {
+      if (approval) approval.textContent = "Öneriyi kullanmamayı seçtin.";
+      setDecisionStatus(root, "Hiçbir işlem yapılmadı.", "success");
+      setStatus(root, "Öneri reddedildi. Hiçbir işlem yapılmadı.", "success");
+    }
+  } catch (error) {
+    setDecisionStatus(
+      root,
+      "Karar işlenirken beklenmeyen bir hata oluştu.",
+      "error"
+    );
+  } finally {
+    decisionBusy = false;
+    setDecisionButtonsDisabled(root, false);
+  }
+}
+
+function handleEditSave(root) {
+  const reminderTime = root.querySelector("#aiReminderTime")?.value || "";
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(reminderTime)) {
+    setDecisionStatus(root, "Geçerli bir saat seç.", "error");
+    return;
+  }
+  handleDecision(root, "edited", { reminderTime });
 }
 
 async function handleAnalysis(root) {
   if (!currentContext) {
-    setStatus(root, "Önce onaylı bağlam önizlemesi oluşturun.", "error");
+    setStatus(root, "Önce kullanmak istediğin bilgileri onaylayıp önizle.", "error");
     return;
   }
 
   const button = root.querySelector("#btnAiAnalysis");
   if (button) button.disabled = true;
-  setStatus(root, "Açıklanabilir öneri yalnız cihazda hazırlanıyor…", "busy");
+  setStatus(root, "Önerin hazırlanıyor…", "busy");
 
   try {
     const result = await Promise.resolve(buildAnalysisPreview({
@@ -393,6 +539,7 @@ async function handleAnalysis(root) {
 
     if (!result.success) {
       currentAnalysis = null;
+      clearDecision(root);
       const output = root.querySelector("#aiAnalysisOutput");
       if (output) output.hidden = true;
       if (
@@ -404,8 +551,8 @@ async function handleAnalysis(root) {
         clearRuleEvaluation(root);
       }
       const message = result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH"
-        ? "NUT-017.3.1 kuralı eşleşmedi; kontrol edilen değerler aşağıda gösterildi."
-        : "Analiz isteği güvenlik sınırlarında reddedildi.";
+        ? "Bu kayıtlar için öneri oluşmadı. Nedeni aşağıda görebilirsin."
+        : "Öneri hazırlanamadı.";
       setStatus(root, message, result.errorCode === "TODAY-AI-ANALYSIS-NO-MATCH"
         ? "idle"
         : "error");
@@ -417,7 +564,7 @@ async function handleAnalysis(root) {
     renderAnalysis(root, result.analysis, currentContext);
     setStatus(
       root,
-      "Öneri hazır. Hiçbir işlem başlatılmadı; taslak kullanıcı onayı bekliyor.",
+      "Öneri hazır. Karar sana ait.",
       "success"
     );
   } catch (error) {
@@ -425,7 +572,7 @@ async function handleAnalysis(root) {
     clearRuleEvaluation(root);
     const output = root.querySelector("#aiAnalysisOutput");
     if (output) output.hidden = true;
-    setStatus(root, "Öneri hazırlanırken beklenmeyen hata oluştu.", "error");
+    setStatus(root, "Öneri hazırlanırken beklenmeyen bir hata oluştu.", "error");
   } finally {
     if (button) button.disabled = false;
   }
@@ -437,7 +584,7 @@ async function handlePreview(root) {
   if (!confirmation?.checked) {
     setStatus(
       root,
-      "Bu önizleme isteği için veri kullanımını açıkça onaylayın.",
+      "Devam etmek için seçtiğin bilgilerin kullanımını onayla.",
       "error"
     );
     confirmation?.focus();
@@ -447,7 +594,7 @@ async function handlePreview(root) {
   const requestedAt = new Date().toISOString();
   const consent = createConsent(root, requestedAt);
   if (!Object.values(consent.permissions).some(entry => entry.allowed)) {
-    setStatus(root, "En az bir veri kapsamı seçin.", "error");
+    setStatus(root, "En az bir bilgi türü seç.", "error");
     return;
   }
 
@@ -456,7 +603,7 @@ async function handlePreview(root) {
   requestEpoch = activeRequestEpoch;
   clearPreview(root, { keepStatus: true, invalidate: false });
   if (button) button.disabled = true;
-  setStatus(root, "Bağlam yalnız cihazda hazırlanıyor…", "busy");
+  setStatus(root, "Seçtiğin bilgiler hazırlanıyor…", "busy");
 
   try {
     const result = await buildContextPreview({
@@ -475,7 +622,7 @@ async function handlePreview(root) {
       clearPreview(root, { keepStatus: true, invalidate: false });
       setStatus(
         root,
-        `Bağlam hazırlanamadı (${result.errorCode}).`,
+        "Bilgiler hazırlanamadı. Lütfen yeniden dene.",
         "error"
       );
       return;
@@ -485,13 +632,13 @@ async function handlePreview(root) {
     renderPreview(root, result.context, result.sourceWarnings);
     setStatus(
       root,
-      "Önizleme hazır. Öneri yalnız aşağıdaki ayrı komutla üretilebilir.",
+      "Önizleme hazır. İstersen şimdi öneriyi oluşturabilirsin.",
       "success"
     );
   } catch (error) {
     if (activeRequestEpoch === requestEpoch) {
       clearPreview(root, { keepStatus: true, invalidate: false });
-      setStatus(root, "Bağlam hazırlanırken beklenmeyen hata oluştu.", "error");
+      setStatus(root, "Bilgiler hazırlanırken beklenmeyen bir hata oluştu.", "error");
     }
   } finally {
     if (activeRequestEpoch === requestEpoch) {
@@ -515,6 +662,11 @@ export function getStatus() {
     externalTransfer: false,
     providerRegistered: false,
     aiProposalGenerated: Boolean(currentAnalysis),
+    approvalState: currentAction
+      ? "pending-user-approval"
+      : currentDecision?.decision || null,
+    hasPendingAction: Boolean(currentAction),
+    auditPersisted: false,
     actionStarted: false
   });
 }
@@ -542,6 +694,29 @@ export function initAIContextUI(documentRef = document) {
     "click",
     () => handleAnalysis(root)
   );
+  root.querySelector("#btnAiApprove")?.addEventListener(
+    "click",
+    () => handleDecision(root, "approved")
+  );
+  root.querySelector("#btnAiReject")?.addEventListener(
+    "click",
+    () => handleDecision(root, "rejected")
+  );
+  root.querySelector("#btnAiEdit")?.addEventListener(
+    "click",
+    () => openEditPanel(root)
+  );
+  root.querySelector("#btnAiEditSave")?.addEventListener(
+    "click",
+    () => handleEditSave(root)
+  );
+  root.querySelector("#btnAiEditCancel")?.addEventListener(
+    "click",
+    () => {
+      closeEditPanel(root);
+      setDecisionStatus(root, "Değişiklik yapılmadı.");
+    }
+  );
   root.querySelectorAll(
     "[data-ai-context-class], [data-ai-context-free-text]"
   ).forEach(input => input.addEventListener("change", () => {
@@ -555,7 +730,7 @@ export function initAIContextUI(documentRef = document) {
     if (hadContext || requestWasBusy) {
       setStatus(
         root,
-        "Kapsam değişti. Yeni önizleme için yeniden onay gerekir.",
+        "Seçimlerin değişti. Yeni önizleme için yeniden onay gerekir.",
         "idle"
       );
     }
