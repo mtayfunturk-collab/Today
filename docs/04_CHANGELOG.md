@@ -5,7 +5,7 @@ Document: Changelog
 Version: 1.0
 Status: Active
 Owner: Today Master Project
-Last Updated: 31 July 2026
+Last Updated: 13 August 2026
 
 ---
 
@@ -28,6 +28,69 @@ Each entry should include:
 ---
 
 # Version History
+
+---
+
+## Version 2.10.0 — NUT-017.2
+
+Date
+
+13 August 2026
+
+Phase
+
+AI Engine integration preparation
+
+Status
+
+🟡 NUT-017.2 completed; product phase closure not claimed
+
+Summary
+
+- Added read-only Core, Health, Nutrition and optional Core–Sky event adapters.
+- Added purpose-bound, one-request, device-only data usage consent in Settings.
+- Added a context preview backed by the unchanged NUT-017.1 Context Builder.
+- Kept Sky symbolic, separate from Core/Health and non-causal.
+- Did not register an AI provider, generate a recommendation or start Connect.
+- Raised the offline shell from `today-v2-foundation-058` to `today-v2-foundation-059`.
+- Kept the Today data schema at `2`; no migration was added.
+
+Files Changed
+
+- `index.html`
+- `sw.js`
+- `modules/version.js`
+- `modules/storage.js`
+- `modules/health-hub.js`
+- `modules/ai-context-source-adapters.js`
+- `modules/ai-context-bridge.mjs`
+- `modules/ai-context-ui.mjs`
+- `tests/ai-context-*.test.*`
+- `tests/run-nut-017.2.cjs`
+- `tests/platform-browser-regression.test.cjs`
+- `docs/NUT-017.2-IMPLEMENTATION.md`
+- `docs/01_ARCHITECTURE.md`
+- `docs/04_CHANGELOG.md`
+- `Today-AI-Engine/README.md`
+- `Today-AI-Engine/CHANGELOG.md`
+- `Today-AI-Engine/docs/ARCHITECTURE.md`
+- `Today-AI-Engine/docs/PHASES.md`
+
+Tests
+
+- NUT-017.2: **35/35 successful**.
+- AI Engine: **51/51 successful**.
+- Existing Adapter, Router, Startup and Service Worker Manager groups: **101/101 successful**.
+- Browser baseline: **47/48**, preserving the pre-existing single failure.
+- Legacy general gate: **1089/1116 individual checks successful**, but failed as a gate because four stale groups remain unresolved.
+
+Result
+
+NUT-017.2 successful. No phase closure claimed.
+
+Commit
+
+`feat(ai): add consent-gated context preview (NUT-017.2)`
 
 ---
 

@@ -2,10 +2,10 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.0.0
+Application Version: 2.10.0
 Data Schema: 2
-Active Shell: today-v2-foundation-012
-Last Updated: 31 July 2026
+Active Shell: today-v2-foundation-059
+Last Updated: 13 August 2026
 
 ---
 
@@ -127,6 +127,25 @@ Responsibilities
 • Health Connect
 • Cloud Backup
 • Device integrations
+
+---
+
+## NUT-017.2 Context Integration
+
+Today AI Engine remains a separate system layer. The App owns only public,
+read-only source adapters and the visible consent/context-preview surface.
+
+| Boundary | Owner | Constraint |
+| --- | --- | --- |
+| Core / Health / Sky records | Today App public APIs | No storage key is exposed to AI Engine |
+| Data scope and one-request consent | Today App settings surface | Device-only, request-scoped, no external recipient |
+| Minimization and context package | Today AI Engine NUT-017.1 | Deterministic, provenance-linked, DOM/storage/network independent |
+| Symbolic Sky section | Today AI Engine | Separate from Core/Health; causality and scientific-evidence claims disabled |
+| AI proposal and action | Not active in NUT-017.2 | No provider registration and no Connect operation |
+
+The active host integration is App `2.10.0`, schema `2`, shell
+`today-v2-foundation-059`. See `docs/NUT-017.2-IMPLEMENTATION.md` for the
+contract mapping and verification record.
 
 ---
 
