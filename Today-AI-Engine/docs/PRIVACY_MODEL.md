@@ -10,6 +10,8 @@ NUT-017.4 kullanıcı kararını da `request-scoped` tutar. Onay, ret veya düze
 
 NUT-017.5 karar makbuzları da yalnız mevcut ekran isteğinin belleğinde tutulur. Yeni önizleme, temizleme veya sayfa yenileme geçmişi kaldırır. Makbuz dış alıcıya gönderilmez, kalıcı hale getirilmez ve gerçek işlem yapıldığı anlamına gelmez.
 
+NUT-017.6 son 7 günlük gözlem için yeni veri toplamaz; aynı açık onayla hazırlanmış, minimize Context Package'i kullanır. Çıktı yalnız mevcut ekran isteğinde tutulur. Eşleşen günlerin iç dayanak kimlikleri kullanıcıya gösterilmez; Sky, serbest metin ve dış alıcı gözleme eklenmez.
+
 ## Bulut sağlayıcı eklenmeden önce zorunlu bildirim
 
 - Gönderilecek alanlar

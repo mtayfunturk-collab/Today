@@ -12,4 +12,6 @@ NUT-017.4 yalnız `approved`, `rejected` veya `edited` geçici kararını üreti
 
 NUT-017.5 bu geçici karardan yalnız istek-süreli bir makbuz üretir. Makbuz Connect komutu, yürütme yetkisi veya tamamlanmış işlem kanıtı değildir ve Connect'e iletilmez.
 
+NUT-017.6 çok günlük gözlemi eylem taslağı veya kullanıcı onayı üretmez. Gözlem Connect'e iletilmez ve hiçbir yürütme akışını başlatamaz.
+
 Bu sürümde Connect adaptörü ve gerçek dış işlem yoktur.

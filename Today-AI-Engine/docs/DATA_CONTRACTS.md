@@ -18,6 +18,8 @@
 - `analysis-output.schema.json`: Açıklanabilir analiz ve onay bekleyen işlem taslakları.
 - `approval-decision.schema.json`: Kullanıcının onay, ret veya düzenleme kararını kaydeder.
 - `decision-receipt.schema.json`: Kararın izlenebilir fakat kalıcı olmayan, istek-süreli sonucunu kaydeder.
+- `pattern-observation-request.schema.json`: Yedi günlük Context Package ve dar Core–uyku tekrar capability'sini taşır.
+- `pattern-observation-output.schema.json`: Çok günlük betimleyici gözlemin dayanak, güven, belirsizlik, seçenek, onay ve sınırlarını taşır.
 - `data-usage-consent.schema.json`: Amaç, kaynak, veri sınıfı, serbest metin ve cihaz-içi işleme izni.
 - `context-build-request.schema.json`: Onay, tarih penceresi ve ortak olay zarflarını taşıyan deterministik build isteği.
 - `context-package.schema.json`: Minimize Core/Health bölümleri, ayrı sembolik Sky bağlamı, provenance, omission, redaction ve sınır beyanları.
@@ -55,3 +57,9 @@ Karar işlemcisi yalnız `pending-user-approval` durumundaki mevcut taslağı ka
 `decision-receipt` v1; `receiptId`, `decisionId`, `analysisId`, `actionId`, sonuç, olay zamanı, aktör, işlem durumu, kapsam ve etki beyanlarını taşır. Düzenleme sonucunda `replacementActionId` zorunludur ve yeni taslağın yeniden onay istediği belirtilir.
 
 Makbuz üreticisi yalnız geçerli NUT-017.4 karar sonucunu kabul eder. Karar ve işlem taslağı kimlikleri/durumları uyuşmazsa fail-closed reddeder. Kapsam `device-only` ve `request-scoped`, `persistent=false`, dış alıcı `null`; eylem, Connect, kalıcı audit ve dış aktarım bayrakları `false` olmak zorundadır. Makbuz yeni bir Today App kayıt şekli veya storage anahtarı değildir.
+
+## NUT-017.6 örüntü gözlemi
+
+`pattern-observation-request` v1 yalnız `core-sleep-recurrence` capability'sini, istek zamanını ve `context-package` v1'i kabul eder. Context penceresi tam 7 yerel gün olmalı; cihaz-içi, istek-süreli onay ve sembolik Sky sınırları bozulmamalıdır.
+
+`pattern-observation-output` v1; gözlem kimliği, özet, pencere sayıları, eşleşen günlere ait Core/Health dayanakları, gözlem gücü, belirsizlikler, seçenekler, onay durumu ve etki sınırlarını taşır. Sayısal güç puanı yalnız pencere kapsamı ile tekrar oranından türetilir ve `probabilityClaim=false` ile işaretlenir. Çıktı eylem taslağı içermez; `approval.status=not-required`, `causalityClaim=false`, `skyUsed=false` ve `actionProposed=false` sabittir.

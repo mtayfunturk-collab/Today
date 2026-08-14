@@ -76,3 +76,18 @@ Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`,
 45. Makbuz üreticisi DOM, App depolaması, ağ, Connect ve sistem saatine erişmemelidir.
 
 Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`; AI Engine toplam `145 PASS / 0 FAIL`. NUT-017.5 App kapısı `63/63 PASS`.
+
+## NUT-017.6 çok günlük örüntü kapsamı
+
+46. Tam 7 günlük pencerede 7 karşılaştırılabilir günün 3'ünde Core `C` + 6 saat altı uyku birlikteyse yalnız bu üç gün provenance-bağlı dayanak olmalıdır.
+47. Üçten az karşılaştırılabilir gün varsa `insufficient-paired-days` dönmeli; gözlem uydurulmamalıdır.
+48. Karşılaştırılabilir gün yeterli fakat iki tekrar yoksa `recurrence-not-observed` dönmelidir.
+49. Tam 360 dakika uyku eşleşme sayılmamalıdır.
+50. Aynı tarihte birden fazla Core/uyku kaydı varsa yalnız en güncel kayıt kullanılmalıdır.
+51. Context sırası veya sembolik Sky içeriği değiştiğinde gözlem, dayanak ve güven değişmemelidir.
+52. Çıktı dayanak, gözlem gücü, belirsizlik, seçenekler ve `not-required` onay durumunu taşımalıdır.
+53. Nedensellik, teşhis, Sky kullanımı, eylem, Connect, dış aktarım, audit ve kalıcılık bayrakları kapalı olmalıdır.
+54. App yetersiz veri veya tekrar bulunmamasını teknik kod göstermeden açıklamalı; başarılı gözlemde iç olay kimliklerini gizlemelidir.
+55. Gözlemci ve App köprüsü DOM, storage, ağ, model sağlayıcısı, Connect veya sistem saatine doğrudan erişmemelidir.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`, NUT-017.6 örüntü `40/40`; AI Engine toplam `185 PASS / 0 FAIL`. NUT-017.6 App kapısı `73/73 PASS`.

@@ -45,6 +45,21 @@ Makbuzun kapsamı sabittir: yalnız cihazda, yalnız mevcut istek için ve kalı
 
 App, makbuzları teknik kimlikler olmadan “Karar geçmişi” altında sade cümlelerle gösterir. Bu liste yeni bağlam önizlemesinde, temizlemede veya sayfa yenilendiğinde sıfırlanır. NUT-017.5 foundation audit writer'ı yeniden kurmaz ve gelecekteki kalıcı audit hattı yerine geçmez.
 
+## NUT-017.6 çok günlük örüntü gözlemi
+
+`core-sleep-recurrence` capability'si yalnız yedi günlük, onaylı ve istek-süreli Context Package üzerinde çalışır. Her yerel gün için en güncel Core günlük seçimi ile en güncel geçerli uyku kaydı eşleştirilir. En az üç karşılaştırılabilir gün ve bunların en az ikisinde Core `C` ile 360 dakikanın altındaki uykunun birlikte görülmesi gerekir. Eşik karşılanmazsa örüntü uydurulmaz.
+
+Başarılı `pattern-observation-output` v1 şunları zorunlu taşır:
+
+- eşleşen her gün için provenance-bağlı Core ve Health dayanakları;
+- pencere kapsamı ve tekrar oranına dayalı, doğruluk olasılığı olmayan gözlem gücü;
+- nedensellik, eksik bağlam ve kısa pencere belirsizlikleri;
+- kullanıcı seçenekleri;
+- `approval.required=false`, `status=not-required` onay durumu;
+- `causalityClaim=false`, `diagnosis=false`, `skyUsed=false` ve `actionProposed=false` sınırları.
+
+Bu çıktı bir teşhis, öğrenilmiş kişisel model, gelecek tahmini veya “uyku zor güne neden oldu” iddiası değildir. Yalnız seçilen kayıtlarda iki durumun aynı günlerde tekrarlandığını betimler. Gözlem App belleğinde mevcut istek boyunca yaşar; karar makbuzu, Connect veya kalıcı audit üretmez.
+
 ## Yasak çıktılar
 
 - Teşhis: “Depresyondasın”, “uyku bozukluğun var”.
@@ -55,3 +70,4 @@ App, makbuzları teknik kimlikler olmadan “Karar geçmişi” altında sade c�
 - Onay olmadan `approved`, `scheduled`, `sent` veya `completed` eylemi.
 - Düzenlemeyi otomatik onay sayma veya onay kararını gerçek eylem yapılmış gibi sunma.
 - Geçici karar makbuzunu kalıcı audit, Connect çağrısı veya tamamlanmış işlem gibi sunma.
+- Birlikte görülen Core–uyku kayıtlarını nedensellik, teşhis veya kişilik hükmü gibi sunma.

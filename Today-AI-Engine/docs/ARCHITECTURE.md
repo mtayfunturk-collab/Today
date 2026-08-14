@@ -20,6 +20,8 @@ NUT-017.4 ile App `2.12.0`, karar katmanı `0.4.0-approval` ve `today-v2-foundat
 
 NUT-017.5 ile App `2.13.0`, karar makbuzu katmanı `0.5.0-receipt` ve `today-v2-foundation-064` üzerinde geçerli karar sonucunu sürümlü, istek-süreli bir makbuza dönüştürür. Makbuz iç sözleşmede karar–analiz–işlem taslağı bağını korur; App yalnız sade sonucu gösterir. Geçmiş yeni önizlemede veya sayfa yenilendiğinde sıfırlanır. Storage, Connect, gerçek işlem, dış aktarım ve kalıcı audit hâlâ kapalıdır.
 
+NUT-017.6 ile App `2.14.0`, örüntü gözlem katmanı `0.6.0-pattern` ve `today-v2-foundation-065` üzerinde aynı onaylı Context Package'ten ayrı bir yedi günlük tekrar gözlemi eklenmiştir. En az üç aynı-gün Core/uyku çifti ve iki Core `C` + 6 saat altı uyku birlikteliği yoksa gözlem üretilmez. Çıktı nedensellik, teşhis, Sky dayanağı, onay veya eylem taşımaz; kullanıcıya teknik kimlikler olmadan sade bir kart olarak gösterilir.
+
 ## Sınırlar
 
 ```mermaid
@@ -27,6 +29,8 @@ flowchart TD
   A["Today App olay adaptörleri"] --> B["Amaç-bağlı veri onayı"]
   B --> C["Deterministik Context Builder"]
   C --> D["Mevcut AI analiz hattı"]
+  C --> J["7 günlük örüntü gözlemcisi"]
+  J --> K["Betimleyici gözlem; eylem yok"]
   D --> E{"Kullanıcı onayı"}
   E -->|"Onay"| F["Geçici karar ve makbuz; işlem yok"]
   E -->|"Düzenleme"| H["Yeni onay-bekleyen taslak"]
@@ -43,9 +47,10 @@ flowchart TD
 4. Policy guard: Sağlık, ruh sağlığı, finans, hukuk ve astroloji risk sınırlarını uygular.
 5. Analysis adapter: İlk aşamada deterministik kural motoru; ileride yerel/bulut model adaptörü.
 6. Explanation builder: Öneri, dayanak, güven ve belirsizlik üretir.
-7. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
-8. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
-9. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.5 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
+7. Pattern observer: NUT-017.6 son 7 günlük aynı-gün Core/uyku tekrarını betimler; nedensellik, teşhis veya eylem üretmez.
+8. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
+9. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
+10. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.6 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
 
 ## Entegrasyon etkisi
 
@@ -86,6 +91,12 @@ Bu adım bir gerçek eylem gateway'i değildir: `executionRequested=false`, `aud
 `buildDecisionReceipt(request)`, yalnız NUT-017.4 işlemcisinin doğrulanmış karar sonucunu kabul eder. Karar, analiz ve işlem taslağı kimlikleri ile durumlarının tutarlılığını denetler; sonuçtan `decision-receipt` v1 üretir. Düzenleme varsa yeni taslak kimliği bağlanır ve yeniden onay gereksinimi açık tutulur.
 
 Makbuzun kapsamı değiştirilemez: `device-only`, `request-scoped`, `persistent=false` ve `externalRecipient=null`. İşlem yürütme, Connect, kalıcı audit ve dış aktarım etkileri `false` kalır. App köprüsü makbuzu yalnız aynı ekran isteğinin belleğinde UI'ya iletir; yeni önizleme, temizleme veya sayfa yenileme geçmişi düşürür.
+
+## NUT-017.6 örüntü gözlem sınırı
+
+`observeTodayPattern(request)` yalnız `pattern-observation-request` v1 ve tam yedi günlük Context Package kabul eder. Her yerel tarihte en güncel `daily-checkin` ve `sleep-record` seçilir. Geçerli seçim/süre taşıyan en az üç aynı-gün çiftinden en az ikisi Core `C` ve 360 dakikanın altında uyku içeriyorsa `pattern-observation-output` v1 üretilir.
+
+Çıktının dayanakları yalnız eşleşen Core ve Health olaylarına bağlanır. Güven puanı pencere kapsamı ile tekrar oranından hesaplanır; olasılık değildir ve UI'da sade düzeye çevrilir. Sky Context Package'te bulunabilir fakat seçim, dayanak, güven veya tanıya katılmaz. Gözlem `approval.required=false` ve `actionProposed=false` taşır; App belleği dışında saklanmaz.
 
 ## Riskler
 
