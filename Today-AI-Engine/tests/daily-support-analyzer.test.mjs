@@ -4,6 +4,7 @@ import { buildTodayContext } from "../src/context-builder.mjs";
 import {
   CAPABILITY,
   ENGINE_VERSION,
+  RULE_IDS,
   RULESET_ID,
   analyzeTodayContext
 } from "../src/daily-support-analyzer.mjs";
@@ -23,6 +24,29 @@ function matchingRequest(sourceRequest) {
   return {
     schemaVersion: 1,
     analysisId: "analysis:nut-017.3:synthetic-001",
+    capability: CAPABILITY,
+    requestedAt: "2040-01-16T12:01:00.000Z",
+    context: built.context
+  };
+}
+
+function energyRequest(sourceRequest, overrides = {}) {
+  const contextRequest = clone(sourceRequest);
+  contextRequest.events.find(
+    event => event.eventId === "sleep-20400115"
+  ).payload.durationMinutes = overrides.sleepMinutes ?? 420;
+  contextRequest.events
+    .filter(event => event.eventType === "energy-record")
+    .forEach(event => {
+      event.payload.energy = overrides.energy ?? "low";
+      event.payload.fatigue = overrides.fatigue ?? "high";
+      event.payload.body = overrides.body ?? "tense";
+    });
+  const built = buildTodayContext(contextRequest);
+  assert.equal(built.ok, true);
+  return {
+    schemaVersion: 1,
+    analysisId: "analysis:nut-017.9:energy-synthetic-001",
     capability: CAPABILITY,
     requestedAt: "2040-01-16T12:01:00.000Z",
     context: built.context
@@ -59,8 +83,16 @@ export async function runDailySupportAnalyzerTests() {
     checks += 1;
   };
 
-  equal(ENGINE_VERSION, "0.3.1-analysis", "Engine sürümü NUT-017.3.1 olmalı");
-  equal(RULESET_ID, "today:daily-support:nut-017.3.1", "Kural kimliği sabit olmalı");
+  equal(ENGINE_VERSION, "0.9.0-rules", "Engine sürümü NUT-017.9 olmalı");
+  equal(RULESET_ID, "today:daily-support:nut-017.9", "Katalog kimliği sabit olmalı");
+  deepEqual(
+    RULE_IDS,
+    {
+      shortSleep: "hard-day-short-sleep",
+      lowEnergy: "hard-day-low-energy-high-fatigue"
+    },
+    "İki dar kuralın kimliği sürümlü olmalı"
+  );
   check(
     requestSchema.required.includes("context") &&
       requestSchema.properties.capability.const === CAPABILITY,
@@ -83,6 +115,11 @@ export async function runDailySupportAnalyzerTests() {
     first.analysis.evidence.map(entry => entry.source),
     ["today-core", "today-health"],
     "Dayanaklar Core ve Health olarak ayrı kalmalı"
+  );
+  equal(
+    first.analysis.evidence[0].reference,
+    "Günlük seçim: Zordu bugün",
+    "Kullanıcı dayanağı teknik Core ifadesi taşımamalı"
   );
   check(
     first.analysis.evidence.every(entry => request.context.provenance.some(
@@ -142,10 +179,23 @@ export async function runDailySupportAnalyzerTests() {
     "no-matching-rule",
     "6 saat sınırında öneri uydurulmamalı"
   );
+  equal(
+    sixHoursResult.error.ruleEvaluation.evaluatedRuleCount,
+    2,
+    "Eşleşmeme tanısı iki dar kuralı değerlendirmeli"
+  );
+  equal(
+    sixHoursResult.error.ruleEvaluation.selectedRuleId,
+    null,
+    "Eşleşme yoksa kural seçilmemeli"
+  );
+  const sixHoursSleepRule = sixHoursResult.error.ruleEvaluation.rules.find(
+    rule => rule.ruleId === RULE_IDS.shortSleep
+  );
   deepEqual(
-    sixHoursResult.error.ruleEvaluation,
+    sixHoursSleepRule,
     {
-      rulesetId: RULESET_ID,
+      ruleId: RULE_IDS.shortSleep,
       matched: false,
       required: {
         coreChoice: "C",
@@ -171,11 +221,12 @@ export async function runDailySupportAnalyzerTests() {
       },
       reasons: ["sleep-duration-not-below-threshold"]
     },
-    "Eşleşmeme tanısı yalnız değerlendirilen kayıtları ve sabit koşulları göstermeli"
+    "Uyku kuralı tanısı yalnız değerlendirilen kayıtları ve sabit koşulları göstermeli"
   );
   check(
     Object.isFrozen(sixHoursResult.error.ruleEvaluation) &&
-      Object.isFrozen(sixHoursResult.error.ruleEvaluation.observed),
+      Object.isFrozen(sixHoursResult.error.ruleEvaluation.rules) &&
+      Object.isFrozen(sixHoursSleepRule.observed),
     "Kural tanısı derin dondurulmalı"
   );
   const noHardDay = clone(request);
@@ -186,10 +237,11 @@ export async function runDailySupportAnalyzerTests() {
     "no-matching-rule",
     "Core C olmadan ilk kural çalışmamalı"
   );
-  deepEqual(
-    noHardDayResult.error.ruleEvaluation.reasons,
-    ["core-choice-not-hard-day"],
-    "Core koşulunun eşleşmeme nedeni açık olmalı"
+  check(
+    noHardDayResult.error.ruleEvaluation.rules.every(rule =>
+      rule.reasons.includes("core-choice-not-hard-day")
+    ),
+    "Core koşulunun eşleşmeme nedeni iki kuralda da açık olmalı"
   );
   const newerNeutralDay = clone(request);
   const newerCore = clone(newerNeutralDay.context.sections.core[0]);
@@ -219,10 +271,11 @@ export async function runDailySupportAnalyzerTests() {
     "no-matching-rule",
     "Core ve uyku farklı yerel günlerdeyse günlük kural çalışmamalı"
   );
-  deepEqual(
-    differentDaysResult.error.ruleEvaluation.reasons,
-    ["records-not-same-local-date"],
-    "Farklı yerel tarih nedeni açık olmalı"
+  check(
+    differentDaysResult.error.ruleEvaluation.rules.find(
+      rule => rule.ruleId === RULE_IDS.shortSleep
+    ).reasons.includes("records-not-same-local-date"),
+    "Farklı yerel tarih nedeni uyku kuralında açık olmalı"
   );
 
   const noSleep = clone(request);
@@ -230,10 +283,100 @@ export async function runDailySupportAnalyzerTests() {
     item => item.eventType !== "sleep-record"
   );
   const noSleepResult = analyzeTodayContext(noSleep);
-  deepEqual(
-    noSleepResult.error.ruleEvaluation.reasons,
-    ["sleep-record-missing"],
+  check(
+    noSleepResult.error.ruleEvaluation.rules.find(
+      rule => rule.ruleId === RULE_IDS.shortSleep
+    ).reasons.includes("sleep-record-missing"),
     "Uyku kaydı yokluğu açık olmalı"
+  );
+
+  const energyMatchRequest = energyRequest(sourceRequest);
+  const energyMatch = analyzeTodayContext(energyMatchRequest);
+  equal(
+    energyMatch.ok,
+    true,
+    "Core C ile düşük enerji ve fazla yorgunluk aynı gün eşleşmeli"
+  );
+  deepEqual(
+    energyMatch.analysis.evidence.map(entry => entry.eventId),
+    ["core-20400115", "energy-20400115"],
+    "İkinci kural yalnız Core ve enerji kaydına dayanmalı"
+  );
+  equal(
+    energyMatch.analysis.evidence[1].reference,
+    "Enerji ve beden kaydı: Düşük enerji · Fazla yorgunluk",
+    "Enerji dayanağı sade kullanıcı diliyle sunulmalı"
+  );
+  equal(
+    energyMatch.analysis.confidence,
+    0.74,
+    "İkinci kuralın kapsam güveni sabit ve olasılık dışı olmalı"
+  );
+  equal(
+    energyMatch.analysis.proposedActions[0].label,
+    "Kısa bir mola vermeyi hatırla",
+    "İkinci kural yalnız onay bekleyen mola taslağı üretmeli"
+  );
+  check(
+    energyMatch.analysis.evidence.every(entry =>
+      energyMatchRequest.context.provenance.some(provenance =>
+        provenance.source === entry.source &&
+        provenance.eventId === entry.eventId
+      )
+    ),
+    "İkinci kuralın bütün dayanakları provenance kaydına bağlanmalı"
+  );
+
+  const partialEnergy = analyzeTodayContext(energyRequest(sourceRequest, {
+    energy: "balanced",
+    fatigue: "high"
+  }));
+  equal(
+    partialEnergy.error.code,
+    "no-matching-rule",
+    "Yalnız fazla yorgunluk varsa ikinci kural öneri uydurmamalı"
+  );
+  const partialEnergyRule = partialEnergy.error.ruleEvaluation.rules.find(
+    rule => rule.ruleId === RULE_IDS.lowEnergy
+  );
+  deepEqual(
+    partialEnergyRule.reasons,
+    ["energy-level-not-low"],
+    "İkinci kuralın eşleşmeme nedeni kontrollü olmalı"
+  );
+
+  const differentEnergyDay = clone(energyRequest(sourceRequest));
+  differentEnergyDay.context.sections.health.find(
+    item => item.eventType === "energy-record"
+  ).localDate = "2040-01-14";
+  const differentEnergyResult = analyzeTodayContext(differentEnergyDay);
+  equal(
+    differentEnergyResult.error.code,
+    "no-matching-rule",
+    "Core ve enerji farklı günlerdeyse ikinci kural çalışmamalı"
+  );
+  check(
+    differentEnergyResult.error.ruleEvaluation.rules.find(
+      rule => rule.ruleId === RULE_IDS.lowEnergy
+    ).reasons.includes("records-not-same-local-date"),
+    "Enerji kuralında farklı yerel tarih nedeni görünmeli"
+  );
+
+  const bothMatch = energyRequest(sourceRequest, { sleepMinutes: 330 });
+  bothMatch.analysisId = request.analysisId;
+  deepEqual(
+    analyzeTodayContext(bothMatch),
+    first,
+    "İki kural birden eşleşirse mevcut kısa uyku önerisi öncelikli kalmalı"
+  );
+
+  const energySkyChanged = clone(energyMatchRequest);
+  energySkyChanged.context.sections.symbolicContext.items[0]
+    .facts.sky.planets.reverse();
+  deepEqual(
+    analyzeTodayContext(energySkyChanged),
+    energyMatch,
+    "Sembolik Sky ikinci kuralı veya güvenini değiştirmemeli"
   );
 
   const unsafeBoundary = clone(request);
@@ -272,11 +415,26 @@ export async function runDailySupportAnalyzerTests() {
     "Gelecekte oluşturulmuş bağlam reddedilmeli"
   );
 
+  const extraRequestField = clone(request);
+  extraRequestField.storageKey = "not-allowed";
+  equal(
+    analyzeTodayContext(extraRequestField).error.code,
+    "invalid-analysis-request",
+    "Sözleşme dışı istek alanı fail-closed reddedilmeli"
+  );
+
   const serialized = JSON.stringify(first.analysis).toLocaleLowerCase("tr");
   check(
     ["depresyondasın", "teşhis koydum", "kesin olarak", "uyku bozukluğun var"]
       .every(term => !serialized.includes(term)),
     "Teşhis ve kesinlik dili üretilmemeli"
+  );
+  const serializedEnergy = JSON.stringify(energyMatch.analysis)
+    .toLocaleLowerCase("tr");
+  check(
+    ["depresyondasın", "teşhis koydum", "kesin olarak", "neden oldu"]
+      .every(term => !serializedEnergy.includes(term)),
+    "Enerji önerisi teşhis, kesinlik veya nedensellik dili üretmemeli"
   );
   check(
     !/(?:localStorage|sessionStorage|indexedDB|document\s*\.|fetch\s*\(|XMLHttpRequest|WebSocket\s*\(|TodayConnect|Date\.now|new Date\s*\(\s*\))/.test(source),

@@ -4,6 +4,7 @@ import {
   BENCHMARK_REPORT_SCHEMA_VERSION,
   BENCHMARK_SUITE_SCHEMA_VERSION,
   ENGINE_VERSION,
+  LEGACY_SUITE_ID,
   RULESET_ID,
   SUITE_ID,
   evaluateSyntheticBenchmark
@@ -17,6 +18,9 @@ const loadJson = async relativePath => JSON.parse(
 export async function runSyntheticBenchmarkEvaluatorTests() {
   const suite = await loadJson(
     "../fixtures/synthetic/nut-017.8-benchmark-suite.json"
+  );
+  const extensionSuite = await loadJson(
+    "../fixtures/synthetic/nut-017.9-benchmark-suite.json"
   );
   const suiteSchema = await loadJson(
     "../contracts/benchmark-suite.schema.json"
@@ -52,12 +56,17 @@ export async function runSyntheticBenchmarkEvaluatorTests() {
     );
   };
 
-  equal(ENGINE_VERSION, "0.8.0-evaluation", "Benchmark sürümü doğru olmalı");
-  equal(RULESET_ID, "today:synthetic-safety-benchmark:nut-017.8", "Kural kimliği sabit olmalı");
-  equal(SUITE_ID, "today:nut-017.8:synthetic-safety-v1", "Paket kimliği sabit olmalı");
+  equal(ENGINE_VERSION, "0.9.0-evaluation", "Benchmark sürümü doğru olmalı");
+  equal(RULESET_ID, "today:synthetic-safety-benchmark:nut-017.9", "Kural kimliği sabit olmalı");
+  equal(SUITE_ID, "today:nut-017.9:synthetic-safety-v1", "Güncel paket kimliği sabit olmalı");
+  equal(LEGACY_SUITE_ID, "today:nut-017.8:synthetic-safety-v1", "Önceki paket kimliği desteklenmeli");
   equal(BENCHMARK_SUITE_SCHEMA_VERSION, 1, "Benchmark paketi v1 olmalı");
   equal(BENCHMARK_REPORT_SCHEMA_VERSION, 1, "Benchmark raporu v1 olmalı");
-  equal(suiteSchema.properties.suiteId.const, SUITE_ID, "Suite sözleşmesi kimliği sabitlemeli");
+  deepEqual(
+    suiteSchema.properties.suiteId.enum,
+    [LEGACY_SUITE_ID, SUITE_ID],
+    "Suite sözleşmesi önceki ve güncel sentetik paketleri kabul etmeli"
+  );
   equal(reportSchema.properties.engineVersion.const, ENGINE_VERSION, "Rapor sözleşmesi Engine sürümünü sabitlemeli");
   equal(suiteSchema.properties.policy.properties.syntheticOnly.const, true, "Sözleşme yalnız sentetik veriyi kabul etmeli");
   equal(reportSchema.properties.boundaries.properties.accuracyClaim.const, false, "Rapor doğruluk iddiasını kapatmalı");
@@ -65,7 +74,7 @@ export async function runSyntheticBenchmarkEvaluatorTests() {
   const first = evaluateSyntheticBenchmark(suite);
   equal(first.ok, true, "Geçerli sentetik paket değerlendirilmeli");
   equal(first.report.schemaVersion, 1, "Rapor schemaVersion 1 olmalı");
-  equal(first.report.suiteId, SUITE_ID, "Rapor paket kimliğine bağlanmalı");
+  equal(first.report.suiteId, LEGACY_SUITE_ID, "Önceki rapor kendi paket kimliğine bağlanmalı");
   equal(first.report.engineVersion, ENGINE_VERSION, "Rapor Engine sürümünü taşımalı");
   equal(first.report.summary.evaluationStatus, "passed", "Tüm vakalar geçtiğinde kapı açılmalı");
   equal(first.report.summary.totalCases, 12, "On iki sentetik vaka değerlendirilmeli");
@@ -80,7 +89,7 @@ export async function runSyntheticBenchmarkEvaluatorTests() {
   deepEqual(
     first.report.components,
     {
-      analysis: "0.3.1-analysis",
+      analysis: "0.9.0-rules",
       pattern: "0.6.0-pattern",
       feedback: "0.7.0-feedback"
     },
@@ -175,6 +184,53 @@ export async function runSyntheticBenchmarkEvaluatorTests() {
     "Veri kümesi, olay ve vaka sırası sonucu değiştirmemeli"
   );
 
+  const extension = evaluateSyntheticBenchmark(extensionSuite);
+  equal(extension.ok, true, "NUT-017.9 genişletme paketi değerlendirilmeli");
+  equal(extension.report.suiteId, SUITE_ID, "Genişletme raporu güncel paket kimliğini taşımalı");
+  equal(extension.report.summary.evaluationStatus, "passed", "Yeni günlük kural vakaları geçmeli");
+  equal(extension.report.summary.totalCases, 4, "Dört yeni günlük kural vakası değerlendirilmeli");
+  equal(extension.report.summary.passedCases, 4, "Dört yeni vaka geçmeli");
+  equal(extension.report.summary.failedCases, 0, "Yeni vakalarda başarısızlık olmamalı");
+  equal(extension.report.summary.safetyViolations, 0, "Yeni vakalarda güvenlik ihlali olmamalı");
+  deepEqual(
+    extension.report.summary.capabilities,
+    ["daily-analysis"],
+    "Genişletme paketi yalnız günlük analizi sınamalı"
+  );
+  const extensionOutcomes = Object.fromEntries(
+    extension.report.cases.map(testCase => [
+      testCase.caseId,
+      testCase.actualOutcome
+    ])
+  );
+  equal(extensionOutcomes["analysis-energy-match"], "success", "Düşük enerji ve fazla yorgunluk eşleşmeli");
+  equal(extensionOutcomes["analysis-energy-partial"], "no-result", "Kısmi enerji koşulu öneri uydurmamalı");
+  equal(extensionOutcomes["analysis-precedence-baseline"], "success", "Kısa uyku öncelik tabanı geçmeli");
+  equal(extensionOutcomes["analysis-precedence-with-energy"], "success", "İki kural birlikteyken kısa uyku sonucu korunmalı");
+  const precedenceCase = extension.report.cases.find(testCase =>
+    testCase.caseId === "analysis-precedence-with-energy"
+  );
+  check(
+    precedenceCase.checks.some(result =>
+      result.checkId === "equivalent-output-with-rule-priority" && result.passed
+    ),
+    "İkinci kural eklendiğinde mevcut kısa uyku çıktısı değişmemeli"
+  );
+  const serializedExtension = JSON.stringify(extension.report);
+  check(
+    !serializedExtension.includes("synthetic-energy-"),
+    "Rapor ham sentetik enerji olaylarını veya dayanak kimliklerini taşımamalı"
+  );
+  const shuffledExtension = clone(extensionSuite);
+  shuffledExtension.datasets.reverse();
+  shuffledExtension.datasets.forEach(dataset => dataset.events.reverse());
+  shuffledExtension.cases.reverse();
+  deepEqual(
+    evaluateSyntheticBenchmark(shuffledExtension),
+    extension,
+    "Yeni veri kümesi, olay ve vaka sırası sonucu değiştirmemeli"
+  );
+
   const mismatchedExpectation = clone(suite);
   const matchCase = mismatchedExpectation.cases.find(testCase =>
     testCase.caseId === "analysis-match"
@@ -212,6 +268,25 @@ export async function runSyntheticBenchmarkEvaluatorTests() {
   invalid(value => { value.datasets[0].events.push(clone(value.datasets[0].events[0])); }, "Aynı veri kümesindeki yinelenen olay reddedilmeli");
   invalid(value => { value.cases[0].unknown = true; }, "Bilinmeyen vaka alanı reddedilmeli");
 
+  const invalidEnergy = clone(extensionSuite);
+  invalidEnergy.datasets[0].events.find(event =>
+    event.eventType === "energy-record"
+  ).payload.energy = "critical";
+  equal(
+    evaluateSyntheticBenchmark(invalidEnergy).error?.code,
+    "invalid-benchmark-suite",
+    "Sözleşme dışı enerji değeri reddedilmeli"
+  );
+  const freeTextEnergy = clone(extensionSuite);
+  freeTextEnergy.datasets[0].events.find(event =>
+    event.eventType === "energy-record"
+  ).payload.note = "ham metin";
+  equal(
+    evaluateSyntheticBenchmark(freeTextEnergy).error?.code,
+    "invalid-benchmark-suite",
+    "Enerji girdisine serbest metin eklenememeli"
+  );
+
   check(
     !/\bdocument\.|globalThis\.window|localStorage|sessionStorage|\bfetch\s*\(|XMLHttpRequest|WebSocket/.test(source),
     "Değerlendirici DOM, depolama veya ağ API'sine erişmemeli"
@@ -230,5 +305,5 @@ export async function runSyntheticBenchmarkEvaluatorTests() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const checks = await runSyntheticBenchmarkEvaluatorTests();
-  console.log(`${checks}/${checks} NUT-017.8 sentetik benchmark kontrolü başarılı.`);
+  console.log(`${checks}/${checks} NUT-017.9 sentetik benchmark kontrolü başarılı.`);
 }

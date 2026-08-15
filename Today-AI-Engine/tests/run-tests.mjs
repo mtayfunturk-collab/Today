@@ -44,7 +44,7 @@ const nut017Checks = await runContextBuilderTests();
 console.log(`${nut017Checks}/${nut017Checks} NUT-017.1 bağlam ve onay kontrolü başarılı.`);
 
 const nut0173Checks = await runDailySupportAnalyzerTests();
-console.log(`${nut0173Checks}/${nut0173Checks} NUT-017.3.1 açıklanabilir analiz ve kural tanısı kontrolü başarılı.`);
+console.log(`${nut0173Checks}/${nut0173Checks} NUT-017.9 açıklanabilir günlük kural kataloğu kontrolü başarılı.`);
 
 const nut0174Checks = await runApprovalDecisionProcessorTests();
 console.log(`${nut0174Checks}/${nut0174Checks} NUT-017.4 geçici onay kararı kontrolü başarılı.`);
@@ -59,4 +59,4 @@ const nut0177Checks = await runPatternFeedbackProcessorTests();
 console.log(`${nut0177Checks}/${nut0177Checks} NUT-017.7 örüntü geri bildirimi kontrolü başarılı.`);
 
 const nut0178Checks = await runSyntheticBenchmarkEvaluatorTests();
-console.log(`${nut0178Checks}/${nut0178Checks} NUT-017.8 sentetik benchmark kontrolü başarılı.`);
+console.log(`${nut0178Checks}/${nut0178Checks} NUT-017.9 sentetik benchmark kontrolü başarılı.`);
