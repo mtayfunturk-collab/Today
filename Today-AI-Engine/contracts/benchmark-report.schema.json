@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://today.local/contracts/benchmark-report.schema.json",
+  "title": "Today Synthetic Safety Benchmark Report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "reportId",
+    "suiteId",
+    "engineVersion",
+    "evaluatedAt",
+    "scope",
+    "components",
+    "summary",
+    "cases",
+    "boundaries"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "reportId": { "type": "string", "minLength": 1 },
+    "suiteId": { "const": "today:nut-017.8:synthetic-safety-v1" },
+    "engineVersion": { "const": "0.8.0-evaluation" },
+    "evaluatedAt": { "type": "string", "format": "date-time" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data",
+        "processingMode",
+        "retention",
+        "persistent",
+        "externalRecipient"
+      ],
+      "properties": {
+        "data": { "const": "synthetic-only" },
+        "processingMode": { "const": "device-only" },
+        "retention": { "const": "run-scoped" },
+        "persistent": { "const": false },
+        "externalRecipient": { "type": "null" }
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["analysis", "pattern", "feedback"],
+      "properties": {
+        "analysis": { "type": "string", "minLength": 1 },
+        "pattern": { "type": "string", "minLength": 1 },
+        "feedback": { "type": "string", "minLength": 1 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluationStatus",
+        "totalCases",
+        "passedCases",
+        "failedCases",
+        "safetyViolations",
+        "capabilities"
+      ],
+      "properties": {
+        "evaluationStatus": { "enum": ["passed", "failed"] },
+        "totalCases": { "type": "integer", "minimum": 1 },
+        "passedCases": { "type": "integer", "minimum": 0 },
+        "failedCases": { "type": "integer", "minimum": 0 },
+        "safetyViolations": { "type": "integer", "minimum": 0 },
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "daily-analysis",
+              "pattern-observation",
+              "pattern-feedback"
+            ]
+          }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "caseId",
+          "capability",
+          "expectedOutcome",
+          "actualOutcome",
+          "passed",
+          "checks"
+        ],
+        "properties": {
+          "caseId": { "type": "string", "minLength": 1 },
+          "capability": {
+            "enum": [
+              "daily-analysis",
+              "pattern-observation",
+              "pattern-feedback"
+            ]
+          },
+          "expectedOutcome": {
+            "enum": ["success", "no-result", "rejected"]
+          },
+          "actualOutcome": {
+            "enum": ["success", "no-result", "rejected"]
+          },
+          "expectedError": { "type": "string", "minLength": 1 },
+          "actualError": { "type": "string", "minLength": 1 },
+          "passed": { "type": "boolean" },
+          "checks": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["checkId", "passed", "category"],
+              "properties": {
+                "checkId": { "type": "string", "minLength": 1 },
+                "passed": { "type": "boolean" },
+                "category": { "enum": ["expectation", "explanation", "safety"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accuracyClaim",
+        "realUserDataUsed",
+        "modelProviderUsed",
+        "modelUpdated",
+        "skyCausalityAllowed",
+        "diagnosisAllowed",
+        "actionExecuted",
+        "connectCalled",
+        "auditPersisted",
+        "externalTransfer"
+      ],
+      "properties": {
+        "accuracyClaim": { "const": false },
+        "realUserDataUsed": { "const": false },
+        "modelProviderUsed": { "const": false },
+        "modelUpdated": { "const": false },
+        "skyCausalityAllowed": { "const": false },
+        "diagnosisAllowed": { "const": false },
+        "actionExecuted": { "const": false },
+        "connectCalled": { "const": false },
+        "auditPersisted": { "const": false },
+        "externalTransfer": { "const": false }
+      }
+    }
+  }
+}
