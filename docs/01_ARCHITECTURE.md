@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.15.0
+Application Version: 2.16.0
 Data Schema: 2
-Active Shell: today-v2-foundation-066
+Active Shell: today-v2-foundation-067
 Last Updated: 15 August 2026
 
 ---
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.8 Synthetic Evaluation Gate
+## NUT-017.9 Explainable Daily Rule Catalog
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -141,10 +141,11 @@ read-only source adapters and the visible consent/context-preview surface.
 | Data scope and one-request consent | Today App settings surface | Device-only, request-scoped, no external recipient |
 | Minimization and context package | Today AI Engine NUT-017.1 | Deterministic, provenance-linked, DOM/storage/network independent |
 | Symbolic Sky section | Today AI Engine | Separate from Core/Health; causality and scientific-evidence claims disabled |
-| Explainable analysis | Today AI Engine NUT-017.3.1 | Provider-free deterministic rule; evidence, confidence, uncertainty, alternatives and approval state are mandatory |
-| Rule mismatch diagnosis | Today AI Engine NUT-017.3.1 | Shows only validated Core/sleep observations, date checks and controlled reasons; does not relax the rule |
+| Explainable analysis | Today AI Engine NUT-017.9 | Provider-free deterministic two-rule catalog; evidence, confidence, uncertainty, alternatives and approval state are mandatory |
+| Daily rule priority | Today AI Engine NUT-017.9 | Core C + short sleep remains first; Core C + low energy + high fatigue is second and cannot change the first output |
+| Rule mismatch diagnosis | Today AI Engine NUT-017.9 | Validates both rules internally; App shows only plain Core, sleep, energy and fatigue summaries |
 | Source event cap | Today App NUT-017.3.2 | Keeps the newest deterministic subset before restoring chronological output order; current Health records are not displaced by older records |
-| Symbolic Sky in analysis | Today AI Engine NUT-017.3.1 | Never used as evidence, confidence input, mismatch input or a health/emotion cause |
+| Symbolic Sky in analysis | Today AI Engine NUT-017.9 | Never used as evidence, confidence input, mismatch input or a health/emotion cause |
 | Proposed action | Existing output contract | Starts as `pending-user-approval` and is never executed by the analysis layer |
 | User decision | Today AI Engine NUT-017.4 | Reuses approval-decision v1 for approve/reject/edit; edit creates a new pending draft |
 | Decision UI | Today App NUT-017.4 | Shows plain-language evidence, confidence, uncertainty, options and decision state; hides internal IDs/codes |
@@ -156,24 +157,25 @@ read-only source adapters and the visible consent/context-preview surface.
 | Pattern feedback processor | Today AI Engine NUT-017.7 | Accepts only three explicit user responses linked to a valid observation; produces a device-only, request-scoped receipt |
 | Pattern feedback UI | Today App NUT-017.7 | Shows “Bana uyuyor”, “Bana uymuyor” and “Emin değilim”; keeps only the latest choice for the current screen request |
 | Feedback effects | Today AI Engine NUT-017.7 | Never changes the observation or confidence and never triggers learning, memory, execution, Connect, persistent audit or transfer |
-| Synthetic benchmark | Today AI Engine NUT-017.8 | Runs only source-controlled `synthetic-*` cases; reports expectation, explanation and safety checks without claiming AI accuracy |
+| Synthetic benchmark | Today AI Engine NUT-017.9 | Preserves the 12 previous cases and adds 4 energy/priority cases; reports expectation, explanation and safety checks without claiming AI accuracy |
 | Benchmark runtime boundary | Development/test only | Not loaded by the App UI or offline shell; no real user data, provider, storage, network, Connect or persistent audit |
 | Execution and persistent audit | Separate future scope | Connect, execution, persistent audit and external transfer remain disabled |
 
-The active host integration is App `2.15.0`, schema `2`, shell
-`today-v2-foundation-066`. NUT-017.8 is Engine-only and preserves the consent-gated context preview,
+The active host integration is App `2.16.0`, schema `2`, shell
+`today-v2-foundation-067`. NUT-017.9 preserves the consent-gated context preview,
 the documented first rule (`Core C` plus sleep below six hours), and the
-NUT-017.3.2 newest-record selection fix. A user may approve, reject, or edit the
+NUT-017.3.2 newest-record selection fix. It adds a second daily rule for same-day
+`Core C`, low energy and high fatigue. The first rule has fixed priority. A user may approve, reject, or edit the
 reminder time. Editing never counts as approval and creates a new pending draft.
 The separate seven-day command observes only whether `Core C` and sleep below
 six hours recur on the same local dates. It makes no causal claim and proposes
 no action. After a successful observation, the user can give one of three
 plain-language responses. That feedback remains request-scoped and does not
 train or update a model. A separate development command now verifies these
-behaviors with twelve synthetic cases; its pass count is not an AI accuracy
+behaviors with sixteen synthetic cases; its pass count is not an AI accuracy
 score and its report is not shown to users. Each valid decision still produces a request-scoped
 receipt. No reminder is created, no audit is persisted, and no Connect
-operation starts. See `docs/NUT-017.8-IMPLEMENTATION.md`; the source mapping remains in
+operation starts. See `docs/NUT-017.9-IMPLEMENTATION.md`; the source mapping remains in
 `docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---

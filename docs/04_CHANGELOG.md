@@ -31,6 +31,49 @@ Each entry should include:
 
 ---
 
+## Version 2.16.0 / AI Engine 0.9.0-rules — NUT-017.9
+
+Date
+
+15 August 2026
+
+Phase
+
+Explainable daily rule catalog checkpoint
+
+Status
+
+🟡 NUT-017.9 completed; product phase closure not claimed
+
+Summary
+
+- Added a second narrow daily rule for same-day `Core C`, low energy and high fatigue.
+- Preserved the existing same-day `Core C` + sleep-below-six-hours rule as the deterministic first priority.
+- Reused `analysis-request` and `analysis-output` v1; every result still carries evidence, confidence, uncertainty, options and approval state.
+- Kept partial matches from producing suggestions and translated no-match details into plain Core, sleep, energy and fatigue text.
+- Kept internal rule IDs, reason codes, event IDs, numeric confidence and NUT version text out of the user surface.
+- Kept Sky outside matching, evidence, confidence and health/emotion causality.
+- Extended the synthetic benchmark from 12 to 16 cases while retaining backward compatibility with the NUT-017.8 suite.
+- Raised App to `2.16.0` and shell to `today-v2-foundation-067`; schema remains `2` with no migration or new storage key.
+
+Tests
+
+- AI Engine: **335/335 successful**.
+- Synthetic benchmark: **16/16 cases**, **0 safety violations**.
+- NUT-017.9 Today integration gate: **96/96 successful**.
+- Existing relevant App groups: **142/142 successful**.
+- Existing documented platform debt remains: static **25/30**, Service Worker event **23/36**, browser **47/48**; automation contract still lacks `.github/workflows/platform-regression.yml`.
+
+Result
+
+Today can prepare a second cautious daily option from existing minimized Health data without adding a model provider, persistent memory, Connect execution or technical UI noise. The original short-sleep behavior remains stable.
+
+Commit
+
+`feat(ai): add deterministic daily rule catalog (NUT-017.9)`
+
+---
+
 ## AI Engine 0.8.0-evaluation — NUT-017.8
 
 Date
