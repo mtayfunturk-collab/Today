@@ -1,5 +1,19 @@
 # Değişiklik Günlüğü
 
+## 0.9.0-rules — NUT-017.9 — 2026-08-15
+
+- Günlük analiz kataloğuna ikinci dar kural eklendi: aynı yerel gündeki Core `C`, `energy=low` ve `fatigue=high` birlikteyse kısa mola/hafifletme önerisi hazırlanır.
+- Mevcut Core `C` + 360 dakikanın altı uyku kuralı değiştirilmedi ve deterministik önceliğini korudu.
+- İki kural da aynı `analysis-request` ve `analysis-output` v1 sözleşmelerini kullanır; dayanak, güven, belirsizlik, seçenek ve açık onay durumu zorunludur.
+- Eşleşmeme tanısı iki kuralı ayrı değerlendirir; App yalnız günlük seçim, uyku, enerji ve yorgunluğu sade dille gösterir, iç kural kimliklerini ve gerekçe kodlarını göstermez.
+- Sky hiçbir kurala, dayanağa, güven değerine veya sağlık/duygu açıklamasına katılmaz.
+- Sentetik benchmark önceki 12 vakayı koruyup 4 enerji/öncelik vakasıyla `16/16` sonuca genişletildi; `0` güvenlik ihlali.
+- Host: Today App `2.16.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-067`.
+- Test sonucu: AI Engine `335/335`; NUT-017.9 App entegrasyon kapısı `96/96`; ilgili mevcut App grupları `142/142` başarılı.
+- Migration gereksinimi: Yok; yeni storage anahtarı veya ana veri biçimi eklenmedi.
+- Mevcut platform test borçları değişmedi: static `25/30`, Service Worker event `23/36`, browser `47/48`; automation contract'ın beklediği workflow dosyası yok.
+- Commit mesajı: `feat(ai): add deterministic daily rule catalog (NUT-017.9)`
+
 ## 0.8.0-evaluation — NUT-017.8 — 2026-08-15
 
 - Günlük analiz, yedi günlük örüntü gözlemi ve örüntü geri bildirimini birlikte değerlendiren 12 vakalık sentetik güvenlik paketi eklendi.

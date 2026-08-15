@@ -2,7 +2,7 @@
 
 Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan, arayüzden ve App'in depolama katmanından bağımsız bir sistem katmanıdır.
 
-`0.8.0-evaluation`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1–17.7 çalışma sınırlarını yeniden oluşturmadan günlük analiz, yedi günlük örüntü ve kullanıcı geri bildirimi davranışlarını sentetik vakalarla değerlendirir. Bu katman yalnız geliştirme kalite kapısıdır; kullanıcı ekranına çıkmaz, gerçek kullanıcı verisi kullanmaz ve geçiş oranını AI doğruluğu olarak sunmaz. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay, kalıcı audit veya kalıcı AI belleği içermez.
+`0.9.0-rules`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1–17.8 çalışma sınırlarını yeniden oluşturmadan günlük destek analizini iki dar, açıklanabilir kurala genişletir. İlk kısa-uyku kuralı aynen ve öncelikli kalır; ikinci kural yalnız aynı gün “Zordu bugün”, düşük enerji ve fazla yorgunluk birlikteyse ihtiyatlı bir mola seçeneği üretir. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay, kalıcı audit veya kalıcı AI belleği içermez.
 
 ## İlkeler
 
@@ -17,13 +17,14 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 
 ## Durum
 
-- AI Engine değerlendirme katmanı sürümü: `0.8.0-evaluation`
-- Today App çalışma tabanı değişmedi: NUT-017.7, App `2.15.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-066`
+- AI Engine günlük kural kataloğu: `0.9.0-rules`; değerlendirme katmanı: `0.9.0-evaluation`
+- Today App çalışma tabanı: NUT-017.9, App `2.16.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-067`
 - Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
-- AI Engine testi: `299 PASS / 0 FAIL` (`232` mevcut + `67` NUT-017.8)
-- NUT-017.8 sentetik benchmark: `12/12` vaka, `0` güvenlik ihlali
-- Today App NUT-017.8 entegrasyon kapısı: `93 PASS / 0 FAIL`
-- Durum: İlk günlük öneri, yedi günlük gözlem ve üç geri bildirim seçeneği değişmedi. Yeni kalite kapısı eşleşme, sonuç üretmeme, reddetme, açıklanabilirlik ve Sky ayrımı beklentilerini yalnız sentetik olaylarla doğrular. Model öğrenmesi, kalıcı hafıza, eylem ve dış aktarım kapalıdır.
+- AI Engine testi: `335 PASS / 0 FAIL`
+- NUT-017.9 birleşik sentetik benchmark: `16/16` vaka, `0` güvenlik ihlali
+- Today App NUT-017.9 entegrasyon kapısı: `96 PASS / 0 FAIL`
+- İlgili mevcut App grupları: `142 PASS / 0 FAIL`
+- Durum: Günlük öneri iki kontrollü kurala sahiptir. Eşleşme yoksa öneri uydurulmaz; kullanıcı yalnız sade bir açıklama görür. Yedi günlük örüntü hâlâ yalnız Core–kısa uyku tekrarını inceler. Sky, model öğrenmesi, kalıcı hafıza, gerçek eylem ve dış aktarım kapalıdır.
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
@@ -45,6 +46,7 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 - `../docs/NUT-017.6-IMPLEMENTATION.md`: son 7 günlük, açıklanabilir ve nedenselliksiz Core–uyku tekrar gözlemi
 - `../docs/NUT-017.7-IMPLEMENTATION.md`: örüntü gözlemi için sade, cihaz-içi ve kalıcı olmayan kullanıcı geri bildirimi
 - `../docs/NUT-017.8-IMPLEMENTATION.md`: gerçek kullanıcı verisi kullanmayan sentetik benchmark ve güvenlik kapısı
+- `../docs/NUT-017.9-IMPLEMENTATION.md`: öncelikli iki kurallı günlük destek kataloğu ve sade kullanıcı yüzeyi
 
 ## Test
 
