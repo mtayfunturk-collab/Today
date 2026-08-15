@@ -1,16 +1,20 @@
 /**
  * Today AI Engine — Explainable Daily Support Analyzer
- * NUT-017.3.1
+ * NUT-017.9
  *
  * Saf ve deterministik bir analiz fonksiyonudur. DOM, Today App depolaması,
  * ağ, model sağlayıcısı, Connect veya sistem saatine erişmez.
  */
 
-export const ENGINE_VERSION = "0.3.1-analysis";
+export const ENGINE_VERSION = "0.9.0-rules";
 export const ANALYSIS_REQUEST_SCHEMA_VERSION = 1;
 export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 1;
 export const CAPABILITY = "daily-support-suggestion";
-export const RULESET_ID = "today:daily-support:nut-017.3.1";
+export const RULESET_ID = "today:daily-support:nut-017.9";
+export const RULE_IDS = Object.freeze({
+  shortSleep: "hard-day-short-sleep",
+  lowEnergy: "hard-day-low-energy-high-fatigue"
+});
 
 const IDENTIFIER_PATTERN =
   /^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$/;
@@ -20,6 +24,10 @@ function isPlainObject(value) {
   if (!value || typeof value !== "object") return false;
   const prototype = Object.getPrototypeOf(value);
   return prototype === Object.prototype || prototype === null;
+}
+
+function hasOnlyKeys(value, allowedKeys) {
+  return Object.keys(value).every(key => allowedKeys.has(key));
 }
 
 function deepFreeze(value, seen = new Set()) {
@@ -125,12 +133,23 @@ function validateContext(context, requestedAt) {
   const provenance = new Set(context.provenance.map(entry =>
     `${entry?.source || ""}:${entry?.eventId || ""}`
   ));
-  return [...context.sections.core, ...context.sections.health]
+  return [
+    ...context.sections.core,
+    ...context.sections.health,
+    ...context.sections.symbolicContext.items
+  ]
     .every(item => provenance.has(`${item.source}:${item.eventId}`));
 }
 
 function validateRequest(request) {
   return isPlainObject(request) &&
+    hasOnlyKeys(request, new Set([
+      "schemaVersion",
+      "analysisId",
+      "capability",
+      "requestedAt",
+      "context"
+    ])) &&
     request.schemaVersion === ANALYSIS_REQUEST_SCHEMA_VERSION &&
     typeof request.analysisId === "string" &&
     IDENTIFIER_PATTERN.test(request.analysisId) &&
@@ -159,16 +178,19 @@ function durationReference(minutes) {
     : `Uyku kaydı: ${hours} saat ${remainder} dakika`;
 }
 
-function ruleEvaluation(context) {
-  const core = latest(
-    context.sections.core,
-    item => item.eventType === "daily-checkin"
-  );
-  const sleep = latest(
-    context.sections.health,
-    item => item.eventType === "sleep-record"
-  );
+function coreObservation(core) {
+  return core
+    ? {
+        eventId: core.eventId,
+        localDate: core.localDate,
+        choice: ["A", "B", "C"].includes(core.facts.choice)
+          ? core.facts.choice
+          : null
+      }
+    : null;
+}
 
+function evaluateShortSleepRule(core, sleep) {
   const observedChoice = ["A", "B", "C"].includes(core?.facts.choice)
     ? core.facts.choice
     : null;
@@ -186,18 +208,16 @@ function ruleEvaluation(context) {
 
   if (!core) reasons.push("core-record-missing");
   else if (!coreChoiceMatches) reasons.push("core-choice-not-hard-day");
-
   if (!sleep) reasons.push("sleep-record-missing");
   else if (observedDuration === null) reasons.push("sleep-duration-missing");
   else if (observedDuration <= 0) reasons.push("sleep-duration-not-positive");
   else if (!sleepDurationMatches) {
     reasons.push("sleep-duration-not-below-threshold");
   }
-
   if (sameLocalDate === false) reasons.push("records-not-same-local-date");
 
-  const diagnostic = {
-    rulesetId: RULESET_ID,
+  return {
+    ruleId: RULE_IDS.shortSleep,
     matched: reasons.length === 0,
     required: {
       coreChoice: "C",
@@ -208,13 +228,7 @@ function ruleEvaluation(context) {
       sameLocalDate: true
     },
     observed: {
-      core: core
-        ? {
-            eventId: core.eventId,
-            localDate: core.localDate,
-            choice: observedChoice
-          }
-        : null,
+      core: coreObservation(core),
       sleep: sleep
         ? {
             eventId: sleep.eventId,
@@ -230,31 +244,104 @@ function ruleEvaluation(context) {
     },
     reasons
   };
+}
+
+function evaluateLowEnergyRule(core, energy) {
+  const observedChoice = ["A", "B", "C"].includes(core?.facts.choice)
+    ? core.facts.choice
+    : null;
+  const observedEnergy = ["low", "balanced", "high"].includes(
+    energy?.facts.energy
+  ) ? energy.facts.energy : null;
+  const observedFatigue = ["high", "some", "none"].includes(
+    energy?.facts.fatigue
+  ) ? energy.facts.fatigue : null;
+  const coreChoiceMatches = observedChoice === "C";
+  const energyLevelMatches = observedEnergy === "low";
+  const fatigueLevelMatches = observedFatigue === "high";
+  const sameLocalDate = core && energy
+    ? core.localDate === energy.localDate
+    : null;
+  const reasons = [];
+
+  if (!core) reasons.push("core-record-missing");
+  else if (!coreChoiceMatches) reasons.push("core-choice-not-hard-day");
+  if (!energy) reasons.push("energy-record-missing");
+  else {
+    if (observedEnergy === null) reasons.push("energy-level-missing");
+    else if (!energyLevelMatches) reasons.push("energy-level-not-low");
+    if (observedFatigue === null) reasons.push("fatigue-level-missing");
+    else if (!fatigueLevelMatches) reasons.push("fatigue-level-not-high");
+  }
+  if (sameLocalDate === false) reasons.push("records-not-same-local-date");
+
+  return {
+    ruleId: RULE_IDS.lowEnergy,
+    matched: reasons.length === 0,
+    required: {
+      coreChoice: "C",
+      energy: "low",
+      fatigue: "high",
+      sameLocalDate: true
+    },
+    observed: {
+      core: coreObservation(core),
+      energy: energy
+        ? {
+            eventId: energy.eventId,
+            localDate: energy.localDate,
+            energy: observedEnergy,
+            fatigue: observedFatigue
+          }
+        : null
+    },
+    checks: {
+      coreChoice: core ? coreChoiceMatches : null,
+      energyLevel: energy ? energyLevelMatches : null,
+      fatigueLevel: energy ? fatigueLevelMatches : null,
+      sameLocalDate
+    },
+    reasons
+  };
+}
+
+function ruleEvaluation(context) {
+  const core = latest(
+    context.sections.core,
+    item => item.eventType === "daily-checkin"
+  );
+  const sleep = latest(
+    context.sections.health,
+    item => item.eventType === "sleep-record"
+  );
+  const energy = latest(
+    context.sections.health,
+    item => item.eventType === "energy-record"
+  );
+  const rules = [
+    evaluateShortSleepRule(core, sleep),
+    evaluateLowEnergyRule(core, energy)
+  ];
+  const selected = rules.find(rule => rule.matched) || null;
+  const diagnostic = deepFreeze({
+    rulesetId: RULESET_ID,
+    matched: Boolean(selected),
+    selectedRuleId: selected?.ruleId || null,
+    evaluatedRuleCount: rules.length,
+    rules
+  });
 
   return {
     core,
     sleep,
-    diagnostic: deepFreeze(diagnostic)
+    energy,
+    selectedRuleId: selected?.ruleId || null,
+    diagnostic
   };
 }
 
-/**
- * analysis-request v1 nesnesinden analysis-output v1 üretir.
- * Çıktı yalnız ilk, dar kuralla eşleşirse oluşur: Core C + 6 saatin altı uyku.
- */
-export function analyzeTodayContext(request) {
-  if (!validateRequest(request)) {
-    return failure("invalid-analysis-request");
-  }
-
-  const evaluated = ruleEvaluation(request.context);
-  if (!evaluated.diagnostic.matched) {
-    return failure("no-matching-rule", {
-      ruleEvaluation: evaluated.diagnostic
-    });
-  }
-
-  const analysis = {
+function shortSleepAnalysis(request, evaluated) {
+  return {
     schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION,
     analysisId: request.analysisId,
     type: CAPABILITY,
@@ -264,7 +351,7 @@ export function analyzeTodayContext(request) {
       {
         source: "today-core",
         eventId: evaluated.core.eventId,
-        reference: "Core günlük seçimi: Zordu bugün"
+        reference: "Günlük seçim: Zordu bugün"
       },
       {
         source: "today-health",
@@ -292,6 +379,84 @@ export function analyzeTodayContext(request) {
       }
     ]
   };
+}
+
+function energyReference(facts) {
+  const energy = {
+    low: "Düşük enerji",
+    balanced: "Dengeli enerji",
+    high: "Yüksek enerji"
+  }[facts.energy] || "Enerji bilgisi yok";
+  const fatigue = {
+    high: "Fazla yorgunluk",
+    some: "Biraz yorgunluk",
+    none: "Yorgunluk yok"
+  }[facts.fatigue] || "Yorgunluk bilgisi yok";
+  return `Enerji ve beden kaydı: ${energy} · ${fatigue}`;
+}
+
+function lowEnergyAnalysis(request, evaluated) {
+  return {
+    schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION,
+    analysisId: request.analysisId,
+    type: CAPABILITY,
+    summary: "Seçtiğin kayıtlarda bugün zorlanma ve belirgin yorgunluk birlikte görünüyor.",
+    suggestion: "Planına kısa bir dinlenme aralığı eklemeyi ve kalan işleri hafifletmeyi değerlendirebilirsin.",
+    evidence: [
+      {
+        source: "today-core",
+        eventId: evaluated.core.eventId,
+        reference: "Günlük seçim: Zordu bugün"
+      },
+      {
+        source: "today-health",
+        eventId: evaluated.energy.eventId,
+        reference: energyReference(evaluated.energy.facts)
+      }
+    ],
+    confidence: 0.74,
+    uncertainty: [
+      "Yorgunluğun nedeni ve gün içindeki koşullar bilinmiyor.",
+      "Bu çıktı iki kayda ve sabit bir kurala dayanır; teşhis veya kesinlik değildir."
+    ],
+    alternatives: [
+      "Öneriyi kullanmadan devam et",
+      "Kısa bir mola verip nasıl hissettiğine yeniden bak",
+      "Veri kapsamını değiştirip yeniden değerlendir"
+    ],
+    requiresUserApproval: true,
+    proposedActions: [
+      {
+        actionId: `action:${request.analysisId}:short-break`,
+        type: "create-reminder",
+        label: "Kısa bir mola vermeyi hatırla",
+        status: "pending-user-approval"
+      }
+    ]
+  };
+}
+
+/**
+ * analysis-request v1 nesnesinden analysis-output v1 üretir.
+ * Çıktı yalnız sürümlü katalogdaki dar kurallardan biri eşleşirse oluşur.
+ * Öncelik: Core C + 6 saatin altı uyku; ardından Core C + düşük enerji ve
+ * fazla yorgunluk. Sky hiçbir kurala katılmaz.
+ */
+export function analyzeTodayContext(request) {
+  if (!validateRequest(request)) {
+    return failure("invalid-analysis-request");
+  }
+
+  const evaluated = ruleEvaluation(request.context);
+  if (!evaluated.diagnostic.matched) {
+    return failure("no-matching-rule", {
+      ruleEvaluation: evaluated.diagnostic
+    });
+  }
+
+  const analysis = evaluated.selectedRuleId === RULE_IDS.shortSleep
+    ? shortSleepAnalysis(request, evaluated)
+    : lowEnergyAnalysis(request, evaluated);
 
   return deepFreeze({ ok: true, analysis });
 }
@@ -302,5 +467,6 @@ export default Object.freeze({
   ANALYSIS_OUTPUT_SCHEMA_VERSION,
   CAPABILITY,
   RULESET_ID,
+  RULE_IDS,
   analyzeTodayContext
 });

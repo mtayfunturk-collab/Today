@@ -1,6 +1,6 @@
 /**
  * Today AI Engine — Synthetic Safety Benchmark Evaluator
- * NUT-017.8
+ * NUT-017.9
  *
  * Yalnız kaynak kodla birlikte gelen sentetik olayları değerlendirir. Gerçek
  * kullanıcı verisi, DOM, depolama, ağ, model sağlayıcısı, Connect, audit
@@ -25,11 +25,14 @@ import {
   processPatternFeedback
 } from "./pattern-feedback-processor.mjs";
 
-export const ENGINE_VERSION = "0.8.0-evaluation";
+export const ENGINE_VERSION = "0.9.0-evaluation";
 export const BENCHMARK_SUITE_SCHEMA_VERSION = 1;
 export const BENCHMARK_REPORT_SCHEMA_VERSION = 1;
-export const SUITE_ID = "today:nut-017.8:synthetic-safety-v1";
-export const RULESET_ID = "today:synthetic-safety-benchmark:nut-017.8";
+export const SUITE_ID = "today:nut-017.9:synthetic-safety-v1";
+export const LEGACY_SUITE_ID = "today:nut-017.8:synthetic-safety-v1";
+export const RULESET_ID = "today:synthetic-safety-benchmark:nut-017.9";
+
+const SUPPORTED_SUITE_IDS = new Set([LEGACY_SUITE_ID, SUITE_ID]);
 
 const IDENTIFIER_PATTERN =
   /^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$/;
@@ -130,6 +133,13 @@ function isSyntheticPayload(event) {
       Number.isFinite(payload.durationMinutes) &&
       payload.durationMinutes > 0 &&
       payload.durationMinutes <= 1440;
+  }
+
+  if (event.source === "today-health" && event.eventType === "energy-record") {
+    return hasOnlyKeys(payload, new Set(["energy", "fatigue", "body"])) &&
+      ["low", "balanced", "high"].includes(payload.energy) &&
+      ["high", "some", "none"].includes(payload.fatigue) &&
+      ["tense", "neutral", "relaxed"].includes(payload.body);
   }
 
   if (event.source === "today-sky" && event.eventType === "sky-moment") {
@@ -274,7 +284,7 @@ function validateSuite(suite) {
       "cases"
     ])) ||
     suite.schemaVersion !== BENCHMARK_SUITE_SCHEMA_VERSION ||
-    suite.suiteId !== SUITE_ID ||
+    !SUPPORTED_SUITE_IDS.has(suite.suiteId) ||
     !isDateTime(suite.contextBuiltAt) ||
     !isDateTime(suite.evaluatedAt) ||
     Date.parse(suite.evaluatedAt) < Date.parse(suite.contextBuiltAt) ||
@@ -362,6 +372,13 @@ function validateSuite(suite) {
 
 function consentFor(suite, dataset) {
   const sources = new Set(dataset.events.map(event => event.source));
+  const healthClasses = [];
+  if (dataset.events.some(event => event.eventType === "sleep-record")) {
+    healthClasses.push("sleep");
+  }
+  if (dataset.events.some(event => event.eventType === "energy-record")) {
+    healthClasses.push("energy");
+  }
   return {
     schemaVersion: 1,
     consentId: `benchmark-consent:${dataset.datasetId}`,
@@ -382,7 +399,7 @@ function consentFor(suite, dataset) {
       },
       health: {
         allowed: sources.has("today-health"),
-        dataClasses: sources.has("today-health") ? ["sleep"] : [],
+        dataClasses: healthClasses,
         includeFreeText: false
       },
       sky: {
@@ -671,8 +688,11 @@ function caseReport(testCase, execution, executions) {
 
   if (Object.hasOwn(testCase, "equivalentToCaseId")) {
     const equivalent = executions.get(testCase.equivalentToCaseId);
+    const checkId = testCase.capability === "pattern-observation"
+      ? "equivalent-output-with-symbolic-sky"
+      : "equivalent-output-with-rule-priority";
     checks.push(makeCheck(
-      "equivalent-output-with-symbolic-sky",
+      checkId,
       stableSerialize(comparableOutput(testCase, execution.result)) ===
         stableSerialize(comparableOutput(testCase, equivalent?.result)),
       "safety"
@@ -798,6 +818,7 @@ export default Object.freeze({
   BENCHMARK_SUITE_SCHEMA_VERSION,
   BENCHMARK_REPORT_SCHEMA_VERSION,
   SUITE_ID,
+  LEGACY_SUITE_ID,
   RULESET_ID,
   evaluateSyntheticBenchmark
 });
