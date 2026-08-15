@@ -5,7 +5,7 @@ Document: Changelog
 Version: 1.0
 Status: Active
 Owner: Today Master Project
-Last Updated: 14 August 2026
+Last Updated: 15 August 2026
 
 ---
 
@@ -28,6 +28,48 @@ Each entry should include:
 ---
 
 # Version History
+
+---
+
+## AI Engine 0.8.0-evaluation — NUT-017.8
+
+Date
+
+15 August 2026
+
+Phase
+
+AI synthetic evaluation checkpoint
+
+Status
+
+🟡 NUT-017.8 completed; product phase closure not claimed
+
+Summary
+
+- Added versioned `benchmark-suite` and `benchmark-report` v1 contracts.
+- Added a pure deterministic evaluator for 12 source-controlled synthetic daily-analysis, pattern-observation and pattern-feedback cases.
+- Covered successful output, controlled no-result behavior and fail-closed rejection of modified safety boundaries.
+- Checked evidence linkage, confidence/uncertainty/options/approval fields and pending/no-action states.
+- Verified that adding symbolic Sky leaves the Core–sleep observation unchanged and never introduces causality or diagnosis.
+- Restricted inputs to `synthetic-*` events and narrow payloads without free text; reports do not copy raw events.
+- Kept real user data, accuracy claims, model providers, learning, DOM/storage/network access, action execution, Connect, persistent audit and external transfer disabled.
+- Kept the user interface unchanged. App remains `2.15.0`, schema `2`, shell `today-v2-foundation-066`; no migration or storage key was added.
+
+Tests
+
+- AI Engine: **299/299 successful**.
+- Synthetic benchmark: **12/12 cases**, **0 safety violations**.
+- NUT-017.8 Today integration gate: **93/93 successful**.
+- Existing documented platform baseline remains unchanged: static **25/30**, Service Worker event **23/36**, browser **47/48**; automation contract still lacks `.github/workflows/platform-regression.yml`.
+
+Result
+
+The existing deterministic Today AI behaviors now have a repeatable synthetic release gate before any new rule, provider, memory or Connect scope is considered. No technical benchmark data was added to the user surface.
+
+Commit
+
+`test(ai): add synthetic safety benchmark (NUT-017.8)`
 
 ---
 

@@ -5,7 +5,7 @@ Status: Active
 Application Version: 2.15.0
 Data Schema: 2
 Active Shell: today-v2-foundation-066
-Last Updated: 14 August 2026
+Last Updated: 15 August 2026
 
 ---
 
@@ -130,7 +130,7 @@ Responsibilities
 
 ---
 
-## NUT-017.7 Request-scoped Pattern Feedback
+## NUT-017.8 Synthetic Evaluation Gate
 
 Today AI Engine remains a separate system layer. The App owns only public,
 read-only source adapters and the visible consent/context-preview surface.
@@ -156,10 +156,12 @@ read-only source adapters and the visible consent/context-preview surface.
 | Pattern feedback processor | Today AI Engine NUT-017.7 | Accepts only three explicit user responses linked to a valid observation; produces a device-only, request-scoped receipt |
 | Pattern feedback UI | Today App NUT-017.7 | Shows “Bana uyuyor”, “Bana uymuyor” and “Emin değilim”; keeps only the latest choice for the current screen request |
 | Feedback effects | Today AI Engine NUT-017.7 | Never changes the observation or confidence and never triggers learning, memory, execution, Connect, persistent audit or transfer |
+| Synthetic benchmark | Today AI Engine NUT-017.8 | Runs only source-controlled `synthetic-*` cases; reports expectation, explanation and safety checks without claiming AI accuracy |
+| Benchmark runtime boundary | Development/test only | Not loaded by the App UI or offline shell; no real user data, provider, storage, network, Connect or persistent audit |
 | Execution and persistent audit | Separate future scope | Connect, execution, persistent audit and external transfer remain disabled |
 
 The active host integration is App `2.15.0`, schema `2`, shell
-`today-v2-foundation-066`. NUT-017.7 preserves the consent-gated context preview,
+`today-v2-foundation-066`. NUT-017.8 is Engine-only and preserves the consent-gated context preview,
 the documented first rule (`Core C` plus sleep below six hours), and the
 NUT-017.3.2 newest-record selection fix. A user may approve, reject, or edit the
 reminder time. Editing never counts as approval and creates a new pending draft.
@@ -167,9 +169,11 @@ The separate seven-day command observes only whether `Core C` and sleep below
 six hours recur on the same local dates. It makes no causal claim and proposes
 no action. After a successful observation, the user can give one of three
 plain-language responses. That feedback remains request-scoped and does not
-train or update a model. Each valid decision still produces a request-scoped
+train or update a model. A separate development command now verifies these
+behaviors with twelve synthetic cases; its pass count is not an AI accuracy
+score and its report is not shown to users. Each valid decision still produces a request-scoped
 receipt. No reminder is created, no audit is persisted, and no Connect
-operation starts. See `docs/NUT-017.7-IMPLEMENTATION.md`; the source mapping remains in
+operation starts. See `docs/NUT-017.8-IMPLEMENTATION.md`; the source mapping remains in
 `docs/NUT-017.2-IMPLEMENTATION.md`.
 
 ---
