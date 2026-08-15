@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "today:nut-017.9:synthetic-safety-v1",
+  "contextBuiltAt": "2040-01-16T12:00:00.000Z",
+  "evaluatedAt": "2040-01-16T12:05:00.000Z",
+  "window": {
+    "startDate": "2040-01-09",
+    "endDate": "2040-01-15",
+    "maxEventsPerSource": 20
+  },
+  "policy": {
+    "syntheticOnly": true,
+    "realUserDataAllowed": false,
+    "processingMode": "device-only",
+    "retention": "run-scoped",
+    "externalRecipient": null,
+    "modelProvider": null
+  },
+  "datasets": [
+    {
+      "datasetId": "energy-match",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-energy-match",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-energy-match",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 420 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-energy-match",
+          "source": "today-health",
+          "eventType": "energy-record",
+          "createdAt": "2040-01-15T19:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": {
+            "energy": "low",
+            "fatigue": "high",
+            "body": "tense"
+          }
+        }
+      ]
+    },
+    {
+      "datasetId": "energy-partial",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-energy-partial",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-energy-partial",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 420 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-energy-partial",
+          "source": "today-health",
+          "eventType": "energy-record",
+          "createdAt": "2040-01-15T19:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": {
+            "energy": "balanced",
+            "fatigue": "high",
+            "body": "neutral"
+          }
+        }
+      ]
+    },
+    {
+      "datasetId": "precedence-baseline",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-precedence",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-precedence",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 330 }
+        }
+      ]
+    },
+    {
+      "datasetId": "precedence-with-energy",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-precedence",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-precedence",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 330 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-energy-precedence",
+          "source": "today-health",
+          "eventType": "energy-record",
+          "createdAt": "2040-01-15T19:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": {
+            "energy": "low",
+            "fatigue": "high",
+            "body": "tense"
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "analysis-energy-match",
+      "capability": "daily-analysis",
+      "datasetId": "energy-match",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "analysis-energy-partial",
+      "capability": "daily-analysis",
+      "datasetId": "energy-partial",
+      "expectedOutcome": "no-result",
+      "expectedError": "no-matching-rule"
+    },
+    {
+      "caseId": "analysis-precedence-baseline",
+      "capability": "daily-analysis",
+      "datasetId": "precedence-baseline",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "analysis-precedence-with-energy",
+      "capability": "daily-analysis",
+      "datasetId": "precedence-with-energy",
+      "equivalentToCaseId": "analysis-precedence-baseline",
+      "expectedOutcome": "success"
+    }
+  ]
+}
