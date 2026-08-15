@@ -18,4 +18,6 @@ NUT-017.7 örüntü geri bildirimi de Connect komutu veya eylem onayı değildir
 
 NUT-017.8 sentetik benchmark yalnız geliştirme kalite kapısıdır. Sentetik vaka veya rapor Connect'e iletilmez; değerlendirme sırasında `connectCalled=false`, `actionExecuted=false` ve `externalTransfer=false` zorunludur.
 
+NUT-017.9 ikinci günlük kuralı kısa mola için yalnız `pending-user-approval` hatırlatıcı taslağı üretir. Kullanıcının App içinde onay vermesi dahi Connect çağrısı veya gerçek hatırlatıcı yürütmesi değildir; ayrı Connect kapsamı ve yeni işlem onayı gerekir.
+
 Bu sürümde Connect adaptörü ve gerçek dış işlem yoktur.

@@ -119,3 +119,18 @@ Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`,
 73. Değerlendirici DOM, storage, ağ, sistem saati, Connect veya audit writer kullanmamalı ve App çalışma zamanı kabuğuna eklenmemelidir.
 
 Sonuç: NUT-017.8 değerlendirici `67/67`; AI Engine toplam `299 PASS / 0 FAIL`. Sentetik benchmark `12/12` vaka ve `0` güvenlik ihlali; NUT-017.8 Today entegrasyon kapısı `93/93 PASS`.
+
+## NUT-017.9 günlük kural kataloğu kapsamı
+
+74. Core `C`, 420 dakika uyku, `energy=low` ve `fatigue=high` aynı yerel gündeyse ikinci günlük destek önerisi üretilmelidir.
+75. Enerji dengeli, yorgunluk kısmi veya Core/Health tarihleri farklıysa öneri uydurulmamalıdır.
+76. Kısa uyku ve enerji kuralları birlikte eşleştiğinde kısa uyku kuralı seçilmeli ve önceki analiz çıktısı değişmemelidir.
+77. Eşleşmeme tanısı iki kuralı ayrı değerlendirmeli; App yalnız günlük seçim, uyku, enerji ve yorgunluğu sade dille göstermelidir.
+78. İkinci çıktı da iki provenance-bağlı dayanak, kapsam confidence'ı, belirsizlikler, seçenekler ve `pending-user-approval` taslağı taşımalıdır.
+79. Sky içeriğinin eklenmesi, sırası veya sembolik ayrıntıları hiçbir günlük kuralın sonucunu değiştirmemelidir.
+80. NUT-017.8'in 12 vakası geriye uyumlu geçmeli; dört yeni enerji/öncelik vakasıyla birleşik benchmark `16/16` olmalıdır.
+81. Sözleşme dışı enerji enum'u, enerji payload'ındaki serbest metin ve bilinmeyen alanlar fail-closed reddedilmelidir.
+82. Yeni suite içinde veri kümesi, olay ve vaka sırası değişse de rapor deterministik kalmalıdır.
+83. App yüzeyi iç kural kimliği, kontrollü gerekçe kodu, olay kimliği, NUT sürümü veya sayısal confidence göstermemelidir.
+
+Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.9 günlük analiz `53/53`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`, NUT-017.6 örüntü `40/40`, NUT-017.7 geri bildirim `47/47`, NUT-017.9 benchmark değerlendirici `85/85`; AI Engine toplam `335 PASS / 0 FAIL`. Sentetik benchmark `16/16` vaka ve `0` güvenlik ihlali; NUT-017.9 Today entegrasyon kapısı `96/96 PASS`.

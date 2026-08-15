@@ -50,6 +50,8 @@ Engine bilinmeyen büyük şema sürümünü işlemeyi reddeder. Hatalı tekil o
 
 NUT-017.3.1'de `no-matching-rule` hata ayrıntısı olarak eklenen `ruleEvaluation`, başarılı AI çıktı sözleşmesinin parçası değildir. Yalnız doğrulanmış Context Package'ten seçilen izinli Core/uyku gözlemlerini, sabit eşik ve aynı-tarih kontrollerini, kontrollü gerekçe kodlarını taşır. Geçersiz analiz isteğinde üretilmez.
 
+NUT-017.9 sözleşme sürümlerini artırmaz. `ruleEvaluation` aynı hata ayrıntısı içinde iki katalog girdisini ayrı taşır: kısa uyku ve düşük enerji/fazla yorgunluk. Seçilen kural kimliği yalnız iç tanıda bulunur. Başarılı `analysis-output` yine iki gerçek dayanak, confidence, belirsizlik, seçenekler ve onay bekleyen taslak taşır; App teknik tanıyı kullanıcı metnine dönüştürür.
+
 ## NUT-017.4 onay kararı
 
 `approval-decision` v1 değiştirilmeden kullanılır. Her kayıt `decisionId`, `analysisId`, `actionId`, karar ve zamanı taşır. `edited` kararı `editedPayload` gerektirir; NUT-017.4'ün ilk dar uygulaması yalnız `HH:MM` biçimindeki `reminderTime` alanını kabul eder.
@@ -76,6 +78,6 @@ Makbuz üreticisi yalnız geçerli NUT-017.4 karar sonucunu kabul eder. Karar ve
 
 ## NUT-017.8 sentetik benchmark
 
-`benchmark-suite` v1 tam yedi günlük değerlendirme penceresi, `synthetic-only` politika beyanı, sentetik veri kümeleri ve beklenen vaka sonuçlarını taşır. Desteklenen yetenekler `daily-analysis`, `pattern-observation` ve `pattern-feedback`; sonuçlar `success`, `no-result` veya `rejected` olabilir. Olay kimlikleri `synthetic-*` ile başlamalıdır. Bu ilk paket yalnız Core günlük seçimi, uyku süresi ve sembolik Sky hesaplaması için gerekli dar, serbest metinsiz payload'ları kabul eder.
+`benchmark-suite` v1 tam yedi günlük değerlendirme penceresi, `synthetic-only` politika beyanı, sentetik veri kümeleri ve beklenen vaka sonuçlarını taşır. Desteklenen yetenekler `daily-analysis`, `pattern-observation` ve `pattern-feedback`; sonuçlar `success`, `no-result` veya `rejected` olabilir. Olay kimlikleri `synthetic-*` ile başlamalıdır. NUT-017.9 geriye uyumlu ikinci suite kimliğiyle `energy-record` için yalnız `energy`, `fatigue` ve `body` enum alanlarını ekler; serbest metin kabul edilmez.
 
 `benchmark-report` v1; kullanılan Engine/bileşen sürümlerini, vaka başına beklenti/açıklama/güvenlik kontrollerini ve özet geçiş durumunu taşır. Rapor gerçek kullanıcı verisi, ham olay, model cevabı veya doğruluk yüzdesi içermez. Güvenlik sınırları gerçek veri, model sağlayıcısı, öğrenme, Sky nedenselliği, teşhis, eylem, Connect, kalıcı audit ve dış aktarım için `false` olmak zorundadır.

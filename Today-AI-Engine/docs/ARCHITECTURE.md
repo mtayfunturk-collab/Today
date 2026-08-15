@@ -26,6 +26,8 @@ NUT-017.7 ile App `2.15.0`, geri bildirim katmanı `0.7.0-feedback` ve `today-v2
 
 NUT-017.8 ile Engine `0.8.0-evaluation` üzerinde günlük analiz, yedi günlük gözlem ve kullanıcı geri bildirimi için 12 vakalık sentetik benchmark eklenmiştir. Bu geliştirme kapısı gerçek kullanıcı verisi veya çalışma zamanı UI'sı kullanmaz. Sonuç; vaka beklentileri ve güvenlik kontrolleridir, AI doğruluk olasılığı değildir. Today App çalışma tabanı `2.15.0`, schema `2` ve `today-v2-foundation-066` olarak değişmeden kalır.
 
+NUT-017.9 ile App `2.16.0`, günlük analiz katmanı `0.9.0-rules`, değerlendirme katmanı `0.9.0-evaluation` ve `today-v2-foundation-067` üzerinde ikinci açıklanabilir günlük kural eklenmiştir. Core `C` ile aynı gün düşük enerji ve fazla yorgunluk birlikteyse kısa mola seçeneği hazırlanır. Mevcut kısa uyku kuralı önceliğini ve çıktısını korur. Eşleşmeme yüzeyi teknik kodları gizler; yedi günlük örüntü, Sky sınırı, onay ve dış-etki sınırları değişmez.
+
 ## Sınırlar
 
 ```mermaid
@@ -37,7 +39,7 @@ flowchart TD
   J --> K["Betimleyici gözlem; eylem yok"]
   K --> L{"Kullanıcı geri bildirimi"}
   L --> M["Geçici geri bildirim; öğrenme yok"]
-  D -. "sentetik geliştirme vakaları" .-> N["NUT-017.8 kalite kapısı"]
+  D -. "sentetik geliştirme vakaları" .-> N["NUT-017.9 kalite kapısı"]
   J -. "sentetik geliştirme vakaları" .-> N
   M -. "sentetik geliştirme vakaları" .-> N
   D --> E{"Kullanıcı onayı"}
@@ -54,14 +56,14 @@ flowchart TD
 2. Consent evaluator: Amaç, zaman, kaynak, veri sınıfı, serbest metin ve cihaz-içi işleme sınırını fail-closed doğrular.
 3. Context Builder: App'in ürettiği olay zarflarından yalnızca onaylı alanları seçer; provenance, omission ve redaction kayıtları üretir.
 4. Policy guard: Sağlık, ruh sağlığı, finans, hukuk ve astroloji risk sınırlarını uygular.
-5. Analysis adapter: İlk aşamada deterministik kural motoru; ileride yerel/bulut model adaptörü.
+5. Analysis adapter: NUT-017.9'da önceliği sabit iki dar deterministik günlük kural; ilerideki yerel/bulut model adaptöründen ayrı.
 6. Explanation builder: Öneri, dayanak, güven ve belirsizlik üretir.
 7. Pattern observer: NUT-017.6 son 7 günlük aynı-gün Core/uyku tekrarını betimler; nedensellik, teşhis veya eylem üretmez.
 8. Pattern feedback processor: NUT-017.7 kullanıcının üç açık yanıtından sürümlü, istek-süreli bir makbuz üretir; gözlemi veya modeli değiştirmez.
-9. Synthetic benchmark evaluator: NUT-017.8 yalnız sürümlü sentetik vaka paketini çalıştırır; açıklanabilirlik ve güvenlik beklentilerini raporlar, çalışma zamanı kullanıcı verisine bağlanmaz.
+9. Synthetic benchmark evaluator: NUT-017.9 önceki 12 vakayı ve dört enerji/öncelik vakasını çalıştırır; açıklanabilirlik ve güvenlik beklentilerini raporlar, çalışma zamanı kullanıcı verisine bağlanmaz.
 10. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
 11. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
-12. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.8 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
+12. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.9 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
 
 ## Entegrasyon etkisi
 
@@ -80,6 +82,12 @@ Today App'teki kaynak adaptörü Core için `TodayStorage`, Health için `TodayH
 `analyzeTodayContext(request)` yalnız `analysis-request` v1 nesnesini işler. Context Package cihaz-içi/istek-süreli sınırları, açık onay fişi, provenance ve ayrı sembolik Sky bölümüyle doğrulanır. İlk kural yalnız aynı yerel gündeki en güncel Core `C` kaydı ile 6 saatin altındaki en güncel uyku kaydını kullanır. Başarılı çıktı iki gerçek olay kimliğini dayanak gösterir; eşleşme yoksa fail-closed sonuç döner.
 
 App köprüsü analiz sonucunu değiştirmez, sağlayıcı kaydetmez ve Connect çağırmaz. UI sonucu yalnız ayrı kullanıcı komutundan sonra gösterir. İşlem taslağı `pending-user-approval` kalır; NUT-017.3 onay kararı toplamaz, audit olayı yazmaz ve eylemi yürütmez. Sky seçilmiş olsa bile dayanak, confidence veya sağlık/duygu yorumuna katılmaz.
+
+### NUT-017.9 kural kataloğu
+
+Mevcut kısa uyku kuralına, aynı yerel gündeki en güncel Core `C` ve en güncel `energy-record` içindeki `energy=low`, `fatigue=high` koşullarını kullanan ikinci kural eklenmiştir. Kısa uyku kuralı önce değerlendirilir. İkinci kuralın eklenmesi mevcut çıktıyı, yedi günlük Core–uyku gözlemini veya sözleşme sürümlerini değiştirmez.
+
+Başarılı enerji kuralı yalnız Core ve Health dayanaklarına bağlanır; yorgunluğun nedeni bilinmiyor belirsizliğini taşır ve kısa mola hatırlatıcısını onay bekleyen taslak olarak sunar. Eşleşmeme tanısı her kuralı ayrı denetler; App bu iç yapıyı kullanıcıya yalnız sade kayıt özeti olarak çevirir. Engine DOM, storage ve kullanıcı metni üretim düzenini bilmez.
 
 ### NUT-017.3.1 eşleşmeme tanısı
 

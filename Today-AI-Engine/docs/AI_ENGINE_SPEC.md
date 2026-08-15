@@ -80,6 +80,17 @@ Her başarılı analiz/gözlem için dayanak, güven, belirsizlik, seçenek ve o
 
 Benchmark yalnız geliştirme/test ortamında çalışır. Vaka geçiş sayısı bir model doğruluğu, kişisel risk skoru veya olasılık değildir. Değerlendirici gerçek kullanıcı kaydı, canlı model sağlayıcısı, DOM, App depolaması, ağ, Connect, kalıcı audit ya da sistem saati kullanmaz; kullanıcı arayüzünde teknik rapor gösterilmez.
 
+## NUT-017.9 günlük kural kataloğu
+
+`daily-support-analyzer.mjs` artık aynı `analysis-request` ve `analysis-output` v1 sözleşmeleriyle iki dar kural değerlendirir:
+
+1. Core `C` + aynı yerel günde 360 dakikanın altında uyku.
+2. Core `C` + aynı yerel günde `energy=low` + `fatigue=high`.
+
+Kısa uyku kuralı deterministik olarak önce değerlendirilir. İki kural birlikte eşleşirse önceki kısa-uyku çıktısı byte-anlamlı olarak korunur. İkinci kural yalnız kısa mola ve planı hafifletme seçeneği sunar; yorgunluğun nedenini açıklamaz. Kısmi koşulda veya tarih uyuşmazlığında `no-matching-rule` döner.
+
+Her başarılı çıktı iki provenance-bağlı dayanak, kapsam göstergesi olarak confidence, en az iki belirsizlik, en az üç seçenek ve `pending-user-approval` taslağı taşır. App eşleşmeme durumunda günlük seçim, uyku, enerji ve yorgunluğu sade dille gösterir; kural kimlikleri, kontrollü gerekçe kodları ve sayısal confidence kullanıcıya gösterilmez. Sky her iki kuralın da tamamen dışındadır.
+
 ## Yasak çıktılar
 
 - Teşhis: “Depresyondasın”, “uyku bozukluğun var”.
@@ -93,3 +104,4 @@ Benchmark yalnız geliştirme/test ortamında çalışır. Vaka geçiş sayısı
 - Birlikte görülen Core–uyku kayıtlarını nedensellik, teşhis veya kişilik hükmü gibi sunma.
 - Kullanıcı geri bildirimini öğrenilmiş gerçek, gözlemin doğruluğu, kalıcı tercih veya sonraki çıktıları değiştiren model eğitimi gibi sunma.
 - Sentetik benchmark geçiş oranını AI doğruluğu, sağlık güvenilirliği veya kullanıcıya ait bir skor gibi sunma.
+- Düşük enerji veya fazla yorgunluğu tek başına hastalık, duygu nedeni ya da kesin toparlanma ihtiyacı olarak sunma.

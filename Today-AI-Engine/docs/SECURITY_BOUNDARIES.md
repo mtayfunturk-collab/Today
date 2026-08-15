@@ -11,7 +11,7 @@
 | Onay | Amaç, zaman, kaynak ve veri sınıfı kapsamı | Başka amaçta tekrar kullanım, iptal sonrası kullanım |
 | Çalışma ortamı | Cihaz-içi, istek-süreli saf dönüşüm | DOM/storage erişimi, ağ aktarımı, kalıcı Engine hafızası |
 | Sky girdisi | Ayrı sembolik bağlam ve doğrulanmış sınır bayrakları | Sağlık/duygu nedeni, bilimsel kanıt, ham doğum/konum |
-| Analiz | Yalnız sürümlü Context Package ve belgelenmiş dar deterministik kural | DOM/storage yeniden okuma, model sağlayıcısı, Sky dayanağı, eşleşmesiz çıkarım |
+| Analiz | Yalnız sürümlü Context Package ve önceliği sabit dar deterministik kural kataloğu | DOM/storage yeniden okuma, model sağlayıcısı, Sky dayanağı, eşleşmesiz çıkarım |
 | Karar | Mevcut sözleşmeyle istek-süreli onay, ret ve yeniden onay isteyen düzenleme | Replay, otomatik onay, eylem yürütme, kalıcı audit veya kararın başka istekte kullanımı |
 | Karar makbuzu | Kimlikleri iç sözleşmede bağlayan, cihaz-içi ve istek-süreli olay | Makbuzu kalıcı audit/işlem kanıtı sayma, storage/ağ/Connect yazımı veya kullanıcıya teknik kimlik gösterme |
 | Çok günlük gözlem | En az 3 karşılaştırılabilir gün ve 2 aynı-gün tekrarıyla betimleyici Core–uyku birlikteliği | Nedensellik, teşhis, gelecek hükmü, Sky dayanağı, eylem veya yetersiz veride örüntü uydurma |
@@ -35,3 +35,5 @@ NUT-017.6 örüntü gözlemcisi yalnız tam 7 günlük, cihaz-içi ve istek-sür
 NUT-017.7 geri bildirim işlemcisi yalnız geçerli NUT-017.6 gözlemini ve izinli üç yanıtı kabul eder. Gözlem içeriği veya güvenlik sınırı değiştirilmişse fail-closed reddeder. Makbuz `persistent=false` ve `request-scoped` üretilir; gözlem/güven değişikliği, model öğrenmesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım kapalıdır. App köprüsü DOM, storage, ağ veya sistem saatine doğrudan erişmez.
 
 NUT-017.8 değerlendiricisi yalnız `synthetic-*` olay kimlikli dar vaka paketini kabul eder. Serbest metin, gerçek kullanıcı verisine izin veren politika, dış alıcı, model sağlayıcısı, yedi gün dışı pencere veya sözleşme dışı alan paketi fail-closed reddeder. Rapor ham olayları taşımaz ve geçiş sayısını doğruluk iddiasına dönüştürmez. Değerlendirici çalışma zamanı App kabuğuna eklenmez; DOM, storage, ağ, Connect, audit writer veya sistem saatine erişmez.
+
+NUT-017.9 enerji kuralı yalnız enum olarak doğrulanmış `energy=low` ve `fatigue=high` değerlerini, aynı yerel gündeki Core `C` ile birlikte kabul eder. Eksik/kısmi koşulda öneri yoktur. Kısa uyku kuralı önceliklidir ve iki kural birlikte eşleştiğinde önceki çıktı korunur. Enerji/yorgunluk sağlık teşhisi veya duygu nedeni sayılmaz; Sky bütün günlük kurallardan dışlanır. İşlem yalnız onay bekleyen taslak kalır.
