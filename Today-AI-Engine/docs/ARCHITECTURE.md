@@ -24,6 +24,8 @@ NUT-017.6 ile App `2.14.0`, örüntü gözlem katmanı `0.6.0-pattern` ve `today
 
 NUT-017.7 ile App `2.15.0`, geri bildirim katmanı `0.7.0-feedback` ve `today-v2-foundation-066` üzerinde kullanıcının başarılı örüntü gözlemini doğrulayabilmesi eklenmiştir. Üç açık yanıt geçerli gözleme bağlanır ve yalnız mevcut istek boyunca tutulur. Geri bildirim gözlemi veya güveni değiştirmez; öğrenme, kalıcı hafıza, Sky kullanımı, Connect ve işlem kapalı kalır.
 
+NUT-017.8 ile Engine `0.8.0-evaluation` üzerinde günlük analiz, yedi günlük gözlem ve kullanıcı geri bildirimi için 12 vakalık sentetik benchmark eklenmiştir. Bu geliştirme kapısı gerçek kullanıcı verisi veya çalışma zamanı UI'sı kullanmaz. Sonuç; vaka beklentileri ve güvenlik kontrolleridir, AI doğruluk olasılığı değildir. Today App çalışma tabanı `2.15.0`, schema `2` ve `today-v2-foundation-066` olarak değişmeden kalır.
+
 ## Sınırlar
 
 ```mermaid
@@ -35,6 +37,9 @@ flowchart TD
   J --> K["Betimleyici gözlem; eylem yok"]
   K --> L{"Kullanıcı geri bildirimi"}
   L --> M["Geçici geri bildirim; öğrenme yok"]
+  D -. "sentetik geliştirme vakaları" .-> N["NUT-017.8 kalite kapısı"]
+  J -. "sentetik geliştirme vakaları" .-> N
+  M -. "sentetik geliştirme vakaları" .-> N
   D --> E{"Kullanıcı onayı"}
   E -->|"Onay"| F["Geçici karar ve makbuz; işlem yok"]
   E -->|"Düzenleme"| H["Yeni onay-bekleyen taslak"]
@@ -53,9 +58,10 @@ flowchart TD
 6. Explanation builder: Öneri, dayanak, güven ve belirsizlik üretir.
 7. Pattern observer: NUT-017.6 son 7 günlük aynı-gün Core/uyku tekrarını betimler; nedensellik, teşhis veya eylem üretmez.
 8. Pattern feedback processor: NUT-017.7 kullanıcının üç açık yanıtından sürümlü, istek-süreli bir makbuz üretir; gözlemi veya modeli değiştirmez.
-9. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
-10. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
-11. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.7 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
+9. Synthetic benchmark evaluator: NUT-017.8 yalnız sürümlü sentetik vaka paketini çalıştırır; açıklanabilirlik ve güvenlik beklentilerini raporlar, çalışma zamanı kullanıcı verisine bağlanmaz.
+10. Approval gateway: Foundation sınırı ve mevcut sözleşme korunur; NUT-017.4 işlemcisi onay/ret/düzenleme kararını yalnız istek kapsamında değerlendirir.
+11. Decision receipt builder: NUT-017.5 geçerli karar sonucundan sürümlü ve istek-süreli bir olay üretir; olayı yazmaz veya saklamaz.
+12. Audit event writer: Foundation mimari sınırı olarak korunur; NUT-017.8 tarafından çağrılmaz ve kalıcı audit henüz uygulanmaz.
 
 ## Entegrasyon etkisi
 
@@ -108,6 +114,12 @@ Makbuzun kapsamı değiştirilemez: `device-only`, `request-scoped`, `persistent
 `processPatternFeedback(request)` yalnız sözleşmeye uygun, eylemsiz ve nedenselliksiz `pattern-observation-output` v1 ile `resonates`, `does-not-resonate` veya `unsure` yanıtlarından birini kabul eder. Gözlemin güven, onay, Sky, işlem veya kalıcılık sınırı değiştirilmişse istek fail-closed reddedilir.
 
 Başarılı sonuç `pattern-feedback-receipt` v1 üretir ve kullanıcı yanıtını gerçek gözlem kimliğine bağlar. Makbuz yalnız cihazda ve mevcut istek boyunca yaşar. Gözlem ve güven değişikliği, model öğrenmesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım etkilerinin tamamı `false` kalır. App köprüsü DOM veya depolama bilmez; UI yalnız üç sade seçenek ile son seçimi gösterir ve teknik kimlikleri gizler.
+
+## NUT-017.8 sentetik değerlendirme sınırı
+
+`evaluateSyntheticBenchmark(suite)` yalnız `benchmark-suite` v1 ve `synthetic-*` kimlikli, serbest metinsiz dar olaylar kabul eder. Günlük analiz, örüntü gözlemi ve geri bildirim işlemcilerini gerçek App kayıtları olmadan çalıştırır. Beklenen başarı, kontrollü sonuçsuzluk ve fail-closed ret davranışlarını; açıklama alanlarını; dayanak bağlarını; onay/dış etki sınırlarını ve Sky eklendiğinde örüntü sonucunun değişmemesini denetler.
+
+`benchmark-report` v1 ham olayı veya AI çıktısını kopyalamaz; yalnız vaka kimlikleri, beklenen/gerçek sonuçlar ve kontrol durumlarını taşır. `accuracyClaim=false`, `realUserDataUsed=false`, `modelProviderUsed=false`, `modelUpdated=false`, `connectCalled=false`, `auditPersisted=false` ve `externalTransfer=false` sabittir. Değerlendirici App kabuğuna veya kullanıcı arayüzüne yüklenmez; yalnız test/geliştirme komutuyla çalışır.
 
 ## Riskler
 

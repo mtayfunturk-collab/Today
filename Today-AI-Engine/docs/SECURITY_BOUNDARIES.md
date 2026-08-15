@@ -16,6 +16,7 @@
 | Karar makbuzu | Kimlikleri iç sözleşmede bağlayan, cihaz-içi ve istek-süreli olay | Makbuzu kalıcı audit/işlem kanıtı sayma, storage/ağ/Connect yazımı veya kullanıcıya teknik kimlik gösterme |
 | Çok günlük gözlem | En az 3 karşılaştırılabilir gün ve 2 aynı-gün tekrarıyla betimleyici Core–uyku birlikteliği | Nedensellik, teşhis, gelecek hükmü, Sky dayanağı, eylem veya yetersiz veride örüntü uydurma |
 | Örüntü geri bildirimi | Geçerli gözleme bağlı üç açık kullanıcı yanıtı; cihaz-içi ve istek-süreli makbuz | Gözlemi/güveni değiştirme, öğrenme iddiası, kalıcı tercih/hafıza, storage/ağ/Connect/audit yazımı |
+| Sentetik değerlendirme | Sürüm kontrollü, serbest metinsiz sentetik vakalarda beklenti/açıklama/güvenlik kontrolleri | Gerçek kullanıcı verisi, doğruluk iddiası, çalışma zamanı UI'sı, model sağlayıcısı, storage/ağ/Connect/audit yazımı |
 
 Yüksek risk sinyali algılanırsa otomatik eylem üretilmez; belirsizlik belirtilir ve uygun profesyonel/acil destek yolu hatırlatılır.
 
@@ -32,3 +33,5 @@ NUT-017.5 makbuz üreticisi karar, analiz ve işlem taslağı kimliklerinin/duru
 NUT-017.6 örüntü gözlemcisi yalnız tam 7 günlük, cihaz-içi ve istek-süreli Context Package kabul eder. En güncel aynı-gün Core/uyku çiftlerini kullanır; üç karşılaştırılabilir gün veya iki tekrar yoksa çıktı üretmez. Güven yalnız veri kapsamı ve tekrar oranıdır. `causalityClaim`, `diagnosis`, `skyUsed`, `actionProposed`, dış aktarım ve kalıcılık kapalıdır.
 
 NUT-017.7 geri bildirim işlemcisi yalnız geçerli NUT-017.6 gözlemini ve izinli üç yanıtı kabul eder. Gözlem içeriği veya güvenlik sınırı değiştirilmişse fail-closed reddeder. Makbuz `persistent=false` ve `request-scoped` üretilir; gözlem/güven değişikliği, model öğrenmesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım kapalıdır. App köprüsü DOM, storage, ağ veya sistem saatine doğrudan erişmez.
+
+NUT-017.8 değerlendiricisi yalnız `synthetic-*` olay kimlikli dar vaka paketini kabul eder. Serbest metin, gerçek kullanıcı verisine izin veren politika, dış alıcı, model sağlayıcısı, yedi gün dışı pencere veya sözleşme dışı alan paketi fail-closed reddeder. Rapor ham olayları taşımaz ve geçiş sayısını doğruluk iddiasına dönüştürmez. Değerlendirici çalışma zamanı App kabuğuna eklenmez; DOM, storage, ağ, Connect, audit writer veya sistem saatine erişmez.

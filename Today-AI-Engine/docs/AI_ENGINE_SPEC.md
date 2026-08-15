@@ -72,6 +72,14 @@ Başarılı yedi günlük gözlemden sonra kullanıcı yalnız şu yanıtları v
 
 App yalnız seçenekleri ve son seçimin alındığını gösterir. Teknik kimlikler görünmez. Seçim yeni önizleme, temizleme veya sayfa yenileme ile düşer; model öğrenmesi, kişisel profil, kalıcı hafıza, audit, Connect, dış aktarım veya işlem başlatmaz.
 
+## NUT-017.8 sentetik kalite değerlendirmesi
+
+`synthetic-benchmark-evaluator.mjs`, sürüm kontrollü sentetik vaka paketini günlük analiz, yedi günlük örüntü gözlemi ve geri bildirim işlemcilerinden geçirir. İlk paket 12 vaka içerir: başarılı eşleşmeler, sınırda/eksik veride sonuç üretmeme ve değiştirilmiş güvenlik sınırlarını reddetme davranışları birlikte değerlendirilir.
+
+Her başarılı analiz/gözlem için dayanak, güven, belirsizlik, seçenek ve onay durumu kontrol edilir. Geri bildirimde gözleme bağ, istek-süreli kapsam ve tüm yan etkilerin kapalı kalması aranır. Sembolik Sky eklenmiş ve eklenmemiş eşdeğer örüntü vakalarının sonucu aynı olmalıdır.
+
+Benchmark yalnız geliştirme/test ortamında çalışır. Vaka geçiş sayısı bir model doğruluğu, kişisel risk skoru veya olasılık değildir. Değerlendirici gerçek kullanıcı kaydı, canlı model sağlayıcısı, DOM, App depolaması, ağ, Connect, kalıcı audit ya da sistem saati kullanmaz; kullanıcı arayüzünde teknik rapor gösterilmez.
+
 ## Yasak çıktılar
 
 - Teşhis: “Depresyondasın”, “uyku bozukluğun var”.
@@ -84,3 +92,4 @@ App yalnız seçenekleri ve son seçimin alındığını gösterir. Teknik kimli
 - Geçici karar makbuzunu kalıcı audit, Connect çağrısı veya tamamlanmış işlem gibi sunma.
 - Birlikte görülen Core–uyku kayıtlarını nedensellik, teşhis veya kişilik hükmü gibi sunma.
 - Kullanıcı geri bildirimini öğrenilmiş gerçek, gözlemin doğruluğu, kalıcı tercih veya sonraki çıktıları değiştiren model eğitimi gibi sunma.
+- Sentetik benchmark geçiş oranını AI doğruluğu, sağlık güvenilirliği veya kullanıcıya ait bir skor gibi sunma.

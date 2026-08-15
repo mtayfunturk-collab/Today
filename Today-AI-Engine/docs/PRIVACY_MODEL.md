@@ -14,6 +14,8 @@ NUT-017.6 son 7 günlük gözlem için yeni veri toplamaz; aynı açık onayla h
 
 NUT-017.7 kullanıcı geri bildirimini yalnız mevcut gözlem isteğinin belleğinde tutar. Yanıt yeni bir kullanıcı profiline, modele, ana Today kaydına, storage anahtarına veya kalıcı audit'e yazılmaz; cihaz dışına aktarılmaz. Kullanıcı yeni önizleme hazırladığında, temizlediğinde veya sayfayı yenilediğinde seçim düşer. İç makbuz kimlikleri kullanıcı arayüzünde gösterilmez.
 
+NUT-017.8 kalite kapısı gerçek kullanıcı bağlamını kabul etmez. Kaynak kodla birlikte gelen olaylar `synthetic-*` kimliği taşır ve serbest metin içermez. Değerlendirme raporu ham olayları veya açıklama metnini kopyalamaz; yalnız kontrollü vaka sonuçlarını taşır ve çalışma sonunda kalıcı Engine belleği oluşturmaz. Bu rapor kullanıcı profiline bağlanmaz ve App arayüzünde gösterilmez.
+
 ## Bulut sağlayıcı eklenmeden önce zorunlu bildirim
 
 - Gönderilecek alanlar

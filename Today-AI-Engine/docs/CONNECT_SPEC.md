@@ -16,4 +16,6 @@ NUT-017.6 çok günlük gözlemi eylem taslağı veya kullanıcı onayı üretme
 
 NUT-017.7 örüntü geri bildirimi de Connect komutu veya eylem onayı değildir. Kullanıcının “uyuyor”, “uymuyor” veya “emin değilim” seçimi gözlemi değiştirmez, Connect'e iletilmez ve yürütme yetkisi oluşturmaz.
 
+NUT-017.8 sentetik benchmark yalnız geliştirme kalite kapısıdır. Sentetik vaka veya rapor Connect'e iletilmez; değerlendirme sırasında `connectCalled=false`, `actionExecuted=false` ve `externalTransfer=false` zorunludur.
+
 Bu sürümde Connect adaptörü ve gerçek dış işlem yoktur.

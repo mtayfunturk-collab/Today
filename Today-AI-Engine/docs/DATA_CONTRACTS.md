@@ -22,6 +22,8 @@
 - `pattern-observation-output.schema.json`: Çok günlük betimleyici gözlemin dayanak, güven, belirsizlik, seçenek, onay ve sınırlarını taşır.
 - `pattern-feedback.schema.json`: Kullanıcının geçerli örüntü gözlemine verdiği üç açık yanıttan birini ve yanıt zamanını taşır.
 - `pattern-feedback-receipt.schema.json`: Geri bildirimin gözleme bağlı, cihaz-içi ve kalıcı olmayan sonucunu taşır.
+- `benchmark-suite.schema.json`: Yalnız sentetik veri kümelerini, kontrollü vaka beklentilerini ve cihaz-içi değerlendirme politikasını taşır.
+- `benchmark-report.schema.json`: Vaka geçişlerini, güvenlik ihlallerini ve dış etki sınırlarını ham olayları kopyalamadan raporlar.
 - `data-usage-consent.schema.json`: Amaç, kaynak, veri sınıfı, serbest metin ve cihaz-içi işleme izni.
 - `context-build-request.schema.json`: Onay, tarih penceresi ve ortak olay zarflarını taşıyan deterministik build isteği.
 - `context-package.schema.json`: Minimize Core/Health bölümleri, ayrı sembolik Sky bağlamı, provenance, omission, redaction ve sınır beyanları.
@@ -71,3 +73,9 @@ Makbuz üreticisi yalnız geçerli NUT-017.4 karar sonucunu kabul eder. Karar ve
 `pattern-feedback` v1; geri bildirim kimliği, sözleşmeye uygun örüntü gözlemi, `resonates`, `does-not-resonate` veya `unsure` yanıtı ve açık etkileşim zamanını taşır. İşlemci gözlemi yeniden üretmez; içeriğin dayanak, güven, onay ve güvenlik sınırlarını doğrulayarak değiştirilmiş gözlemi reddeder.
 
 `pattern-feedback-receipt` v1; geri bildirim ve gözlem kimliklerini, kullanıcı yanıtını, zamanı, kapsamı ve etkileri bağlar. Kapsam `device-only`, `request-scoped`, `persistent=false`, dış alıcı `null` olmak zorundadır. Gözlem/güven değişikliği, model güncellemesi, hafıza yazımı, eylem, Connect, kalıcı audit ve dış aktarım bayraklarının tümü `false` kalır. Makbuz Today App ana kaydı veya storage anahtarı değildir.
+
+## NUT-017.8 sentetik benchmark
+
+`benchmark-suite` v1 tam yedi günlük değerlendirme penceresi, `synthetic-only` politika beyanı, sentetik veri kümeleri ve beklenen vaka sonuçlarını taşır. Desteklenen yetenekler `daily-analysis`, `pattern-observation` ve `pattern-feedback`; sonuçlar `success`, `no-result` veya `rejected` olabilir. Olay kimlikleri `synthetic-*` ile başlamalıdır. Bu ilk paket yalnız Core günlük seçimi, uyku süresi ve sembolik Sky hesaplaması için gerekli dar, serbest metinsiz payload'ları kabul eder.
+
+`benchmark-report` v1; kullanılan Engine/bileşen sürümlerini, vaka başına beklenti/açıklama/güvenlik kontrollerini ve özet geçiş durumunu taşır. Rapor gerçek kullanıcı verisi, ham olay, model cevabı veya doğruluk yüzdesi içermez. Güvenlik sınırları gerçek veri, model sağlayıcısı, öğrenme, Sky nedenselliği, teşhis, eylem, Connect, kalıcı audit ve dış aktarım için `false` olmak zorundadır.

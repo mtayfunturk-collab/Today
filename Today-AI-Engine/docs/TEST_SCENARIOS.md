@@ -104,3 +104,18 @@ Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`,
 63. Kullanıcı son seçimini değiştirebilmeli; yeni önizleme veya temizleme geçici geri bildirimi sıfırlamalıdır.
 
 Sonuç: Foundation `10/10`, NUT-017.1 `41/41`, NUT-017.3.1 analiz/tanı `35/35`, NUT-017.4 karar `28/28`, NUT-017.5 makbuz `31/31`, NUT-017.6 örüntü `40/40`, NUT-017.7 geri bildirim `47/47`; AI Engine toplam `232 PASS / 0 FAIL`. NUT-017.7 App kapısı `83/83 PASS`.
+
+## NUT-017.8 sentetik benchmark kapsamı
+
+64. Core `C` + 330 dakika uyku günlük analiz üretmeli; 360 dakika ve Core `B` vakaları kontrollü olarak sonuç üretmemelidir.
+65. `externalTransfer=true` yapılmış bağlam günlük analiz tarafından fail-closed reddedilmelidir.
+66. Üç karşılaştırılabilir gün ve iki tekrar taşıyan örüntü başarıyla gözlenmeli; yetersiz gün ve tekrar yokluğu ayrı kontrollü sonuçlar vermelidir.
+67. Aynı Core/Health olaylarına sembolik Sky eklendiğinde örüntü çıktısı ve güven değeri değişmemelidir.
+68. Üç kullanıcı geri bildirimi geçerli gözleme bağlanmalı; `causalityClaim=true` yapılmış gözlem reddedilmelidir.
+69. Başarılı çıktılarda dayanak–provenance bağı, güven, belirsizlik, seçenek ve onay durumu bulunmalıdır.
+70. Rapor ham olay kimliklerini taşımamalı; AI doğruluğu veya olasılık iddiası üretmemelidir.
+71. Gerçek veri izni, dış alıcı, model sağlayıcısı, serbest metin, sentetik olmayan olay kimliği, bilinmeyen alan ve geçersiz pencere reddedilmelidir.
+72. Vaka/veri/olay sırası değiştirilse de rapor deterministik olarak aynı kalmalıdır.
+73. Değerlendirici DOM, storage, ağ, sistem saati, Connect veya audit writer kullanmamalı ve App çalışma zamanı kabuğuna eklenmemelidir.
+
+Sonuç: NUT-017.8 değerlendirici `67/67`; AI Engine toplam `299 PASS / 0 FAIL`. Sentetik benchmark `12/12` vaka ve `0` güvenlik ihlali; NUT-017.8 Today entegrasyon kapısı `93/93 PASS`.
