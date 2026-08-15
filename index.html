@@ -1265,7 +1265,7 @@ html[data-theme="light"] .healthSelect {
 }
 
 /* =========================
-   NUT-017.7 — AI SUGGESTION, PATTERN & REQUEST-SCOPED FEEDBACK
+   NUT-017.9 — EXPLAINABLE DAILY RULES, PATTERN & REQUEST-SCOPED FEEDBACK
 ========================= */
 
 .aiContextPanel {
@@ -2870,10 +2870,11 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 
               <div class="aiAnalysisRequest" id="aiAnalysisRequest" hidden>
                 <p>
-                  Bugünkü öneriye bak, bugünün kaydını değerlendirir. Son 7
-                  güne bak ise “Zordu bugün” seçimi ile 6 saatin altındaki
-                  uykunun birlikte tekrar edip etmediğini inceler. Sky bu iki
-                  değerlendirmede de kullanılmaz.
+                  Bugünkü öneriye bak; günlük seçim, uyku ve enerji kayıtlarını
+                  değerlendirir. “Zordu bugün” ile kısa uyku ya da düşük enerji
+                  ve fazla yorgunluk aynı günde birlikteyse küçük bir öneri
+                  hazırlayabilir. Son 7 güne bak yalnız günlük seçim ile kısa
+                  uyku tekrarını inceler. Sky bu değerlendirmelerde kullanılmaz.
                 </p>
                 <div class="smallBtns">
                   <button class="ghost" id="btnAiAnalysis" type="button">
