@@ -9,9 +9,10 @@ const loadText = relativePath => readFile(
 );
 const loadJson = async relativePath => JSON.parse(await loadText(relativePath));
 
-const [suite, suiteSchema, reportSchema, evaluatorSource, indexSource,
+const [suite, extensionSuite, suiteSchema, reportSchema, evaluatorSource, indexSource,
   uiSource, serviceWorkerSource, versionSource] = await Promise.all([
   loadJson("../Today-AI-Engine/fixtures/synthetic/nut-017.8-benchmark-suite.json"),
+  loadJson("../Today-AI-Engine/fixtures/synthetic/nut-017.9-benchmark-suite.json"),
   loadJson("../Today-AI-Engine/contracts/benchmark-suite.schema.json"),
   loadJson("../Today-AI-Engine/contracts/benchmark-report.schema.json"),
   loadText("../Today-AI-Engine/src/synthetic-benchmark-evaluator.mjs"),
@@ -32,21 +33,28 @@ async function test(name, callback) {
 }
 
 const evaluated = evaluateSyntheticBenchmark(suite);
+const extensionEvaluated = evaluateSyntheticBenchmark(extensionSuite);
 
 await test("Sentetik kalite kapısı bütün kontrollü vakaları geçirir", () => {
   assert.equal(evaluated.ok, true);
-  assert.deepEqual({ ...evaluated.report.summary }, {
-    evaluationStatus: "passed",
-    totalCases: 12,
-    passedCases: 12,
-    failedCases: 0,
-    safetyViolations: 0,
-    capabilities: [
-      "daily-analysis",
-      "pattern-feedback",
-      "pattern-observation"
-    ]
-  });
+  assert.equal(extensionEvaluated.ok, true);
+  assert.equal(evaluated.report.summary.evaluationStatus, "passed");
+  assert.equal(extensionEvaluated.report.summary.evaluationStatus, "passed");
+  assert.equal(
+    evaluated.report.summary.totalCases +
+      extensionEvaluated.report.summary.totalCases,
+    16
+  );
+  assert.equal(
+    evaluated.report.summary.passedCases +
+      extensionEvaluated.report.summary.passedCases,
+    16
+  );
+  assert.equal(
+    evaluated.report.summary.safetyViolations +
+      extensionEvaluated.report.summary.safetyViolations,
+    0
+  );
 });
 
 await test("Değerlendirme yalnız sentetik ve geçici kapsamda kalır", () => {
@@ -59,6 +67,7 @@ await test("Değerlendirme yalnız sentetik ve geçici kapsamda kalır", () => {
   });
   assert.equal(suite.policy.realUserDataAllowed, false);
   assert.equal(suite.policy.modelProvider, null);
+  assert.deepEqual(extensionEvaluated.report.scope, evaluated.report.scope);
 });
 
 await test("Değerlendirme dış etki ve sağlık iddiası üretmez", () => {
@@ -72,7 +81,9 @@ await test("Değerlendirme dış etki ve sağlık iddiası üretmez", () => {
 });
 
 await test("Benchmark girdileri dar ve sentetik olaylardan oluşur", () => {
-  const events = suite.datasets.flatMap(dataset => dataset.events);
+  const events = [suite, extensionSuite].flatMap(entry =>
+    entry.datasets.flatMap(dataset => dataset.events)
+  );
   assert.equal(events.length > 0, true);
   assert.equal(events.every(event => event.eventId.startsWith("synthetic-")), true);
   assert.equal(events.some(event =>
@@ -92,9 +103,29 @@ await test("Sembolik Sky Core–uyku sonucunu değiştirmez", () => {
   ), true);
 });
 
+await test("Yeni enerji kuralı güvenli ve mevcut kısa uyku önceliği sabittir", () => {
+  const energyCase = extensionEvaluated.report.cases.find(testCase =>
+    testCase.caseId === "analysis-energy-match"
+  );
+  const partialCase = extensionEvaluated.report.cases.find(testCase =>
+    testCase.caseId === "analysis-energy-partial"
+  );
+  const precedenceCase = extensionEvaluated.report.cases.find(testCase =>
+    testCase.caseId === "analysis-precedence-with-energy"
+  );
+  assert.equal(energyCase.actualOutcome, "success");
+  assert.equal(partialCase.actualOutcome, "no-result");
+  assert.equal(precedenceCase.checks.some(check =>
+    check.checkId === "equivalent-output-with-rule-priority" && check.passed
+  ), true);
+});
+
 await test("Benchmark ve rapor sözleşmeleri sürümlüdür", () => {
-  assert.equal(suiteSchema.properties.suiteId.const, suite.suiteId);
-  assert.equal(reportSchema.properties.engineVersion.const, "0.8.0-evaluation");
+  assert.deepEqual(suiteSchema.properties.suiteId.enum, [
+    suite.suiteId,
+    extensionSuite.suiteId
+  ]);
+  assert.equal(reportSchema.properties.engineVersion.const, "0.9.0-evaluation");
   assert.equal(reportSchema.properties.boundaries.properties.accuracyClaim.const, false);
 });
 
@@ -112,15 +143,18 @@ await test("Benchmark geliştirme kapısıdır ve kullanıcı ekranına taşınm
   assert.doesNotMatch(serviceWorkerSource, /synthetic-benchmark-evaluator|run-benchmark/i);
 });
 
-await test("Engine-only adımı Today çalışma sürümünü değiştirmez", () => {
-  assert.match(versionSource, /const APP_VERSION = "2\.15\.0"/);
+await test("Today runtime yeni günlük kural kataloğu sürümünü taşır", () => {
+  assert.match(versionSource, /const APP_VERSION = "2\.16\.0"/);
   assert.match(versionSource, /const SCHEMA_VERSION = 2/);
-  assert.match(serviceWorkerSource, /const VERSION = "today-v2-foundation-066"/);
+  assert.match(serviceWorkerSource, /const VERSION = "today-v2-foundation-067"/);
 });
 
 await test("Rapor ham olay veya yanıltıcı doğruluk yüzdesi taşımaz", () => {
-  const serialized = JSON.stringify(evaluated.report);
-  assert.doesNotMatch(serialized, /synthetic-(?:core|sleep|sky)-/);
+  const serialized = JSON.stringify([
+    evaluated.report,
+    extensionEvaluated.report
+  ]);
+  assert.doesNotMatch(serialized, /synthetic-(?:core|sleep|sky|energy)-/);
   assert.equal(evaluated.report.boundaries.accuracyClaim, false);
   assert.doesNotMatch(serialized, /accuracyPercentage|probabilityScore/);
 });
@@ -132,4 +166,4 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.8 Evaluation Gate: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.9 Evaluation Gate: ${passed}/${results.length} başarılı`);

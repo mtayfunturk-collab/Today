@@ -18,7 +18,13 @@ const bridgeSource = await readFile(
   "utf8"
 );
 
-function contextWith({ choice = "C", sleepMinutes = 330 } = {}) {
+function contextWith({
+  choice = "C",
+  sleepMinutes = 330,
+  energy = "balanced",
+  fatigue = "some",
+  body = "neutral"
+} = {}) {
   const request = clone(sourceRequest);
   request.events.find(
     event => event.eventId === "core-20400115"
@@ -26,12 +32,19 @@ function contextWith({ choice = "C", sleepMinutes = 330 } = {}) {
   request.events.find(
     event => event.eventId === "sleep-20400115"
   ).payload.durationMinutes = sleepMinutes;
+  request.events.filter(
+    event => event.eventType === "energy-record"
+  ).forEach(event => {
+    event.payload.energy = energy;
+    event.payload.fatigue = fatigue;
+    event.payload.body = body;
+  });
   return buildTodayContext(request).context;
 }
 
 function options(context = contextWith()) {
   return {
-    analysisId: "analysis:nut-017.3.1:bridge-001",
+    analysisId: "analysis:nut-017.9:bridge-001",
     requestedAt: "2040-01-16T12:01:00.000Z",
     context
   };
@@ -50,8 +63,8 @@ async function test(name, callback) {
 await test("Köprü cihaz-içi, sağlayıcısız ve Connect'siz durum bildirir", () => {
   const status = getStatus();
   assert.equal(status.ready, true);
-  assert.equal(status.engineVersion, "0.3.1-analysis");
-  assert.equal(status.rulesetId, "today:ai-analysis-bridge:nut-017.3.1");
+  assert.equal(status.engineVersion, "0.9.0-rules");
+  assert.equal(status.rulesetId, "today:ai-analysis-bridge:nut-017.9");
   assert.equal(status.processingMode, "device-only");
   assert.equal(status.externalRecipient, null);
   assert.equal(status.providerRegistered, false);
@@ -106,12 +119,34 @@ await test("Eşleşmeyen kayıt için çıktı uydurulmaz", () => {
   assert.equal(result.success, false);
   assert.equal(result.errorCode, "TODAY-AI-ANALYSIS-NO-MATCH");
   assert.equal(result.analysisError, "no-matching-rule");
-  assert.equal(result.ruleEvaluation.observed.sleep.durationMinutes, 420);
-  assert.equal(result.ruleEvaluation.checks.sleepDuration, false);
-  assert.deepEqual(result.ruleEvaluation.reasons, [
+  assert.equal(result.ruleEvaluation.evaluatedRuleCount, 2);
+  assert.equal(result.ruleEvaluation.selectedRuleId, null);
+  const sleepRule = result.ruleEvaluation.rules.find(
+    rule => rule.ruleId === "hard-day-short-sleep"
+  );
+  assert.equal(sleepRule.observed.sleep.durationMinutes, 420);
+  assert.equal(sleepRule.checks.sleepDuration, false);
+  assert.deepEqual(sleepRule.reasons, [
     "sleep-duration-not-below-threshold"
   ]);
   assert.equal(Object.isFrozen(result.ruleEvaluation), true);
+});
+
+await test("Zor gün ile düşük enerji ve fazla yorgunluk ikinci sade öneriyi üretir", () => {
+  const result = buildAnalysisPreview(options(contextWith({
+    sleepMinutes: 420,
+    energy: "low",
+    fatigue: "high",
+    body: "tense"
+  })));
+  assert.equal(result.success, true);
+  assert.equal(result.analysis.confidence, 0.74);
+  assert.match(result.analysis.evidence[1].reference, /Düşük enerji/);
+  assert.match(result.analysis.evidence[1].reference, /Fazla yorgunluk/);
+  assert.equal(
+    result.analysis.proposedActions[0].label,
+    "Kısa bir mola vermeyi hatırla"
+  );
 });
 
 await test("Core C yoksa dar ilk kural çalışmaz", () => {
@@ -153,4 +188,4 @@ failures.forEach(result => {
 });
 if (failures.length) process.exitCode = 1;
 const passed = results.length - failures.length;
-console.log(`NUT-017.3.1 Analysis Bridge: ${passed}/${results.length} başarılı`);
+console.log(`NUT-017.9 Analysis Bridge: ${passed}/${results.length} başarılı`);
