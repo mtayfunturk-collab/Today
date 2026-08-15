@@ -6,6 +6,7 @@ import { runApprovalDecisionProcessorTests } from './approval-decision-processor
 import { runDecisionReceiptBuilderTests } from './decision-receipt-builder.test.mjs';
 import { runPatternObserverTests } from './pattern-observer.test.mjs';
 import { runPatternFeedbackProcessorTests } from './pattern-feedback-processor.test.mjs';
+import { runSyntheticBenchmarkEvaluatorTests } from './synthetic-benchmark-evaluator.test.mjs';
 
 const load = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 const inputs = await load('../fixtures/synthetic/daily-context.json');
@@ -56,3 +57,6 @@ console.log(`${nut0176Checks}/${nut0176Checks} NUT-017.6 çok günlük örüntü
 
 const nut0177Checks = await runPatternFeedbackProcessorTests();
 console.log(`${nut0177Checks}/${nut0177Checks} NUT-017.7 örüntü geri bildirimi kontrolü başarılı.`);
+
+const nut0178Checks = await runSyntheticBenchmarkEvaluatorTests();
+console.log(`${nut0178Checks}/${nut0178Checks} NUT-017.8 sentetik benchmark kontrolü başarılı.`);
