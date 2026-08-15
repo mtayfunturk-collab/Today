@@ -1,5 +1,18 @@
 # Değişiklik Günlüğü
 
+## 0.8.0-evaluation — NUT-017.8 — 2026-08-15
+
+- Günlük analiz, yedi günlük örüntü gözlemi ve örüntü geri bildirimini birlikte değerlendiren 12 vakalık sentetik güvenlik paketi eklendi.
+- Yeni `benchmark-suite` ve `benchmark-report` v1 sözleşmeleri ile saf, deterministik `synthetic-benchmark-evaluator` eklendi.
+- Eşleşen, sonuç üretmemesi gereken ve güvenli biçimde reddedilmesi gereken vakalar ayrı beklentiler olarak ölçülür.
+- Açıklama alanları, dayanak–provenance bağı, onay durumu, dış etki sınırları ve sembolik Sky'nin sonucu değiştirmemesi denetlenir.
+- Benchmark yalnız `synthetic-*` olay kimliklerini ve dar, serbest metinsiz payload'ları kabul eder; gerçek kullanıcı verisi, model sağlayıcısı, DOM, storage, ağ, Connect veya audit writer kullanmaz.
+- Rapor vaka geçişini ve güvenlik ihlalini gösterir; AI doğruluğu veya olasılık iddiası üretmez ve ham olayları rapora kopyalamaz.
+- Bu Engine-only adımında kullanıcı arayüzü değişmedi. Host Today App `2.15.0`, schema `2` ve çevrimdışı kabuk `today-v2-foundation-066` olarak kaldı; migration ve yeni storage anahtarı yoktur.
+- Test sonucu: AI Engine `299/299`; sentetik benchmark `12/12`, `0` güvenlik ihlali; NUT-017.8 App entegrasyon kapısı `93/93` başarılı.
+- Önceden belgelenen platform tabanı değişmedi: static `25/30`, Service Worker event `23/36`, browser `47/48`; automation contract'ta beklenen workflow dosyası eksik.
+- Commit mesajı: `test(ai): add synthetic safety benchmark (NUT-017.8)`
+
 ## 0.7.0-feedback — NUT-017.7 — 2026-08-14
 
 - Geçerli `pattern-observation-output` v1 sonucuna bağlı üç seçenekli kullanıcı geri bildirimi eklendi: `resonates`, `does-not-resonate`, `unsure`.

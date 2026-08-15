@@ -2,7 +2,7 @@
 
 Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan, arayüzden ve App'in depolama katmanından bağımsız bir sistem katmanıdır.
 
-`0.7.0-feedback`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1–17.6 sınırlarını yeniden oluşturmadan kullanıcının yedi günlük örüntü gözlemine verdiği geri bildirimi doğrular. Geri bildirim gözlemi değiştirmez, modeli eğitmez ve yalnız mevcut istek boyunca tutulur. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay, kalıcı audit veya kalıcı AI belleği içermez.
+`0.8.0-evaluation`, mevcut `0.1.0-foundation` mimarisini ve NUT-017.1–17.7 çalışma sınırlarını yeniden oluşturmadan günlük analiz, yedi günlük örüntü ve kullanıcı geri bildirimi davranışlarını sentetik vakalarla değerlendirir. Bu katman yalnız geliştirme kalite kapısıdır; kullanıcı ekranına çıkmaz, gerçek kullanıcı verisi kullanmaz ve geçiş oranını AI doğruluğu olarak sunmaz. Canlı/yerel model sağlayıcısı, dış servis işlemi, otomatik onay, kalıcı audit veya kalıcı AI belleği içermez.
 
 ## İlkeler
 
@@ -17,12 +17,13 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 
 ## Durum
 
-- AI Engine geri bildirim katmanı sürümü: `0.7.0-feedback`
-- Today App entegrasyon tabanı: NUT-017.7, App `2.15.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-066`
+- AI Engine değerlendirme katmanı sürümü: `0.8.0-evaluation`
+- Today App çalışma tabanı değişmedi: NUT-017.7, App `2.15.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-066`
 - Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
-- AI Engine testi: `232 PASS / 0 FAIL` (`10` foundation + `41` NUT-017.1 + `35` NUT-017.3.1 + `28` NUT-017.4 + `31` NUT-017.5 + `40` NUT-017.6 + `47` NUT-017.7)
-- Today App NUT-017.7 kapısı: `83 PASS / 0 FAIL`
-- Durum: İlk günlük öneri ve yedi günlük gözlem kuralları değişmedi. Başarılı gözlemden sonra kullanıcı “Bana uyuyor”, “Bana uymuyor” veya “Emin değilim” seçebilir. Seçim gözlem, güven veya dayanakları değiştirmez; Sky, nedensellik, model öğrenmesi, kalıcı hafıza ve eylem kapalıdır.
+- AI Engine testi: `299 PASS / 0 FAIL` (`232` mevcut + `67` NUT-017.8)
+- NUT-017.8 sentetik benchmark: `12/12` vaka, `0` güvenlik ihlali
+- Today App NUT-017.8 entegrasyon kapısı: `93 PASS / 0 FAIL`
+- Durum: İlk günlük öneri, yedi günlük gözlem ve üç geri bildirim seçeneği değişmedi. Yeni kalite kapısı eşleşme, sonuç üretmeme, reddetme, açıklanabilirlik ve Sky ayrımı beklentilerini yalnız sentetik olaylarla doğrular. Model öğrenmesi, kalıcı hafıza, eylem ve dış aktarım kapalıdır.
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
@@ -30,7 +31,7 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 
 - `docs/`: ürün, mimari, güvenlik, entegrasyon ve faz belgeleri
 - `contracts/`: JSON Schema veri sözleşmeleri
-- `src/`: saf onay değerlendiricisi, deterministik Context Builder, sağlayıcısız günlük destek analizörü, geçici karar işlemcisi, istek-süreli karar makbuzu üreticisi, çok günlük örüntü gözlemcisi ve istek-süreli örüntü geri bildirimi işlemcisi
+- `src/`: saf onay değerlendiricisi, deterministik Context Builder, sağlayıcısız günlük destek analizörü, geçici karar işlemcisi, istek-süreli karar makbuzu üreticisi, çok günlük örüntü gözlemcisi, istek-süreli örüntü geri bildirimi işlemcisi ve sentetik benchmark değerlendiricisi
 - `fixtures/synthetic/`: yalnızca sentetik test kayıtları
 - `tests/`: bağımlılıksız sözleşme ve güvenlik testleri
 - `docs/APP_CONTRACT_MAPPING.md`: NUT-017.1 için salt okunur Today App 2.9.0 referans eşlemesi
@@ -43,9 +44,11 @@ Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
 - `../docs/NUT-017.5-IMPLEMENTATION.md`: sürümlü, geçici karar makbuzu ve sade karar geçmişi
 - `../docs/NUT-017.6-IMPLEMENTATION.md`: son 7 günlük, açıklanabilir ve nedenselliksiz Core–uyku tekrar gözlemi
 - `../docs/NUT-017.7-IMPLEMENTATION.md`: örüntü gözlemi için sade, cihaz-içi ve kalıcı olmayan kullanıcı geri bildirimi
+- `../docs/NUT-017.8-IMPLEMENTATION.md`: gerçek kullanıcı verisi kullanmayan sentetik benchmark ve güvenlik kapısı
 
 ## Test
 
 ```bash
 node tests/run-tests.mjs
+node tests/run-benchmark.mjs
 ```
