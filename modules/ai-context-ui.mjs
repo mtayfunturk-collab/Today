@@ -1,6 +1,6 @@
 /**
  * Today App — AI Context, Suggestion, Decision & Pattern Feedback UI
- * NUT-017.7
+ * NUT-017.9
  *
  * DOM sahipliği yalnız bu dosyadadır. Onay ve oluşturulan bağlam bellekte,
  * tek önizleme isteği boyunca tutulur; kalıcı depolamaya veya ağa yazılmaz.
@@ -22,7 +22,7 @@ import {
 } from "./ai-pattern-feedback-bridge.mjs";
 
 export const API_VERSION = 1;
-export const RULESET_ID = "today:ai-context-ui:nut-017.7";
+export const RULESET_ID = "today:ai-context-ui:nut-017.9";
 export const PURPOSE =
   "Günlük denge için kişisel öneri hazırlama";
 
@@ -59,18 +59,16 @@ const PATTERN_FEEDBACK_LABELS = Object.freeze({
   unsure: "Emin değilim"
 });
 
-const RULE_REASON_LABELS = Object.freeze({
-  "core-record-missing": "Bugün için günlük seçim bulunamadı.",
-  "core-choice-not-hard-day":
-    "Günlük seçim “Zordu bugün” değil.",
-  "sleep-record-missing": "Bugün için uyku kaydı bulunamadı.",
-  "sleep-duration-missing": "Uyku kaydında süre bulunamadı.",
-  "sleep-duration-not-positive":
-    "Uyku süresi geçerli görünmüyor.",
-  "sleep-duration-not-below-threshold":
-    "Uyku süresi 6 saatin altında değil.",
-  "records-not-same-local-date":
-    "Günlük seçim ve uyku kaydı aynı güne ait değil."
+const ENERGY_LABELS = Object.freeze({
+  low: "Düşük",
+  balanced: "Dengeli",
+  high: "Yüksek"
+});
+
+const FATIGUE_LABELS = Object.freeze({
+  high: "Fazla",
+  some: "Biraz",
+  none: "Yok"
 });
 
 function dateKey(date) {
@@ -354,8 +352,19 @@ function renderRuleEvaluation(root, evaluation) {
     return;
   }
 
-  const core = evaluation.observed?.core || null;
-  const sleep = evaluation.observed?.sleep || null;
+  const rules = Array.isArray(evaluation.rules)
+    ? evaluation.rules
+    : [{
+        observed: evaluation.observed || {},
+        checks: evaluation.checks || {}
+      }];
+  const sleepRule = rules.find(rule => rule.observed?.sleep) ||
+    rules.find(rule => Object.hasOwn(rule.observed || {}, "sleep")) || null;
+  const energyRule = rules.find(rule => rule.observed?.energy) ||
+    rules.find(rule => Object.hasOwn(rule.observed || {}, "energy")) || null;
+  const core = rules.find(rule => rule.observed?.core)?.observed.core || null;
+  const sleep = sleepRule?.observed?.sleep || null;
+  const energy = energyRule?.observed?.energy || null;
   const coreChoice = core?.choice
     ? CHOICE_LABELS[core.choice] || "tanınmayan seçim"
     : "seçim bulunamadı";
@@ -378,21 +387,25 @@ function renderRuleEvaluation(root, evaluation) {
   appendTextItem(
     root.ownerDocument,
     items,
-    evaluation.checks?.sameLocalDate === true
-      ? "Kayıtlar aynı güne ait."
-      : evaluation.checks?.sameLocalDate === false
-        ? "Kayıtlar farklı günlere ait."
-        : "Kayıt günleri karşılaştırılamadı."
+    energy
+      ? `Enerji: ${ENERGY_LABELS[energy.energy] || "bilgi yok"} · ` +
+        `Yorgunluk: ${FATIGUE_LABELS[energy.fatigue] || "bilgi yok"}`
+      : "Enerji ve yorgunluk: kayıt bulunamadı"
   );
+  const datesDiffer = rules.some(rule =>
+    rule.checks?.sameLocalDate === false
+  );
+  if (datesDiffer) {
+    appendTextItem(
+      root.ownerDocument,
+      items,
+      "Bazı kayıtlar farklı günlere ait."
+    );
+  }
 
-  const reasons = Array.isArray(evaluation.reasons)
-    ? evaluation.reasons.map(reason =>
-        RULE_REASON_LABELS[reason] || "Kural koşullarından biri karşılanmadı."
-      )
-    : [];
-  summary.textContent = reasons.length
-    ? reasons.join(" ")
-    : "Gerekli koşullar kontrol edildi.";
+  summary.textContent =
+    "Seçtiğin kayıtlarda desteklenen koşullar birlikte oluşmadı. " +
+    "Bu, bir sorun olduğu anlamına gelmez.";
   panel.hidden = false;
 }
 
@@ -528,7 +541,7 @@ function analysisIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `analysis:nut-017.7:${(hash >>> 0).toString(36)}`;
+  return `analysis:nut-017.9:${(hash >>> 0).toString(36)}`;
 }
 
 function patternIdFor(context) {
@@ -537,7 +550,7 @@ function patternIdFor(context) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `pattern:nut-017.7:${(hash >>> 0).toString(36)}`;
+  return `pattern:nut-017.9:${(hash >>> 0).toString(36)}`;
 }
 
 function feedbackIdFor(observationId, response) {
@@ -547,7 +560,7 @@ function feedbackIdFor(observationId, response) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `feedback:nut-017.7:${(hash >>> 0).toString(36)}:${feedbackSequence}`;
+  return `feedback:nut-017.9:${(hash >>> 0).toString(36)}:${feedbackSequence}`;
 }
 
 function decisionIdFor(analysisId, actionId) {
@@ -557,7 +570,7 @@ function decisionIdFor(analysisId, actionId) {
     hash ^= character.codePointAt(0);
     hash = Math.imul(hash, 16777619);
   }
-  return `decision:nut-017.7:${(hash >>> 0).toString(36)}:${decisionSequence}`;
+  return `decision:nut-017.9:${(hash >>> 0).toString(36)}:${decisionSequence}`;
 }
 
 function setDecisionStatus(root, message, state = "idle") {

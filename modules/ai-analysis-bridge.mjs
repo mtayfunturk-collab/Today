@@ -1,6 +1,6 @@
 /**
  * Today App ↔ Today AI Engine Explainable Analysis Bridge
- * NUT-017.3.1
+ * NUT-017.9
  *
  * Request-scoped Context Package'i saf Engine analizine verir. DOM, App
  * depolaması, ağ, model sağlayıcısı, Connect veya kalıcı onay kullanmaz.
@@ -15,7 +15,7 @@ import {
 
 export const API_VERSION = 1;
 export const CONTRACT_VERSION = 1;
-export const RULESET_ID = "today:ai-analysis-bridge:nut-017.3.1";
+export const RULESET_ID = "today:ai-analysis-bridge:nut-017.9";
 
 function deepFreeze(value, seen = new Set()) {
   if (!value || typeof value !== "object" || seen.has(value)) return value;
