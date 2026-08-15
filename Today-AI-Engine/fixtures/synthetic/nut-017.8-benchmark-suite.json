@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "today:nut-017.8:synthetic-safety-v1",
+  "contextBuiltAt": "2040-01-16T12:00:00.000Z",
+  "evaluatedAt": "2040-01-16T12:05:00.000Z",
+  "window": {
+    "startDate": "2040-01-09",
+    "endDate": "2040-01-15",
+    "maxEventsPerSource": 20
+  },
+  "policy": {
+    "syntheticOnly": true,
+    "realUserDataAllowed": false,
+    "processingMode": "device-only",
+    "retention": "run-scoped",
+    "externalRecipient": null,
+    "modelProvider": null
+  },
+  "datasets": [
+    {
+      "datasetId": "daily-match",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-daily-match",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-daily-match",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 330 }
+        }
+      ]
+    },
+    {
+      "datasetId": "daily-threshold",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-daily-threshold",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-daily-threshold",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 360 }
+        }
+      ]
+    },
+    {
+      "datasetId": "daily-other-core",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-daily-other",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-15T18:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "choice": "B" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-daily-other",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-15T07:00:00.000Z",
+          "localDate": "2040-01-15",
+          "payload": { "durationMinutes": 330 }
+        }
+      ]
+    },
+    {
+      "datasetId": "pattern-match",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-09",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-09T18:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-09",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-09T07:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "durationMinutes": 330 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-10",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-10T18:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "choice": "B" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-10",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-10T07:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "durationMinutes": 420 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-11",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-11T18:00:00.000Z",
+          "localDate": "2040-01-11",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-11",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-11T07:00:00.000Z",
+          "localDate": "2040-01-11",
+          "payload": { "durationMinutes": 340 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-12",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-12T18:00:00.000Z",
+          "localDate": "2040-01-12",
+          "payload": { "choice": "A" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-12",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-12T07:00:00.000Z",
+          "localDate": "2040-01-12",
+          "payload": { "durationMinutes": 390 }
+        }
+      ]
+    },
+    {
+      "datasetId": "pattern-insufficient",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-insufficient-09",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-09T18:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-insufficient-09",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-09T07:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "durationMinutes": 330 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-insufficient-10",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-10T18:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "choice": "B" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-insufficient-10",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-10T07:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "durationMinutes": 420 }
+        }
+      ]
+    },
+    {
+      "datasetId": "pattern-no-recurrence",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-no-recurrence-09",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-09T18:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-no-recurrence-09",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-09T07:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "durationMinutes": 330 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-no-recurrence-10",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-10T18:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "choice": "B" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-no-recurrence-10",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-10T07:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "durationMinutes": 420 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-no-recurrence-11",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-11T18:00:00.000Z",
+          "localDate": "2040-01-11",
+          "payload": { "choice": "A" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-no-recurrence-11",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-11T07:00:00.000Z",
+          "localDate": "2040-01-11",
+          "payload": { "durationMinutes": 390 }
+        }
+      ]
+    },
+    {
+      "datasetId": "pattern-match-with-sky",
+      "events": [
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-09",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-09T18:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-09",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-09T07:00:00.000Z",
+          "localDate": "2040-01-09",
+          "payload": { "durationMinutes": 330 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-10",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-10T18:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "choice": "B" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-10",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-10T07:00:00.000Z",
+          "localDate": "2040-01-10",
+          "payload": { "durationMinutes": 420 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-11",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-11T18:00:00.000Z",
+          "localDate": "2040-01-11",
+          "payload": { "choice": "C" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-11",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-11T07:00:00.000Z",
+          "localDate": "2040-01-11",
+          "payload": { "durationMinutes": 340 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-core-pattern-12",
+          "source": "today-core",
+          "eventType": "daily-checkin",
+          "createdAt": "2040-01-12T18:00:00.000Z",
+          "localDate": "2040-01-12",
+          "payload": { "choice": "A" }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sleep-pattern-12",
+          "source": "today-health",
+          "eventType": "sleep-record",
+          "createdAt": "2040-01-12T07:00:00.000Z",
+          "localDate": "2040-01-12",
+          "payload": { "durationMinutes": 390 }
+        },
+        {
+          "schemaVersion": 1,
+          "eventId": "synthetic-sky-symbolic-only",
+          "source": "today-sky",
+          "eventType": "sky-moment",
+          "createdAt": "2040-01-12T12:00:00.000Z",
+          "localDate": "2040-01-12",
+          "payload": {
+            "instant": "2040-01-12T12:00:00.000Z",
+            "planets": [
+              {
+                "id": "sun",
+                "signId": "capricorn",
+                "longitude": 291,
+                "degreeInSign": 21
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "analysis-match",
+      "capability": "daily-analysis",
+      "datasetId": "daily-match",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "analysis-threshold",
+      "capability": "daily-analysis",
+      "datasetId": "daily-threshold",
+      "expectedOutcome": "no-result",
+      "expectedError": "no-matching-rule"
+    },
+    {
+      "caseId": "analysis-other-core",
+      "capability": "daily-analysis",
+      "datasetId": "daily-other-core",
+      "expectedOutcome": "no-result",
+      "expectedError": "no-matching-rule"
+    },
+    {
+      "caseId": "analysis-unsafe-context",
+      "capability": "daily-analysis",
+      "datasetId": "daily-match",
+      "contextMutation": "external-transfer",
+      "expectedOutcome": "rejected",
+      "expectedError": "invalid-analysis-request"
+    },
+    {
+      "caseId": "pattern-match",
+      "capability": "pattern-observation",
+      "datasetId": "pattern-match",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "pattern-insufficient",
+      "capability": "pattern-observation",
+      "datasetId": "pattern-insufficient",
+      "expectedOutcome": "no-result",
+      "expectedError": "insufficient-paired-days"
+    },
+    {
+      "caseId": "pattern-no-recurrence",
+      "capability": "pattern-observation",
+      "datasetId": "pattern-no-recurrence",
+      "expectedOutcome": "no-result",
+      "expectedError": "recurrence-not-observed"
+    },
+    {
+      "caseId": "pattern-with-sky",
+      "capability": "pattern-observation",
+      "datasetId": "pattern-match-with-sky",
+      "equivalentToCaseId": "pattern-match",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "feedback-resonates",
+      "capability": "pattern-feedback",
+      "sourceCaseId": "pattern-match",
+      "response": "resonates",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "feedback-does-not-resonate",
+      "capability": "pattern-feedback",
+      "sourceCaseId": "pattern-match",
+      "response": "does-not-resonate",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "feedback-unsure",
+      "capability": "pattern-feedback",
+      "sourceCaseId": "pattern-match",
+      "response": "unsure",
+      "expectedOutcome": "success"
+    },
+    {
+      "caseId": "feedback-causal-tamper",
+      "capability": "pattern-feedback",
+      "sourceCaseId": "pattern-match",
+      "response": "resonates",
+      "observationMutation": "enable-causality",
+      "expectedOutcome": "rejected",
+      "expectedError": "invalid-pattern-feedback"
+    }
+  ]
+}
