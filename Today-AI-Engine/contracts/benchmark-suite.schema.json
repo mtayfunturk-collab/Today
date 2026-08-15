@@ -16,7 +16,12 @@
   ],
   "properties": {
     "schemaVersion": { "const": 1 },
-    "suiteId": { "const": "today:nut-017.8:synthetic-safety-v1" },
+    "suiteId": {
+      "enum": [
+        "today:nut-017.8:synthetic-safety-v1",
+        "today:nut-017.9:synthetic-safety-v1"
+      ]
+    },
     "contextBuiltAt": { "type": "string", "format": "date-time" },
     "evaluatedAt": { "type": "string", "format": "date-time" },
     "window": {
