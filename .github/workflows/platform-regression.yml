@@ -4,18 +4,26 @@ on:
   push:
     paths:
       - "index.html"
+      - "storage.js"
+      - "health-hub.js"
       - "sw.js"
       - "modules/**"
+      - "Today-AI-Engine/**"
       - "tests/**"
+      - "scripts/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/platform-regression.yml"
   pull_request:
     paths:
       - "index.html"
+      - "storage.js"
+      - "health-hub.js"
       - "sw.js"
       - "modules/**"
+      - "Today-AI-Engine/**"
       - "tests/**"
+      - "scripts/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/platform-regression.yml"
@@ -48,3 +56,9 @@ jobs:
 
       - name: Run regression gate
         run: npm test
+
+      - name: Run AI Engine tests
+        run: node Today-AI-Engine/tests/run-tests.mjs
+
+      - name: Run AI Engine benchmark
+        run: node Today-AI-Engine/tests/run-benchmark.mjs
