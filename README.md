@@ -1,6 +1,6 @@
 # Today
 
-Beslenme ve hareket hedeflerini sürdürmeyi kolaylaştırmayı amaçlayan, cihaz içi veriye ve kullanıcı kararına öncelik veren günlük yaşam uygulaması. Core günlük farkındalığı, Health yerel kayıt/planlamayı, isteğe bağlı Sky sembolik düşünme alanını sağlar. AI Engine bugün sağlayıcısız deterministik kurallarla çalışır; genel sohbet veya otomatik dış işlem yapmaz.
+Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Engine ile anlamlandırmayı hedefleyen, cihaz içi veriye ve kullanıcı kararına öncelik veren günlük yaşam uygulaması. Önceki beslenme/hareket odak seçimi geri çekildi; ana ürün vaadi ve ilk kullanım senaryosu yeniden seçiliyor. Core günlük farkındalığı, Health yerel kayıt/planlamayı, isteğe bağlı Sky sembolik düşünme alanını sağlar. AI Engine bugün sağlayıcısız deterministik kurallarla çalışır; genel sohbet veya otomatik dış işlem yapmaz.
 
 ## Geliştirme ve doğrulama
 
@@ -28,7 +28,7 @@ Playwright kendi yalnız-loopback test sunucusunu açar, her testte izole profil
 
 ## Ürün sırası
 
-[Yol haritası](docs/02_ROADMAP.md) ve [kabul fazları](docs/03_PHASES.md): teknik güven → kurucunun günlük beslenme/hareket kullanımı → kontrollü gerçek kullanıcı PWA betası → pazar doğrulaması → App Store/Google Play hazırlığı. Önerilen işlevler teslim edilmiş özellik gibi sunulmaz.
+[Yol haritası](docs/02_ROADMAP.md) ve [kabul fazları](docs/03_PHASES.md): teknik güven → kurucunun seçeceği günlük değer döngüsü → kontrollü gerçek kullanıcı PWA betası → pazar doğrulaması → App Store/Google Play hazırlığı. Önerilen işlevler teslim edilmiş özellik gibi sunulmaz.
 
 Yerel tarayıcı verisi cihaz kaybı veya tarayıcı temizliğiyle kaybolabilir. PWA cache'i veri yedeği değildir; Core CSV tüm modüllerin tam yedeği değildir. Gerçek kullanıcı pilotundan önce yedek/geri yükleme kapsamı ve fiziksel cihaz akışları doğrulanmalıdır. Kullanıcı verisi/şema değişikliği, yeni model sağlayıcısı, dış aktarım ve mağaza gönderimi ayrı açık onay gerektirir.
 

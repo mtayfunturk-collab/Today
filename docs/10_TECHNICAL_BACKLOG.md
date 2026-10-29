@@ -310,7 +310,7 @@ Sürekli geliştirme ortamı Codex'tir. Kullanıcı verileri/şemaları ve mevcu
 | NUT-018.1 | Eksik Health Hub / tüketim editörü testleri ve kayıtlı test envanteri | Yerelde doğrulandı: 25 grup / 1155 PASS; AI 335, entegrasyon 96, benchmark 16 PASS. CI kaydı PR #1'de |
 | NUT-018.2 | Bağımlılık güvenliği ve aktif sürüm tutarlılığı | Doğrulandı: df47b0e / Actions 40938911892; audit 0, paket/aktif sürüm 2.16.0; 1155/335/96/16 PASS |
 | NUT-018.3 | Gerçek tarayıcı otomasyonu ve iPhone PWA doğrulama hazırlığı | Hazırlık uygulandı: Chromium 6 PASS, platform 1156 PASS; Chromium/WebKit CI kanıtı PR #1'de. Fiziksel iPhone/Android kabulü bekliyor |
-| NUT-019 keşfi | Beslenme/hareket hedeflerini sürdüren ilk günlük kullanım döngüsü | Stabilizasyon sonrası: düşük yükle kayıt, küçük hedef, açıklanabilir öneri, haftalık değerlendirme; üretim kapsamı ayrıca daraltılacak |
+| NUT-019 keşfi | Core–Health–Sky / AI ürün kabulü ve veri taşınabilirliği | Önceki beslenme/hareket seçimi geri çekildi; ana ürün vaadi ve ilk günlük kullanım senaryosu yeniden seçilecek. Mimari korunur; ürüne özgü kod kapsamı seçimden sonra daraltılır. |
 
 Tam modül yedekleme/geri yükleme, veri kaybı sınırları ve gizlilik bilgilendirmesi doğrulanmadan gerçek kişilerle pilot başlatılmaz. Yeni model sağlayıcısı, dış aktarım, hesap/senkronizasyon ve şema değişiklikleri ayrı karar gerektirir. Güncel ürün kapıları docs/02_ROADMAP.md ve docs/03_PHASES.md içindedir.
 

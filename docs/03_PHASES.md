@@ -25,7 +25,7 @@ Giriş: mevcut geliştirme dalı ve taslak PR korunur; son başarılı test, gü
 
 Fazın ürün pilotuna geçiş kapısı: desteklenen fiziksel iPhone Safari + Ana Ekran PWA ve Android Chrome/PWA'da normal açılış, yeniden açılış, yerel kayıt, çevrimdışı kullanım ve kullanıcı onaylı güncelleme kayıpsız çalışmalıdır. Masaüstü WebKit veya mobil viewport, gerçek iPhone/Apple PWA yaşam döngüsünün kanıtı değildir. Gerekli cihaz erişimi yoksa ilgili kayıt **Engelli / cihaz sonucu bekleniyor** kalır.
 
-## Faz 4 — Kurucunun beslenme/hareket hedeflerini sürdürme döngüsü
+## Faz 4 — Kurucunun seçeceği günlük değer döngüsü
 
 Önerilen iş paketi ailesi: NUT-019. Henüz kod kapsamı kesinleştirilmiş değildir; ilk alt iş aşağıdaki kabul envanteridir.
 
@@ -33,20 +33,20 @@ Giriş:
 
 - Teknik kapı yeşil; fiziksel cihaz sonuçları ve bilinen sınırlamalar görünür.
 - Tam veri dışa aktarımı/geri yükleme kapsamı envanteri çıkarılmış; Core CSV'nin kapsam sınırı açık.
-- Kullanıcının birincil beklentisi **“Beslenme ve hareket hedeflerimi sürdürebilmek”** olarak alınır; “bugün hangi küçük adımı kolaylaştıracak?” kabul örnekleri yazılır. Core check-in, uyku/enerji ve AI bu odağı destekler; Sky isteğe bağlı ayrı bir düşünme alanıdır.
+- Önceki beslenme/hareket seçimi kullanıcı tarafından geri çekildi. Bütünsel farkındalık, günlük karar desteği veya kişisel günlük ana vaadi yeniden seçilecek; kabul örnekleri bu seçimden sonra yazılır. Core, Health ve Sky modül mimarisi korunur; Sky isteğe bağlı sembolik bağlam olarak ayrı kalır.
 
 Küçük teslim sırası:
 
-1. **NUT-019.1 — Kabul ve veri güveni envanteri:** kurucunun beslenme/hareket hedefini sürdürürken kullandığı yolları, gereksiz kayıt adımlarını, eksik geri bildirimi ve tam yedek/geri yükleme boşluklarını somut örneklerle belirle. Gerçek kullanıcı pilotuna kadar eksik veri güveni işleri zorunlu blokerdır.
-2. **NUT-019.2 — Bir günlük akış dilimi:** mevcut Health kayıt/planlama ve hareket yüzeylerinden tek küçük sürtünmeyi gider; kullanıcının kendi seçtiği küçük hedef, düşük çabalı kayıt ve bir sonraki adım döngüsünü tasarla. Önerilen hedef akışı henüz uygulanmış değildir. Kalıcı hedef kaydı yeni veri yapısı gerektirirse önce veri etkisi ve onay kapısı tamamlanır. Kayıt durumu ve boş/eksik veri açıklamaları sadeleşir. Yeni veri modeli yerine mevcut API'leri kullan.
-3. **NUT-019.3 — Bir açıklanabilir AI dilimi:** mevcut iki günlük kural ve yedi günlük gözlemi beslenme/hareket hedefinin günlük koşullarını anlamak için daha erişilebilir kıl. Yeni hedefe yönelik öneri ayrı doğrulanacak hipotezdir; mevcut kural kataloğu hedef koçluğu yapıyormuş gibi anlatılmaz. Her çıktı dayanak, belirsizlik, seçenek ve geçerli onay durumunu korur; eşleşme yoksa veri uydurmaz.
+1. **NUT-019.1 — Kabul ve veri güveni envanteri:** kurucunun Core, Health ve isteğe bağlı Sky içinde kullandığı yolları, gereksiz kayıt adımlarını, eksik geri bildirimi ve tam yedek/geri yükleme boşluklarını somut örneklerle belirle. Gerçek kullanıcı pilotuna kadar eksik veri güveni işleri zorunlu blokerdır.
+2. **NUT-019.2 — Bir günlük akış dilimi:** yeniden seçilecek ürün vaadine göre mevcut modüllerden tek küçük sürtünmeyi gider; düşük çabalı kayıt, anlaşılır gözlem ve isteğe bağlı sonraki adım döngüsünü tasarla. Bu günlük akış henüz seçilmemiş ve uygulanmış değildir. Kalıcı hedef kaydı yeni veri yapısı gerektirirse önce veri etkisi ve onay kapısı tamamlanır. Kayıt durumu ve boş/eksik veri açıklamaları sadeleşir. Yeni veri modeli yerine mevcut API'leri kullan.
+3. **NUT-019.3 — Bir açıklanabilir AI dilimi:** mevcut iki günlük kural ve yedi günlük gözlemin anlaşılabilirliğini incele. Daha geniş modüller arası örüntü keşfi ayrı doğrulanacak hipotezdir; mevcut kural kataloğu genel öğrenen bir sistemmiş gibi anlatılmaz. Her çıktı dayanak, belirsizlik, seçenek ve geçerli onay durumunu korur; eşleşme yoksa veri uydurmaz.
 4. **NUT-019.4 — Kişisel kullanım kabulü:** önerilen 14 günlük kullanım; kayıt/yeniden açılış/güncelleme, üç somut fayda örneği, kullanılmayan yüzeyler ve açık sorunlar belgelenir. Bu süre kullanıcı benimsemesi veya pazar sonucu sayılmaz.
 
 Çıkış:
 
-- Kurucu, üç farklı günde “Today beslenme veya hareket hedefimi sürdürmemi nasıl kolaylaştırdı; hangi küçük adımı ben seçtim?” sorusunu somut örnekle cevaplayabilir.
+- Kurucu, üç farklı günde yeni ürün vaadine göre belirlenecek “Today bugün neyi fark etmeme veya hangi kararı vermeme yardımcı oldu?” sorusunu somut örnekle cevaplayabilir.
 - Kritik akışlar testli, kullanıcı verisi kayıpsız, ana sürtünmeler giderilmiş veya pilot sınırı açıkça konmuş.
-- Health ana değer akışıdır; Core kısa günlük bağlam sağlar, tüm modülleri doldurma zorunluluğu olmaz. Sky tamamen isteğe bağlıdır. Eksik gün suçluluk veya seri kaybı yaratmaz; kilo/kalori takıntısı ve öğün ahlakileştirmesi teşvik edilmez.
+- Core, Health ve Sky birlikte platformu oluşturur; bir modül tek ana değer akışı olarak seçilmiş değildir ve tüm modülleri doldurma zorunluluğu olmaz. Sky tamamen isteğe bağlıdır. Eksik gün suçluluk veya seri kaybı yaratmaz; kilo/kalori takıntısı ve öğün ahlakileştirmesi teşvik edilmez.
 - Sadece arayüz zenginliği veya test sayısı yeterli kabul edilmez; fayda örneği yoksa kapsam daraltılır.
 
 ## Faz 5 — Kontrollü gerçek kullanıcı PWA betası

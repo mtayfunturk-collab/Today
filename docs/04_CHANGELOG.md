@@ -31,6 +31,17 @@ Each entry should include:
 
 ---
 
+## Ürün odağı düzeltmesi — 29 Ekim 2026
+
+- Kullanıcı önceki beslenme/hareket seçimini yanlışlıkla yaptığını belirterek geri çekti. Bu seçim artık ürünün ana yönü veya geliştirme yetkisi olarak kullanılmaz; aşağıdaki eski aşama notları tarihsel kayıttır.
+- Core–Health–Sky verilerini izin verilen kapsamda AI Engine ile anlamlandıran mimari korunur. Ana vaat ve ilk kullanım senaryosu ayrı kararlardır; yeni seçim bekleniyor.
+- AGENTS, README, roadmap/fazlar, backlog ve NUT-018.3 sonraki adım metinleri düzeltildi. Çalışan uygulama, testler, veri anahtarları ve şemalar değişmedi.
+- Doğrulama: Markdown bağlantıları ve diff kontrolü. Runtime testleri belge değişikliği için yeniden çalıştırılmadı; 052dbd2 CI kanıtı aynı kod için geçerlidir.
+
+Commit: `docs: reopen product direction without changing module architecture`
+
+---
+
 ## NUT-018.3 — Gerçek tarayıcı/PWA hazırlığı ve ürün fazları
 
 Tarih: 29 Ekim 2026. Modül: otomasyon / SW yaşam döngüsü / ürün planı. Veri şemaları aynı; App 2.16.0, kabuk foundation-070.
