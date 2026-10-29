@@ -130,6 +130,23 @@ test("Health water persists in real IndexedDB and leaves Core records unchanged"
   await expect(page.locator("#todayWaterMl")).toHaveText("250 ml");
 });
 
+test("AI observation windows use explicit consent and show sparse daily coverage", async ({ page }) => {
+  await open(page); await saveCore(page);
+  await page.evaluate(() => window.TodayRouter.navigate("settings", { moveFocus: false }));
+  await expect(page.locator("#aiWindowDays")).toBeVisible();
+  for (const days of [1, 7, 30, 90]) {
+    await page.locator("#aiWindowDays").selectOption(String(days));
+    await expect(page.locator("#aiConsentConfirm")).not.toBeChecked();
+    await page.locator("#aiConsentConfirm").check();
+    await page.locator("#btnAiWindowObserve").click();
+    await expect(page.locator("#aiWindowOutput")).toContainText(`${days} günün 1 gününde uygun kayıt var`);
+    await expect(page.locator("#aiWindowOutput")).toContainText("Günlük seçim");
+    await expect(page.locator("#aiWindowOutput")).toContainText("Tek günlük kayıt tekrar örüntüsü değildir");
+  }
+  await page.locator("#btnAiContextClear").click();
+  await expect(page.locator("#aiWindowOutput")).toHaveText("");
+});
+
 test("A missing critical module preserves every existing localStorage value", async ({ page }) => {
   await page.addInitScript(() => {
     const legacy = { theme: "light", days: { "2026-07-30": { choice: "C", note: "Sentetik korunan not" } }, logs: {} };

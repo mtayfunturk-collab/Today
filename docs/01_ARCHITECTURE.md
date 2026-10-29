@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.16.0
+Application Version: 2.17.0
 Data Schema: 2
-Active Shell: today-v2-foundation-070
+Active Shell: today-v2-foundation-071
 Last Updated: 29 October 2026
 
 ---

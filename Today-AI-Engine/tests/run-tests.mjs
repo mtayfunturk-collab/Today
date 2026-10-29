@@ -7,6 +7,7 @@ import { runDecisionReceiptBuilderTests } from './decision-receipt-builder.test.
 import { runPatternObserverTests } from './pattern-observer.test.mjs';
 import { runPatternFeedbackProcessorTests } from './pattern-feedback-processor.test.mjs';
 import { runSyntheticBenchmarkEvaluatorTests } from './synthetic-benchmark-evaluator.test.mjs';
+import { runMultiWindowTests } from './multi-window-observer.test.mjs';
 
 const load = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 const inputs = await load('../fixtures/synthetic/daily-context.json');
@@ -60,3 +61,6 @@ console.log(`${nut0177Checks}/${nut0177Checks} NUT-017.7 örüntü geri bildirim
 
 const nut0178Checks = await runSyntheticBenchmarkEvaluatorTests();
 console.log(`${nut0178Checks}/${nut0178Checks} NUT-017.9 sentetik benchmark kontrolü başarılı.`);
+
+const multiWindowChecks = await runMultiWindowTests();
+console.log(`${multiWindowChecks}/${multiWindowChecks} NUT-019.1 çok dönemli gözlem kontrolü başarılı.`);

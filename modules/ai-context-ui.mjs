@@ -20,6 +20,7 @@ import {
 import {
   recordPatternFeedback
 } from "./ai-pattern-feedback-bridge.mjs";
+import { observeMultiWindow } from "../Today-AI-Engine/src/multi-window-observer.mjs";
 
 export const API_VERSION = 1;
 export const RULESET_ID = "today:ai-context-ui:nut-017.9";
@@ -78,15 +79,16 @@ function dateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-export function createContextWindow(now = new Date()) {
+export function createContextWindow(now = new Date(), days = WINDOW_DAYS) {
+  if (![1, 7, 30, 90].includes(days)) throw new RangeError("Unsupported observation window");
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const start = new Date(end);
-  start.setDate(start.getDate() - (WINDOW_DAYS - 1));
+  start.setDate(start.getDate() - (days - 1));
 
   return Object.freeze({
     startDate: dateKey(start),
     endDate: dateKey(end),
-    maxEventsPerSource: MAX_EVENTS_PER_SOURCE
+    maxEventsPerSource: days <= 7 ? MAX_EVENTS_PER_SOURCE : Math.min(366, days * 4)
   });
 }
 
@@ -266,6 +268,7 @@ function clearAnalysis(root) {
 }
 
 function clearPreview(root, options = {}) {
+  root.querySelector("#aiWindowOutput")?.replaceChildren();
   if (options.invalidate !== false) {
     requestEpoch += 1;
   }
@@ -1042,11 +1045,85 @@ export function getStatus() {
   });
 }
 
+function addWindowObservationControls(root) {
+  const doc = root.ownerDocument;
+  const section = doc.createElement("section");
+  section.className = "aiAnalysisOutput";
+  const title = doc.createElement("h4");
+  title.textContent = "Kayıtlarındaki gözlemler";
+  const label = doc.createElement("label");
+  label.textContent = "İncelenecek dönem ";
+  const select = doc.createElement("select");
+  select.id = "aiWindowDays";
+  for (const [value, text] of [[1, "Bugün"], [7, "Son 7 gün"], [30, "Son 30 gün"], [90, "Son 90 gün"]]) {
+    const option = doc.createElement("option"); option.value = String(value); option.textContent = text;
+    select.append(option);
+  }
+  label.append(select);
+  const button = doc.createElement("button");
+  button.id = "btnAiWindowObserve"; button.type = "button"; button.className = "ghost";
+  button.textContent = "Seçtiğim dönemi incele";
+  const help = doc.createElement("p");
+  help.textContent = "Yukarıdaki bilgi seçimi ve açık onayın yalnız bu incelemede kullanılır. Tek gün gözlemdir; az verideki tekrar ön gözlemdir. Günün her bilgi türündeki son uygun kaydı incelenir.";
+  const output = doc.createElement("div");
+  output.id = "aiWindowOutput"; output.setAttribute("role", "status"); output.setAttribute("aria-live", "polite");
+  select.addEventListener("change", () => {
+    const confirmation = root.querySelector("#aiConsentConfirm");
+    if (confirmation) confirmation.checked = false;
+    clearPreview(root);
+  });
+  button.addEventListener("click", async () => {
+    const confirmation = root.querySelector("#aiConsentConfirm");
+    if (!confirmation?.checked) { output.textContent = "Önce bilgi seçimini onayla."; return; }
+    if (button.disabled) return;
+    const requestedAt = new Date().toISOString();
+    const consent = createConsent(root, requestedAt);
+    const epoch = ++requestEpoch;
+    clearPreview(root, { keepStatus: true, invalidate: false });
+    button.disabled = true; output.textContent = "Kayıtların inceleniyor…";
+    try {
+      const built = await buildContextPreview({
+        requestId: consent.consentId.replace("consent:", "request:"), purpose: PURPOSE,
+        requestedAt, window: createContextWindow(new Date(requestedAt), Number(select.value)), consent
+      });
+      if (epoch !== requestEpoch) return;
+      const result = built.success ? observeMultiWindow({ context: built.context, requestedAt }) : null;
+      if (!result?.ok) { output.textContent = "Kayıtlar incelenemedi. Bilgi seçimini kontrol edip yeniden dene."; return; }
+      const report = result.report;
+      output.replaceChildren();
+      const summary = doc.createElement("p");
+      summary.textContent = report.status === "insufficient-data" ? "Bu dönemde seçtiğin bilgi türlerinden yeterli kayıt yok." :
+        `${report.window.days} günün ${report.observedDays} gününde uygun kayıt var. Eksik günler sıfır sayılmadı.`;
+      output.append(summary);
+      const labels = { core: "Günlük seçim", sleep: "Uyku (dk)", energy: "Enerji", fatigue: "Yorgunluk", activity: "Son aktivite kaydı (dk)" };
+      const valueLabels = { core: CHOICE_LABELS, energy: ENERGY_LABELS, fatigue: FATIGUE_LABELS };
+      for (const item of report.observations) {
+        const paragraph = doc.createElement("p");
+        if (item.metric === "core-short-sleep") paragraph.textContent =
+          `Ön gözlem: karşılaştırılabilir ${item.recordedDays} günün ${item.matchingDays} gününde “Zordu bugün” ve 6 saatten kısa uyku birlikte kaydedilmiş. Bu bir neden-sonuç ilişkisi değildir.`;
+        else {
+          const values = valueLabels[item.metric] || {};
+          paragraph.textContent = `${labels[item.metric]} — ${item.recordedDays} kayıtlı gün. ` +
+            item.values.map(row => `${row.localDate}: ${values[row.value] ?? row.value}`).join("; ") +
+            item.repeatedValues.map(row => ` Kayıtlı ${row.recordedDays} günde: ${values[row.value] ?? row.value}.`).join("");
+        }
+        output.append(paragraph);
+      }
+      const caveat = doc.createElement("p");
+      caveat.textContent = report.uncertainty.join(" ") + (report.omittedEvents ? " Bazı kayıtlar kapsam veya kayıt sınırı nedeniyle dahil edilmedi." : "");
+      output.append(caveat);
+    } catch { if (epoch === requestEpoch) output.textContent = "İnceleme tamamlanamadı; kayıtların değiştirilmedi."; }
+    finally { button.disabled = false; if (epoch === requestEpoch && confirmation) confirmation.checked = false; }
+  });
+  section.append(title, label, help, button, output); root.append(section);
+}
+
 export function initAIContextUI(documentRef = document) {
   if (initialized) return getStatus();
 
   const root = documentRef.querySelector("#aiContextPanel");
   if (!root) return getStatus();
+  addWindowObservationControls(root);
 
   root.querySelector("#aiConsentPurpose").textContent = PURPOSE;
   root.querySelector("#btnAiContextPreview")?.addEventListener(

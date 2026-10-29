@@ -18,15 +18,19 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 ## Durum
 
 - AI Engine günlük kural kataloğu: `0.9.0-rules`; değerlendirme katmanı: `0.9.0-evaluation`
-- Today App host çalışma tabanı: NUT-018.3 hazırlığı, App `2.16.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-070`
+- Today App host çalışma tabanı: NUT-019.1, App `2.17.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-071`
 - Today App güncel regresyonu ve gerçek tarayıcı kanıtı: [NUT-018.3 kaydı](../docs/NUT-018.3-VALIDATION.md) ve taslak PR #1. Eski 822 kontrol raporu güncel kapı sonucu yerine kullanılmaz.
-- AI Engine testi: `335 PASS / 0 FAIL` (koşucunun raporladığı kontroller; NUT-018 aşamalarında yeniden çalıştırılır)
+- AI Engine testi: `364 PASS / 0 FAIL` (koşucunun raporladığı kontroller; NUT-018 aşamalarında yeniden çalıştırılır)
 - NUT-017.9 birleşik sentetik benchmark: `16/16` vaka, `0` güvenlik ihlali
-- Today App NUT-017.9 entegrasyon kapısı: `96 PASS / 0 FAIL`
+- Today App birleşik entegrasyon kapısı: `112 PASS / 0 FAIL`
 - NUT-017.9 tarihsel ilgili App alt grupları: `142 PASS / 0 FAIL`; güncel birleşik sonuç teknik backlog/PR'dadır.
 - Durum: Günlük öneri iki kontrollü kurala sahiptir. Eşleşme yoksa öneri uydurulmaz; kullanıcı yalnız sade bir açıklama görür. Yedi günlük örüntü hâlâ yalnız Core–kısa uyku tekrarını inceler. Sky, model öğrenmesi, kalıcı hafıza, gerçek eylem ve dış aktarım kapalıdır.
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.
+
+## Çok dönemli gözlemler — NUT-019.1
+
+multi-window-observer.mjs, onaylı Context Package v1 üzerinde 1/7/30/90 günlük betimleyici sonuç üretir. Tek gün tekrar değildir; az kayıtla birliktelik yalnız ön gözlemdir. Günlük seçim, uyku, enerji, yorgunluk ve aktivite son kayıtları görünür; eksik günler doldurulmaz. Eski günlük analiz ve yedi günlük API'ler korunur. Yeni gözlemci 29 sentetik kontrolle ayrıca doğrulanır. Saat/native provider ve telefon bildirimi bu Engine modülünün yan etkisi değildir; gerçek bağlantı kapsamı [NUT-019.1 raporunda](../docs/NUT-019.1-IMPLEMENTATION.md) ayrılır.
 
 ## Yapı
 

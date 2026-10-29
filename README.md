@@ -1,6 +1,6 @@
 # Today
 
-Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Engine ile anlamlandırmayı hedefleyen, cihaz içi veriye ve kullanıcı kararına öncelik veren günlük yaşam uygulaması. Önceki beslenme/hareket odak seçimi geri çekildi; ana ürün vaadi ve ilk kullanım senaryosu yeniden seçiliyor. Core günlük farkındalığı, Health yerel kayıt/planlamayı, isteğe bağlı Sky sembolik düşünme alanını sağlar. AI Engine bugün sağlayıcısız deterministik kurallarla çalışır; genel sohbet veya otomatik dış işlem yapmaz.
+Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Engine ile anlamlandırmayı hedefleyen, cihaz içi veriye ve kullanıcı kararına öncelik veren günlük yaşam uygulaması. Önceki beslenme/hareket odak seçimi geri çekildi; kullanıcının yeni talebi günlük, 7/30/90 günlük AI gözlemleri ve sonrasında izinli saat/bildirim bağlantılarıdır. Core günlük farkındalığı, Health yerel kayıt/planlamayı, isteğe bağlı Sky sembolik düşünme alanını sağlar. AI Engine bugün sağlayıcısız günlük kurallar ve çok dönemli betimleyici gözlemlerle çalışır; genel sohbet veya otomatik dış işlem yapmaz.
 
 ## Geliştirme ve doğrulama
 

@@ -10,7 +10,8 @@ const GROUPS = Object.freeze([
   "tests/ai-pattern-bridge.test.mjs",
   "tests/ai-pattern-feedback-bridge.test.mjs",
   "tests/ai-context-ui.test.mjs",
-  "tests/ai-evaluation-gate.test.mjs"
+  "tests/ai-evaluation-gate.test.mjs",
+  "tests/wearable-read-adapter.test.mjs"
 ]);
 
 let passed = 0;
@@ -27,7 +28,7 @@ for (const file of GROUPS) {
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
   process.stdout.write(`\n=== ${file} ===\n${output}`);
   const summary = output.match(
-    /NUT-017\.(?:2|3|4|5|6|7|8|9)(?:\.[12])? [^:]+: (\d+)\/(\d+) başarılı/
+    /NUT-(?:017\.(?:2|3|4|5|6|7|8|9)(?:\.[12])?|019\.1) [^:]+: (\d+)\/(\d+) başarılı/
   );
   if (!summary || result.status !== 0 || summary[1] !== summary[2]) {
     failures.push({ file, status: result.status });

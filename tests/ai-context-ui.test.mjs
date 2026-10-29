@@ -590,6 +590,52 @@ await test("UI onayı veya seçilen bilgiler kalıcı depolamaya ya da ağa yaz�
   }
 });
 
+await test("Çok dönemli gözlem günlük, haftalık ve uzun dönem seçenekleri sunar", () => {
+  assert.deepEqual([...document.querySelectorAll("#aiWindowDays option")].map(item => item.value), ["1", "7", "30", "90"]);
+  for (const days of [1, 7, 30, 90]) {
+    const window = ui.createContextWindow(new Date(2026, 9, 29, 12), days);
+    assert.equal(1 + Math.round((Date.parse(window.endDate) - Date.parse(window.startDate)) / 86400000), days);
+  }
+  assert.throws(() => ui.createContextWindow(new Date(), 2), RangeError);
+});
+
+await test("Yeni gözlem açık onay olmadan veri toplamaz", async () => {
+  const before = observed.length;
+  document.querySelector("#aiConsentConfirm").checked = false;
+  document.querySelector("#btnAiWindowObserve").click(); await settle();
+  assert.equal(observed.length, before);
+  assert.match(document.querySelector("#aiWindowOutput").textContent, /onayla/);
+});
+
+for (const days of [1, 7, 30, 90]) await test(`${days} günlük gözlem seçilen pencereyi ve kayıt kapsamını gösterir`, async () => {
+  const select = document.querySelector("#aiWindowDays"); select.value = String(days);
+  select.dispatchEvent(new window.Event("change", { bubbles: true }));
+  document.querySelector("#aiConsentConfirm").checked = true;
+  document.querySelector("#btnAiWindowObserve").click(); await settle();
+  const requested = observed.at(-1).window;
+  assert.equal(1 + Math.round((Date.parse(requested.endDate) - Date.parse(requested.startDate)) / 86400000), days);
+  const text = document.querySelector("#aiWindowOutput").textContent;
+  assert.match(text, /uygun kayıt var/); assert.match(text, /Tek günlük kayıt tekrar örüntüsü değildir/);
+  assert.equal(document.querySelector("#aiConsentConfirm").checked, false);
+});
+
+await test("Dönem değişikliği eski gözlemi temizler ve yeni onay ister", () => {
+  document.querySelector("#aiConsentConfirm").checked = true;
+  document.querySelector("#aiWindowDays").dispatchEvent(new window.Event("change", { bubbles: true }));
+  assert.equal(document.querySelector("#aiWindowOutput").textContent, "");
+  assert.equal(document.querySelector("#aiConsentConfirm").checked, false);
+});
+
+await test("Çok dönemli istek sürerken kapsam değişirse eski sonuç gösterilmez", async () => {
+  holdNextRequest = true;
+  document.querySelector("#aiConsentConfirm").checked = true;
+  document.querySelector("#btnAiWindowObserve").click(); await settle();
+  document.querySelector("#aiWindowDays").dispatchEvent(new window.Event("change", { bubbles: true }));
+  releaseHeldRequest(); await settle();
+  assert.equal(document.querySelector("#aiWindowOutput").textContent, "");
+  assert.equal(document.querySelector("#btnAiWindowObserve").disabled, false);
+});
+
 await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabuğa dahildir", async () => {
   const sourceIndex = indexSource.indexOf("ai-context-source-adapters.js");
   const uiIndex = indexSource.indexOf("ai-context-ui.mjs");
@@ -618,12 +664,12 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 113);
+  assert.equal(shellFiles.length, 114);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-070/);
+  assert.match(swSource, /today-v2-foundation-071/);
 });
 
 const failures = results.filter(result => !result.success);

@@ -9,7 +9,7 @@ Aktif iş: NUT-018, `nut-018-ci-stabilization`, taslak PR #1
 
 ## Hedef
 
-Today, **Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Engine ile anlamlandıran** gizlilik odaklı bir günlük yaşam platformu olarak geliştirilir. Mimari, ürünün ana vaadi ve ilk kullanım senaryosu ayrı kararlardır. Önceki beslenme/hareket seçimi kullanıcı tarafından yanlışlıkla yapıldığı belirtilerek geri çekildi. Ana vaat için bütünsel farkındalık, günlük karar desteği ve kişisel günlük seçenekleri yeniden sunuldu; yeni seçim henüz kesinleşmedi. Bu seçenekler modül mimarisini değiştirmez. Nihai dağıtım hedefi App Store ve Google Play'dir. Önce kurucunun düzenli kullanmak isteyeceği değer kanıtlanır; ardından gerçek kişilerle kontrollü PWA pilotu ve pazar doğrulaması yapılır.
+Today, **Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Engine ile anlamlandıran** gizlilik odaklı bir günlük yaşam platformu olarak geliştirilir. Mimari, ürünün ana vaadi ve ilk kullanım senaryosu ayrı kararlardır. Önceki beslenme/hareket seçimi kullanıcı tarafından yanlışlıkla yapıldığı belirtilerek geri çekildi. Ana vaat için bütünsel farkındalık, günlük karar desteği ve kişisel günlük seçenekleri yeniden sunuldu; kullanıcı daha sonra günlük, 7 günlük ve uzun dönemli gözlemler, telefon bildirimi ve Health içinde akıllı saat bağlantısını istedi. Bu istek NUT-019.1 gözlem dilimi ve NUT-019.2 platform/izin tasarımı olarak izlenir. Bu seçenekler modül mimarisini değiştirmez. Nihai dağıtım hedefi App Store ve Google Play'dir. Önce kurucunun düzenli kullanmak isteyeceği değer kanıtlanır; ardından gerçek kişilerle kontrollü PWA pilotu ve pazar doğrulaması yapılır.
 
 29 Ekim kararı, önceki plandaki “hemen Capacitor'a geç” sırasını değiştirir. Native paketleme, kullanıcı değerini kanıtlamanın ön koşulu değildir. Mevcut Core, Health, Sky modülleri ve AI Engine/Connect sınırları korunur; yeni bir uygulama veya paralel veri modeli kurulmaz. Faz 1–2 tarihsel kayıtları aşağıda korunmuştur.
 
@@ -59,7 +59,7 @@ Bu liste uygulandı iddiası değil, test edilecek ürün hipotezidir. Her dilim
 
 ## Pazar doğrulaması: önerilen ölçüm planı
 
-Ana ürün vaadi ve hedef kullanıcı hipotezi yeni seçimle netleştirilecek. Önceki beslenme/hareket hipotezi geri çekildi; mevcut modül mimarisi korunur. Önerilen genel değer, kişinin kendi kayıtlarından anlaşılır ve açıklanabilir gözlemler edinebilmesidir; bu henüz onaylanmış ürün odağı veya araştırmayla doğrulanmış kullanıcı bulgusu değildir.
+Ana ürün vaadi ve hedef kullanıcı hipotezi yeni seçimle netleştirilecek. Önceki beslenme/hareket hipotezi geri çekildi; çok dönemli AI gözlemleri ve izinli cihaz/bildirim bağlantıları kullanıcı tarafından istendi; mevcut modül mimarisi korunur. Önerilen genel değer, kişinin kendi kayıtlarından anlaşılır ve açıklanabilir gözlemler edinebilmesidir; bu henüz onaylanmış ürün odağı veya araştırmayla doğrulanmış kullanıcı bulgusu değildir.
 
 Aşağıdaki eşikler pilot başlamadan gözden geçirilecek karar yardımcılarıdır; elde edilmiş sonuç veya sektör standardı değildir. Küçük örneklemde sayı ve payda birlikte raporlanır; örneğin 4/10 ve 8/20 aynı ürün-pazar uyumu kanıtı sayılmaz.
 
@@ -85,7 +85,7 @@ Aşağıdaki eşikler pilot başlamadan gözden geçirilecek karar yardımcılar
 
 ## Sıradaki öncelik
 
-Önce NUT-018.1–018.3 kanıtları kapanır. Sonra önerilen ilk ürün işi, mevcut veriyle normal/yeniden/çevrimdışı açılışın ve tüm-modül yedek/geri yükleme kapsamının doğrulandığı, kurucunun günlük kullanım sürtünmelerini kaydettiği **NUT-019 modüller arası ürün kabul envanteri** olur. Temel kabul sorusu, yeniden seçilecek ürün vaadine göre kullanıcıyla belirlenecek. Seçim beklenirken beslenme/hareket odaklı özellik geliştirmesi başlatılmaz. Bu envanterden yalnız bir küçük kullanıcı akışı seçilip uygulanır; kullanıcı gözlemi olmadan geniş özellik paketi başlatılmaz.
+Önce NUT-018.1–018.3 kanıtları kapanır. Sonra önerilen ilk ürün işi, mevcut veriyle normal/yeniden/çevrimdışı açılışın ve tüm-modül yedek/geri yükleme kapsamının doğrulandığı, kurucunun günlük kullanım sürtünmelerini kaydettiği **NUT-019 modüller arası ürün kabul envanteri** olur. Temel kabul sorusu, yeniden seçilecek ürün vaadine göre kullanıcıyla belirlenecek. Beslenme/hareket tek odak olarak dayatılmaz. Güncel teknik dilimler ve gerçek bağlantı sınırları NUT-019.1 uygulama raporunda izlenir. Bu envanterden yalnız bir küçük kullanıcı akışı seçilip uygulanır; kullanıcı gözlemi olmadan geniş özellik paketi başlatılmaz.
 
 ## Tarihsel kayıt — 31 Temmuz 2026
 

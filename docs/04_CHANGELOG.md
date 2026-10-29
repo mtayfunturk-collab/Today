@@ -31,6 +31,20 @@ Each entry should include:
 
 ---
 
+## NUT-019.1 — Çok dönemli AI gözlemleri
+
+Tarih: 29 Ekim 2026. App 2.17.0; Core şema 2; kabuk foundation-071.
+
+- Açık, istek-süreli onayla Bugün/7/30/90 günlük betimleyici gözlem ve kapsam seçimi eklendi. Tek gün tekrar sayılmaz; az verideki birliktelik yalnız ön gözlemdir. Eksik günler sıfır sayılmaz.
+- Eski günlük analiz/yedi günlük örüntü API'leri korundu; beş metrik ve kayıtlı günlerde kategorik tekrarlar eklendi. Kaynak, gün ve belirsizlik izi tutulur; Sky sağlık kanıtına katılmaz.
+- Saat için salt okunur sağlayıcı sözleşmesi ve gizli sağlık bilgisi taşımayan bildirim metni önizlemesi hazırlandı. Native sağlayıcı kaydedilmedi, Health'e saat verisi alınmadı ve telefon bildirimi gönderilmedi.
+- Testler: platform 1156/1156; AI Engine 364/364; entegrasyon 112/112; benchmark 16/16 ve 0 güvenlik ihlali; yeni dönem seçimi yerel Chromium'da geçti. Tam tarayıcı CI kanıtı PR #1'de tutulur.
+- Kayıt: docs/NUT-019.1-IMPLEMENTATION.md. Sonraki adım platform/izin kapsamı seçimi, Health kişisel sağlık verisi akışı ve güvenilir native/Web Push taşıyıcısıdır. Gerçek sağlık verisi ve arka plan bildirim altyapısı için kullanıcı sınırları korunur.
+
+Commit: `feat(ai): add consented daily and multi-window observations (NUT-019.1)`
+
+---
+
 ## Ürün odağı düzeltmesi — 29 Ekim 2026
 
 - Kullanıcı önceki beslenme/hareket seçimini yanlışlıkla yaptığını belirterek geri çekti. Bu seçim artık ürünün ana yönü veya geliştirme yetkisi olarak kullanılmaz; aşağıdaki eski aşama notları tarihsel kayıttır.
