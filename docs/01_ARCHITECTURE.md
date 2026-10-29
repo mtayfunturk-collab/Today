@@ -4,7 +4,7 @@ Version: 1.0
 Status: Active
 Application Version: 2.16.0
 Data Schema: 2
-Active Shell: today-v2-foundation-069
+Active Shell: today-v2-foundation-070
 Last Updated: 29 October 2026
 
 ---

@@ -107,7 +107,7 @@ const TEST_GROUPS = Object.freeze([
   {
     file:
       "tests/service-worker-manager.test.cjs",
-    count: 29
+    count: 30
   },
   {
     file:

@@ -31,6 +31,24 @@ Each entry should include:
 
 ---
 
+## NUT-018.3 — Gerçek tarayıcı/PWA hazırlığı ve ürün fazları
+
+Tarih: 29 Ekim 2026. Modül: otomasyon / SW yaşam döngüsü / ürün planı. Veri şemaları aynı; App 2.16.0, kabuk foundation-070.
+
+- Kesin sürümlü Playwright 1.64.1, yalnız-loopback sunucu, her test için izole sentetik bağlam ve altı gerçek tarayıcı senaryosu eklendi. CI Chromium ve iPhone görünümündeki Linux WebKit'i ayrı işte çalıştırır; hata tanısı 7 gün tutulur.
+- İlk gerçek Chromium koşusu 3 PASS / 3 FAIL verdi: iki updatedAt beklentisi kullanıcı içeriğiyle sınırlandı. Üçüncü hata gerçekti: eski aktif worker redundant olduğunda kullanıcı onayı sıfırlanıyordu. Yalnız önceden activated olmuş worker'ın normal emekliliği ayrıldı; başarısız kurulum ve onaysız yenilememe kontrolleri korunur.
+- Yeni SW regresyonu eski kodda 29/30, düzeltmeyle 30/30; yerel Chromium son koşusu 6 PASS / 0 FAIL. Platform 1156 PASS / 0 FAIL; AI Engine 335/0, entegrasyon 96/0, benchmark 16/0, audit 0 açık. Resmi iki motorun CI kanıtı aynı commit için taslak PR #1'de tutulur.
+- Fiziksel iPhone Safari/Ana Ekran PWA ve Android cihaz kabul matrisi hazır; testler fiziksel cihazda yapılmış sayılmaz. Üretime/pilota dağıtım yapılmadı.
+- Roadmap/fazlar kullanıcının beslenme-hareket sürdürülebilirliği önceliğine göre güncellendi: teknik güven → kurucu kullanımı → kontrollü PWA betası → pazar doğrulaması → native/mağaza hazırlığı. Mevcut deterministik AI ve önerilen işlevler açıkça ayrıldı.
+
+Dosyalar: Playwright config/sunucu/spec, workflow ve test bağımlılıkları; modules/service-worker-manager.js, sw.js, ilgili test/snapshot referansları; README'ler, mimari, roadmap/fazlar, teknik backlog ve NUT-018.3 kabul kaydı.
+
+Sıradaki öncelik: fiziksel cihaz kabul kaydı ve NUT-019.1 beslenme/hareket kullanım + tam veri taşınabilirliği envanteri. Şema, yeni dış sağlayıcı, kullanıcı pilotu ve mağaza gönderimi için ilgili açık onay sınırları korunur.
+
+Commit: `test: add real browser PWA gates and preserve update approval (NUT-018.3)`
+
+---
+
 ## NUT-018.2 — Bağımlılık güvenliği ve sürüm tutarlılığı
 
 Tarih: 29 Ekim 2026. Modül: test bağımlılıkları / otomasyon. Üretim verisi veya şema değişmedi.

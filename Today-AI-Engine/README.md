@@ -18,12 +18,12 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 ## Durum
 
 - AI Engine günlük kural kataloğu: `0.9.0-rules`; değerlendirme katmanı: `0.9.0-evaluation`
-- Today App çalışma tabanı: NUT-017.9, App `2.16.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-067`
-- Today App referans regresyonu: `822 PASS / 0 FAIL` (salt okunur paket raporu; burada yeniden çalıştırılmadı)
-- AI Engine testi: `335 PASS / 0 FAIL`
+- Today App host çalışma tabanı: NUT-018.3 hazırlığı, App `2.16.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-070`
+- Today App güncel regresyonu ve gerçek tarayıcı kanıtı: [NUT-018.3 kaydı](../docs/NUT-018.3-VALIDATION.md) ve taslak PR #1. Eski 822 kontrol raporu güncel kapı sonucu yerine kullanılmaz.
+- AI Engine testi: `335 PASS / 0 FAIL` (koşucunun raporladığı kontroller; NUT-018 aşamalarında yeniden çalıştırılır)
 - NUT-017.9 birleşik sentetik benchmark: `16/16` vaka, `0` güvenlik ihlali
 - Today App NUT-017.9 entegrasyon kapısı: `96 PASS / 0 FAIL`
-- İlgili mevcut App grupları: `142 PASS / 0 FAIL`
+- NUT-017.9 tarihsel ilgili App alt grupları: `142 PASS / 0 FAIL`; güncel birleşik sonuç teknik backlog/PR'dadır.
 - Durum: Günlük öneri iki kontrollü kurala sahiptir. Eşleşme yoksa öneri uydurulmaz; kullanıcı yalnız sade bir açıklama görür. Yedi günlük örüntü hâlâ yalnız Core–kısa uyku tekrarını inceler. Sky, model öğrenmesi, kalıcı hafıza, gerçek eylem ve dış aktarım kapalıdır.
 
 Bu nedenle herhangi bir Faz 1–6 tamamlanmış sayılmamaktadır.

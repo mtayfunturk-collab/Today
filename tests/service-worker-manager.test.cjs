@@ -1288,6 +1288,32 @@ async function test(name, callback) {
   );
 
   await test(
+    "Eski etkin worker'ın kapanışı yeni güncellemenin onayını silmiyor",
+    async () => {
+      const oldWorker = new MockWorker("installing");
+      const registration = new MockRegistration({ installing: oldWorker });
+      const runtime = createRuntime({ registration });
+      const api = runtime.window.TodayServiceWorker;
+      await api.start();
+      oldWorker.setState("activated");
+
+      const nextWorker = new MockWorker("installed");
+      registration.waiting = nextWorker;
+      registration.emitUpdateFound(nextWorker);
+      assert.equal(api.activateUpdate().success, true);
+      oldWorker.setState("redundant");
+
+      assert.equal(api.getState().userAccepted, true);
+      assert.equal(api.getState().errorCode, null);
+      assert.equal(runtime.eventCount("today:service-worker-update-error"), 0);
+      runtime.emitControllerChange();
+      runtime.emitControllerChange();
+      assert.equal(runtime.reloadCount, 1);
+      assert.equal(nextWorker.messages.length, 1);
+    }
+  );
+
+  await test(
     "Bekleyen worker yoksa etkinleştirme kontrollü hata dönüyor",
     async () => {
       const runtime =

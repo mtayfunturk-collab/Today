@@ -15,7 +15,7 @@ const expectedProductionHashes = {
   "index.html":
     "4319269ee900775a15ec0fef36a04e15eac6cd570cef93282206403cd0325c2b",
   "sw.js":
-    "3ded321af9c89dd4cfaefa2718403f9fcfb08672db1cdafe7c81e98d59b7679b",
+    "de361891109e49c21f0050bb188fec57da03656a517c3ddd22176af82697a574",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -59,7 +59,7 @@ const expectedProductionHashes = {
   "module-registry.js":
     "9678b6a3f73789f50e961257a0fa2115006b60ae521a6867340ea11975be8356",
   "service-worker-manager.js":
-    "e84346622aed07bf988981e2fb616ebb2b0bcd31cee297ce862257d914db239c"
+    "37a35037a92eb6b2c7cc2394d4e66f93490a609a57834067ea1ac7b79aa06e6a"
 };
 
 const expectedHtmlIds = [
@@ -1222,7 +1222,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-069 ve 113 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-070 ve 113 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1234,7 +1234,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-069"'
+        'const VERSION = "today-v2-foundation-070"'
       )
     );
     assert.ok(shellMatch);

@@ -21,6 +21,7 @@ on:
       - "scripts/**"
       - "package.json"
       - "package-lock.json"
+      - "playwright.config.cjs"
       - ".github/workflows/platform-regression.yml"
   pull_request:
     paths:
@@ -42,6 +43,7 @@ on:
       - "scripts/**"
       - "package.json"
       - "package-lock.json"
+      - "playwright.config.cjs"
       - ".github/workflows/platform-regression.yml"
 
 permissions:
@@ -89,3 +91,36 @@ jobs:
       - name: Audit test dependencies
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm audit --audit-level=high
+
+  browser:
+    name: Real browser and mobile WebKit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install test dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run real browser tests
+        run: npm run test:e2e
+
+      - name: Upload synthetic browser diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-browser-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

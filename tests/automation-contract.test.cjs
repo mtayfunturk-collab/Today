@@ -259,7 +259,7 @@ test(
 );
 
 test(
-  "Koşucu Türkiye saat dilimi ve 1155 kontrollük NUT-018.1 kapısını kilitliyor",
+  "Koşucu Türkiye saat dilimi ve 1156 kontrollük NUT-018.3 kapısını kilitliyor",
   () => {
     assert.ok(
       runner.includes(
@@ -281,7 +281,7 @@ test(
           sum + value,
         0
       ),
-      1155
+      1156
     );
   }
 );

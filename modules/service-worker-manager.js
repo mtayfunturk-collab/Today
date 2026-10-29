@@ -29,6 +29,7 @@
   let announcedWorker = null;
   let observedRegistration = null;
   const observedWorkers = new WeakSet();
+  const activatedWorkers = new WeakSet();
 
   let status = {
     phase: "idle",
@@ -468,6 +469,14 @@
       typeof worker.state === "string"
         ? worker.state
         : null;
+
+    if (workerState === "activated") {
+      activatedWorkers.add(worker);
+    }
+    // A replaced active worker retires normally; it did not fail installation.
+    if (workerState === "redundant" && activatedWorkers.has(worker)) {
+      return;
+    }
 
     setStatus({
       workerState
