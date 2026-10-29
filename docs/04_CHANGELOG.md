@@ -31,6 +31,24 @@ Each entry should include:
 
 ---
 
+## NUT-018.1 — Eksik test kapsamı
+
+Tarih: 29 Ekim 2026. Modül: Health / otomatik doğrulama. Uygulama 2.16.0, şema 2; offline kabuk foundation-069.
+
+- Health Hub testi gerçek DOMContentLoaded sırasını bekler; hatalı sabit başarı sayısı yerine çalışan kontroller sayılır.
+- Tüketim editörü mevcut statik kontrollerine ek olarak gerçek DOM etkileşimiyle miktar/birim, şablon ölçekleme, geçersiz miktar, geçmiş gün, hata sonrası toparlanma ve çift gönderim davranışını doğrular.
+- Çalışan kayıt sırasında ikinci gönderimin alt Nutrition UI işleyicisine kaçtığı doğrulandı. Capture işleyicisindeki olay durdurma, submitting kontrolünden önceye alındı; kayıt API'si/şeması değişmedi. Kalıcı kaydın çoğaldığı iddia edilmez.
+- İki eksik grup npm test'e eklendi. Otomasyon envanteri platform ve AI kapılarının tüm mevcut test dosyalarını tekrarsız kapsadığını denetler.
+- Codex çalışma sınırları AGENTS.md'ye kaydedildi; ürünün birincil hedefi beslenme/hareket sürdürülebilirliği olarak tanımlandı.
+
+Değişenler: iki Health test dosyası, platform koşucusu ve otomasyon sözleşmesi; modules/nutrition-consumption-editor.js, sw.js ve ilgili kabuk referansları; AGENTS.md, mimari/backlog, NUT-018.1 uygulama kaydı ve bu changelog.
+
+Doğrulama: platform **1155 PASS / 0 FAIL**, AI Engine **335 / 0**, Today AI entegrasyonu **96 / 0**, sentetik benchmark **16 / 0**, güvenlik ihlali **0**. CI kanıtı taslak PR #1'de tutulur. Sonraki teknik öncelik NUT-018.2 bağımlılık güvenliği ve sürüm tutarlılığıdır.
+
+Commit: `test: complete Health regression coverage (NUT-018.1)`
+
+---
+
 ## NUT-018 — CI and startup stabilization
 
 Date: 29 October 2026

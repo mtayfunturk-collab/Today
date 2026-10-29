@@ -50,6 +50,8 @@ Core localStorage anahtarları, şema 2, beslenme IndexedDB store'ları/indeksle
 
 ## Kalan riskler ve sonraki adımlar
 
+Bu bölüm ilk NUT-018 kapanışının kaydıdır. Sonraki alt aşamaların güncel durumu `docs/10_TECHNICAL_BACKLOG.md` ve ayrı NUT-018.x raporlarında tutulur.
+
 1. `npm audit` iki yüksek dereceli dolaylı geliştirme bağımlılığı bildiriyor: source-map-js ve undici. Ayrı, kontrollü bir lockfile güncellemesi ve regresyon doğrulaması önerilir; bu PR otomatik npm audit fix uygulamaz. Bu bildirimler ürün çalışma zamanında istismar kanıtı değildir.
 2. Mevcut birleşik platform kapısı depodaki her bağımsız testi içermez. Kapı dışındaki health-hub testi DOMContentLoaded öncesi başlatılmış durum bekliyor; nutrition-consumption-editor testi eski foundation-024 / 2.4.1 sürümlerini bekliyor. Bu iki test ayrıca düzeltilip kapıya dahil edilmelidir; tüm depo testlerinin başarılı olduğu iddia edilmez.
 3. Statik hash/sayı referansları onaylı üretim değişikliklerinde bilinçli güncelleme gerektirir. Uzun vadede sürüm, script sırası ve kabuk envanteri için tek kaynak önerilir.
