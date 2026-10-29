@@ -31,6 +31,23 @@ Each entry should include:
 
 ---
 
+## NUT-018.2 — Bağımlılık güvenliği ve sürüm tutarlılığı
+
+Tarih: 29 Ekim 2026. Modül: test bağımlılıkları / otomasyon. Üretim verisi veya şema değişmedi.
+
+- Hedefli lockfile güncellemesi: source-map-js 1.2.1 → 1.2.2, undici 7.29.0 → 7.30.1; doğrudan jsdom/fake-indexeddb sürümleri korundu.
+- package/lock sürümleri aktif uygulama 2.16.0 ile hizalandı; Node aralığı kilitli jsdom 29'un destek aralığıyla eşitlendi.
+- Mevcut otomasyon sözleşmesi aktif Storage/Version Manager ve paket sürüm tutarlılığını, eski kök kopyalarının yüklenmemesini doğrular.
+- CI'a yüksek/kritik bağımlılık bildirimlerinde işi kıran audit adımı eklendi.
+
+Dosyalar: package.json, package-lock.json, .github/workflows/platform-regression.yml, tests/automation-contract.test.cjs, NUT-018.2 raporu ve teknik kayıtlar.
+
+Testler: temiz kurulum başarılı; audit **0 açık**; platform **1155 PASS / 0 FAIL**; AI Engine **335 / 0**, AI entegrasyonu **96 / 0**, benchmark **16 / 0**, güvenlik ihlali **0**; diff kontrolü temiz. Audit anlık bağımlılık veritabanı sonucudur. Sonraki öncelik NUT-018.3 gerçek tarayıcı ve iPhone PWA hazırlığı.
+
+Commit: `chore: align runtime versions and secure test dependencies (NUT-018.2)`
+
+---
+
 ## NUT-018.1 — Eksik test kapsamı
 
 Tarih: 29 Ekim 2026. Modül: Health / otomatik doğrulama. Uygulama 2.16.0, şema 2; offline kabuk foundation-069.

@@ -45,7 +45,7 @@ function test(name, callback) {
 }
 
 test(
-  "Test paketi özel ve lockfile sürümüyle uyumlu",
+  "Aktif uygulama, depolama ve paket sürümleri tek sürüm kaynağıyla uyumlu",
   () => {
     assert.equal(
       packageJson.private,
@@ -55,10 +55,30 @@ test(
       packageJson.version,
       /^\d+\.\d+\.\d+$/
     );
+    const versionSource = fs.readFileSync("modules/version.js", "utf8");
+    const canonicalVersion = versionSource.match(/const APP_VERSION = "(\d+\.\d+\.\d+)";/);
+    assert.ok(canonicalVersion, "Aktif Version Manager uygulama sürümü yayımlamalı");
+    const storageSource = fs.readFileSync("modules/storage.js", "utf8");
+    const storageVersion = storageSource.match(/const APP_VERSION = "(\d+\.\d+\.\d+)";/);
+    assert.ok(storageVersion, "Aktif Storage Manager uygulama sürümü taşımalı");
+    assert.equal(storageVersion[1], canonicalVersion[1]);
+    assert.equal(packageJson.version, canonicalVersion[1]);
+    assert.equal(lock.version, canonicalVersion[1]);
     assert.equal(
-      packageJson.version,
-      lock.packages[""].version
+      lock.packages[""].version,
+      canonicalVersion[1]
     );
+
+    const html = fs.readFileSync("index.html", "utf8");
+    const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)]
+      .map(match => match[1]);
+    ["./modules/storage.js", "./modules/version.js"].forEach(src => {
+      assert.equal(scripts.filter(path => path === src).length, 1, src);
+    });
+    const scriptPaths = scripts.map(src => new URL(src, "https://today.test/Today/").pathname);
+    ["/Today/storage.js", "/Today/version.js"].forEach(path => {
+      assert.equal(scriptPaths.includes(path), false, `Eski kök kopya yüklenmemeli: ${path}`);
+    });
   }
 );
 
@@ -116,8 +136,10 @@ test(
     assert.equal(
       lock.packages[""]
         .engines.node,
-      ">=20.19.0"
+      packageJson.engines.node
     );
+    assert.equal(packageJson.engines.node, "^20.19.0 || ^22.13.0 || >=24.0.0");
+    assert.equal(packageJson.engines.node, lock.packages["node_modules/jsdom"].engines.node);
   }
 );
 

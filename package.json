@@ -1,6 +1,6 @@
 {
   "name": "today-app",
-  "version": "2.4.1",
+  "version": "2.16.0",
   "private": true,
   "description": "Today App platform regression gate",
   "scripts": {
@@ -8,7 +8,7 @@
     "test:browser": "node tests/platform-browser-regression.test.cjs"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
   },
   "devDependencies": {
     "fake-indexeddb": "6.2.5",

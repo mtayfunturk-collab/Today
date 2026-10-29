@@ -85,3 +85,7 @@ jobs:
       - name: Run AI Engine benchmark
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: node Today-AI-Engine/tests/run-benchmark.mjs
+
+      - name: Audit test dependencies
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm audit --audit-level=high
