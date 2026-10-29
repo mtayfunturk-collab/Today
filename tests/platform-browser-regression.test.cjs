@@ -267,6 +267,7 @@ async function createRuntime({
       );
     }
   );
+  const initialStorage = storageSnapshot(window.localStorage);
 
   class CapturedBlob {
     constructor(parts, options = {}) {
@@ -363,6 +364,7 @@ async function createRuntime({
     jsdomErrors,
     consoleErrors,
     consoleWarnings,
+    initialStorage,
     close() {
       window.close();
     }
@@ -447,6 +449,10 @@ test(
     assert.equal(
       status.errorCode,
       null
+    );
+    assert.equal(
+      normal.window.TodaySkyHub.getState().initialized,
+      true
     );
     assert.ok(
       normal.window
@@ -1858,7 +1864,14 @@ test(
       normal.window,
       '[aria-current="date"]'
     );
-    await wait(20);
+    // history.go completes asynchronously through popstate, including under CI load.
+    const deadline = Date.now() + 1000;
+    while (
+      normal.window.TodayRouter.getState().route !== "pick" &&
+      Date.now() < deadline
+    ) {
+      await wait(10);
+    }
 
     assert.equal(
       normal.window.TodayRouter
@@ -2360,6 +2373,15 @@ test(
 test(
   "Başlangıç hatası mevcut kullanıcı kaydını değiştirmiyor",
   () => {
+    assert.deepEqual(
+      storageSnapshot(broken.window.localStorage),
+      broken.initialStorage
+    );
+    assert.equal(
+      broken.window.TodaySkyHub.getState().initialized,
+      false
+    );
+
     const stored =
       parseStorage(
         broken.window,

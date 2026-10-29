@@ -5,7 +5,7 @@ Document: Changelog
 Version: 1.0
 Status: Active
 Owner: Today Master Project
-Last Updated: 15 August 2026
+Last Updated: 29 October 2026
 
 ---
 
@@ -28,6 +28,47 @@ Each entry should include:
 ---
 
 # Version History
+
+---
+
+## NUT-018 — CI and startup stabilization
+
+Date: 29 October 2026
+Module: Platform automation / Sky startup
+Version: App remains 2.16.0; offline shell foundation-068; data schemas unchanged.
+
+Summary
+
+- Diagnosed Actions run 40930531664: dependency installation succeeded, but stale NUT-011 snapshots, missing contract path filters and a real startup storage write broke the platform gate.
+- Gated automatic Sky initialization on Startup Manager readiness, preserving localStorage/IndexedDB keys and migrations. Bumped the shell so offline clients can receive the fix.
+- Refreshed explicit static/SW baselines without dropping behavioral assertions; strengthened failed-startup storage preservation and offline inventory checks.
+- Replaced the calendar test's fixed 20 ms sleep with a bounded wait for asynchronous history navigation.
+- Added the existing 96-control Today AI integration gate and synchronized its two shell-version expectations.
+- Extended workflow dependency paths and kept AI checks running after a platform failure when installation succeeds; all failing checks still fail the job.
+
+Files Changed
+
+- `.github/workflows/platform-regression.yml`, `modules/sky-hub.js`, `sw.js`
+- `tests/ai-context-ui.test.mjs`, `tests/ai-evaluation-gate.test.mjs`
+- `tests/automation-contract.test.cjs`, `tests/platform-browser-regression.test.cjs`, `tests/static-regression.test.cjs`, `tests/sw-event-regression.cjs`
+- `docs/NUT-018-IMPLEMENTATION.md`, this changelog
+
+Tests
+
+- Platform: **1116 PASS / 0 FAIL** (including static 30/30, SW 36/36, automation 8/8, browser 48/48).
+- AI Engine: **335 reported controls PASS / 0 FAIL**.
+- Synthetic benchmark: **16 PASS / 0 FAIL**, **0 safety violations**.
+- Today AI integration: **96 PASS / 0 FAIL**.
+- Controlled 50 ms history delay reproduced the calendar race; the corrected test passed 48/48 with and without the delay.
+- `git diff --check` clean. Fresh remote Actions results are recorded on draft PR #1 after the branch update.
+
+Result
+
+Local regression validation passed. Keep PR #1 draft and unmerged. Existing audit warnings (two high-severity transitive development dependencies) and stale standalone Health/editor tests outside the gate remain documented follow-ups.
+
+Commit Message
+
+`fix(ci): stabilize regression baselines and gate Sky startup (NUT-018)`
 
 ---
 

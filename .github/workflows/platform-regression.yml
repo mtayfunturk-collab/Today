@@ -6,9 +6,17 @@ on:
       - "index.html"
       - "storage.js"
       - "health-hub.js"
+      - "version.js"
       - "sw.js"
+      - "manifest.json"
+      - "nutrition-unit-rules.json"
       - "modules/**"
+      - "contracts/**"
       - "Today-AI-Engine/**"
+      - "assets/**"
+      - "vendor/**"
+      - "data/**"
+      - "*.png"
       - "tests/**"
       - "scripts/**"
       - "package.json"
@@ -19,9 +27,17 @@ on:
       - "index.html"
       - "storage.js"
       - "health-hub.js"
+      - "version.js"
       - "sw.js"
+      - "manifest.json"
+      - "nutrition-unit-rules.json"
       - "modules/**"
+      - "contracts/**"
       - "Today-AI-Engine/**"
+      - "assets/**"
+      - "vendor/**"
+      - "data/**"
+      - "*.png"
       - "tests/**"
       - "scripts/**"
       - "package.json"
@@ -52,13 +68,20 @@ jobs:
           cache: npm
 
       - name: Install test dependencies
+        id: install
         run: npm ci --ignore-scripts
 
       - name: Run regression gate
         run: npm test
 
       - name: Run AI Engine tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: node Today-AI-Engine/tests/run-tests.mjs
 
+      - name: Run Today AI integration tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: node tests/run-nut-017.9.cjs
+
       - name: Run AI Engine benchmark
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: node Today-AI-Engine/tests/run-benchmark.mjs

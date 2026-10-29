@@ -45,15 +45,19 @@ function test(name, callback) {
 }
 
 test(
-  "Paket özel ve uygulama sürümüyle uyumlu",
+  "Test paketi özel ve lockfile sürümüyle uyumlu",
   () => {
     assert.equal(
       packageJson.private,
       true
     );
+    assert.match(
+      packageJson.version,
+      /^\d+\.\d+\.\d+$/
+    );
     assert.equal(
       packageJson.version,
-      "2.4.0"
+      lock.packages[""].version
     );
   }
 );
@@ -128,19 +132,35 @@ test(
       workflow,
       /\n  pull_request:\n/
     );
-    [
+    const targets = [
       '"index.html"',
+      '"storage.js"',
+      '"health-hub.js"',
+      '"version.js"',
       '"sw.js"',
+      '"manifest.json"',
+      '"nutrition-unit-rules.json"',
       '"modules/**"',
       '"contracts/**"',
+      '"Today-AI-Engine/**"',
+      '"assets/**"',
+      '"vendor/**"',
+      '"data/**"',
+      '"*.png"',
       '"tests/**"',
+      '"scripts/**"',
       '"package.json"',
-      '"package-lock.json"'
-    ].forEach(target => {
-      assert.ok(
-        workflow.includes(target),
-        target
-      );
+      '"package-lock.json"',
+      '".github/workflows/platform-regression.yml"'
+    ];
+    ["push", "pull_request"].forEach(event => {
+      const paths = workflow.match(new RegExp(
+        `\\n  ${event}:\\n    paths:\\n((?:      - .+\\n)+)`
+      ));
+      assert.ok(paths, `${event} paths`);
+      targets.forEach(target => {
+        assert.ok(paths[1].includes(`- ${target}\n`), `${event}: ${target}`);
+      });
     });
   }
 );
