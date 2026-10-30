@@ -422,7 +422,14 @@ test('Mobile layout fits the viewport and module swipes leave vertical scroll an
   const before=await coreDay(page);
   const gesture=async(dx,dy=0,target='.screen')=>page.evaluate(({dx,dy,target})=>{
     const el=document.querySelector(target), x=dx<0?290:100;
-    const send=(type,end)=>{const t=new Touch({identifier:1,target:el,clientX:x+(end?dx:0),clientY:250+(end?dy:0)});el.dispatchEvent(new TouchEvent(type,{bubbles:true,touches:type==='touchend'?[]:[t],changedTouches:[t]}));};
+    // Synthetic handler contract: WebKit does not expose a constructible Touch.
+    // Physical finger scrolling remains a separate device acceptance check.
+    const send=(type,end)=>{
+      const t={identifier:1,target:el,clientX:x+(end?dx:0),clientY:250+(end?dy:0)};
+      const event=new Event(type,{bubbles:true});
+      Object.defineProperties(event,{touches:{value:type==='touchend'?[]:[t]},changedTouches:{value:[t]}});
+      el.dispatchEvent(event);
+    };
     send('touchstart',false);send('touchmove',true);send('touchend',true);
   },{dx,dy,target});
   await page.locator('#note').blur();

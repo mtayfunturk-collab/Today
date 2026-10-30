@@ -31,6 +31,12 @@ Each entry should include:
 
 ---
 
+## NUT-020.1 — WebKit test sürücüsü düzeltmesi
+
+CI 41116016970 WebKit'te constructible olmayan Touch nedeniyle 25 PASS/1 FAIL verdi. Sentetik gesture testinde Event + salt okunur touches/changedTouches payload kullanıldı; ürün router/CSS ve test beklentileri değiştirilmedi. Gerçek parmak/OS hareketi ayrı cihaz kabulüdür. Yerel hedefli Chromium sonucu ve uzak WebKit CI kanıtı PR #1'de izlenir. Bu dilimde Radio kodu yoktur.
+
+---
+
 ## NUT-020.1 — Mobil yerleşim ve modül kaydırma
 
 App 2.20.1, Core şema 2, foundation-075 / 122 kayıt.
