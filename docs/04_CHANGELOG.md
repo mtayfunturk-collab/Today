@@ -31,6 +31,12 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.1 — Mimari ve uygulanabilirlik
+
+feature/today-radio, taban d10f1eb; ürün sürümü/depolar değişmedi. Modül/mini-player/tek audio, API/HTTPS/CORS/HLS, dış bağlantı gizliliği, önerilen ayrı depolar ve aşamalar raporlandı. İki API HTTP kontrolü 2 PASS/0 FAIL; gerçek yayın/cihaz testi yapılmadı. Taban CI 41116016970: 25 tarayıcı PASS/1 FAIL; WebKit testindeki Touch kurucusu uyumsuzluğu entegrasyon önkoşulu. Mevcut dal, saat/bildirim kodu ve ertelenme kararı korundu. Ayrıntı docs/TODAY-RADIO-IMPLEMENTATION.md.
+
+---
+
 ## NUT-020.1 — Mobil yerleşim ve modül kaydırma
 
 App 2.20.1, Core şema 2, foundation-075 / 122 kayıt.
