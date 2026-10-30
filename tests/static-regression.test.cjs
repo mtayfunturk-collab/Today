@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "90ff92faa57257b324dd7cee776b343a3bfb6b9cf19f3527c231cd37255ee465",
+    "a7e883bcd795a010b32fce087c7fbe74962848d92effad235e23ec6fe2caea10",
   "sw.js":
-    "5d925ae9b7e067521898d188000d1b3e7668628a5ab297c19e5945ec0cde34b8",
+    "08da802371da2ff2ab6a78084ca2026102b805ce93dc06c3f1e24ebf5876a346",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -45,9 +45,9 @@ const expectedProductionHashes = {
   "modules/nutrition-ui.js":
     "66d5811449440e94ba18c24d6e93ebe6cb20d16e40b718fbb9f673dc66a7324e",
   "storage.js":
-    "23876d6946ac54ee030fe749127026708444cd44a33a3280de11a1732e64cf0d",
+    "b2b6d5f25f204bbf59d30a80a94c099c95da6f2e1d6f89220daf0f756dd40f27",
   "version.js":
-    "247f19e8857369a710888bc85ca4ad7483d4acc5aee51965336b5ee33914baff",
+    "9b5fe961368da1d1e1065bc294bc5e24a0ab6aad2d2695b7749a973c8cf9c416",
   "migration.js":
     "8862194d0b240944cc0cab9149fb923416e76498eedd33245b28f0d3ef8dba3d",
   "day-manager.js":
@@ -1234,7 +1234,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-076 ve 124 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-077 ve 124 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1246,7 +1246,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-076"'
+        'const VERSION = "today-v2-foundation-077"'
       )
     );
     assert.ok(shellMatch);

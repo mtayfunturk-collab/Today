@@ -460,27 +460,31 @@ test('Mobile layout fits the viewport and module swipes leave vertical scroll an
   expect(await coreDay(page)).toEqual(before);
 });
 
-test('Radio preview filters example stations without external requests or changing Core',async({page,context},testInfo)=>{
-  await page.setViewportSize({width:393,height:852});const external=[];
+test('Radio catalog requests require consent and preserve Core without contacting a stream',async({page,context},testInfo)=>{
+  await page.setViewportSize({width:393,height:852});const external=[],requests=[];
+  const rows=[
+    {stationuuid:'00000000-0000-4000-8000-000000000001',name:'Test Klasik',url_resolved:'https://stream.example/classical',countrycode:'TR',language:'turkish',tags:'classical',codec:'MP3',hls:0,lastcheckok:1},
+    {stationuuid:'00000000-0000-4000-8000-000000000002',name:'Test Jazz',url_resolved:'https://stream.example/jazz',countrycode:'US',language:'english',tags:'jazz',codec:'AAC',hls:0,lastcheckok:1},
+    {stationuuid:'00000000-0000-4000-8000-000000000003',name:'Test Haber',url_resolved:'https://stream.example/news',countrycode:'TR',language:'turkish',tags:'news',codec:'AAC',hls:1,lastcheckok:1}
+  ];
+  await page.route('https://*.api.radio-browser.info/**',async route=>{
+    const u=new URL(route.request().url());requests.push(u);
+    const p=u.searchParams;const data=u.pathname==='/json/servers'?[{name:'de1.api.radio-browser.info'}]:rows.filter(r=>(!p.get('countrycode')||r.countrycode===p.get('countrycode'))&&(!p.get('tag')||r.tags===p.get('tag'))&&(!p.get('name')||r.name.includes(p.get('name'))));
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});
+  });
   context.on('request',r=>{if(new URL(r.url()).hostname!=='127.0.0.1')external.push(r.url());});
   await open(page);await saveCore(page);const before=await coreDay(page);
-  await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
-  await page.locator('#btnModuleRadio').click();
-  await expect(page.locator('#radioTitle')).toBeVisible();
-  const card=await page.locator('.screen').boundingBox();expect(card.y).toBeLessThan(30);
-  await expect(page.locator('#radioStatus')).toContainText('Henüz arama yapılmadı');
-  await page.locator('#btnRadioSearch').click();
-  await expect(page.locator('#radioResults li')).toHaveCount(3);
-  await page.locator('#radioCountry').selectOption('TR');
-  await page.locator('#radioGenre').selectOption('news');
-  await page.locator('#btnRadioSearch').click();
-  await expect(page.locator('#radioResults li')).toHaveCount(1);
-  await expect(page.locator('#radioResults')).toContainText('Örnek Haber');
-  await page.locator('#radioQuery').fill('olmayan');await page.locator('#btnRadioSearch').click();
-  await expect(page.locator('#radioStatus')).toContainText('bulunamadı');
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.screenshot({path:testInfo.outputPath('radio-preview.png'),fullPage:true});
-  await page.locator('#btnRadioBack').click();
-  await expect(page.locator('#modulesTitle')).toBeVisible();
-  expect(await coreDay(page)).toEqual(before);expect(external).toEqual([]);
+  await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));await page.locator('#btnModuleRadio').click();
+  await expect(page.locator('#radioTitle')).toBeVisible();const card=await page.locator('.screen').boundingBox();expect(card.y).toBeLessThan(30);
+  await expect(page.locator('#radioStatus')).toContainText('Henüz arama yapılmadı');expect(requests).toHaveLength(0);
+  await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioStatus')).toContainText('izin');expect(requests).toHaveLength(0);
+  await page.locator('#radioDirectoryConsent').check();await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioResults li')).toHaveCount(3);
+  await expect(page.locator('#radioResults')).toContainText('Canlı yayın doğrulanmadı');
+  await page.locator('#radioCountry').selectOption('TR');await page.locator('#radioGenre').selectOption('news');await page.locator('#btnRadioSearch').click();
+  await expect(page.locator('#radioResults li')).toHaveCount(1);await expect(page.locator('#radioResults')).toContainText('Test Haber');
+  await page.locator('#radioQuery').fill('olmayan');await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioStatus')).toContainText('bulunamadı');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:testInfo.outputPath('radio-catalog.png'),fullPage:true});
+  await page.locator('#btnRadioBack').click();await expect(page.locator('#modulesTitle')).toBeVisible();await page.locator('#btnModuleRadio').click();await expect(page.locator('#radioDirectoryConsent')).not.toBeChecked();
+  expect(await coreDay(page)).toEqual(before);expect(requests.filter(u=>u.pathname.includes('/stations/'))).toHaveLength(3);
+  expect(external.every(u=>new URL(u).hostname.endsWith('.api.radio-browser.info'))).toBe(true);expect(requests.every(u=>!u.href.includes('Sentetik'))).toBe(true);
 });

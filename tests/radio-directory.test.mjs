@@ -23,4 +23,20 @@ await check('rows beyond requested count are rejected',async()=>{const f=fixture
 await check('timeout covers a fetch which ignores abort',async()=>{const f=fixture(()=>new Promise(()=>{}),{timeoutMs:5});assert.equal((await f.directory.search({userConfirmed:true})).error,'directory-timeout');});
 await check('explicit cancel prevents late results',async()=>{let release;const f=fixture(()=>new Promise(r=>{release=r;}));const pending=f.directory.search({userConfirmed:true});f.directory.cancel();release(response([sample]));assert.equal((await pending).error,'cancelled');});
 await check('new search supersedes old request even if old provider ignores abort',async()=>{let release,n=0;const f=fixture(()=>++n===1?new Promise(r=>{release=r;}):response([]));const old=f.directory.search({userConfirmed:true,query:'old'});const next=await f.directory.search({userConfirmed:true,query:'new'});release(response([sample]));assert.equal(next.ok,true);assert.equal((await old).error,'cancelled');});
+await check('live discovery is lazy and deduplicates only trusted mirror hostnames',async()=>{
+  const f=fixture(url=>url.includes('/json/servers')?response([{name:'de1.api.radio-browser.info'},{name:'de1.api.radio-browser.info'},{name:'evil.example'},{name:'user@evil.example'},{ip:'127.0.0.1'}]):response([sample]),{discover:true});
+  assert.equal(f.calls.length,0);const result=await f.directory.search({userConfirmed:true});assert.equal(result.ok,true);assert.equal(f.calls.length,2);
+  assert.equal(new URL(f.calls[1][0]).hostname,'de1.api.radio-browser.info');assert.equal(new URL(f.calls[1][0]).searchParams.get('is_https'),'true');
+});
+await check('untrusted discovery data falls back to explicit bootstrap only',async()=>{
+ const f=fixture(url=>url.includes('/json/servers')?response([{name:'evil.example'}]):response([sample]),{discover:true});
+ assert.equal((await f.directory.search({userConfirmed:true})).ok,true);assert(f.calls.every(([url])=>new URL(url).hostname==='de1.api.radio-browser.info'));
+});
+await check('no discovery request is made before explicit directory consent',async()=>{
+ const f=fixture(()=>response([]),{discover:true});assert.equal((await f.directory.search()).ok,false);assert.equal(f.calls.length,0);
+});
+await check('discovery cannot consume unbounded list data or bypass total timeout',async()=>{
+ const f=fixture(()=>new Promise(()=>{}),{discover:true,timeoutMs:5});assert.equal((await f.directory.search({userConfirmed:true})).error,'directory-timeout');
+ const g=fixture(url=>url.includes('/json/servers')?response(Array.from({length:101},()=>({name:'de1.api.radio-browser.info'}))):response([]),{discover:true});assert.equal((await g.directory.search({userConfirmed:true})).ok,true);assert.equal(g.calls.length,2);
+});
 console.log(`NUT-RADIO Directory: ${passed}/${passed} başarılı`);

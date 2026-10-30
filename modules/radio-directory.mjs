@@ -20,7 +20,20 @@ export function normalizeStation(row){
 function serverUrl(value){
   try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&u.pathname==='/'&&!u.search&&!u.hash&&/^[a-z0-9-]+\.api\.radio-browser\.info$/.test(u.hostname)?u.origin:null;}catch{return null;}
 }
-export function createRadioDirectory({fetcher=globalThis.fetch,servers=[],timeoutMs=8000}={}){
+async function fetchJson(fetcher,url,signal){
+  const response=await fetcher(url,{signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store',redirect:'error',headers:{Accept:'application/json'}});
+  if(!response.ok||!/^application\/json\b/i.test(response.headers.get('content-type')||''))throw new Error('directory-response');
+  const reader=response.body?.getReader();if(!reader)throw new Error('directory-response');
+  const chunks=[];let size=0;
+  try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>524288)throw new Error('directory-response');chunks.push(value);}}
+  catch(error){await reader.cancel().catch(()=>{});throw error;}
+  const bytes=new Uint8Array(size);let at=0;for(const chunk of chunks){bytes.set(chunk,at);at+=chunk.byteLength;}
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+export function createLiveRadioDirectory(options={}){
+  return createRadioDirectory({servers:['https://de1.api.radio-browser.info/'],discover:true,...options});
+}
+export function createRadioDirectory({fetcher=globalThis.fetch,servers=[],timeoutMs=8000,discover=false}={}){
   const mirrors=[...new Set(servers.map(serverUrl))];
   if(!mirrors.length||mirrors.includes(null)||mirrors.length>3||typeof fetcher!=='function'||!Number.isFinite(timeoutMs)||timeoutMs<1||timeoutMs>30000)throw new TypeError('invalid-directory-configuration');
   let active=null,epoch=0;
@@ -32,28 +45,31 @@ export function createRadioDirectory({fetcher=globalThis.fetch,servers=[],timeou
     if(q===null||lang===null||tag===null||typeof countryCode!=='string'||(countryCode!==''&&!/^[A-Z]{2}$/.test(countryCode))||!Number.isInteger(limit)||limit<1||limit>100||!Number.isInteger(offset)||offset<0||offset>10000)return {ok:false,error:'invalid-search'};
     const controller=new AbortController();active=controller;let timedOut=false;
     const timer=setTimeout(()=>{timedOut=true;controller.abort();},timeoutMs);
-    const params=new URLSearchParams({hidebroken:'true',limit:String(limit),offset:String(offset)});
+    const params=new URLSearchParams({hidebroken:'true',limit:String(limit),offset:String(offset),is_https:'true'});
     for(const [key,value]of Object.entries({name:q,countrycode:countryCode,language:lang,tag}))if(value)params.set(key,value);
     // Race the entire body operation as well, even if a mock/server ignores abort.
     let onAbort;
     const aborted=new Promise((_,reject)=>{onAbort=()=>reject(new Error('aborted'));controller.signal.addEventListener('abort',onAbort,{once:true});});
     try{
-      for(const mirror of mirrors){
+      let candidates=mirrors;
+      if(discover){
+        for(const bootstrap of mirrors){
+          try{
+            const entries=await Promise.race([fetchJson(fetcher,`${bootstrap}/json/servers`,controller.signal),aborted]);
+            if(!Array.isArray(entries)||entries.length>100)throw new Error('invalid-mirrors');
+            const found=[...new Set(entries.map(row=>typeof row?.name==='string'?serverUrl(`https://${row.name}/`):null).filter(Boolean))];
+            if(!found.length)throw new Error('invalid-mirrors');
+            // Randomize only validated names; do not trust API-supplied IPs/URLs.
+            const start=Math.floor(Math.random()*found.length);
+            candidates=[...found.slice(start),...found.slice(0,start)].slice(0,3);break;
+          }catch{if(controller.signal.aborted)return {ok:false,error:timedOut?'directory-timeout':'cancelled'};}
+        }
+      }
+      for(const mirror of candidates){
         try{
-          const operation=(async()=>{
-            const response=await fetcher(`${mirror}/json/stations/search?${params}`,{signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store',redirect:'error',headers:{Accept:'application/json'}});
-            if(!response.ok)throw new Error('http');
-            const mime=response.headers.get('content-type')||'';
-            if(!/^application\/json\b/i.test(mime))throw new Error('payload');
-            // Bound streamed responses before JSON parsing (Content-Length is optional).
-            const reader=response.body?.getReader();if(!reader)throw new Error('payload');
-            const chunks=[];let size=0;
-            try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>524288)throw new Error('payload');chunks.push(value);}}
-            catch(error){await reader.cancel().catch(()=>{});throw error;}
-            const bytes=new Uint8Array(size);let at=0;for(const chunk of chunks){bytes.set(chunk,at);at+=chunk.byteLength;}
-            const rows=JSON.parse(new TextDecoder().decode(bytes));if(!Array.isArray(rows)||rows.length>limit)throw new Error('payload');
-            return rows;
-          })();
+          const operation=fetchJson(fetcher,`${mirror}/json/stations/search?${params}`,controller.signal).then(rows=>{
+            if(!Array.isArray(rows)||rows.length>limit)throw new Error('payload');return rows;
+          });
           const rows=await Promise.race([operation,aborted]);
           if(revision!==epoch||controller.signal.aborted)return {ok:false,error:timedOut?'directory-timeout':'cancelled'};
           const stations=[],ids=new Set();let rejected=0;

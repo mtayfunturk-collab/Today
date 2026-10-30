@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.21.0
+Application Version: 2.21.1
 Data Schema: 2
-Active Shell: today-v2-foundation-076
+Active Shell: today-v2-foundation-077
 Last Updated: 30 October 2026
 
 ---
@@ -447,4 +447,4 @@ Phase 2 result: **294/294 successful, 0 failures**. GitHub Pages deployment comp
 
 Tercihen Web Locks kullanılır. Yalnız üretilen tek WebView native kabuk açık `singleContext` yeteneğiyle, Web Locks yoksa ortak modül kilidini kullanabilir. İkinci WebView/arka plan JS yazıcısı eklenmeden önce native ortak kilit gerekir. PWA'da kilitsiz yazma kapalıdır. Ayrıntı: `NUT-019.3-IMPLEMENTATION.md`.
 
-Radio önizlemesi: radio-directory.mjs + radio-ui.mjs; ayrı radio route/Registry kaydı, yedinci fiziksel görünüm. Örnek katalog gerçek fetch yapmaz; tek merkezli canlı audio henüz eklenmedi. Core/Health/AI store ve şemaları değişmez. Ayrıntı TODAY-RADIO-IMPLEMENTATION.md.
+Radio önizlemesi: radio-directory.mjs + radio-ui.mjs; ayrı radio route/Registry kaydı, yedinci fiziksel görünüm. Katalog yalnız oturumluk açık izin ve yükle eylemiyle Radio Browser keşif/arama isteği yapar; tek merkezli canlı audio henüz eklenmedi. Core/Health/AI store ve şemaları değişmez. Ayrıntı TODAY-RADIO-IMPLEMENTATION.md.

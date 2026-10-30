@@ -31,6 +31,18 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.2c — İzinli gerçek istasyon kataloğu
+
+App 2.21.1; Core şema 2; foundation-077 / 124 kayıt.
+
+- Örnek katalog yerine Radio Browser bağlantısı; ilk açılışta istek yok. IP/arama/filtre aktarımı açıkça belirtilen, varsayılan boş oturumluk izin ve yükle eylemi gerekir. İzin kaldırma/rota çıkışı istek ve sonuçları temizler; kalıcı tercih/depo yoktur.
+- HTTPS sunucu keşfi yalnız sağlayıcı hostname'lerini kabul eder, IP alanlarını kullanmaz; doğrulanmış en çok üç ayna, tek timeout bütçesi, bootstrap fallback. Bugünkü resmî keşif iki IP kaydında aynı de1 hostname'ini verdi; birden çok bağımsız canlı sunucu varmış gibi raporlanmadı. Arama is_https=true; DTO son URL'yi ayrıca doğrular.
+- 30'luk sayfalama, artan offset, filtrede sıfırlama, ayıklanan kayıt açıklaması ve doğrulanmamış yayın etiketi. Logo, click/oy, stream, audio, favori/geçmiş/AI isteği yok.
+- Directory23 ve UI12 hedefli test, birleşik300 PASS; platform1161, Engine403, benchmark16/0ihlal ve native15 geçti. Chromium14/14 PASS; uzak CI kanıtı PR #2'de tutulur. İki resmî API HTTP200/CORS kontrolü yapıldı; radyo sesi dinlenmedi. İlk E2E'nin bulduğu erken rota değişiminde yanlış bağlantı kapalı mesajı düzeltildi ve regresyon testi eklendi.
+- Önceki CI41124365909 success olarak doğrulandı. Gerçek iPhone/Windows cihaz kabulü veya site yayını yapılmadı.
+
+---
+
 ## NUT-RADIO.2b — Radio tasarım önizlemesi
 
 App 2.21.0; Core şema 2; foundation-076 / 124 kabuk kaydı.
