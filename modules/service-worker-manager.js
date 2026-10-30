@@ -207,7 +207,7 @@
       targetDocument.createElement("h2");
     title.id = "todayUpdateTitle";
     title.textContent =
-      "Yeni sürüm hazır";
+      "Today Yenilik";
     title.style.cssText = [
       "margin:0",
       "font-size:18px",
@@ -336,7 +336,7 @@
     }
 
     title.textContent =
-      "Yeni sürüm hazır";
+      "Today Yenilik";
     text.textContent =
       "Today’in yeni sürümü indirildi. " +
       "Güncelleme, sen onayladığında uygulanacak.";

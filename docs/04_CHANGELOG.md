@@ -31,6 +31,19 @@ Each entry should include:
 
 ---
 
+## NUT-019.3 — Onaylı yerel bildirim ve sınırlı gözlem arşivi
+
+Tarih: 30 Ekim 2026. App 2.20.0; Core şema 2; foundation-074 / 122 kabuk kaydı.
+
+- Kullanıcı onaylı ayrı today_ai_delivery_v1 deposu, 7 gözlem/7 gün geçerlilik/sonraki erişimde temizlik, varsayılan kapalı tercihler ve ayrı UI/OS izni uygulandı. Ham not/olay/cihaz kimliği arşivlenmez; mevcut Core/Health şemaları korunur.
+- Yerel native SDK 8.3.1, rezervasyon/tekilleştirme/sessiz saat/DST/kota/iptal/açma ve Ayarlar/AI arşivi eklendi. OS temizliği hatasında da süre dolan sağlık özeti önce silinir; yalnız cleanup ID'leri kalır. Exact alarm kapalıdır.
+- Yalnız hazır gözlem için aynı gün en çok bir AI mesajı; kurulu yüksek bundle sürümü sonraki açılışta Today Yenilik. PWA telefon push'u, kapalı uygulamada AI üretimi, mağaza sürüm sorgusu yoktur.
+- Testler: platform 1161, Engine 403, entegrasyon 265, benchmark 16, native 15, Chromium 12 PASS; FAIL 0, audit 0, benchmark ihlal 0. Uzak CI/derleme/WebKit kanıtı SHA ile PR #1'de; fiziksel cihaz teslimi yapılmadı.
+- Dosyalar: dört bildirim modülü/testi; AI UI olayı; native bootstrap/izin/lock; E2E, sürüm/SW referansları ve belgeler. Ayrıntı docs/NUT-019.3-IMPLEMENTATION.md.
+- Commit: feat: add opt-in local observation notifications (NUT-019.3).
+
+---
+
 ## NUT-019.2.2 — Saat verisinden ayrı onaylı AI gözlemi ve cihaz paketi
 
 Tarih: 30 Ekim 2026. App 2.19.0; Core şema 2; foundation-073 / 118 kabuk kaydı.

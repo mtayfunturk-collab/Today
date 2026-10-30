@@ -58,10 +58,16 @@ Android CI, derleme ve birleşmiş manifest doğrulaması geçtikten sonra yaln�
 
 Native WebView origin/deposu mevcut tarayıcı/PWA profilinden ayrıdır. Mevcut PWA kayıtları kendiliğinden taşınmaz. Bu paket otomatik migration, mevcut kullanıcı verisini silme veya yeni kalıcı sağlık şeması içermez. Saatten okunan özetlerin bu bağlantı dilimindeki hedefi açık oturum belleğinde önizlemedir; güncel Health/AI kaynak/onay davranışının sınırı ana uygulama raporunda açıklanır. Üretici Mi Fitness/Zepp Life bulutu Today'in cihaz içi işleme sınırından ayrıdır; kullanıcı adına üretici bulutu açılmaz.
 
-Telefon bildirimi taşıyıcısı, arka plan AI veya push sunucusu bu paketle kurulmaz. Mevcut bildirim içerikleri ayrı sözleşmedir. Sağlık/native SDK kodu eklemek gerçek cihaz izinlerinin verilmiş olduğu anlamına gelmez.
+NUT-019.3 ile @capacitor/local-notifications 8.3.1 üzerinden izinli yerel bildirim taşıyıcısı vardır. Arka plan AI veya push sunucusu yoktur. Sağlık/native SDK kodu eklemek gerçek cihaz izinlerinin verilmiş olduğu anlamına gelmez.
 
 ## Bağımlılık ve lisans kaydı
 
-Capacitor core/CLI/Android/iOS **8.6.0** (MIT), Capgo Capacitor Health **8.11.13** (**MPL-2.0**) ve esbuild **0.28.2** (MIT) tam sürümle kilitlenir. Plugin kaynakları değiştirilmez. Health plugin lisansı native web paketine `health-plugin-LICENSE.txt` olarak eklenir; kaynak deposu [Cap-go/capacitor-health](https://github.com/Cap-go/capacitor-health). MPL bildirimleri ve kaynak erişimi dağıtım paketinde korunmalıdır; mağaza dağıtımı ayrıca incelenir. Capgo hesabı, ücretli güncelleme hizmeti, updater veya API anahtarı eklenmez.
+Capacitor core/CLI/Android/iOS **8.6.0** (MIT), Capgo Capacitor Health **8.11.13** (**MPL-2.0**) Local Notifications **8.3.1** (MIT) ve esbuild **0.28.2** (MIT) tam sürümle kilitlenir. Plugin kaynakları değiştirilmez. Health plugin lisansı native web paketine `health-plugin-LICENSE.txt` olarak eklenir; kaynak deposu [Cap-go/capacitor-health](https://github.com/Cap-go/capacitor-health). MPL bildirimleri ve kaynak erişimi dağıtım paketinde korunmalıdır; mağaza dağıtımı ayrıca incelenir. Capgo hesabı, ücretli güncelleme hizmeti, updater veya API anahtarı eklenmez.
 
 İşletim sistemi API kaynakları: [HealthKit](https://developer.apple.com/documentation/healthkit/setting-up-healthkit), [Health Connect](https://developer.android.com/health-and-fitness/health-connect/get-started), [Capacitor ortam gereksinimleri](https://capacitorjs.com/docs/getting-started/environment-setup).
+
+## Bildirim önizlemesi
+
+Ayarlar/AI içinde bildirimler varsayılan kapalıdır. Ayrı saklama onayı, seçilen saat ve OS izni gerekir. AI bildirimi yalnız önceden üretilen gözlem içindir; saat geçtiyse ertesi güne yeni gözlem mesajı kurulmaz. OS yükü yalnız sabit metin + opak gözlem kimliği/sürüm taşır. Android POST_NOTIFICATIONS ve reboot restore receiver korunur; SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM manifestten kaldırılır, SDK exact bayrakları false olur. Kesin saat/kapalı telefonda teslim garanti edilmez.
+
+Güncelleme kanalı ilk etkinleştirmede sürümü başlangıç olarak kaydeder. Sonraki gerçek yüksek kurulu bundle sürümü uygulama açılışında bir kez `Today Yenilik` planlayabilir; mağazada güncelleme bulunması veya uygulama kapalıyken mağaza kontrolü değildir. PWA Service Worker güncelleme duyurusu uygulama içindedir. Cihaz kabul adımları `DEVICE-VALIDATION.md` içinde.

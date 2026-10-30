@@ -835,7 +835,7 @@ async function test(name, callback) {
           .getElementById(
             "todayUpdateTitle"
           ).textContent,
-        "Yeni sürüm hazır"
+        "Today Yenilik"
       );
       assert.match(
         runtime.document

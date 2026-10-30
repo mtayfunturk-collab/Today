@@ -63,6 +63,20 @@ export function narrowAndroidManifest(appXml, pluginXml) {
   return xml.replace(/(<manifest\b[^>]*>)/, `$1\n    ${lines.join('\n    ')}`);
 }
 
+export function withInexactNotifications(appXml, pluginXml) {
+  if (!pluginXml.includes('android.permission.POST_NOTIFICATIONS') ||
+      !pluginXml.includes('LocalNotificationRestoreReceiver') || !pluginXml.includes('android.intent.action.BOOT_COMPLETED')) {
+    throw new Error('Pinned local notifications permission/restore contract is missing');
+  }
+  const start = '<!-- TODAY_INEXACT_NOTIFICATIONS_START -->';
+  const end = '<!-- TODAY_INEXACT_NOTIFICATIONS_END -->';
+  let xml = appXml.replace(new RegExp(`\\s*${start}[\\s\\S]*?${end}`), '');
+  if (!/\bxmlns:tools=/.test(xml)) xml = xml.replace('<manifest', '<manifest xmlns:tools="http://schemas.android.com/tools"');
+  if (!/<manifest\b/.test(xml)) throw new Error('Android app manifest not found');
+  const block = `${start}\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:node="remove" />\n    ${end}`;
+  return xml.replace(/(<manifest\b[^>]*>)/, `$1\n    ${block}`);
+}
+
 function xmlText(value) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -83,7 +97,11 @@ export async function configurePlatform(platform) {
     const manifest = path.join(NATIVE_ROOT, 'android/app/src/main/AndroidManifest.xml');
     const variables = path.join(NATIVE_ROOT, 'android/variables.gradle');
     const pluginManifest = path.join(NATIVE_ROOT, 'node_modules/@capgo/capacitor-health/android/src/main/AndroidManifest.xml');
-    const preparedManifest = withAndroidPrivateBackup(narrowAndroidManifest(await readFile(manifest, 'utf8'), await readFile(pluginManifest, 'utf8')));
+    const notificationManifest = path.join(NATIVE_ROOT, 'node_modules/@capacitor/local-notifications/android/src/main/AndroidManifest.xml');
+    const preparedManifest = withInexactNotifications(
+      withAndroidPrivateBackup(narrowAndroidManifest(await readFile(manifest, 'utf8'), await readFile(pluginManifest, 'utf8'))),
+      await readFile(notificationManifest, 'utf8')
+    );
     const preparedVariables = withAndroidMinimumSdk(await readFile(variables, 'utf8'));
     await writeFile(manifest, preparedManifest);
     await writeFile(variables, preparedVariables);

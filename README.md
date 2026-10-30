@@ -4,7 +4,7 @@ Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Eng
 
 Health → Sağlık → Kişisel Sağlık Verileri, native SDK bulunan telefonda seçilen son 1/7/30 günlük uyku/adım/antrenman özetini açık onayla geçici olarak incelemek içindir. Normal PWA'da erişim olmadığı açıklanır. [Native önizleme kurulumu](native/README.md) aynı web uygulamasını kullanır; PWA verisini otomatik taşımaz. [Teslim kapsamı, test kanıtı ve kalan cihaz/bildirim işleri](docs/NUT-019.2-IMPLEMENTATION.md).
 
-Son saat önizlemesi, Ayarlar/AI içindeki ayrı ve varsayılan kapalı saat türleri seçilip yeniden onaylandığında gözleme katılabilir. Takvim günü uykusu ve antrenman oturum süresi manuel kayıtlardan ayrı kalır; yeni bir kalıcı sağlık/AI deposu oluşturulmaz. [Health–AI dilimi](docs/NUT-019.2.2-IMPLEMENTATION.md), [Android APK ve cihaz kabulü](native/DEVICE-VALIDATION.md), [henüz uygulanmamış bildirim depo önerisi](docs/NUT-019.3-NOTIFICATION-DESIGN.md).
+Son saat önizlemesi, Ayarlar/AI içindeki ayrı ve varsayılan kapalı saat türleri seçilip yeniden onaylandığında gözleme katılabilir. Takvim günü uykusu ve antrenman oturum süresi manuel kayıtlardan ayrı kalır; yeni bir kalıcı sağlık/AI deposu oluşturulmaz. [Health–AI dilimi](docs/NUT-019.2.2-IMPLEMENTATION.md), [Android APK ve cihaz kabulü](native/DEVICE-VALIDATION.md), [onaylı bildirim tasarımı](docs/NUT-019.3-NOTIFICATION-DESIGN.md).
 
 ## Geliştirme ve doğrulama
 
@@ -37,3 +37,5 @@ Playwright kendi yalnız-loopback test sunucusunu açar, her testte izole profil
 Yerel tarayıcı verisi cihaz kaybı veya tarayıcı temizliğiyle kaybolabilir. PWA cache'i veri yedeği değildir; Core CSV tüm modüllerin tam yedeği değildir. Gerçek kullanıcı pilotundan önce yedek/geri yükleme kapsamı ve fiziksel cihaz akışları doğrulanmalıdır. Kullanıcı verisi/şema değişikliği, yeni model sağlayıcısı, dış aktarım ve mağaza gönderimi ayrı açık onay gerektirir.
 
 Güncel teknik sonuçlar: [backlog](docs/10_TECHNICAL_BACKLOG.md), [changelog](docs/04_CHANGELOG.md) ve NUT-018.x raporları. Geçmiş test sayıları yeni çalıştırma yerine geçmez.
+
+Ayarlar/AI içindeki bildirimler varsayılan kapalıdır. Destekleyen native kabukta ayrı saklama onayı ve OS izniyle, önceden hazırlanmış bir gözlem için aynı gün en fazla bir yerel bildirim planlanır. En çok 7 türetilmiş gözlem, 7 gün geçerlidir; süre dolanlar sonraki erişimde temizlenir. Yeni `today_ai_delivery_v1` anahtarı kullanıcı tarafından onaylandı; mevcut Core/Health depoları değişmez. Normal PWA'da telefon bildirimi/Web Push bağlı değildir. [NUT-019.3 uygulama durumu ve sınırlar](docs/NUT-019.3-IMPLEMENTATION.md).

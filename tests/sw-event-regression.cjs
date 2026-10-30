@@ -4,7 +4,7 @@ const vm = require("node:vm");
 const SOURCE_PATH = "sw.js";
 const ORIGIN = "https://today.test";
 const ACTIVE_CACHE =
-  "today-cache-today-v2-foundation-073";
+  "today-cache-today-v2-foundation-074";
 const OLD_CACHE =
   "today-cache-today-v2-foundation-019";
 const FOREIGN_CACHE = "unrelated-cache";
@@ -352,13 +352,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Cache sürümü foundation-073",
+    "Cache sürümü foundation-074",
     async () => {
       assert(
         source.includes(
-          'const VERSION = "today-v2-foundation-073"'
+          'const VERSION = "today-v2-foundation-074"'
         ),
-        "foundation-073 sürüm etiketi yok."
+        "foundation-074 sürüm etiketi yok."
       );
     }
   );
@@ -441,10 +441,10 @@ function assert(condition, message) {
   );
 
   await test(
-    "Install 118 uygulama kabuğu isteği yapıyor",
+    "Install 122 uygulama kabuğu isteği yapıyor",
     async () => {
       assert(
-        runtime.fetchCalls.length === 118,
+        runtime.fetchCalls.length === 122,
         `${runtime.fetchCalls.length} istek yapıldı.`
       );
     }
@@ -463,13 +463,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Install 118 dosyayı aktif cache'e yazıyor",
+    "Install 122 dosyayı aktif cache'e yazıyor",
     async () => {
       const cache =
         await runtime.caches.open(ACTIVE_CACHE);
       const keys = await cache.keys();
       assert(
-        keys.length === 118,
+        keys.length === 122,
         `${keys.length} cache girdisi var.`
       );
     }

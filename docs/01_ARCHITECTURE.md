@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.19.0
+Application Version: 2.20.0
 Data Schema: 2
-Active Shell: today-v2-foundation-073
+Active Shell: today-v2-foundation-074
 Last Updated: 30 October 2026
 
 ---
@@ -440,3 +440,9 @@ Phase 2 result: **294/294 successful, 0 failures**. GitHub Pages deployment comp
 - Before every new phase, review the current version, commit, CHANGELOG and backlog.
 
 > **Faz 2 geliştirmeleri tamamlandı. GitHub Actions üzerinde test edildi. Sonuç: Başarılı.**
+
+## NUT-019.3 yerel bildirim sınırı
+
+`notification-store` yalnız onaylı `today_ai_delivery_v1` anahtarını yönetir; mevcut şema 2 değişmez. `notification-service` rezervasyon/tekilleştirme, 7 günlük arşiv, sessiz saat ve izin denetimini; `native-notification-adapter` generic OS içeriğini; `notification-ui` açık etkinleştirme/arşiv açma/sıfırlamayı sağlar. AI tamamlanma olayı yalnız taze, onaylı ve gerçekten üretilen gözlemi aktarır. Ham kaynak/not veya cihaz kimliği arşive/OS yüküne yazılmaz. Arka plan AI/Health okuması, push sunucusu ve platformlar arası senkronizasyon yoktur.
+
+Tercihen Web Locks kullanılır. Yalnız üretilen tek WebView native kabuk açık `singleContext` yeteneğiyle, Web Locks yoksa ortak modül kilidini kullanabilir. İkinci WebView/arka plan JS yazıcısı eklenmeden önce native ortak kilit gerekir. PWA'da kilitsiz yazma kapalıdır. Ayrıntı: `NUT-019.3-IMPLEMENTATION.md`.

@@ -1172,6 +1172,11 @@ function addWindowObservationControls(root) {
       caveat.textContent = report.uncertainty.join(" ") + (report.omittedEvents || built.sourceWarnings?.length
         ? " Bazı kayıtlar kaynak, kapsam veya kayıt sınırı nedeniyle dahil edilmedi. Ekran bütün kayıtların eksiksiz özeti olmayabilir." : "");
       output.append(caveat);
+      if (report.status === "observed") root.ownerDocument.defaultView?.dispatchEvent(
+        new root.ownerDocument.defaultView.CustomEvent("today:ai-observation-ready", {
+          detail: Object.freeze({ report, requestedAt, userConfirmed: true })
+        })
+      );
     } catch { if (epoch === requestEpoch) output.textContent = "İnceleme tamamlanamadı; kayıtların değiştirilmedi."; }
     finally { button.disabled = false; if (epoch === requestEpoch && confirmation) confirmation.checked = false; }
   });

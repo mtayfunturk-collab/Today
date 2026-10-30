@@ -14,7 +14,11 @@ const GROUPS = Object.freeze([
   "tests/wearable-read-adapter.test.mjs",
   "tests/wearable-native-provider.test.mjs",
   "tests/health-wearable-ui.test.mjs",
-  "tests/wearable-context-session.test.mjs"
+  "tests/wearable-context-session.test.mjs",
+  "tests/notification-store.test.mjs",
+  "tests/native-notification-adapter.test.mjs",
+  "tests/notification-service.test.mjs",
+  "tests/notification-ui.test.mjs"
 ]);
 
 let passed = 0;
@@ -31,7 +35,7 @@ for (const file of GROUPS) {
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
   process.stdout.write(`\n=== ${file} ===\n${output}`);
   const summary = output.match(
-    /NUT-(?:017\.(?:2|3|4|5|6|7|8|9)(?:\.[12])?|019\.[12]) [^:]+: (\d+)\/(\d+) başarılı/
+    /NUT-(?:017\.(?:2|3|4|5|6|7|8|9)(?:\.[12])?|019\.[123]) [^:]+: (\d+)\/(\d+) başarılı/
   );
   if (!summary || result.status !== 0 || summary[1] !== summary[2]) {
     failures.push({ file, status: result.status });

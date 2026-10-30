@@ -347,3 +347,71 @@ test("Consented wearable AI uses temporary steps and clears results when Health 
   await expect(page.locator('#aiConsentConfirm')).not.toBeChecked();
   expect(await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])))).toEqual(before);
 });
+
+test('PWA notification preferences default off without creating an archive', async ({ page }) => {
+  await open(page);
+  await page.evaluate(() => window.TodayRouter.navigate('settings', { moveFocus: false }));
+  await expect(page.locator('#notificationAvailability')).toContainText('telefon bildirimi planlanamıyor');
+  await expect(page.locator('#notificationAiEnabled')).not.toBeChecked();
+  await expect(page.locator('#notificationAiEnabled')).toBeDisabled();
+  await expect(page.locator('#notificationUpdateEnabled')).not.toBeChecked();
+  expect(await page.evaluate(() => localStorage.getItem('today_ai_delivery_v1'))).toBeNull();
+});
+
+test('Synthetic notification bridge archives a consented observation, opens after reload and resets only its own data', async ({ page }, testInfo) => {
+  testInfo.annotations.push({ type: 'provider', description: 'synthetic local-notification bridge; no physical OS delivery' });
+  await page.clock.setFixedTime(new Date('2026-10-30T09:00:00Z'));
+  await page.addInitScript(() => {
+    const read = () => JSON.parse(sessionStorage.getItem('__syntheticNotificationQueue') || '[]');
+    const write = rows => sessionStorage.setItem('__syntheticNotificationQueue', JSON.stringify(rows));
+    window.__permissionRequests = 0;
+    const permission = () => sessionStorage.getItem('__syntheticNotificationPermission') || 'prompt';
+    window.TodayNativeNotifications = { isNative: true, platform: 'android', pluginAvailable: true, singleContext: true,
+      notifications: {
+        checkPermissions: async () => ({ display: permission() }),
+        requestPermissions: async () => { window.__permissionRequests++; sessionStorage.setItem('__syntheticNotificationPermission','granted'); return { display: 'granted' }; },
+        createChannel: async () => {},
+        schedule: async ({ notifications }) => { write([...read(), ...notifications]); return { notifications: notifications.map(({ id }) => ({ id })) }; },
+        getPending: async () => ({ notifications: read() }),
+        cancel: async ({ notifications }) => { write(read().filter(row => !notifications.some(item => item.id === row.id))); },
+        getDeliveredNotifications: async () => ({ notifications: [] }),
+        removeDeliveredNotifications: async () => {},
+        addListener: async (name, callback) => { window.__notificationAction = callback; return { remove() {} }; }
+      }
+    };
+  });
+  await open(page); await saveCore(page); const before = await coreDay(page);
+  await page.evaluate(() => { localStorage.setItem('__unrelatedSentinel','keep'); window.TodayRouter.navigate('settings', { moveFocus: false }); });
+  await expect(page.locator('#notificationAvailability')).toContainText('kullanılabilir');
+  expect(await page.evaluate(() => localStorage.getItem('today_ai_delivery_v1'))).toBeNull();
+  expect(await page.evaluate(() => window.__permissionRequests)).toBe(0);
+  await page.locator('#notificationAiEnabled').check();
+  await page.locator('#notificationTime').fill('12:05');
+  await page.locator('#notificationArchiveConsent').check();
+  await page.locator('#btnNotificationApply').click();
+  await expect(page.locator('#notificationStatus')).toContainText('Tercihler kaydedildi');
+  expect(await page.evaluate(() => window.__permissionRequests)).toBe(1);
+  await page.locator('#aiWindowDays').selectOption('1');
+  await page.locator('#aiConsentConfirm').check();
+  await page.locator('#btnAiWindowObserve').click();
+  await expect(page.locator('#notificationStatus')).toContainText('bildirim planlandı');
+  const queue = await page.evaluate(() => JSON.parse(sessionStorage.getItem('__syntheticNotificationQueue')));
+  expect(queue).toHaveLength(1);
+  expect(queue[0]).toMatchObject({ title: 'Today', body: 'Today, yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin.', isExactNotification: false, isExactMandatory: false });
+  expect(Object.keys(queue[0].extra).sort()).toEqual(['insightId','kind']);
+  expect(JSON.stringify(queue)).not.toContain('Sentetik');
+  expect(await page.evaluate(() => localStorage.getItem('today_ai_delivery_v1'))).not.toContain('Sentetik');
+  await page.reload(); await ready(page);
+  await expect.poll(() => page.evaluate(() => typeof window.__notificationAction)).toBe('function');
+  await expect(page.locator('#notificationAiEnabled')).toBeChecked();
+  await page.evaluate(notification => window.__notificationAction({ notification }), queue[0]);
+  await expect(page.locator('#notificationInsight')).toContainText('Kaydedilmiş gözlemin');
+  await expect(page.locator('#notificationInsight')).toContainText('Her şey çok net');
+  await expect(page.locator('#notificationInsight')).not.toContainText('Sentetik');
+  await page.locator('#btnNotificationReset').click();
+  await expect(page.locator('#notificationStatus')).toContainText('Core ve Health kayıtların korundu');
+  expect(await page.evaluate(() => localStorage.getItem('today_ai_delivery_v1'))).toBeNull();
+  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('__syntheticNotificationQueue')))).toEqual([]);
+  expect(await page.evaluate(() => localStorage.getItem('__unrelatedSentinel'))).toBe('keep');
+  expect(await coreDay(page)).toEqual(before);
+});

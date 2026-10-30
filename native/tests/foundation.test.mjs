@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { isPackagedPath, parseAppShell, NATIVE_ROOT } from '../scripts/build-web.mjs';
-import { narrowAndroidManifest, READ_PERMISSIONS, withAndroidMinimumSdk, withAndroidPrivateBackup, withHealthReadDescription } from '../scripts/configure-platform.mjs';
-import { verifyHealthPermissions, verifyNativePrivacy } from '../scripts/verify-android-permissions.mjs';
+import { narrowAndroidManifest, READ_PERMISSIONS, withAndroidMinimumSdk, withAndroidPrivateBackup, withHealthReadDescription, withInexactNotifications } from '../scripts/configure-platform.mjs';
+import { verifyHealthPermissions, verifyNativePrivacy, verifyNotificationPermissions } from '../scripts/verify-android-permissions.mjs';
 
 const manifestWith = permissions => `<manifest xmlns:android="http://schemas.android.com/apk/res/android">${permissions.map(name => `<uses-permission android:name="${name}" />`).join('')}<application /></manifest>`;
 
@@ -94,4 +94,29 @@ test('Native preview loads bundled web assets without a remote server URL', asyn
   assert.equal(config.appId, 'app.today.preview');
   assert.equal(config.webDir, 'www');
   assert.equal(config.server, undefined);
+});
+
+const notificationXml = await readFile(path.join(NATIVE_ROOT, 'node_modules/@capacitor/local-notifications/android/src/main/AndroidManifest.xml'), 'utf8');
+test('Local notification preparation removes exact alarms and preserves read-only health and backup settings', () => {
+  const source = '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:allowBackup="true" /></manifest>';
+  const prepare = xml => withInexactNotifications(withAndroidPrivateBackup(narrowAndroidManifest(xml, pluginXml)), notificationXml);
+  const prepared = prepare(source);
+  assert.match(prepared, /android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove"/);
+  assert.match(prepared, /android.permission.USE_EXACT_ALARM" tools:node="remove"/);
+  assert.match(prepared, /android.permission.health.WRITE_STEPS" tools:node="remove"/);
+  assert.equal(verifyNativePrivacy(prepared), true);
+  assert.equal(prepare(prepared), prepared);
+  assert.throws(() => withInexactNotifications(source, '<manifest />'), /contract/);
+});
+
+test('Merged notification manifest requires permission/restore support and rejects exact-alarm scope', () => {
+  const allowedXml = notificationXml.replace(/\s*<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"\/>/, '');
+  assert.equal(verifyNotificationPermissions(allowedXml), true);
+  assert.throws(() => verifyNotificationPermissions(notificationXml), /exact alarms/);
+  for (const missing of ['POST_NOTIFICATIONS', 'RECEIVE_BOOT_COMPLETED', 'WAKE_LOCK']) {
+    const source = notificationXml.replace(`android.permission.${missing}`, 'removed');
+    assert.throws(() => verifyNotificationPermissions(source), new RegExp(missing));
+  }
+  const missingRestore = allowedXml.replaceAll('LocalNotificationRestoreReceiver', 'RemovedReceiver');
+  assert.throws(() => verifyNotificationPermissions(missingRestore), /restore receiver/);
 });

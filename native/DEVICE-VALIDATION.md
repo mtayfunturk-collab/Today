@@ -88,3 +88,17 @@ Her satırı ayrı cihaz/OS/üretici uygulaması sürümü için çoğalt. Ham s
 | iPhone → Mi Fitness/Zepp Life → Apple Health | Bekleniyor | Bekleniyor | Uygulama/sürüm/bölge bekleniyor | Bekleniyor | Çalıştırılmadı | Çalıştırılmadı | Çalıştırılmadı | Ayrı özellik kapısı; çalıştırılmadı | **İmzalı cihaz kurulumu ve test bekleniyor** |
 
 Her sorun için: cihaz satırı, commit/run, seçilen tür/dönem, beklenen davranış, gözlenen davranış, veri kaybı olup olmadığı ve yeniden üretme adımlarını yaz. Sonuç ancak gözlendiğinde PASS/FAIL olur; “derlendi” cihaz sonucu değildir.
+
+## NUT-019.3 — Fiziksel bildirim kabulü (henüz yapılmadı)
+
+Ayrı sentetik profilde iPhone ve Android için şu sonucu OS/sürüm/cihaz/uygulama sürümüyle kaydet:
+
+1. İlk açılışta bildirim izni sorulmasın ve `today_ai_delivery_v1` oluşmasın. PWA'da native bildirim düğmeleri kapalı olsun.
+2. Ayarlar/AI'da günlük kanal + yerel saat + ayrı saklama onayı ver; OS iznini reddet, sonra açık eylemle ver. İzin yokken planlama olmamalı.
+3. Onaylı günlük/7 günlük gözlem oluştur. Seçilen gelecek saatte yalnız sabit gizli içerikli mesajı kontrol et; hassas özet/not kilit ekranında bulunmasın. Aynı gün ikinci gözlem ikinci mesaj üretmesin.
+4. Uygulama kapalıyken bildirime dokun; aynı kayıtlı gözlem açılsın. Süresi geçmiş/silinmiş kimlik için dürüst kullanılamıyor mesajı olsun.
+5. Sessiz saat, saat dilimi değişimi, çevrimdışı, OS pil kısıtı, yeniden başlatma ve izin iptalinde gerçek davranışı kaydet. Kesin teslim bekleme.
+6. AI kanalını kapat/sıfırla: yalnız yeni arşiv ve Today bildirimleri temizlensin, mevcut Core/Health örnekleri korunsun. 7 gün dolduktan sonraki açılışta arşiv temizliğini doğrula.
+7. Güncelleme kanalında ilk etkinleştirmede sahte mesaj olmamalı. Aynı imzalı yüksek bundle sürümü kurup açınca bir `Today Yenilik`, tekrar açılışta sıfır ek mesaj bekle. Farklı CI debug imzası nedeniyle profili silme.
+
+Tarayıcı testindeki sentetik SDK callback/queue bu kontrollerin yerine geçmez. iOS unsigned simulator derlemesi gerçek iPhone teslimini kanıtlamaz.

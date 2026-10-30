@@ -20,6 +20,21 @@ export function verifyNativePrivacy(xml) {
   return true;
 }
 
+export function verifyNotificationPermissions(xml) {
+  const permissions = [...xml.matchAll(/<uses-permission(?:-sdk-\d+)?\b[^>]*>/g)]
+    .map(match => match[0].match(/\bandroid:name\s*=\s*["']([^"']+)["']/)?.[1]).filter(Boolean);
+  for (const required of ['POST_NOTIFICATIONS', 'RECEIVE_BOOT_COMPLETED', 'WAKE_LOCK']) {
+    if (!permissions.includes(`android.permission.${required}`)) throw new Error(`Merged notification permission is missing: ${required}`);
+  }
+  if (permissions.some(name => ['android.permission.SCHEDULE_EXACT_ALARM', 'android.permission.USE_EXACT_ALARM'].includes(name))) {
+    throw new Error('Merged Android preview must not request exact alarms');
+  }
+  if (!xml.includes('LocalNotificationRestoreReceiver') || !xml.includes('android.intent.action.BOOT_COMPLETED')) {
+    throw new Error('Merged local notification restore receiver is missing');
+  }
+  return true;
+}
+
 async function mergedManifests(directory) {
   const selected = [];
   for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -39,6 +54,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
     const xml = await readFile(filename, 'utf8');
     verifyHealthPermissions(xml);
     verifyNativePrivacy(xml);
-    console.log(`PASS merged health permissions and backup privacy: ${path.relative(NATIVE_ROOT, filename)} (READ_STEPS, READ_SLEEP, READ_EXERCISE only; Auto Backup disabled)`);
+    verifyNotificationPermissions(xml);
+    console.log(`PASS merged health/notification permissions and backup privacy: ${path.relative(NATIVE_ROOT, filename)} (READ_STEPS, READ_SLEEP, READ_EXERCISE only; Auto Backup disabled; no exact alarm)`);
   }
 }

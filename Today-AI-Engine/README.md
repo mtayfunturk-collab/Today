@@ -18,7 +18,7 @@ Today AI Engine, Today App ile JSON veri sözleşmeleri üzerinden entegre olan,
 ## Durum
 
 - AI Engine günlük kural kataloğu: `0.9.0-rules`; değerlendirme katmanı: `0.9.0-evaluation`
-- Today App host çalışma tabanı: NUT-019.2.2, App `2.19.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-073`
+- Today App host çalışma tabanı: NUT-019.3, App `2.20.0`, schema `2`, çevrimdışı kabuk `today-v2-foundation-074`
 - Today App güncel regresyonu ve gerçek tarayıcı kanıtı: [NUT-018.3 kaydı](../docs/NUT-018.3-VALIDATION.md) ve taslak PR #1. Eski 822 kontrol raporu güncel kapı sonucu yerine kullanılmaz.
 - AI Engine testi: `403 PASS / 0 FAIL` (koşucunun raporladığı kontroller; 39 ayrı saat bağlamı kontrolü dahil)
 - NUT-017.9 birleşik sentetik benchmark: `16/16` vaka, `0` güvenlik ihlali
