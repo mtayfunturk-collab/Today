@@ -31,9 +31,23 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.2a — İzole dizin adaptörü
+
+Yeni radio-directory.mjs: doğrulanmış HTTPS/UUID DTO, TR/dünya arama/ülke/dil/tür filtresi, sınırlı pagination/ayna/timeout, iptal/eski sonuç, 512KiB yanıt tavanı ve kayıt tekilleştirme. Mount/ağ/oynatma/depo/AI yok; adaptör yalnız açık kullanıcı eylemiyle kullanılabilir. Kullanıcı arayüzü sonraki dilimdir.
+
+Radio 19/19, birleşik entegrasyon 284/284; platform 1161, Engine 403 ve benchmark 16 PASS/0 FAIL. Bu aşama sahte API kullanır; gerçek radyo/iPhone testi değildir. Ana geliştirme dalındaki sentetik Touch sürücüsü düzeltmesi bu dala da alındı; yerel Chromium hedefi 1/1. WebKit CI sonucu PR'lerde izlenir.
+
+---
+
 ## NUT-RADIO.1 — Mimari ve uygulanabilirlik
 
 feature/today-radio, taban d10f1eb; ürün sürümü/depolar değişmedi. Modül/mini-player/tek audio, API/HTTPS/CORS/HLS, dış bağlantı gizliliği, önerilen ayrı depolar ve aşamalar raporlandı. İki API HTTP kontrolü 2 PASS/0 FAIL; gerçek yayın/cihaz testi yapılmadı. Taban CI 41116016970: 25 tarayıcı PASS/1 FAIL; WebKit testindeki Touch kurucusu uyumsuzluğu entegrasyon önkoşulu. Mevcut dal, saat/bildirim kodu ve ertelenme kararı korundu. Ayrıntı docs/TODAY-RADIO-IMPLEMENTATION.md.
+
+---
+
+## NUT-020.1 — WebKit test sürücüsü düzeltmesi
+
+CI 41116016970 WebKit'te constructible olmayan Touch nedeniyle 25 PASS/1 FAIL verdi. Sentetik gesture testinde Event + salt okunur touches/changedTouches payload kullanıldı; ürün router/CSS ve test beklentileri değiştirilmedi. Gerçek parmak/OS hareketi ayrı cihaz kabulüdür. Yerel hedefli Chromium sonucu ve uzak WebKit CI kanıtı PR #1'de izlenir. Bu dilimde Radio kodu yoktur.
 
 ---
 

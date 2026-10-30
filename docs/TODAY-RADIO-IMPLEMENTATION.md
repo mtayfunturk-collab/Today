@@ -81,3 +81,11 @@ Gerçek Windows Chromium/Edge ve fiziksel iPhone Safari/PWA: ilk izinli play, ik
 Önerilen ilk kapsam: yalnız doğrulanmış HTTPS adayları; MP3/AAC + native HLS yeteneği; yerel simge; no autoplay; tek audio; geçmiş/AI kapalı; dış logo/click yok. Karar kapıları: sağlayıcının click beklentisiyle privacy uyumu, gerçek istasyon/logo koşulları, HLS Windows fallback gereksinimi ve yukarıdaki somut ayrı depo sınırları. Bu kapılar çözülmeden geçmiş/AI veya “tüm istasyonlar çalışır” teslimi işaretlenmez.
 
 Bu aşama testleri: iki resmî API HTTP kontrolü **2 PASS / 0 FAIL**; örnek 3 kaydın yalnız 1'i HTTPS aday (oynatma testi değil). Çalıştırılmamış ürün ses/iPhone/Windows testleri PASS sayılmaz. Yalnız belgeler değiştiğinden geçen uygulama kapıları tekrar çalıştırılmadı; önceki taban CI başarısızlığı yukarıda açık. Sonraki görev: mevcut WebKit test bağımlılığını kapatıp 2a DTO/dizin sözleşmesini izole testlerle hazırlamak.
+
+## Aşama 2a — Dizin sözleşmesi uygulaması
+
+radio-directory.mjs ve 19 hedefli test eklendi; birleşik test koşucusuna kaydedildi (284/284). Eski platform1161/Engine403/benchmark16 korundu. HTTP/JSON/MIME/yanıt boyutu, UUID/URL/dil/tür alanları, filtre kodlaması, duplicate, boş/hatalı yanıt, ayna fallback, timeout, cancel ve eski arama yarışı test edildi. Adaptör kurulduğunda istek yok; search userConfirmed=true ister. credentials omit/referrer yok/cache yok/redirect error; aynalar yalnız doğrulanmış Radio Browser HTTPS origin'leri ve en çok3. Tüm literal IP yayınları konservatif olarak reddedilir; DNS/redirect güvenliğinin tamamı kanıtlanmış sayılmaz.
+
+Bu modül henüz index/router/SW tarafından yüklenmez; kullanıcıya Radio varmış gibi gösterilmez. Depo/AI/ses/history/logo/click yok; yeni uygulama sürümü veya migration yok. Ayna keşfi/sağlayıcı click koşulu halen açık. Sonraki küçük dilim sahte adaptörle erişilebilir Radio arama/filtre/empty/error ekranıdır. Canlı dizin ve oynatıcı ayrı kapılardır.
+
+Ana dal Touch test düzeltmesi ede686d: Event üstünde sentetik touches/changedTouches kullanılır; hedefli Chromium1/1. Bu sentetik handler sözleşmesidir, fiziksel parmak kaydırması değildir. Uzak WebKit sonucu SHA/PR ile izlenir; başarılı doğrulanmadan engel kapandı denmez.
