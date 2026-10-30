@@ -1966,6 +1966,52 @@
         text-align: center;
       }
 
+      #wellnessPersonalDataPanel .wearableReadCard {
+        display: grid;
+        gap: 12px;
+        text-align: left;
+        min-width: 0;
+      }
+
+      #wellnessPersonalDataPanel .wearableReadCard p {
+        max-width: none;
+        margin: 0;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      #wellnessPersonalDataPanel fieldset {
+        min-width: 0;
+        margin: 0;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        padding: 8px 12px;
+      }
+
+      #wellnessPersonalDataPanel label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      #wellnessPersonalDataPanel button,
+      #wellnessPersonalDataPanel select {
+        min-height: 44px;
+        padding: 9px 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--text);
+        font: inherit;
+      }
+
+      #wellnessPersonalDataPanel button:disabled {
+        opacity: .45;
+      }
+
       .wellnessFoundationMark {
         width: 48px;
         height: 48px;
@@ -2173,6 +2219,7 @@
             sleep:"Uyku & Toparlanma",
             energy:"Enerji & Beden",
             symptoms:"Belirtiler & Notlar",
+            personalData:"Kişisel Sağlık Verileri",
             history:"Geçmiş"
           }[wellnessActiveSection] || "Sağlık")
     };
@@ -3454,6 +3501,12 @@
         "+",
         "Belirtiler & Notlar",
         "Belirti, ağrı ve beden notları."
+      ),
+      wellnessCard(
+        "personalData",
+        "⌚",
+        "Kişisel Sağlık Verileri",
+        "Saat ve bilekliğinden izinli günlük özetleri incele."
       )
     );
 
@@ -3484,6 +3537,11 @@
         id:"wellnessSymptomsPanel",
         attributes:{hidden:""}
       }),
+      personalData: createElement("section", {
+        className:"wellnessSubview",
+        id:"wellnessPersonalDataPanel",
+        attributes:{hidden:"", "aria-label":"Kişisel Sağlık Verileri"}
+      }),
       history: createElement("section", {
         className:"wellnessSubview",
         id:"wellnessHistoryPanel",
@@ -3510,7 +3568,7 @@
   }
 
   function showWellnessSection(section, options = {}) {
-    const valid = ["hub","sleep","energy","symptoms","history"];
+    const valid = ["hub","sleep","energy","symptoms","personalData","history"];
     if (!valid.includes(section)) section = "hub";
 
     wellnessActiveSection = section;
@@ -3544,6 +3602,7 @@
       sleep:"Uyku & Toparlanma",
       energy:"Enerji & Beden",
       symptoms:"Belirtiler & Notlar",
+      personalData:"Kişisel Sağlık Verileri",
       history:"Geçmiş"
     };
 
@@ -5591,6 +5650,7 @@
 
     initialized = true;
     showSection("hub", { focus: false, scroll: true });
+    window.dispatchEvent(new window.CustomEvent("today:health-hub-ready"));
     return getState();
   }
 

@@ -297,6 +297,8 @@ function createRuntime(options = {}) {
     }
   };
 
+  if (options.native === true) window.Capacitor = { isNativePlatform: () => true };
+
   const context = {
     window,
     document,
@@ -587,6 +589,20 @@ async function test(name, callback) {
   );
 
   await test(
+    "Native paket web Service Worker kaydı veya keşfi yapmıyor",
+    async () => {
+      const runtime = createRuntime({ native: true });
+      const result = await runtime.window.TodayServiceWorker.start();
+      assert.equal(result.success, true);
+      assert.equal(result.supported, false);
+      assert.equal(result.phase, "unsupported");
+      assert.equal(runtime.registerCount, 0);
+      assert.equal(runtime.serviceWorkerEvents.listenerCount("controllerchange"), 0);
+      assert.equal(runtime.document.getElementById("todayUpdateNotice"), null);
+    }
+  );
+
+  await test(
     "Service Worker verilen URL ile bir kez kaydediliyor",
     async () => {
       const runtime =
@@ -819,7 +835,7 @@ async function test(name, callback) {
           .getElementById(
             "todayUpdateTitle"
           ).textContent,
-        "Yeni sürüm hazır"
+        "Today Yenilik"
       );
       assert.match(
         runtime.document
@@ -1284,6 +1300,32 @@ async function test(name, callback) {
         event.detail.workerState,
         "redundant"
       );
+    }
+  );
+
+  await test(
+    "Eski etkin worker'ın kapanışı yeni güncellemenin onayını silmiyor",
+    async () => {
+      const oldWorker = new MockWorker("installing");
+      const registration = new MockRegistration({ installing: oldWorker });
+      const runtime = createRuntime({ registration });
+      const api = runtime.window.TodayServiceWorker;
+      await api.start();
+      oldWorker.setState("activated");
+
+      const nextWorker = new MockWorker("installed");
+      registration.waiting = nextWorker;
+      registration.emitUpdateFound(nextWorker);
+      assert.equal(api.activateUpdate().success, true);
+      oldWorker.setState("redundant");
+
+      assert.equal(api.getState().userAccepted, true);
+      assert.equal(api.getState().errorCode, null);
+      assert.equal(runtime.eventCount("today:service-worker-update-error"), 0);
+      runtime.emitControllerChange();
+      runtime.emitControllerChange();
+      assert.equal(runtime.reloadCount, 1);
+      assert.equal(nextWorker.messages.length, 1);
     }
   );
 

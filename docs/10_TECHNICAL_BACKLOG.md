@@ -5,9 +5,9 @@ Document: Technical Backlog
 Version: 1.0
 Status: Active
 Owner: Today Master Project
-Current Phase: Phase 2 Completed
-Next Phase: Phase 3 — Native Mobile / Capacitor
-Last Updated: 31 July 2026
+Current Phase: NUT-018 — Teknik stabilizasyon
+Next Phase: Test kapsamı, bağımlılıklar ve gerçek tarayıcı/PWA hazırlığı
+Last Updated: 29 October 2026
 
 ---
 
@@ -300,7 +300,27 @@ Phase 2 Closure
 
 ---
 
-# Phase 3 — Native Mobile / Capacitor
+# Aktif teknik sıra — NUT-018
+
+Sürekli geliştirme ortamı Codex'tir. Kullanıcı verileri/şemaları ve mevcut modüller korunur; main'e doğrudan yazılmaz, taslak PR #1 otomatik birleştirilmez.
+
+| İş | Kapsam | Durum / kabul ölçütü |
+|---|---|---|
+| NUT-018 | İlk CI kök nedeni, başlangıç kapısı, güncel regresyon referansları | Tamamlandı: ea2f99d, Actions 40933274467 başarılı; platform 1116, AI 335, entegrasyon 96, benchmark 16 PASS |
+| NUT-018.1 | Eksik Health Hub / tüketim editörü testleri ve kayıtlı test envanteri | Yerelde doğrulandı: 25 grup / 1155 PASS; AI 335, entegrasyon 96, benchmark 16 PASS. CI kaydı PR #1'de |
+| NUT-018.2 | Bağımlılık güvenliği ve aktif sürüm tutarlılığı | Doğrulandı: df47b0e / Actions 40938911892; audit 0, paket/aktif sürüm 2.16.0; 1155/335/96/16 PASS |
+| NUT-018.3 | Gerçek tarayıcı otomasyonu ve iPhone PWA doğrulama hazırlığı | Hazırlık uygulandı: Chromium 6 PASS, platform 1156 PASS; Chromium/WebKit CI kanıtı PR #1'de. Fiziksel iPhone/Android kabulü bekliyor |
+| NUT-019.1 | Günlük / 7 / 30 / 90 günlük gözlemler; saat adaptör sözleşmesi | Yerel 1156/364/112/16 kapıları ve yeni Chromium senaryosu başarılı. Gerçek saat okuma ve telefon bildirimi bağlı değildir; kayıt docs/NUT-019.1-IMPLEMENTATION.md içinde. |
+| NUT-019.2 | Health kişisel sağlık verisi native bağlantısı ve bildirim taşıyıcısı | Açık: kapsam/metin sözleşmesi ve 019.2.1 SDK/Health önizleme dilimi var. Health–AI bağlantısı ve izinli yerel zamanlayıcı uygulandı; fiziksel saat kabulü ve gerçek bildirim teslimi bekliyor. Tüm model/sürüm garantisi verilmez; kapsam docs/NUT-019.2-COMPATIBILITY.md içinde. |
+| NUT-019.2.1 | İnce native preview, dar SDK okuyucusu ve kişisel veri ekranı | App 2.18.0, şema 2, foundation-072/117 dosya. Sağlık verisi yalnız istek belleğinde; kaynak/merged manifest/native derleme ve tarayıcı kanıtı docs/NUT-019.2-IMPLEMENTATION.md ile PR #1'de. Fiziksel cihaz testi değildir. |
+| NUT-019.2.2 | Saat önizlemesinden ayrı AI onayı, kaynak anlamı ve Android cihaz paketi | App 2.19.0, şema 2, foundation-073/118 kayıt. Kalıcı yeni depo yok; geçici saat türleri manuel kayıtlardan ayrılır. Kod/test/CI kanıtı docs/NUT-019.2.2-IMPLEMENTATION.md ve PR #1'de. APK ve cihaz rehberi fiziksel kabul yerine geçmez. |
+| NUT-019.3 | Günlük AI ve güncelleme OS bildirimi | Kullanıcı onaylı today_ai_delivery_v1 arşivi, native yerel bildirim adaptörü, tekilleştirme/sessiz saat/geri çekme ve UI uygulandı. 41101231255 completed/success doğrulandı; önceki durum API gecikmesi kapandı. İndirilen APK checksum ve 7 kritik kaynak dosyası eşleşti. APK 12999152208 ve boş fiziksel kabul formu docs/NUT-019.3-IMPLEMENTATION.md içinde; fiziksel teslim açık. Tek cihaz iPhone 15/iOS 18.7.8 + Mi Band 8/Mi Fitness; Windows erişimiyle önce Apple Sağlık aktarımı ve imzalı iOS dağıtım yolu gerekiyor. Hazır gözlem yokken mesaj planlanmaz. |
+
+Tam modül yedekleme/geri yükleme, veri kaybı sınırları ve gizlilik bilgilendirmesi doğrulanmadan gerçek kişilerle pilot başlatılmaz. Yeni model sağlayıcısı, dış aktarım, hesap/senkronizasyon ve şema değişiklikleri ayrı karar gerektirir. Güncel ürün kapıları docs/02_ROADMAP.md ve docs/03_PHASES.md içindedir.
+
+# Phase 3 — Native Mobile / Capacitor (önceki aday planı)
+
+Aşağıdaki liste korunmuş teknik envanterdir. Mağaza hazırlığı kişisel kullanım ve pazar doğrulamasından sonra gelir. 30 Ekim kullanıcının istediği saat bağlantısı için dar native sağlık köprüsü NUT-019.2 kapsamında öne alınır; bu tam native yeniden yazım veya mağaza yayını kararı değildir.
 
 Phase 3 task IDs will be finalized only after technical discovery and a fresh repository review. Application code must not change before the relevant backlog ID is assigned.
 
@@ -373,3 +393,7 @@ Review
 🟢 Completed
 
 🔴 Blocked
+
+## Güncel öncelik — NUT-020 mobil deneyim
+
+Apple Developer maliyeti nedeniyle NUT-019 saat/bildirim fiziksel kabulü 2–4 ay veya üyelik mümkün olana kadar ertelendi; mevcut kod korunur. Önce iPhone PWA hizalama/taşma/scroll kararlılığı ve kontrollü yatay gezinme; sonra modül içerik/tasarım geliştirmesi; ardından az veri için belirsizliği gösteren AI gözlemleri. Native veya Web Push alternatifi bu ertelemeyi aşmak için başlatılmaz.

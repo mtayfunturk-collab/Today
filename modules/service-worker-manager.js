@@ -29,6 +29,7 @@
   let announcedWorker = null;
   let observedRegistration = null;
   const observedWorkers = new WeakSet();
+  const activatedWorkers = new WeakSet();
 
   let status = {
     phase: "idle",
@@ -206,7 +207,7 @@
       targetDocument.createElement("h2");
     title.id = "todayUpdateTitle";
     title.textContent =
-      "Yeni sürüm hazır";
+      "Today Yenilik";
     title.style.cssText = [
       "margin:0",
       "font-size:18px",
@@ -335,7 +336,7 @@
     }
 
     title.textContent =
-      "Yeni sürüm hazır";
+      "Today Yenilik";
     text.textContent =
       "Today’in yeni sürümü indirildi. " +
       "Güncelleme, sen onayladığında uygulanacak.";
@@ -468,6 +469,14 @@
       typeof worker.state === "string"
         ? worker.state
         : null;
+
+    if (workerState === "activated") {
+      activatedWorkers.add(worker);
+    }
+    // A replaced active worker retires normally; it did not fail installation.
+    if (workerState === "redundant" && activatedWorkers.has(worker)) {
+      return;
+    }
 
     setStatus({
       workerState
@@ -812,7 +821,10 @@
     targetDocument = candidateDocument;
     targetNavigator = candidateNavigator;
 
-    const supported = Boolean(
+    // Native packages ship their own assets; a web cache must not replace them.
+    const nativeApp = typeof targetWindow.Capacitor?.isNativePlatform === "function" &&
+      targetWindow.Capacitor.isNativePlatform() === true;
+    const supported = !nativeApp && Boolean(
       targetNavigator.serviceWorker &&
       typeof targetNavigator.serviceWorker
         .register === "function"

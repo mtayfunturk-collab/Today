@@ -8,8 +8,11 @@ const source = fs.readFileSync(
   "utf8"
 );
 
+let checks = 0;
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+  checks += 1;
 }
 
 const dom = new JSDOM(`<!doctype html>
@@ -40,57 +43,90 @@ dom.window.TodayNutritionLibraryUI = { open: async () => {} };
 
 new vm.Script(source).runInContext(dom.getInternalVMContext());
 
-const api = dom.window.TodayHealthHub;
-assert(api, "TodayHealthHub API yayımlanmadı.");
-assert(api.getState().initialized === true, "Health Hub başlatılmadı.");
+async function run() {
+  try {
+    // Match the actual boot lifecycle instead of asserting before DOMContentLoaded.
+    if (dom.window.document.readyState === "loading") {
+      await new Promise(resolve => dom.window.document.addEventListener(
+        "DOMContentLoaded", resolve, { once: true }
+      ));
+    }
 
-const view = dom.window.document.querySelector('[data-view="health"]');
-assert(view.querySelector("#healthHub"), "Health Hub yüzeyi oluşmadı.");
-assert(
-  view.querySelectorAll("[data-health-hub-open]").length === 3,
-  "Spor / Beslenme / Sağlık üçlü girişi oluşmadı."
-);
-assert(
-  view.querySelector("#healthNutritionPanel"),
-  "Mevcut Beslenme paneli korunmadı."
-);
+    const api = dom.window.TodayHealthHub;
+    assert(api, "TodayHealthHub API yayımlanmadı.");
+    assert(api.getState().initialized === true, "Health Hub başlatılmadı.");
 
-api.showSection("nutrition", { focus: false, scroll: false });
-assert(
-  api.getState().activeSection === "nutrition",
-  "Beslenme alt modülüne geçilemedi."
-);
-assert(
-  view.querySelector("#healthNutritionPanel").hidden === false,
-  "Beslenme paneli görünür olmadı."
-);
+    const view = dom.window.document.querySelector('[data-view="health"]');
+    assert(view.querySelector("#healthHub"), "Health Hub yüzeyi oluşmadı.");
+    assert(
+      view.querySelectorAll("[data-health-hub-open]").length === 3,
+      "Spor / Beslenme / Sağlık üçlü girişi oluşmadı."
+    );
+    assert(
+      view.querySelector("#healthNutritionPanel"),
+      "Mevcut Beslenme paneli korunmadı."
+    );
 
-api.showSection("sport", { focus: false, scroll: false });
-assert(
-  view.querySelector("#healthSportPanel").hidden === false,
-  "Spor paneli görünür olmadı."
-);
+    api.showSection("nutrition", { focus: false, scroll: false });
+    assert(
+      api.getState().activeSection === "nutrition",
+      "Beslenme alt modülüne geçilemedi."
+    );
+    assert(
+      view.querySelector("#healthNutritionPanel").hidden === false,
+      "Beslenme paneli görünür olmadı."
+    );
 
-api.showSection("wellness", { focus: false, scroll: false });
-assert(
-  view.querySelector("#healthWellnessPanel").hidden === false,
-  "Sağlık paneli görünür olmadı."
-);
+    api.showSection("sport", { focus: false, scroll: false });
+    assert(
+      view.querySelector("#healthSportPanel").hidden === false,
+      "Spor paneli görünür olmadı."
+    );
 
-const styleText =
-  dom.window.document.getElementById("todayHealthHubStyles")?.textContent || "";
+    api.showSection("wellness", { focus: false, scroll: false });
+    assert(
+      view.querySelector("#healthWellnessPanel").hidden === false,
+      "Sağlık paneli görünür olmadı."
+    );
+    assert(
+      view.querySelector('[data-wellness-open="personalData"]'),
+      "Kişisel Sağlık Verileri girişi oluşmadı."
+    );
+    api.showWellnessSection("personalData", { focus: false });
+    assert(
+      view.querySelector("#wellnessPersonalDataPanel").hidden === false,
+      "Kişisel Sağlık Verileri paneli görünür olmadı."
+    );
+    assert(
+      view.querySelector(".topbar .pill").textContent === "Kişisel Sağlık Verileri",
+      "Kişisel Sağlık Verileri üst başlığı güncellenmedi."
+    );
+    view.querySelector("#btnModulesFromHealth").click();
+    assert(api.getState().wellnessActiveSection === "hub", "Geri düğmesi Sağlık merkezine dönmedi.");
 
-assert(
-  styleText.includes("overflow-x: clip"),
-  "Yatay taşma koruması bulunamadı."
-);
-assert(
-  styleText.includes("100dvh"),
-  "Dinamik viewport yüksekliği koruması bulunamadı."
-);
-assert(
-  styleText.includes("safe-area-inset"),
-  "Safe-area koruması bulunamadı."
-);
+    const styleText =
+      dom.window.document.getElementById("todayHealthHubStyles")?.textContent || "";
 
-console.log("NUT-013 Health Hub: 10/10 başarılı");
+    assert(
+      styleText.includes("overflow-x: clip"),
+      "Yatay taşma koruması bulunamadı."
+    );
+    assert(
+      styleText.includes("100dvh"),
+      "Dinamik viewport yüksekliği koruması bulunamadı."
+    );
+    assert(
+      styleText.includes("safe-area-inset"),
+      "Safe-area koruması bulunamadı."
+    );
+
+    console.log(`NUT-013 Health Hub: ${checks}/${checks} başarılı`);
+  } finally {
+    dom.window.close();
+  }
+}
+
+run().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

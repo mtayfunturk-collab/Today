@@ -10,17 +10,18 @@ const updatedHtml = fs.readFileSync(
   "utf8"
 );
 
+// NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "4d5857d3bb820381b797cc1323ec5d05ca865a4b632c2503ccbc88d5184a711b",
+    "46c649ac6e79899547116503b883badcae12ce12b3d48f71dfcd35e5ebc9bcf6",
   "sw.js":
-    "221a0bba91695f3eae1d0fbfc9e630466588a80301ea6a2e4dcfc8138ff0397d",
+    "66fe88d9a41dc8aed6aef1769dfe115284761146601b7b8d1f8def614619fc95",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
     "705a8d5302c92810ca22de9b3ee5235e70348cee37780a77d46cf5a7a1a7b23f",
   "modules/startup-manager.js":
-    "13a2a46a92d6e917a507f33855593c0989d60496b9053200dedc4061f175d587",
+    "4d11603fe9b8d71537e7788385cae5356b768b2462937f433e428840d7a4d8fd",
   "modules/nutrition-contracts.js":
     "41fbd1b7dd61181b5c1ed997e109700562fdc55b03789709bbb06f5fce89f1a6",
   "modules/nutrition-calculations.js":
@@ -44,21 +45,21 @@ const expectedProductionHashes = {
   "modules/nutrition-ui.js":
     "66d5811449440e94ba18c24d6e93ebe6cb20d16e40b718fbb9f673dc66a7324e",
   "storage.js":
-    "10898fab6a110aaab284814cdb37fe0e5bce11d88e771c5b8d3f734675651017",
+    "28d0450b05882b74689c86ae251a5b21f512ed61641a8920f37e39c359420ea1",
   "version.js":
-    "0d671f208e53c0e665980157a6f4ab749ae1c86e0ebd43effa15d3b1a02342fe",
+    "4e179a9346968f4319335929ab385cc77eec494147ebf62aabdb9b8fd1dc4acb",
   "migration.js":
     "8862194d0b240944cc0cab9149fb923416e76498eedd33245b28f0d3ef8dba3d",
   "day-manager.js":
-    "7d30f8086be316deee4f2cebb8c04d09d3165ff7af3e43aba6bf680d375dff9f",
+    "a99e2c56b72e7b970182c6395fa3ea049feb18200b63bfb2248ed58150f49e89",
   "state-manager.js":
-    "b87694d5bf516d9b0024c8607608fe1d8616061e9a05b741449e38773f195e78",
+    "e513c919ad4088f09a06d5890ce05578e955488254d6bf45af7ca54d5507d2d1",
   "router.js":
-    "4afc06c5cd7d4af4cdf9fdb25a75cbf9f90161e6808e2a8c3a6279bb031a9c68",
+    "a71e4847f559f3203e619931d5477a309a687608e7955a8af829fdd2d321a789",
   "module-registry.js":
     "9678b6a3f73789f50e961257a0fa2115006b60ae521a6867340ea11975be8356",
   "service-worker-manager.js":
-    "e84346622aed07bf988981e2fb616ebb2b0bcd31cee297ce862257d914db239c"
+    "c42c5f1e13ccb58e062f1b05a736025a8fc1c5121759635847efbce768c6a75d"
 };
 
 const expectedHtmlIds = [
@@ -72,8 +73,61 @@ const expectedHtmlIds = [
   "accSummary",
   "accSummaryBody",
   "accSummaryHead",
+  "aiAnalysisActionLabel",
+  "aiAnalysisAlternatives",
+  "aiAnalysisApproval",
+  "aiAnalysisConfidence",
+  "aiAnalysisEvidence",
+  "aiAnalysisOutput",
+  "aiAnalysisRequest",
+  "aiAnalysisSkyBoundary",
+  "aiAnalysisSuggestion",
+  "aiAnalysisSummary",
+  "aiAnalysisTitle",
+  "aiAnalysisUncertainty",
+  "aiConsentConfirm",
+  "aiConsentPurpose",
+  "aiContextBoundaries",
+  "aiContextCounts",
+  "aiContextFilters",
+  "aiContextPanel",
+  "aiContextPreview",
+  "aiContextPreviewTitle",
+  "aiContextStatus",
+  "aiContextTitle",
+  "aiDecisionControls",
+  "aiDecisionReceipt",
+  "aiDecisionReceiptItems",
+  "aiDecisionStatus",
+  "aiEditPanel",
+  "aiPatternAlternatives",
+  "aiPatternApproval",
+  "aiPatternConfidence",
+  "aiPatternEvidence",
+  "aiPatternFeedbackControls",
+  "aiPatternFeedbackStatus",
+  "aiPatternOutput",
+  "aiPatternSkyBoundary",
+  "aiPatternStatus",
+  "aiPatternSummary",
+  "aiPatternTitle",
+  "aiPatternUncertainty",
+  "aiReminderTime",
+  "aiRuleEvaluation",
+  "aiRuleEvaluationItems",
+  "aiRuleEvaluationSummary",
+  "aiRuleEvaluationTitle",
   "appContent",
   "area",
+  "btnAiAnalysis",
+  "btnAiApprove",
+  "btnAiContextClear",
+  "btnAiContextPreview",
+  "btnAiEdit",
+  "btnAiEditCancel",
+  "btnAiEditSave",
+  "btnAiPattern",
+  "btnAiReject",
   "btnBackToPick",
   "btnCalendar",
   "btnClearTodayLogs",
@@ -229,7 +283,7 @@ function test(name, callback) {
 }
 
 test(
-  "Üretim index'i NUT-011 foundation-023, kütüphane yönetimi ve iOS genişlik sınırını koruyor",
+  "Üretim index'i NUT-018 taban çizgisini ve iOS genişlik sınırını koruyor",
   () => {
     assert.equal(
       sha256(UPDATED_INDEX),
@@ -268,7 +322,7 @@ test(
 );
 
 test(
-  "Yirmi dört üretim dosyası NUT-011 parmak izleriyle aynı",
+  "Yirmi dört üretim dosyası NUT-018 parmak izleriyle aynı",
   () => {
     Object.entries(
       expectedProductionHashes
@@ -293,14 +347,14 @@ test(
 );
 
 test(
-  "NUT-011 ile genişleyen 129 HTML kimliği benzersiz",
+  "NUT-018 taban çizgisindeki 182 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 129);
+    assert.equal(updatedIds.length, 182);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -348,7 +402,7 @@ test(
   () => {
     const scripts = matches(
       updatedHtml,
-      /<script\s+src="([^"]+)"\s*><\/script>/g
+      /<script(?:\s+type="module")?\s+src="([^"]+)"\s*><\/script>/g
     );
 
     assert.deepEqual(scripts, [
@@ -370,7 +424,29 @@ test(
       "./modules/nutrition-planning.js",
       "./modules/nutrition-history.js",
       "./modules/nutrition-ui.js",
+      "./modules/nutrition-consumption-editor.js",
       "./modules/nutrition-library-ui.js",
+      "./modules/health-hub.js",
+      "./vendor/moment/moment.min.js",
+      "./vendor/moment-timezone/moment-timezone-with-data.min.js",
+      "./vendor/astronomy-engine/astronomy.browser.min.js",
+      "./modules/sky-birth-profile.js",
+      "./modules/sky-place-catalog.js",
+      "./modules/sky-house-core.js",
+      "./modules/sky-calculation-core.js",
+      "./modules/sky-observation-context.js",
+      "./modules/sky-moment-core.js",
+      "./modules/core-sky-link.js",
+      "./modules/sky-periods-core.js",
+      "./modules/sky-natal-ui.js",
+      "./modules/sky-today-ui.js",
+      "./modules/sky-periods-ui.js",
+      "./modules/core-sky-link-ui.js",
+      "./modules/sky-hub.js",
+      "./modules/ai-context-source-adapters.js",
+      "./modules/ai-context-ui.mjs",
+      "./modules/health-wearable-ui.mjs",
+      "./modules/notification-ui.mjs",
       "./modules/router.js",
       "./modules/module-registry.js",
       "./modules/startup-manager.js"
@@ -1148,7 +1224,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-023 ve 28 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-075 ve 122 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1160,7 +1236,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-023"'
+        'const VERSION = "today-v2-foundation-075"'
       )
     );
     assert.ok(shellMatch);
@@ -1170,7 +1246,15 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 28);
+    assert.equal(shellEntries.length, 122);
+    assert.equal(new Set(shellEntries).size, shellEntries.length);
+    shellEntries.forEach(entry => {
+      assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);
+    });
+
+    // Classic scripts and the AI module entry must all be available offline.
+    matches(updatedHtml, /<script(?:\s+type="module")?\s+src="([^"]+)"\s*><\/script>/g)
+      .forEach(path => assert.ok(shellEntries.includes(path), path));
     assert.equal(
       shellEntries.filter(
         (entry) =>

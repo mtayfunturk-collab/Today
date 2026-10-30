@@ -371,6 +371,42 @@
       .slice(-limit);
   }
 
+  function collectWearableEvents(consent, window, requestedAt, warnings) {
+    const catalog = [
+      ["sleep", "wearable-sleep-calendar-day", "wearable-sleep-summary"],
+      ["steps", "wearable-steps", "wearable-steps-summary"],
+      ["activity", "wearable-workout-span", "wearable-workout-summary"]
+    ].filter(([, dataClass]) => classAllowed(consent, "health", dataClass));
+    if (!catalog.length) return { events: [], session: null };
+    const session = globalThis.TodayWearableContextSession;
+    if (!session || typeof session.getSnapshot !== "function" || typeof session.getRevision !== "function") {
+      warnings.push({ source: "today-health", reason: "wearable-preview-unavailable" });
+      return { events: [], session: null };
+    }
+    const revision = session.getRevision();
+    const snapshot = session.getSnapshot({ startDate: window.startDate, endDate: window.endDate,
+      types: catalog.map(([type]) => type) });
+    if (!snapshot) {
+      warnings.push({ source: "today-health", reason: "wearable-preview-empty" });
+      return { events: [], session, revision };
+    }
+    if (snapshot.revision !== revision || !Array.isArray(snapshot.samples) ||
+        !Number.isFinite(Date.parse(snapshot.capturedAt)) || Date.parse(snapshot.capturedAt) > Date.parse(requestedAt)) {
+      warnings.push({ source: "today-health", reason: "wearable-preview-invalid" });
+      return { events: [], session, revision };
+    }
+    const events = snapshot.samples.flatMap(sample => {
+      const item = catalog.find(([type]) => type === sample.type);
+      if (!item || !inWindow(sample.localDate, window)) return [];
+      return [eventEnvelope({ source: "today-health", eventType: item[2],
+        eventId: `health:wearable:${sample.provider}:${sample.type}:${sample.localDate}`,
+        localDate: sample.localDate, createdAt: snapshot.capturedAt, requestedAt,
+        payload: { value: sample.value, unit: sample.unit, provider: sample.provider,
+          aggregation: sample.aggregation } })];
+    });
+    return { events, session, revision };
+  }
+
   async function collectEvents(options = {}) {
     const consent = options.consent;
     const window = options.window;
@@ -393,10 +429,14 @@
       collectCoreEvents(consent, window, requestedAt, warnings),
       window.maxEventsPerSource
     );
-    const health = selectLatestEvents(
-      await collectHealthEvents(consent, window, requestedAt, warnings),
-      window.maxEventsPerSource
-    );
+    const wearable = collectWearableEvents(consent, window, requestedAt, warnings);
+    const manualHealth = await collectHealthEvents(consent, window, requestedAt, warnings);
+    const stillCurrent = !wearable.session || wearable.session.getRevision() === wearable.revision;
+    if (!stillCurrent) warnings.push({ source: "today-health", reason: "wearable-preview-changed" });
+    const allHealth = [...manualHealth, ...(stillCurrent ? wearable.events : [])];
+    const health = selectLatestEvents(allHealth, window.maxEventsPerSource);
+    if (allHealth.length > health.length) warnings.push({ source: "today-health", reason: "source-event-limit",
+      omitted: allHealth.length - health.length });
     const sky = selectLatestEvents(
       collectSkyEvents(consent, window, requestedAt, warnings),
       window.maxEventsPerSource

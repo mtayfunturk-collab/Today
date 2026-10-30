@@ -1,0 +1,208 @@
+name: Today Platform Regression
+
+on:
+  push:
+    paths:
+      - "index.html"
+      - "storage.js"
+      - "health-hub.js"
+      - "version.js"
+      - "sw.js"
+      - "manifest.json"
+      - "nutrition-unit-rules.json"
+      - "modules/**"
+      - "native/**"
+      - "contracts/**"
+      - "Today-AI-Engine/**"
+      - "assets/**"
+      - "vendor/**"
+      - "data/**"
+      - "*.png"
+      - "tests/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - "playwright.config.cjs"
+      - ".github/workflows/platform-regression.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "storage.js"
+      - "health-hub.js"
+      - "version.js"
+      - "sw.js"
+      - "manifest.json"
+      - "nutrition-unit-rules.json"
+      - "modules/**"
+      - "native/**"
+      - "contracts/**"
+      - "Today-AI-Engine/**"
+      - "assets/**"
+      - "vendor/**"
+      - "data/**"
+      - "*.png"
+      - "tests/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - "playwright.config.cjs"
+      - ".github/workflows/platform-regression.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: today-platform-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    name: Platform regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install test dependencies
+        id: install
+        run: npm ci --ignore-scripts
+
+      - name: Run regression gate
+        run: npm test
+
+      - name: Run AI Engine tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: node Today-AI-Engine/tests/run-tests.mjs
+
+      - name: Run Today AI integration tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: node tests/run-nut-017.9.cjs
+
+      - name: Run AI Engine benchmark
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: node Today-AI-Engine/tests/run-benchmark.mjs
+
+      - name: Audit test dependencies
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm audit --audit-level=high
+
+  browser:
+    name: Real browser and mobile WebKit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install test dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run real browser tests
+        run: npm run test:e2e
+
+      - name: Upload synthetic browser diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-browser-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  native:
+    name: Native preview (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            runner: ubuntu-latest
+          - platform: ios
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: native/package-lock.json
+
+      - name: Install native preview dependencies
+        run: npm ci --ignore-scripts
+        working-directory: native
+
+      - name: Validate native foundation and audit dependencies
+        run: |
+          npm test
+          npm audit --audit-level=high
+        working-directory: native
+
+      - name: Use Java 21
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Prepare bundled native preview
+        run: npm run prepare:${{ matrix.platform }}
+        working-directory: native
+
+      - name: Compile Android debug preview
+        if: matrix.platform == 'android'
+        run: ./gradlew --no-daemon :app:assembleDebug
+        working-directory: native/android
+
+      - name: Verify merged Android read permissions
+        id: android_manifest
+        if: matrix.platform == 'android'
+        run: npm run verify:android-permissions
+        working-directory: native
+
+      - name: Checksum Android device preview
+        if: matrix.platform == 'android' && steps.android_manifest.outcome == 'success'
+        run: sha256sum app-debug.apk > SHA256SUMS
+        working-directory: native/android/app/build/outputs/apk/debug
+
+      - name: Upload Android device preview
+        if: matrix.platform == 'android' && steps.android_manifest.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: today-android-preview-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            native/android/app/build/outputs/apk/debug/app-debug.apk
+            native/android/app/build/outputs/apk/debug/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Compile unsigned iOS simulator preview
+        if: matrix.platform == 'ios'
+        run: >-
+          xcodebuild -project native/ios/App/App.xcodeproj -scheme App
+          -configuration Debug -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath /tmp/today-native-ios-build
+          CODE_SIGNING_ALLOWED=NO build

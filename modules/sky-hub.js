@@ -2197,6 +2197,9 @@
   });
 
   function boot() {
+    // Profile reads can create a store; wait until validation and migration finish.
+    if (window.TodayStartup?.getStatus?.().phase !== "ready") return;
+
     const result = init();
     if (result.initialized) return;
 
@@ -2208,6 +2211,12 @@
       }
     }, 100);
   }
+
+  window.addEventListener(
+    "today:startup-ready",
+    boot,
+    { once: true }
+  );
 
   if (document.readyState === "loading") {
     document.addEventListener(

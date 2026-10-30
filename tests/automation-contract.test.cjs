@@ -45,16 +45,40 @@ function test(name, callback) {
 }
 
 test(
-  "Paket özel ve uygulama sürümüyle uyumlu",
+  "Aktif uygulama, depolama ve paket sürümleri tek sürüm kaynağıyla uyumlu",
   () => {
     assert.equal(
       packageJson.private,
       true
     );
-    assert.equal(
+    assert.match(
       packageJson.version,
-      "2.4.0"
+      /^\d+\.\d+\.\d+$/
     );
+    const versionSource = fs.readFileSync("modules/version.js", "utf8");
+    const canonicalVersion = versionSource.match(/const APP_VERSION = "(\d+\.\d+\.\d+)";/);
+    assert.ok(canonicalVersion, "Aktif Version Manager uygulama sürümü yayımlamalı");
+    const storageSource = fs.readFileSync("modules/storage.js", "utf8");
+    const storageVersion = storageSource.match(/const APP_VERSION = "(\d+\.\d+\.\d+)";/);
+    assert.ok(storageVersion, "Aktif Storage Manager uygulama sürümü taşımalı");
+    assert.equal(storageVersion[1], canonicalVersion[1]);
+    assert.equal(packageJson.version, canonicalVersion[1]);
+    assert.equal(lock.version, canonicalVersion[1]);
+    assert.equal(
+      lock.packages[""].version,
+      canonicalVersion[1]
+    );
+
+    const html = fs.readFileSync("index.html", "utf8");
+    const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)]
+      .map(match => match[1]);
+    ["./modules/storage.js", "./modules/version.js"].forEach(src => {
+      assert.equal(scripts.filter(path => path === src).length, 1, src);
+    });
+    const scriptPaths = scripts.map(src => new URL(src, "https://today.test/Today/").pathname);
+    ["/Today/storage.js", "/Today/version.js"].forEach(path => {
+      assert.equal(scriptPaths.includes(path), false, `Eski kök kopya yüklenmemeli: ${path}`);
+    });
   }
 );
 
@@ -112,8 +136,10 @@ test(
     assert.equal(
       lock.packages[""]
         .engines.node,
-      ">=20.19.0"
+      packageJson.engines.node
     );
+    assert.equal(packageJson.engines.node, "^20.19.0 || ^22.13.0 || >=24.0.0");
+    assert.equal(packageJson.engines.node, lock.packages["node_modules/jsdom"].engines.node);
   }
 );
 
@@ -128,19 +154,35 @@ test(
       workflow,
       /\n  pull_request:\n/
     );
-    [
+    const targets = [
       '"index.html"',
+      '"storage.js"',
+      '"health-hub.js"',
+      '"version.js"',
       '"sw.js"',
+      '"manifest.json"',
+      '"nutrition-unit-rules.json"',
       '"modules/**"',
       '"contracts/**"',
+      '"Today-AI-Engine/**"',
+      '"assets/**"',
+      '"vendor/**"',
+      '"data/**"',
+      '"*.png"',
       '"tests/**"',
+      '"scripts/**"',
       '"package.json"',
-      '"package-lock.json"'
-    ].forEach(target => {
-      assert.ok(
-        workflow.includes(target),
-        target
-      );
+      '"package-lock.json"',
+      '".github/workflows/platform-regression.yml"'
+    ];
+    ["push", "pull_request"].forEach(event => {
+      const paths = workflow.match(new RegExp(
+        `\\n  ${event}:\\n    paths:\\n((?:      - .+\\n)+)`
+      ));
+      assert.ok(paths, `${event} paths`);
+      targets.forEach(target => {
+        assert.ok(paths[1].includes(`- ${target}\n`), `${event}: ${target}`);
+      });
     });
   }
 );
@@ -172,7 +214,7 @@ test(
 );
 
 test(
-  "Koşucu bütün yirmi üç test grubunu sabit sırada çalıştırıyor",
+  "Koşucu 25 platform grubunu ve test envanterinin tam kapsamını doğruluyor",
   () => {
     const files = [
       ...runner.matchAll(
@@ -182,7 +224,7 @@ test(
 
     assert.equal(
       files.length,
-      23
+      25
     );
     assert.equal(
       new Set(files).size,
@@ -196,11 +238,28 @@ test(
       files.at(-1),
       "tests/platform-browser-regression.test.cjs"
     );
+
+    const aiRunner = fs.readFileSync("tests/run-nut-017.9.cjs", "utf8");
+    const aiFiles = [...aiRunner.matchAll(/"(tests\/[^\"]+\.test\.(?:cjs|mjs))"/g)]
+      .map(match => match[1]);
+    const registered = [...files, ...aiFiles];
+    assert.equal(new Set(registered).size, registered.length);
+    const discovered = fs.readdirSync("tests")
+      .filter(file => /\.test\.(?:cjs|mjs)$/.test(file) || file === "sw-event-regression.cjs")
+      .map(file => `tests/${file}`);
+    assert.deepEqual([...registered].sort(), discovered.sort());
+    assert.ok(workflow.includes("node tests/run-nut-017.9.cjs"));
+
+    const engineRunner = fs.readFileSync("Today-AI-Engine/tests/run-tests.mjs", "utf8");
+    const engineFiles = [...engineRunner.matchAll(/from '\.\/([^']+\.test\.mjs)'/g)]
+      .map(match => match[1]);
+    assert.deepEqual(engineFiles.sort(), fs.readdirSync("Today-AI-Engine/tests")
+      .filter(file => file.endsWith(".test.mjs")).sort());
   }
 );
 
 test(
-  "Koşucu Türkiye saat dilimi ve 1116 testlik NUT-011 kapısını kilitliyor",
+  "Koşucu Türkiye saat dilimi ve 1161 kontrollük güncel platform kapısını kilitliyor",
   () => {
     assert.ok(
       runner.includes(
@@ -222,7 +281,7 @@ test(
           sum + value,
         0
       ),
-      1116
+      1161
     );
   }
 );

@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-067";
+const VERSION = "today-v2-foundation-075";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -48,6 +48,14 @@ const APP_SHELL = [
   "./modules/nutrition-consumption-editor.js",
   "./modules/nutrition-library-ui.js",
   "./modules/health-hub.js",
+  "./modules/health-wearable-ui.mjs",
+  "./modules/wearable-native-provider.mjs",
+  "./modules/wearable-read-adapter.mjs",
+  "./modules/wearable-context-session.mjs",
+  "./modules/notification-store.mjs",
+  "./modules/notification-service.mjs",
+  "./modules/native-notification-adapter.mjs",
+  "./modules/notification-ui.mjs",
   "./vendor/moment/moment.min.js",
   "./vendor/moment-timezone/moment-timezone-with-data.min.js",
   "./vendor/astronomy-engine/astronomy.browser.min.js",
@@ -77,6 +85,7 @@ const APP_SHELL = [
   "./Today-AI-Engine/src/approval-decision-processor.mjs",
   "./Today-AI-Engine/src/decision-receipt-builder.mjs",
   "./Today-AI-Engine/src/pattern-observer.mjs",
+  "./Today-AI-Engine/src/multi-window-observer.mjs",
   "./Today-AI-Engine/src/pattern-feedback-processor.mjs",
   "./data/sky-cities-15000.json",
 

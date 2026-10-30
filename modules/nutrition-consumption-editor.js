@@ -244,10 +244,11 @@
   }
 
   async function submitEditedMeal(event) {
-    if (submitting || !window.TodayNutritionUI?.selectedIsToday?.()) return;
+    if (!window.TodayNutritionUI?.selectedIsToday?.()) return;
 
     event.preventDefault();
     event.stopImmediatePropagation();
+    if (submitting) return;
 
     try {
       const input = mealInput();

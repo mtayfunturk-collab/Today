@@ -2,14 +2,18 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.16.0
+Application Version: 2.20.0
 Data Schema: 2
-Active Shell: today-v2-foundation-067
-Last Updated: 15 August 2026
+Active Shell: today-v2-foundation-074
+Last Updated: 30 October 2026
 
 ---
 
 # 1. Project Vision
+
+NUT-019.2.1 adds a request-scoped Health wearable preview and thin native preview shell; see [implementation and limits](NUT-019.2-IMPLEMENTATION.md). The browser PWA does not acquire native health access. Native SDK reads remain in memory and are not automatically saved or passed to AI. Existing storage schemas and keys are preserved; native WebView storage is a separate origin with no automatic migration from PWA.
+
+NUT-019.2.2 adds a separate, explicit AI opt-in for the current in-memory wearable preview. Calendar-day sleep, daily steps and elapsed workout spans remain distinct from manual sleep/workout records; see [Health–AI slice](NUT-019.2.2-IMPLEMENTATION.md). The proposed delivery archive is documented separately and is not an active store.
 
 Today is a privacy-first personal life platform designed to help people understand themselves rather than measure themselves.
 
@@ -436,3 +440,9 @@ Phase 2 result: **294/294 successful, 0 failures**. GitHub Pages deployment comp
 - Before every new phase, review the current version, commit, CHANGELOG and backlog.
 
 > **Faz 2 geliştirmeleri tamamlandı. GitHub Actions üzerinde test edildi. Sonuç: Başarılı.**
+
+## NUT-019.3 yerel bildirim sınırı
+
+`notification-store` yalnız onaylı `today_ai_delivery_v1` anahtarını yönetir; mevcut şema 2 değişmez. `notification-service` rezervasyon/tekilleştirme, 7 günlük arşiv, sessiz saat ve izin denetimini; `native-notification-adapter` generic OS içeriğini; `notification-ui` açık etkinleştirme/arşiv açma/sıfırlamayı sağlar. AI tamamlanma olayı yalnız taze, onaylı ve gerçekten üretilen gözlemi aktarır. Ham kaynak/not veya cihaz kimliği arşive/OS yüküne yazılmaz. Arka plan AI/Health okuması, push sunucusu ve platformlar arası senkronizasyon yoktur.
+
+Tercihen Web Locks kullanılır. Yalnız üretilen tek WebView native kabuk açık `singleContext` yeteneğiyle, Web Locks yoksa ortak modül kilidini kullanabilir. İkinci WebView/arka plan JS yazıcısı eklenmeden önce native ortak kilit gerekir. PWA'da kilitsiz yazma kapalıdır. Ayrıntı: `NUT-019.3-IMPLEMENTATION.md`.

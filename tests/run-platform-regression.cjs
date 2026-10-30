@@ -66,6 +66,16 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file:
+      "tests/nutrition-consumption-editor.test.cjs",
+    count: 27
+  },
+  {
+    file:
+      "tests/health-hub.test.cjs",
+    count: 16
+  },
+  {
+    file:
       "tests/adapter-interfaces.test.cjs",
     count: 42
   },
@@ -97,7 +107,7 @@ const TEST_GROUPS = Object.freeze([
   {
     file:
       "tests/service-worker-manager.test.cjs",
-    count: 29
+    count: 31
   },
   {
     file:
@@ -157,6 +167,7 @@ TEST_GROUPS.forEach(group => {
   process.stdout.write(output);
 
   if (
+    result.error ||
     result.status !== 0 ||
     !output.includes(
       `${group.count}/${group.count}`
@@ -165,6 +176,7 @@ TEST_GROUPS.forEach(group => {
     failures.push({
       file: group.file,
       status: result.status,
+      error: result.error?.message,
       expectedCount:
         group.count
     });

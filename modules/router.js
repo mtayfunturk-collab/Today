@@ -783,6 +783,43 @@
     });
   }
 
+  // Sibling module pages only: preserve editors, native edge navigation and
+  // ordinary vertical scrolling. No data writes and no browser gesture blocking.
+  let swipe = null;
+  const swipeRoutes = ["pick", "health", "sky"];
+  const swipeIgnore = 'form,button,a,input,textarea,select,label,[role="button"],[role="slider"],[contenteditable],canvas,dialog,[aria-modal="true"],[data-no-swipe]';
+  if (typeof document.addEventListener === "function") {
+    document.addEventListener("touchstart", event => {
+      swipe = null;
+      if (event.touches.length !== 1 || !swipeRoutes.includes(currentRoute)) return;
+      if (currentRoute === "health" && window.TodayHealthHub?.getState?.().activeSection !== "hub") return;
+      if (document.activeElement?.matches?.("input,textarea,select,[contenteditable]")) return;
+      const target = event.target;
+      if (!target?.closest || target.closest(swipeIgnore) || !target.closest(".screen")) return;
+      const t = event.touches[0];
+      if (t.clientX < 28 || t.clientX > window.innerWidth - 28) return;
+      if (window.getSelection?.().toString()) return;
+      // A horizontally scrollable descendant owns its own gesture.
+      for (let el=target; el && el!==document.body; el=el.parentElement) {
+        if (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(window.getComputedStyle(el).overflowX)) return;
+      }
+      swipe = {x:t.clientX,y:t.clientY,route:currentRoute,at:Date.now(),scroll:window.scrollY};
+    }, {passive:true});
+    document.addEventListener("touchmove", event => {
+      if (!swipe) return;
+      if (event.touches.length !== 1 || Math.abs(event.touches[0].clientY-swipe.y)>12) swipe=null;
+    }, {passive:true});
+    document.addEventListener("touchcancel", () => {swipe=null;}, {passive:true});
+    document.addEventListener("touchend", event => {
+      const start=swipe;swipe=null;
+      if (!start || event.touches.length || event.changedTouches.length!==1 || currentRoute!==start.route || Date.now()-start.at>700 || Math.abs(window.scrollY-start.scroll)>2) return;
+      const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
+      if (Math.abs(dx)<80 || Math.abs(dy)>12) return;
+      const next=swipeRoutes[swipeRoutes.indexOf(currentRoute)+(dx<0?1:-1)];
+      if (next) navigate(next,{source:"swipe"});
+    }, {passive:true});
+  }
+
   window.TodayRouter = Object.freeze({
     ROUTER_VERSION,
     ROUTES,

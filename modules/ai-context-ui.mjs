@@ -20,6 +20,7 @@ import {
 import {
   recordPatternFeedback
 } from "./ai-pattern-feedback-bridge.mjs";
+import { observeMultiWindow } from "../Today-AI-Engine/src/multi-window-observer.mjs";
 
 export const API_VERSION = 1;
 export const RULESET_ID = "today:ai-context-ui:nut-017.9";
@@ -44,6 +45,11 @@ let decisionBusy = false;
 let patternBusy = false;
 let feedbackBusy = false;
 let initialized = false;
+let wearableContextUsed = false;
+
+const WEARABLE_CLASSES = Object.freeze([
+  "wearable-sleep-calendar-day", "wearable-steps", "wearable-workout-span"
+]);
 
 const MAX_REQUEST_RECEIPTS = 20;
 
@@ -78,15 +84,17 @@ function dateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-export function createContextWindow(now = new Date()) {
+export function createContextWindow(now = new Date(), days = WINDOW_DAYS, { includeWearables = false } = {}) {
+  if (![1, 7, 30, 90].includes(days)) throw new RangeError("Unsupported observation window");
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const start = new Date(end);
-  start.setDate(start.getDate() - (WINDOW_DAYS - 1));
+  start.setDate(start.getDate() - (days - 1));
 
   return Object.freeze({
     startDate: dateKey(start),
     endDate: dateKey(end),
-    maxEventsPerSource: MAX_EVENTS_PER_SOURCE
+    maxEventsPerSource: includeWearables === true ? 366 :
+      days <= 7 ? MAX_EVENTS_PER_SOURCE : Math.min(366, days * 4)
   });
 }
 
@@ -94,6 +102,14 @@ function selectedClasses(root, source) {
   return [...root.querySelectorAll(
     `[data-ai-context-source="${source}"][data-ai-context-class]:checked`
   )].map(input => input.dataset.aiContextClass);
+}
+
+function wearableSelected(root) {
+  return selectedClasses(root, "health").some(dataClass => WEARABLE_CLASSES.includes(dataClass));
+}
+
+function contextWindowFor(root, now, days = WINDOW_DAYS) {
+  return createContextWindow(now, days, { includeWearables: wearableSelected(root) });
 }
 
 export function createConsent(root, requestedAt) {
@@ -266,6 +282,8 @@ function clearAnalysis(root) {
 }
 
 function clearPreview(root, options = {}) {
+  wearableContextUsed = false;
+  root.querySelector("#aiWindowOutput")?.replaceChildren();
   if (options.invalidate !== false) {
     requestEpoch += 1;
   }
@@ -962,6 +980,7 @@ async function handlePreview(root) {
   const activeRequestEpoch = requestEpoch + 1;
   requestEpoch = activeRequestEpoch;
   clearPreview(root, { keepStatus: true, invalidate: false });
+  wearableContextUsed = wearableSelected(root);
   if (button) button.disabled = true;
   setStatus(root, "Seçtiğin bilgiler hazırlanıyor…", "busy");
 
@@ -970,7 +989,7 @@ async function handlePreview(root) {
       requestId,
       purpose: PURPOSE,
       requestedAt,
-      window: createContextWindow(new Date(requestedAt)),
+      window: contextWindowFor(root, new Date(requestedAt)),
       consent
     });
 
@@ -1042,11 +1061,135 @@ export function getStatus() {
   });
 }
 
+function addWearableConsentControls(root) {
+  const doc = root.ownerDocument;
+  const fieldset = doc.createElement("fieldset");
+  fieldset.className = "aiContextScopeGroup";
+  fieldset.id = "aiWearableScopes";
+  const legend = doc.createElement("legend");
+  legend.textContent = "Saatten okunan geçici özetler";
+  fieldset.append(legend);
+  const labels = [
+    "Saat: takvim günündeki uyku", "Saat: adım", "Saat: antrenman oturumu süresi"
+  ];
+  WEARABLE_CLASSES.forEach((dataClass, index) => {
+    const label = doc.createElement("label");
+    label.className = "aiContextScope";
+    const input = doc.createElement("input");
+    input.type = "checkbox";
+    input.dataset.aiContextSource = "health";
+    input.dataset.aiContextClass = dataClass;
+    label.append(input, doc.createTextNode(labels[index]));
+    fieldset.append(label);
+  });
+  const note = doc.createElement("p");
+  note.id = "aiWearableScopeNote";
+  note.textContent = "Önce Health / Sağlık / Kişisel Sağlık Verileri ekranında okuduğun geçici özetlerden yalnız seçtiklerin kullanılır. AI incelemesi yeni saat okuması başlatmaz. 90 günlük AI dönemi seçilse de saat önizlemesi en çok son 30 günden gelir. Takvim günündeki uyku ve molaları içerebilen antrenman oturumu, elle yazdığın uyku/aktivite kayıtlarıyla birleştirilmez. Önizlemeyi temizlemek veya yenilemek AI sonucunu da temizler; yeniden onay gerekir.";
+  fieldset.append(note);
+  (root.querySelector(".aiContextScopes") || root).append(fieldset);
+
+  root.ownerDocument.defaultView?.addEventListener("today:wearable-preview-changed", () => {
+    if (!wearableContextUsed && !wearableSelected(root)) return;
+    const confirmation = root.querySelector("#aiConsentConfirm");
+    if (confirmation) confirmation.checked = false;
+    clearPreview(root, { keepStatus: true });
+    setStatus(root, "Saat önizlemesi değişti veya temizlendi. Yeni AI incelemesi için bilgileri yeniden onayla.", "idle");
+  });
+}
+
+function addWindowObservationControls(root) {
+  const doc = root.ownerDocument;
+  const section = doc.createElement("section");
+  section.className = "aiAnalysisOutput";
+  const title = doc.createElement("h4");
+  title.textContent = "Kayıtlarındaki gözlemler";
+  const label = doc.createElement("label");
+  label.textContent = "İncelenecek dönem ";
+  const select = doc.createElement("select");
+  select.id = "aiWindowDays";
+  for (const [value, text] of [[1, "Bugün"], [7, "Son 7 gün"], [30, "Son 30 gün"], [90, "Son 90 gün"]]) {
+    const option = doc.createElement("option"); option.value = String(value); option.textContent = text;
+    select.append(option);
+  }
+  label.append(select);
+  const button = doc.createElement("button");
+  button.id = "btnAiWindowObserve"; button.type = "button"; button.className = "ghost";
+  button.textContent = "Seçtiğim dönemi incele";
+  const help = doc.createElement("p");
+  help.textContent = "Yukarıdaki bilgi seçimi ve açık onayın yalnız bu incelemede kullanılır. Tek gün gözlemdir; az verideki tekrar ön gözlemdir. Günün her bilgi türündeki son uygun kaydı incelenir.";
+  const output = doc.createElement("div");
+  output.id = "aiWindowOutput"; output.setAttribute("role", "status"); output.setAttribute("aria-live", "polite");
+  select.addEventListener("change", () => {
+    const confirmation = root.querySelector("#aiConsentConfirm");
+    if (confirmation) confirmation.checked = false;
+    clearPreview(root);
+  });
+  button.addEventListener("click", async () => {
+    const confirmation = root.querySelector("#aiConsentConfirm");
+    if (!confirmation?.checked) { output.textContent = "Önce bilgi seçimini onayla."; return; }
+    if (button.disabled) return;
+    const requestedAt = new Date().toISOString();
+    const consent = createConsent(root, requestedAt);
+    const epoch = ++requestEpoch;
+    clearPreview(root, { keepStatus: true, invalidate: false });
+    wearableContextUsed = wearableSelected(root);
+    button.disabled = true; output.textContent = "Kayıtların inceleniyor…";
+    try {
+      const built = await buildContextPreview({
+        requestId: consent.consentId.replace("consent:", "request:"), purpose: PURPOSE,
+        requestedAt, window: contextWindowFor(root, new Date(requestedAt), Number(select.value)), consent
+      });
+      if (epoch !== requestEpoch) return;
+      const result = built.success ? observeMultiWindow({ context: built.context, requestedAt }) : null;
+      if (!result?.ok) { output.textContent = "Kayıtlar incelenemedi. Bilgi seçimini kontrol edip yeniden dene."; return; }
+      const report = result.report;
+      output.replaceChildren();
+      const summary = doc.createElement("p");
+      summary.textContent = report.status === "insufficient-data" ? "Bu dönemde seçtiğin bilgi türlerinden yeterli kayıt yok." :
+        `${report.window.days} günün ${report.observedDays} gününde uygun kayıt var. Eksik günler sıfır sayılmadı.`;
+      output.append(summary);
+      const labels = { core: "Günlük seçim", sleep: "Uyku (dk)", energy: "Enerji", fatigue: "Yorgunluk", activity: "Son aktivite kaydı (dk)",
+        "wearable-sleep-calendar-day": "Saat: takvim günündeki uyku",
+        "wearable-steps": "Saat: adım", "wearable-workout-span": "Saat: antrenman oturumu süresi" };
+      const valueLabels = { core: CHOICE_LABELS, energy: ENERGY_LABELS, fatigue: FATIGUE_LABELS };
+      for (const item of report.observations) {
+        const paragraph = doc.createElement("p");
+        if (item.metric === "core-short-sleep") paragraph.textContent =
+          `Ön gözlem: karşılaştırılabilir ${item.recordedDays} günün ${item.matchingDays} gününde “Zordu bugün” ve 6 saatten kısa uyku birlikte kaydedilmiş. Bu bir neden-sonuç ilişkisi değildir.`;
+        else {
+          const values = valueLabels[item.metric] || {};
+          const unit = WEARABLE_CLASSES.includes(item.metric) ? (item.unit === "count" ? " adım" : " dk") : "";
+          paragraph.textContent = `${labels[item.metric]} — ${item.recordedDays} kayıtlı gün. ` +
+            item.values.map(row => `${row.localDate}: ${values[row.value] ?? row.value}${unit}`).join("; ") +
+            item.repeatedValues.map(row => ` Kayıtlı ${row.recordedDays} günde: ${values[row.value] ?? row.value}.`).join("");
+          if (unit && item.providers?.length) paragraph.textContent += " Kaynak: " + item.providers
+            .map(provider => ({ "apple-health": "Apple Health", "health-connect": "Health Connect" })[provider])
+            .filter(Boolean).join(", ") + ".";
+        }
+        output.append(paragraph);
+      }
+      const caveat = doc.createElement("p");
+      caveat.textContent = report.uncertainty.join(" ") + (report.omittedEvents || built.sourceWarnings?.length
+        ? " Bazı kayıtlar kaynak, kapsam veya kayıt sınırı nedeniyle dahil edilmedi. Ekran bütün kayıtların eksiksiz özeti olmayabilir." : "");
+      output.append(caveat);
+      if (report.status === "observed") root.ownerDocument.defaultView?.dispatchEvent(
+        new root.ownerDocument.defaultView.CustomEvent("today:ai-observation-ready", {
+          detail: Object.freeze({ report, requestedAt, userConfirmed: true })
+        })
+      );
+    } catch { if (epoch === requestEpoch) output.textContent = "İnceleme tamamlanamadı; kayıtların değiştirilmedi."; }
+    finally { button.disabled = false; if (epoch === requestEpoch && confirmation) confirmation.checked = false; }
+  });
+  section.append(title, label, help, button, output); root.append(section);
+}
+
 export function initAIContextUI(documentRef = document) {
   if (initialized) return getStatus();
 
   const root = documentRef.querySelector("#aiContextPanel");
   if (!root) return getStatus();
+  addWearableConsentControls(root);
+  addWindowObservationControls(root);
 
   root.querySelector("#aiConsentPurpose").textContent = PURPOSE;
   root.querySelector("#btnAiContextPreview")?.addEventListener(

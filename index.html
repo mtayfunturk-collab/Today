@@ -77,6 +77,17 @@
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
+    html{overflow-x:clip;scrollbar-gutter:stable}
+    .screen,.inner{min-width:0}
+    .topbar{flex-wrap:wrap}
+    .topbar > *{min-width:0}
+    img,svg,canvas{max-width:100%}
+    @media(max-width:600px){
+      .wrap{min-height:calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom));align-items:flex-start;padding:12px}
+      .inner{padding:20px}
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea{font-size:16px;max-width:100%}
+    }
+
     .skipLink{
       position:fixed;
       z-index:1000;
@@ -121,7 +132,7 @@
 
     .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:22px; }
     .screen{
-      width:min(520px, 94vw);
+      width:min(520px, 100%);
       background:var(--card);
       border:1px solid var(--stroke);
       border-radius:var(--radius);
@@ -3116,6 +3127,8 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 <script src="./modules/sky-hub.js"></script>
 <script src="./modules/ai-context-source-adapters.js"></script>
 <script type="module" src="./modules/ai-context-ui.mjs"></script>
+<script type="module" src="./modules/health-wearable-ui.mjs"></script>
+<script type="module" src="./modules/notification-ui.mjs"></script>
 <script src="./modules/router.js"></script>
 <script src="./modules/module-registry.js"></script>
 <script src="./modules/startup-manager.js"></script>
