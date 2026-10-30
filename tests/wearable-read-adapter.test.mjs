@@ -63,4 +63,22 @@ await check(() => {
     assert.throws(() => { template.body = 'private health details'; }, TypeError);
   }
 });
+await check(async () => {
+  const controller = new AbortController();
+  let reads = 0;
+  const p = provider();
+  p.requestReadPermission = async () => { controller.abort(); return true; };
+  p.readDailySummaries = async () => { reads += 1; return [sample]; };
+  const result = await createWearableReader(p).read({ ...options, signal: controller.signal });
+  assert.equal(result.error.code, 'read-cancelled');
+  assert.equal(reads, 0);
+});
+await check(async () => {
+  const controller = new AbortController();
+  const p = provider();
+  p.readDailySummaries = async () => { controller.abort(); return [sample]; };
+  const result = await createWearableReader(p).read({ ...options, signal: controller.signal });
+  assert.equal(result.error.code, 'read-cancelled');
+  assert.equal(result.samples, undefined);
+});
 console.log(`NUT-019.1 Wearable Read Contract: ${count}/${count} başarılı`);

@@ -11,6 +11,7 @@ on:
       - "manifest.json"
       - "nutrition-unit-rules.json"
       - "modules/**"
+      - "native/**"
       - "contracts/**"
       - "Today-AI-Engine/**"
       - "assets/**"
@@ -33,6 +34,7 @@ on:
       - "manifest.json"
       - "nutrition-unit-rules.json"
       - "modules/**"
+      - "native/**"
       - "contracts/**"
       - "Today-AI-Engine/**"
       - "assets/**"
@@ -124,3 +126,66 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  native:
+    name: Native preview (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            runner: ubuntu-latest
+          - platform: ios
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: native/package-lock.json
+
+      - name: Install native preview dependencies
+        run: npm ci --ignore-scripts
+        working-directory: native
+
+      - name: Validate native foundation and audit dependencies
+        run: |
+          npm test
+          npm audit --audit-level=high
+        working-directory: native
+
+      - name: Use Java 21
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Prepare bundled native preview
+        run: npm run prepare:${{ matrix.platform }}
+        working-directory: native
+
+      - name: Compile Android debug preview
+        if: matrix.platform == 'android'
+        run: ./gradlew --no-daemon :app:assembleDebug
+        working-directory: native/android
+
+      - name: Verify merged Android read permissions
+        if: matrix.platform == 'android'
+        run: npm run verify:android-permissions
+        working-directory: native
+
+      - name: Compile unsigned iOS simulator preview
+        if: matrix.platform == 'ios'
+        run: >-
+          xcodebuild -project native/ios/App/App.xcodeproj -scheme App
+          -configuration Debug -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath /tmp/today-native-ios-build
+          CODE_SIGNING_ALLOWED=NO build

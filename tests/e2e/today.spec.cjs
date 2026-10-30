@@ -219,3 +219,98 @@ test("An update activates only after the user confirms and preserves Core data",
     (await navigator.serviceWorker.getRegistration()).waiting === null
   )).toBe(true);
 });
+
+test("Wearable PWA preview explains unavailable access and preserves Core and Health data", async ({ page }) => {
+  await open(page);
+  await saveCore(page);
+  await page.locator("#btnHomeFromPick").click();
+  await page.locator("#btnModuleHealth").click();
+  await page.locator('[data-health-hub-open="nutrition"]').click();
+  await page.locator('[data-nutrition-hub-open="water"]').click();
+  await addWater(page);
+  const healthRecords = () => page.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open("today_nutrition", 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction("records", "readonly");
+      const read = transaction.objectStore("records").getAll();
+      read.onerror = () => { db.close(); reject(read.error); };
+      read.onsuccess = () => { db.close(); resolve(read.result); };
+    };
+  }));
+  const storageSnapshot = () => page.evaluate(() => Object.fromEntries(
+    Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])
+  ));
+  const before = { storage: await storageSnapshot(), health: await healthRecords() };
+  await page.locator("#btnModulesFromHealth").click();
+  await page.locator("#btnModulesFromHealth").click();
+  await page.locator('[data-health-hub-open="wellness"]').click();
+  await page.locator('[data-wellness-open="personalData"]').click();
+  await expect(page.locator("#wellnessPersonalDataPanel")).toBeVisible();
+  await expect(page.locator("#wearableAvailability")).toContainText("Bu sürümde saat verisine erişim yok");
+  await expect(page.locator("#btnWearableRead")).toBeDisabled();
+  await expect(page.locator("#wearableReadConsent")).not.toBeChecked();
+  await expect(page.locator("#wearableReadConsent")).toBeDisabled();
+  await expect(page.locator("#wearableReadResults")).toBeEmpty();
+  await page.locator("#btnWearableClear").click();
+  await expect(page.locator("#wearableReadResults")).toBeEmpty();
+  expect(await storageSnapshot()).toEqual(before.storage);
+  expect(await healthRecords()).toEqual(before.health);
+  await page.locator("#btnModulesFromHealth").click();
+  await expect(page.locator("#wellnessHub")).toBeVisible();
+});
+
+test("Synthetic native health bridge reads only explicitly selected steps after consent", async ({ page }, testInfo) => {
+  testInfo.annotations.push({ type: "provider", description: "synthetic Android bridge; no real OS permission or watch" });
+  await page.addInitScript(() => {
+    const observed = { permissions: [], checks: [], queries: [] };
+    window.__syntheticHealthCalls = observed;
+    window.TodayNativeHealth = Object.freeze({
+      isNative: true, platform: "android", pluginAvailable: true,
+      health: {
+        isAvailable: async () => ({ available: true }),
+        requestAuthorization: async scope => {
+          observed.permissions.push(scope);
+          return { readAuthorized: scope.read, readDenied: [] };
+        },
+        checkAuthorization: async scope => {
+          observed.checks.push(scope);
+          return { readAuthorized: scope.read, readDenied: [] };
+        },
+        queryAggregated: async options => {
+          observed.queries.push(options);
+          return { samples: [{ startDate: options.startDate, endDate: options.endDate,
+            value: 1234, values: { sum: 1234 }, unit: "count" }] };
+        },
+        readSamples: async () => { throw Error("Unexpected sleep read"); },
+        queryWorkouts: async () => { throw Error("Unexpected workout read"); }
+      }
+    });
+  });
+  await open(page);
+  await openModule(page, "Health");
+  await page.locator('[data-health-hub-open="wellness"]').click();
+  await page.locator('[data-wellness-open="personalData"]').click();
+  await expect(page.locator("#wearableAvailability")).toContainText("erişim yolu hazır");
+  const storageSnapshot = () => page.evaluate(() => Object.fromEntries(
+    Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])
+  ));
+  const before = await storageSnapshot();
+  expect(await page.evaluate(() => window.__syntheticHealthCalls)).toEqual({ permissions: [], checks: [], queries: [] });
+  await page.locator('[data-wearable-type="steps"]').check();
+  await page.locator("#wearableReadDays").selectOption("1");
+  await expect(page.locator("#btnWearableRead")).toBeDisabled();
+  await page.locator("#wearableReadConsent").check();
+  await page.locator("#btnWearableRead").click();
+  await expect(page.locator("#wearableReadResults")).toContainText("1234 adım");
+  await expect(page.locator("#wearableReadConsent")).not.toBeChecked();
+  const calls = await page.evaluate(() => window.__syntheticHealthCalls);
+  expect(calls.permissions).toEqual([{ read: ["steps"], write: [] }]);
+  expect(calls.checks).toEqual([{ read: ["steps"], write: [] }]);
+  expect(calls.queries).toHaveLength(1);
+  expect(calls.queries[0]).toMatchObject({ dataType: "steps", bucket: "day", aggregation: "sum" });
+  expect(await storageSnapshot()).toEqual(before);
+  await page.locator("#btnWearableClear").click();
+  await expect(page.locator("#wearableReadResults")).toBeEmpty();
+});

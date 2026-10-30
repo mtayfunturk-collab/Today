@@ -2,6 +2,8 @@
 
 Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Engine ile anlamlandırmayı hedefleyen, cihaz içi veriye ve kullanıcı kararına öncelik veren günlük yaşam uygulaması. Önceki beslenme/hareket odak seçimi geri çekildi; kullanıcının yeni talebi günlük, 7/30/90 günlük AI gözlemleri ve sonrasında izinli saat/bildirim bağlantılarıdır. Core günlük farkındalığı, Health yerel kayıt/planlamayı, isteğe bağlı Sky sembolik düşünme alanını sağlar. AI Engine bugün sağlayıcısız günlük kurallar ve çok dönemli betimleyici gözlemlerle çalışır; genel sohbet veya otomatik dış işlem yapmaz.
 
+Health → Sağlık → Kişisel Sağlık Verileri, native SDK bulunan telefonda seçilen son 1/7/30 günlük uyku/adım/antrenman özetini açık onayla geçici olarak incelemek içindir. Normal PWA'da erişim olmadığı açıklanır. [Native önizleme kurulumu](native/README.md) aynı web uygulamasını kullanır; PWA verisini otomatik taşımaz. [Teslim kapsamı, test kanıtı ve kalan cihaz/bildirim işleri](docs/NUT-019.2-IMPLEMENTATION.md).
+
 ## Geliştirme ve doğrulama
 
 Ana geliştirme ortamı Codex'tir. Önce [AGENTS.md](AGENTS.md) ve [proje kurallarını](docs/00_PROJECT_RULES.md) okuyun. `main` dalına doğrudan yazılmaz; mevcut NUT-018 çalışması `nut-018-ci-stabilization` ve taslak PR #1'de sürer.

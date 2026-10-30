@@ -2,14 +2,16 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.17.0
+Application Version: 2.18.0
 Data Schema: 2
-Active Shell: today-v2-foundation-071
-Last Updated: 29 October 2026
+Active Shell: today-v2-foundation-072
+Last Updated: 30 October 2026
 
 ---
 
 # 1. Project Vision
+
+NUT-019.2.1 adds a request-scoped Health wearable preview and thin native preview shell; see [implementation and limits](NUT-019.2-IMPLEMENTATION.md). The browser PWA does not acquire native health access. Native SDK reads remain in memory and are not automatically saved or passed to AI. Existing storage schemas and keys are preserved; native WebView storage is a separate origin with no automatic migration from PWA.
 
 Today is a privacy-first personal life platform designed to help people understand themselves rather than measure themselves.
 

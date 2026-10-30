@@ -25,6 +25,7 @@ export function createWearableReader(provider = null) {
     getAvailability: () => Object.freeze({ supported, provider: supported ? provider.kind : null, connected: false }),
     async read(options = {}) {
       if (!supported) return failure("native-provider-unavailable");
+      if (options?.signal?.aborted === true) return failure("read-cancelled");
       if (options?.userConfirmed !== true || typeof options.purpose !== "string" || !options.purpose.trim() ||
           !Array.isArray(options.types) || !options.types.length ||
           options.types.some(type => !READ_TYPES.includes(type)) || new Set(options.types).size !== options.types.length ||
@@ -32,11 +33,14 @@ export function createWearableReader(provider = null) {
       const days = 1 + (Date.parse(options.endDate) - Date.parse(options.startDate)) / 86400000;
       if (days < 1 || days > 90) return failure("invalid-read-window");
       const scope = Object.freeze({ types: Object.freeze([...options.types]), startDate: options.startDate,
-        endDate: options.endDate, purpose: options.purpose.trim(), readOnly: true });
+        endDate: options.endDate, purpose: options.purpose.trim(), readOnly: true,
+        ...(options.signal ? { signal: options.signal } : {}) });
       try {
         // Completion is not proof that every HealthKit type was granted.
         if (await provider.requestReadPermission(scope) !== true) return failure("permission-request-incomplete");
+        if (scope.signal?.aborted === true) return failure("read-cancelled");
         const samples = await provider.readDailySummaries(scope);
+        if (scope.signal?.aborted === true) return failure("read-cancelled");
         if (!Array.isArray(samples) || samples.length > 270) return failure("invalid-provider-response");
         const daysSeen = new Set();
         const normalized = [];
@@ -56,7 +60,7 @@ export function createWearableReader(provider = null) {
         }
         return Object.freeze({ ok: true, status: normalized.length ? "read-completed" : "no-readable-data",
           permissionState: "not-inferred", samples: Object.freeze(normalized), persistent: false, externalTransfer: false });
-      } catch { return failure("provider-read-failed"); }
+      } catch { return failure(scope.signal?.aborted === true ? "read-cancelled" : "provider-read-failed"); }
     }
   });
 }

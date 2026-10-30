@@ -1,0 +1,25 @@
+{
+  "name": "today-native-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin native preview shell for the existing Today web application",
+  "engines": { "node": ">=22.0.0" },
+  "scripts": {
+    "build:web": "node scripts/build-web.mjs",
+    "prepare:android": "node scripts/prepare-platform.mjs android",
+    "prepare:ios": "node scripts/prepare-platform.mjs ios",
+    "verify:android-permissions": "node scripts/verify-android-permissions.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/ios": "8.6.0",
+    "@capgo/capacitor-health": "8.11.13"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.0",
+    "esbuild": "0.28.2"
+  }
+}

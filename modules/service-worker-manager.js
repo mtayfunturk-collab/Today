@@ -821,7 +821,10 @@
     targetDocument = candidateDocument;
     targetNavigator = candidateNavigator;
 
-    const supported = Boolean(
+    // Native packages ship their own assets; a web cache must not replace them.
+    const nativeApp = typeof targetWindow.Capacitor?.isNativePlatform === "function" &&
+      targetWindow.Capacitor.isNativePlatform() === true;
+    const supported = !nativeApp && Boolean(
       targetNavigator.serviceWorker &&
       typeof targetNavigator.serviceWorker
         .register === "function"

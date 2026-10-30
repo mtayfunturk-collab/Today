@@ -297,6 +297,8 @@ function createRuntime(options = {}) {
     }
   };
 
+  if (options.native === true) window.Capacitor = { isNativePlatform: () => true };
+
   const context = {
     window,
     document,
@@ -583,6 +585,20 @@ async function test(name, callback) {
         runtime.registerCount,
         0
       );
+    }
+  );
+
+  await test(
+    "Native paket web Service Worker kaydı veya keşfi yapmıyor",
+    async () => {
+      const runtime = createRuntime({ native: true });
+      const result = await runtime.window.TodayServiceWorker.start();
+      assert.equal(result.success, true);
+      assert.equal(result.supported, false);
+      assert.equal(result.phase, "unsupported");
+      assert.equal(runtime.registerCount, 0);
+      assert.equal(runtime.serviceWorkerEvents.listenerCount("controllerchange"), 0);
+      assert.equal(runtime.document.getElementById("todayUpdateNotice"), null);
     }
   );
 

@@ -88,6 +88,21 @@ async function run() {
       view.querySelector("#healthWellnessPanel").hidden === false,
       "Sağlık paneli görünür olmadı."
     );
+    assert(
+      view.querySelector('[data-wellness-open="personalData"]'),
+      "Kişisel Sağlık Verileri girişi oluşmadı."
+    );
+    api.showWellnessSection("personalData", { focus: false });
+    assert(
+      view.querySelector("#wellnessPersonalDataPanel").hidden === false,
+      "Kişisel Sağlık Verileri paneli görünür olmadı."
+    );
+    assert(
+      view.querySelector(".topbar .pill").textContent === "Kişisel Sağlık Verileri",
+      "Kişisel Sağlık Verileri üst başlığı güncellenmedi."
+    );
+    view.querySelector("#btnModulesFromHealth").click();
+    assert(api.getState().wellnessActiveSection === "hub", "Geri düğmesi Sağlık merkezine dönmedi.");
 
     const styleText =
       dom.window.document.getElementById("todayHealthHubStyles")?.textContent || "";

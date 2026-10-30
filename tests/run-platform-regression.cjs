@@ -72,7 +72,7 @@ const TEST_GROUPS = Object.freeze([
   {
     file:
       "tests/health-hub.test.cjs",
-    count: 12
+    count: 16
   },
   {
     file:
@@ -107,7 +107,7 @@ const TEST_GROUPS = Object.freeze([
   {
     file:
       "tests/service-worker-manager.test.cjs",
-    count: 30
+    count: 31
   },
   {
     file:

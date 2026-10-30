@@ -31,6 +31,20 @@ Each entry should include:
 
 ---
 
+## NUT-019.2.1 — Health ekranı ve gerçek native SDK köprüsü
+
+Tarih: 30 Ekim 2026. App 2.18.0; Core şema 2; foundation-072 / 117 kabuk kaydı.
+
+- Health/Sağlık/Kişisel Sağlık Verileri: seçilen uyku/adım/antrenman türleri ve son 1/7/30 gün için her istekte açık onayla geçici önizleme. PWA'da native erişim yoksa okuma kapalı; bağlı iddiası yok.
+- Aynı web uygulaması için ayrı kilit dosyalı Capacitor 8.6.0 / Health 8.11.13 native kabuğu, gerçek SDK sağlayıcısı, Android üç dar okuma izni ve merged-manifest kapısı, iOS HealthKit okuma yapılandırması eklendi. Android minSdk 26, Auto Backup kapalı; yeni üretici bulutu/hesabı yok.
+- İptal/tür/dönem değişimi sonraki SDK çağrılarını durdurur, geç sonuç atılır. Günlük kaynak/aralık tekilleştirmesi, eksik ile sıfır ayrımı, uyku/antrenman anlamı ve DST sınırları test edildi. Mevcut kullanıcı verisi anahtarları, şema ve migration yapısı korundu; native ayrı origin'dir, PWA verisi otomatik taşınmaz.
+- Gerçek Chromium ilk koşusundaki boş panel lifecycle yarışı araştırılıp düzeltildi: interactive aşamasında erken mount, DOMContentLoaded/Health hazır olayıyla tekrar edilir. Eski kodda mounted=false, düzeltmeyle true; beklentiler gevşetilmedi.
+- Yerel sonuç: platform 1161/1161, AI Engine 364/364, entegrasyon 160/160, benchmark 16/16, native hazırlık 13/13, Chromium 9/9; FAIL 0, benchmark güvenlik ihlali 0. Native audit 0 açık. Android hazırlığı başarılı; gerçek native derleme/merged manifest ve WebKit CI kanıtı SHA ile PR #1'de tutulur.
+- Değişen alanlar: Health hub, yeni UI/SDK sağlayıcısı, okuma sözleşmesi/iptal, native/**, index/SW/sürüm, ilgili test kapıları/E2E, CI ve proje belgeleri. Kayıt docs/NUT-019.2-IMPLEMENTATION.md.
+- Sonraki kapı: fiziksel cihaz kabulü, onaylı Health–AI kaynak bağlantısı, günlük analiz/bildirim taşıyıcısı. Bunlar henüz tamamlanmadı; bildirim gönderimi, yeni kalıcı sağlık kaydı, push sunucusu veya mağaza yayını yok.
+
+---
+
 ## NUT-019.2 — Çoklu ekosistem hedefi ve bildirim içeriği
 
 Tarih: 30 Ekim 2026. App 2.17.0 / Core şema 2 / foundation-071 değişmedi.

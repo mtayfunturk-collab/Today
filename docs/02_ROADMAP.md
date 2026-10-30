@@ -15,6 +15,8 @@ Today, **Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsam
 
 30 Ekim kapsam kararı: Apple Watch, Android ve Xiaomi/Mi Fitness ile Zepp Life dahil mümkün olan en geniş saat/bileklik desteği hedeflenir. Native sağlık adaptörü bu istenen yetenek için gereklidir; mağazaya gönderim veya tüm modellerde uyumluluk onayı anlamına gelmez. HealthKit ve Health Connect üzerinden gerçekten aktarılabilen türler alınır. Tüm sürümler için destek iddiası yerine model/telefon/üretici uygulaması bazında kabul kaydı tutulur. Güncelleme başlığı `Today Yenilik`; günlük AI gövdesi `Today, yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin.` olur. [Uyumluluk, üretici bulutu ve bildirim sınırları](NUT-019.2-COMPATIBILITY.md).
 
+[NUT-019.2.1](NUT-019.2-IMPLEMENTATION.md) native SDK okuyucusu ve Health kişisel veri önizlemesini ekler. Bu dar bağlantı kabuğu, aynı web uygulamasını kullanır; fiziksel saat kabulü, otomatik AI aktarımı, bildirim teslimi veya mağaza yayını değildir. Pilot veri güveni ve kişisel kullanım kapıları korunur.
+
 ## Bugünkü ürün ile hedef arasındaki fark
 
 | Alan | Mevcut taban | Sıradaki değer hipotezi |

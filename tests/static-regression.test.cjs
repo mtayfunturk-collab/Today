@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "4319269ee900775a15ec0fef36a04e15eac6cd570cef93282206403cd0325c2b",
+    "77be5981de4968aaa9c4450995120f9bd1a2deaf084aff3775cb5b376e4256dc",
   "sw.js":
-    "c98ad1d2f834ba78b8b60fd6567ec62f4c372b3868ed7b62d00da1e91d2101d4",
+    "b43ec3623aeb1493ff8849f6d2ff48f7892496712eafa7ab7b2a372b183b84cd",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -45,9 +45,9 @@ const expectedProductionHashes = {
   "modules/nutrition-ui.js":
     "66d5811449440e94ba18c24d6e93ebe6cb20d16e40b718fbb9f673dc66a7324e",
   "storage.js":
-    "ba87841e5e8ffe9445ef57a97e52e7fc72a9a932855ed94339d227d36cf5f154",
+    "5c4bbd30566e10e46688bd52283325eec0fcc2f201e190b3a006246dd6da5abb",
   "version.js":
-    "7434d62326762f9dbbd22e8d140b5655f10245aab47be3bcd0dbf7716ada32d3",
+    "5ef7225fc5b0d123b52f66fc60222d310b1ffe04d0afaf0af53ecb0d3d8354a1",
   "migration.js":
     "8862194d0b240944cc0cab9149fb923416e76498eedd33245b28f0d3ef8dba3d",
   "day-manager.js":
@@ -59,7 +59,7 @@ const expectedProductionHashes = {
   "module-registry.js":
     "9678b6a3f73789f50e961257a0fa2115006b60ae521a6867340ea11975be8356",
   "service-worker-manager.js":
-    "37a35037a92eb6b2c7cc2394d4e66f93490a609a57834067ea1ac7b79aa06e6a"
+    "f7f7a98f6fb610b7eb71255e652132038c2b0f53ca99284abcda4b177a18252d"
 };
 
 const expectedHtmlIds = [
@@ -445,6 +445,7 @@ test(
       "./modules/sky-hub.js",
       "./modules/ai-context-source-adapters.js",
       "./modules/ai-context-ui.mjs",
+      "./modules/health-wearable-ui.mjs",
       "./modules/router.js",
       "./modules/module-registry.js",
       "./modules/startup-manager.js"
@@ -1222,7 +1223,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-071 ve 114 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-072 ve 117 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1234,7 +1235,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-071"'
+        'const VERSION = "today-v2-foundation-072"'
       )
     );
     assert.ok(shellMatch);
@@ -1244,7 +1245,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 114);
+    assert.equal(shellEntries.length, 117);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);

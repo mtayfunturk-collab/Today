@@ -1,3 +1,7 @@
 node_modules/
 playwright-report/
 test-results/
+native/www/
+native/android/
+native/ios/
+native/.www-build-*/
