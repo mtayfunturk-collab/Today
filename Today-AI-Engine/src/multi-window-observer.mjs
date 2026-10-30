@@ -23,8 +23,23 @@ const kinds = {
   "energy-record": ["today-health", "energy"],
   "workout-record": ["today-health", "activity"],
   "nutrition-record": ["today-health", null],
-  "symptom-record": ["today-health", "symptoms"]
+  "symptom-record": ["today-health", "symptoms"],
+  "wearable-sleep-summary": ["today-health", "wearable-sleep-calendar-day"],
+  "wearable-steps-summary": ["today-health", "wearable-steps"],
+  "wearable-workout-summary": ["today-health", "wearable-workout-span"]
 };
+
+function wearableFactsValid(item) {
+  const steps = item.eventType === "wearable-steps-summary";
+  return item.dataClasses.length === 1 &&
+    Object.keys(item.facts).length === 4 &&
+    ["value", "unit", "provider", "aggregation"].every(key => Object.hasOwn(item.facts, key)) &&
+    number(item.facts.value, steps ? 1000000 : 1440) &&
+    (!steps || Number.isInteger(item.facts.value)) &&
+    item.facts.unit === (steps ? "count" : "min") &&
+    ["apple-health", "health-connect"].includes(item.facts.provider) &&
+    item.facts.aggregation === "daily-deduplicated";
+}
 
 function validate(context, requestedAt) {
   if (!time(requestedAt) || context?.schemaVersion !== 1 || !time(context.builtAt) ||
@@ -61,7 +76,8 @@ function validate(context, requestedAt) {
         !time(item.createdAt) || Date.parse(item.createdAt) > Date.parse(context.builtAt) ||
         !item.facts || typeof item.facts !== "object" || Array.isArray(item.facts) || !Array.isArray(item.dataClasses) ||
         (kind[1] && !item.dataClasses.includes(kind[1])) ||
-        !provenance.has(key) || seen.has(key)) return null;
+        !provenance.has(key) || seen.has(key) ||
+        (item.eventType.startsWith("wearable-") && !wearableFactsValid(item))) return null;
     seen.add(key);
   }
   if (context.sections.core.some(item => item.source !== "today-core") ||
@@ -94,7 +110,10 @@ export function observeMultiWindow(request = {}) {
     ["sleep", "sleep-record", "durationMinutes", "sleep", value => number(value, 1440)],
     ["energy", "energy-record", "energy", "energy", value => ["low", "balanced", "high"].includes(value)],
     ["fatigue", "energy-record", "fatigue", "energy", value => ["none", "some", "high"].includes(value)],
-    ["activity", "workout-record", "durationMinutes", "activity", value => number(value, 1440)]
+    ["activity", "workout-record", "durationMinutes", "activity", value => number(value, 1440)],
+    ["wearable-sleep-calendar-day", "wearable-sleep-summary", "value", "wearable-sleep-calendar-day", value => number(value, 1440)],
+    ["wearable-steps", "wearable-steps-summary", "value", "wearable-steps", value => number(value, 1000000) && Number.isInteger(value)],
+    ["wearable-workout-span", "wearable-workout-summary", "value", "wearable-workout-span", value => number(value, 1440)]
   ];
   const selected = {};
   for (const [metric, type, field, dataClass, valid] of specs) {
@@ -109,6 +128,10 @@ export function observeMultiWindow(request = {}) {
     observations.push({
       metric, kind: days === 1 ? "daily-observation" : "record-summary",
       recordedDays: items.length, calendarDays: days,
+      ...(metric.startsWith("wearable-") ? {
+        unit: items[0].facts.unit,
+        providers: [...new Set(items.map(item => item.facts.provider))].sort()
+      } : {}),
       // Each value is the latest eligible record of that type on its date.
       values: items.map(item => ({ localDate: item.localDate, value: item.facts[field] })),
       repeatedValues: [...frequencies].filter(([, count]) => count >= 2)

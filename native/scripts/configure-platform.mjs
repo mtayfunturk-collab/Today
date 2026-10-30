@@ -69,7 +69,7 @@ function xmlText(value) {
 
 export function withHealthReadDescription(xml) {
   const key = 'NSHealthShareUsageDescription';
-  const value = 'Today, seçtiğin tarih ve veri türleri için uyku, adım ve kayıtlı aktivite özetlerini yalnız cihazında göstermek üzere okur. Sağlık verisi yazmaz.';
+  const value = 'Today, seçtiğin uyku, adım ve antrenman özetlerini cihazında gösterir; ayrıca seçip onaylarsan cihazında AI gözlemi hazırlamada kullanır. Sağlık verisi yazmaz.';
   const entry = `<key>${key}</key>\n\t<string>${xmlText(value)}</string>`;
   if (xml.includes(`<key>${key}</key>`)) {
     return xml.replace(new RegExp(`<key>${key}</key>\\s*<string>[\\s\\S]*?</string>`), entry);

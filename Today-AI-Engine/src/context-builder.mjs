@@ -15,7 +15,10 @@ export const SUPPORTED_EVENT_TYPES = Object.freeze({
     "energy-record",
     "symptom-record",
     "workout-record",
-    "nutrition-record"
+    "nutrition-record",
+    "wearable-sleep-summary",
+    "wearable-steps-summary",
+    "wearable-workout-summary"
   ]),
   "today-sky": Object.freeze([
     "sky-moment",
@@ -44,6 +47,14 @@ const INACTIVE_HEALTH_STATUSES = new Set([
   "deleted",
   "superseded"
 ]);
+
+// These daily native summaries deliberately do not use manual sleep/workout
+// event types: a calendar day's asleep intervals are not a complete night.
+const WEARABLE_SUMMARIES = Object.freeze({
+  "wearable-sleep-summary": Object.freeze({ dataClass: "wearable-sleep-calendar-day", unit: "min", maximum: 1440 }),
+  "wearable-steps-summary": Object.freeze({ dataClass: "wearable-steps", unit: "count", maximum: 1000000 }),
+  "wearable-workout-summary": Object.freeze({ dataClass: "wearable-workout-span", unit: "min", maximum: 1440 })
+});
 
 const IDENTIFIER_PATTERN =
   /^[a-z0-9](?:[a-z0-9._:-]{0,158}[a-z0-9])?$/;
@@ -421,6 +432,29 @@ function mapWorkout(event, consent) {
     : { omissionReason: "no-eligible-fields", redactions };
 }
 
+function mapWearableSummary(event, consent) {
+  const spec = WEARABLE_SUMMARIES[event.eventType];
+  if (!isDataClassAllowed(consent, "health", spec.dataClass)) {
+    return { omissionReason: "data-class-not-consented", redactions: [] };
+  }
+  const { payload } = event;
+  const value = safeNumber(payload.value, 0, spec.maximum);
+  if (value === null || payload.unit !== spec.unit ||
+      (spec.unit === "count" && !Number.isInteger(value)) ||
+      !["apple-health", "health-connect"].includes(payload.provider) ||
+      payload.aggregation !== "daily-deduplicated") {
+    return { omissionReason: "invalid-wearable-summary", redactions: [] };
+  }
+  const allowedFields = ["value", "unit", "provider", "aggregation"];
+  return {
+    facts: { value, unit: spec.unit, provider: payload.provider, aggregation: payload.aggregation },
+    dataClasses: [spec.dataClass],
+    redactions: Object.keys(payload).filter(field => !allowedFields.includes(field))
+      .map(field => redact(event, `payload.${field}`)),
+    freeTextIncluded: false
+  };
+}
+
 function firstFinite(object, keys, minimum = 0, maximum = Infinity) {
   for (const key of keys) {
     const value = safeNumber(object?.[key], minimum, maximum);
@@ -724,6 +758,9 @@ function mapEvent(event, consent) {
     case "symptom-record": return mapSymptoms(event, consent);
     case "workout-record": return mapWorkout(event, consent);
     case "nutrition-record": return mapNutrition(event, consent);
+    case "wearable-sleep-summary":
+    case "wearable-steps-summary":
+    case "wearable-workout-summary": return mapWearableSummary(event, consent);
     default: return { omissionReason: "unsupported-event-type", redactions: [] };
   }
 }

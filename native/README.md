@@ -52,6 +52,8 @@ xcodebuild -project native/ios/App/App.xcodeproj -scheme App -configuration Debu
 
 Bu komutlar native kaynakların derlenmesini doğrular; gerçek saatin veri paylaşımını, bildirim teslimini, imzalı cihaz kurulumunu veya mağaza kabulünü kanıtlamaz. Uyumluluk telefon/OS/saat/üretici uygulaması/sürüm/tür matrisiyle ayrıca kaydedilir.
 
+Android CI, derleme ve birleşmiş manifest doğrulaması geçtikten sonra yalnız debug APK ile SHA256SUMS dosyasını `today-android-preview-<commit SHA>` artifact'i olarak 7 gün saklar. Bu bir mağaza sürümü değildir; iOS simulator derlemesi de iPhone'a kurulabilir paket değildir. İndirme, checksum, kurulum/güncelleme ayrımı ve henüz çalıştırılmamış gerçek cihaz kabul kaydı [DEVICE-VALIDATION.md](DEVICE-VALIDATION.md) içindedir.
+
 ## Veri ve dağıtım sınırı
 
 Native WebView origin/deposu mevcut tarayıcı/PWA profilinden ayrıdır. Mevcut PWA kayıtları kendiliğinden taşınmaz. Bu paket otomatik migration, mevcut kullanıcı verisini silme veya yeni kalıcı sağlık şeması içermez. Saatten okunan özetlerin bu bağlantı dilimindeki hedefi açık oturum belleğinde önizlemedir; güncel Health/AI kaynak/onay davranışının sınırı ana uygulama raporunda açıklanır. Üretici Mi Fitness/Zepp Life bulutu Today'in cihaz içi işleme sınırından ayrıdır; kullanıcı adına üretici bulutu açılmaz.

@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 import { mountWearableUI, PURPOSE } from "../modules/health-wearable-ui.mjs";
+import { wearableContextSession } from "../modules/wearable-context-session.mjs";
 
 let checks = 0;
 const days = date => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"),
   String(date.getDate()).padStart(2, "0")].join("-");
-const sample = { type: "steps", localDate: days(new Date()), value: 1234, unit: "count" };
+const sample = { type: "steps", localDate: days(new Date()), value: 1234, unit: "count", provider: "health-connect", aggregation: "daily-deduplicated" };
 const success = { ok: true, samples: [sample] };
 const pause = () => new Promise(resolve => setTimeout(resolve, 0));
 
@@ -239,14 +240,24 @@ await check("provider errors are generic and do not leak rejected payloads", asy
   }
 });
 
-await check("sample content is inserted as plain text and activity meaning is explicit", async () => {
+await check("invalid sample markup is rejected before it can enter preview or AI memory", async () => {
   const f = await fixture({ result: { ok: true, samples: [
     { type: "activity", localDate: '<img src=x onerror="alert(1)">', value: 0, unit: "min" }
   ] } });
   try {
     f.select("activity"); f.consent(); f.$("btnWearableRead").click(); await pause();
-    assert.match(f.$("wearableReadResults").textContent, /Antrenman oturumu süresi: 0 dakika/);
+    assert.equal(f.$("wearableReadResults").textContent, '');
+    assert.match(f.$("wearableReadStatus").textContent, /doğrulanamadı/);
     assert.equal(f.$("wearableReadResults").querySelector("img"), null);
+  } finally { f.close(); }
+});
+
+await check("valid zero activity summary retains its separate unit and session meaning", async () => {
+  const f = await fixture({ result: { ok: true, samples: [{ ...sample, type: 'activity', value: 0, unit: 'min' }] } });
+  try {
+    f.select('activity'); f.period(1); f.consent(); f.$('btnWearableRead').click(); await pause();
+    assert.match(f.$('wearableReadResults').textContent, /Antrenman oturumu süresi: 0 dakika/);
+    assert.match(f.dom.window.document.body.textContent, /molaları içerebilir/);
   } finally { f.close(); }
 });
 
@@ -314,4 +325,14 @@ await check("deferred interactive module retries after classic Health Hub create
   }
 });
 
+await check("successful preview is available only in memory and clearing revokes AI source", async () => {
+  const f = await fixture();
+  try {
+    f.select('steps'); f.period(1); f.consent(); f.$('btnWearableRead').click(); await pause();
+    const scope = { startDate: sample.localDate, endDate: sample.localDate, types: ['steps'] };
+    assert.equal(wearableContextSession.getSnapshot(scope).samples[0].value, 1234);
+    f.$('btnWearableClear').click();
+    assert.equal(wearableContextSession.getSnapshot(scope), null);
+  } finally { f.close(); }
+});
 console.log(`NUT-019.2 Wearable UI: ${checks}/${checks} başarılı`);

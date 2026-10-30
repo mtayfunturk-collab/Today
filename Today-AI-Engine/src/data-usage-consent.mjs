@@ -16,7 +16,10 @@ export const DATA_CLASSES = deepFreeze({
     "activity",
     "hydration",
     "nutrition",
-    "weight"
+    "weight",
+    "wearable-sleep-calendar-day",
+    "wearable-steps",
+    "wearable-workout-span"
   ],
   sky: [
     "moment",

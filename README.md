@@ -4,6 +4,8 @@ Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsamda AI Eng
 
 Health → Sağlık → Kişisel Sağlık Verileri, native SDK bulunan telefonda seçilen son 1/7/30 günlük uyku/adım/antrenman özetini açık onayla geçici olarak incelemek içindir. Normal PWA'da erişim olmadığı açıklanır. [Native önizleme kurulumu](native/README.md) aynı web uygulamasını kullanır; PWA verisini otomatik taşımaz. [Teslim kapsamı, test kanıtı ve kalan cihaz/bildirim işleri](docs/NUT-019.2-IMPLEMENTATION.md).
 
+Son saat önizlemesi, Ayarlar/AI içindeki ayrı ve varsayılan kapalı saat türleri seçilip yeniden onaylandığında gözleme katılabilir. Takvim günü uykusu ve antrenman oturum süresi manuel kayıtlardan ayrı kalır; yeni bir kalıcı sağlık/AI deposu oluşturulmaz. [Health–AI dilimi](docs/NUT-019.2.2-IMPLEMENTATION.md), [Android APK ve cihaz kabulü](native/DEVICE-VALIDATION.md), [henüz uygulanmamış bildirim depo önerisi](docs/NUT-019.3-NOTIFICATION-DESIGN.md).
+
 ## Geliştirme ve doğrulama
 
 Ana geliştirme ortamı Codex'tir. Önce [AGENTS.md](AGENTS.md) ve [proje kurallarını](docs/00_PROJECT_RULES.md) okuyun. `main` dalına doğrudan yazılmaz; mevcut NUT-018 çalışması `nut-018-ci-stabilization` ve taslak PR #1'de sürer.

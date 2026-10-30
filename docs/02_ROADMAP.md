@@ -17,6 +17,8 @@ Today, **Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsam
 
 [NUT-019.2.1](NUT-019.2-IMPLEMENTATION.md) native SDK okuyucusu ve Health kişisel veri önizlemesini ekler. Bu dar bağlantı kabuğu, aynı web uygulamasını kullanır; fiziksel saat kabulü, otomatik AI aktarımı, bildirim teslimi veya mağaza yayını değildir. Pilot veri güveni ve kişisel kullanım kapıları korunur.
 
+[NUT-019.2.2](NUT-019.2.2-IMPLEMENTATION.md), son geçici saat önizlemesini ayrı AI onayıyla ve manuel kayıt anlamından ayrı kullanır; Android APK/cihaz kabul paketini ekler. [NUT-019.3 bildirimi](NUT-019.3-NOTIFICATION-DESIGN.md) için yeni sınırlı gözlem deposu somut öneridir; mevcut depolama sınırına uygun açık kapsam onayı olmadan uygulanmaz. Günlük mesaj ancak gerçek/açılabilir gözlem olduğunda hedeflenir; kapalı uygulamada her gün yeni AI sözü verilmez.
+
 ## Bugünkü ürün ile hedef arasındaki fark
 
 | Alan | Mevcut taban | Sıradaki değer hipotezi |

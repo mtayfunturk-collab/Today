@@ -31,6 +31,19 @@ Each entry should include:
 
 ---
 
+## NUT-019.2.2 — Saat verisinden ayrı onaylı AI gözlemi ve cihaz paketi
+
+Tarih: 30 Ekim 2026. App 2.19.0; Core şema 2; foundation-073 / 118 kabuk kaydı.
+
+- Son Health saat önizlemesi yalnız bellekte tutulan, temizleme/yenilemede revizyonu değişen bir kaynak oldu. AI'da üç ayrı, varsayılan kapalı saat sınıfı ve taze onay gerekir; SDK tekrar okunmaz. Yeni kalıcı sağlık/AI kaydı yoktur.
+- Context/consent v1 kataloğuna takvim günü uykusu, adım, antrenman oturum süresi eklendi. Manuel kayıtlar ve eski kısa-gece kuralları aynı kalır; yeni veriler farklı metriklerdir. Kaynak/kayıt tavanı kaybı açıklanır; asenkron toplamada geri alınan snapshot dışlanır.
+- Android CI'da başarılı derleme/merged manifest kontrolünden sonra yalnız APK+SHA256SUMS artifact'i, 7 günlük saklama ve fiziksel cihaz kabul rehberi eklendi. iOS simulator cihaz kurulumu sayılmaz; debug imza/native origin/veri kaybı sınırları açıklandı.
+- Testler: platform 1161/1161, Engine 403/403, entegrasyon 182/182, benchmark 16/16 (0 güvenlik ihlali), native 13/13, Chromium 10/10; FAIL 0. Yeni kapsam: 39 Engine, 9 oturum kaynağı, 5 source adapter, 6 AI UI ve 2 Health UI kontrolü. SHA/CI/artifact kanıtı PR #1'de tutulur.
+- Bildirim için ayrı today_ai_delivery_v1 depo tasarımı somutlaştırıldı; uygulanmadı. Kullanıcının depolama değişikliğinde onay sınırı nedeniyle önce bu kapsam onaylanmalıdır. Günlük OS bildirimi veya kapalı uygulamada AI üretimi henüz kurulmadı.
+- Değişen alanlar: Engine consent/context/observer, kaynak adaptörü, Health/AI UI ve yeni session modülü, ilgili testler, APK workflow/cihaz rehberi, sürüm/SW ve proje belgeleri. Kayıtlar docs/NUT-019.2.2-IMPLEMENTATION.md ve docs/NUT-019.3-NOTIFICATION-DESIGN.md.
+
+---
+
 ## NUT-019.2.1 — Health ekranı ve gerçek native SDK köprüsü
 
 Tarih: 30 Ekim 2026. App 2.18.0; Core şema 2; foundation-072 / 117 kabuk kaydı.

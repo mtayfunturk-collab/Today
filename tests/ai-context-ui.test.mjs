@@ -57,6 +57,8 @@ let observedSleepMinutes = 330;
 let observedEnergy = "balanced";
 let observedFatigue = "some";
 let includePatternHistory = false;
+let includeWearableSamples = false;
+let includeSourceWarning = false;
 const today = localDateKey(new Date());
 
 function dateBeforeToday(daysAgo) {
@@ -136,9 +138,14 @@ globalThis.TodayAIContextSources = Object.freeze({
         );
       });
     }
+    if (includeWearableSamples) events.push({
+      schemaVersion: 1, eventId: "health:wearable:steps:test", source: "today-health",
+      eventType: "wearable-steps-summary", createdAt: new Date(Date.now()-60000).toISOString(), localDate: today,
+      payload: { value: 1234, unit: "count", provider: "health-connect", aggregation: "daily-deduplicated" }
+    });
     return Object.freeze({
       events: Object.freeze(events),
-      warnings: Object.freeze([])
+      warnings: Object.freeze(includeSourceWarning ? [{ source: "today-health", reason: "source-event-limit", omitted: 2 }] : [])
     });
   }
 });
@@ -664,14 +671,66 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 117);
+  assert.equal(shellFiles.length, 118);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-072/);
+  assert.match(swSource, /today-v2-foundation-073/);
 });
 
+const watchInput = document.querySelector('[data-ai-context-class="wearable-steps"]');
+const changeWatch = checked => { watchInput.checked = checked; watchInput.dispatchEvent(new window.Event("change", { bubbles: true })); };
+await test("Saat AI sınıfları ayrı ve varsayılan kapalıdır", () => {
+  const inputs = [...document.querySelectorAll('#aiWearableScopes input')];
+  assert.equal(inputs.length, 3); assert.equal(inputs.every(input => !input.checked), true);
+  assert.match(document.getElementById('aiWearableScopeNote').textContent, /yeniden onay/);
+});
+await test("Saat seçimi yeni onay ister ve açık sınıfı ayrı kapsamla gönderir", async () => {
+  const before = observed.length; changeWatch(true);
+  document.querySelector('#btnAiWindowObserve').click(); await settle();
+  assert.equal(observed.length, before);
+  includeWearableSamples = true;
+  document.querySelector('#aiConsentConfirm').checked = true;
+  document.querySelector('#btnAiWindowObserve').click(); await settle();
+  const request = observed.at(-1);
+  assert.equal(request.consent.permissions.health.dataClasses.includes('wearable-steps'), true);
+  assert.equal(request.window.maxEventsPerSource, 366);
+  assert.match(document.querySelector('#aiWindowOutput').textContent, /Saat: adım.*1234 adım/s);
+  assert.match(document.querySelector('#aiWindowOutput').textContent, /Health Connect/);
+  assert.equal(document.querySelector('#aiConsentConfirm').checked, false);
+});
+await test("Saat önizlemesi temizlenince hazır AI gözlemi ve onayı geçersiz olur", async () => {
+  document.querySelector('#aiConsentConfirm').checked = true;
+  window.dispatchEvent(new window.CustomEvent('today:wearable-preview-changed', { detail: { revision: 2 } }));
+  assert.equal(document.querySelector('#aiWindowOutput').textContent, '');
+  assert.equal(document.querySelector('#aiConsentConfirm').checked, false);
+  assert.match(document.querySelector('#aiContextStatus').textContent, /Saat önizlemesi/);
+});
+await test("Geç dönen AI toplaması geri alınmış saat önizlemesini yeniden göstermez", async () => {
+  holdNextRequest = true; document.querySelector('#aiConsentConfirm').checked = true;
+  document.querySelector('#btnAiWindowObserve').click(); await settle();
+  window.dispatchEvent(new window.CustomEvent('today:wearable-preview-changed', { detail: { revision: 3 } }));
+  releaseHeldRequest(); await settle();
+  assert.equal(document.querySelector('#aiWindowOutput').textContent, '');
+  assert.equal(document.querySelector('#aiConsentConfirm').checked, false);
+});
+await test("Saat sınıfını kapatmak eski manuel kapsamı ve kaynak sınırını korur", async () => {
+  changeWatch(false); includeWearableSamples = false;
+  const period = document.querySelector('#aiWindowDays'); period.value = '7'; period.dispatchEvent(new window.Event('change'));
+  document.querySelector('#aiConsentConfirm').checked = true;
+  document.querySelector('#btnAiWindowObserve').click(); await settle();
+  assert.equal(observed.at(-1).window.maxEventsPerSource, 31);
+  assert.equal(observed.at(-1).consent.permissions.health.dataClasses.includes('wearable-steps'), false);
+});
+
+await test("Kaynak adaptörü kayıt sınırı uyarısı gözlemde görünür kalır", async () => {
+  includeSourceWarning = true;
+  document.querySelector('#aiConsentConfirm').checked = true;
+  document.querySelector('#btnAiWindowObserve').click(); await settle();
+  assert.match(document.querySelector('#aiWindowOutput').textContent, /bütün kayıtların eksiksiz özeti olmayabilir/);
+  includeSourceWarning = false;
+});
 const failures = results.filter(result => !result.success);
 failures.forEach(result => {
   console.error(`FAIL — ${result.name}`);

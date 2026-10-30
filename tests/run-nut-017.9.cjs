@@ -13,7 +13,8 @@ const GROUPS = Object.freeze([
   "tests/ai-evaluation-gate.test.mjs",
   "tests/wearable-read-adapter.test.mjs",
   "tests/wearable-native-provider.test.mjs",
-  "tests/health-wearable-ui.test.mjs"
+  "tests/health-wearable-ui.test.mjs",
+  "tests/wearable-context-session.test.mjs"
 ]);
 
 let passed = 0;

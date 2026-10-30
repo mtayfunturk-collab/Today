@@ -501,6 +501,57 @@ async function test(name, callback) {
     dom.window.close();
   });
 
+  const nativeSample = { type: "steps", localDate: "2026-08-12", value: 1234,
+    unit: "count", provider: "health-connect", aggregation: "daily-deduplicated", privateNote: "SECRET_NATIVE" };
+  function nativeRuntime() {
+    const runtime = createRuntime(); let revision = 1; let reads = 0;
+    runtime.context.TodayWearableContextSession = {
+      getRevision: () => revision,
+      getSnapshot(options) { reads += 1; assert.deepEqual(clone(options.types), ["steps"]);
+        return { revision, capturedAt: "2026-08-13T08:00:00.000Z", samples: [nativeSample] }; }
+    };
+    return { ...runtime, reads: () => reads, revoke: () => { revision += 1; } };
+  }
+  await test("Saat AI sınıfı seçilmeden bellekteki önizleme okunmaz", async () => {
+    const runtime = nativeRuntime();
+    await runtime.context.TodayAIContextSources.collectEvents({ consent: createConsent(), window: windowRequest, requestedAt });
+    assert.equal(runtime.reads(), 0);
+  });
+  await test("Ayrı saat sınıfı yalnız izinli özet zarfını toplar, manuel API veya SDK çağırmaz", async () => {
+    const runtime = nativeRuntime();
+    const result = await runtime.context.TodayAIContextSources.collectEvents({
+      consent: createConsent({ coreClasses: [], healthClasses: ["wearable-steps"] }), window: windowRequest, requestedAt });
+    assert.equal(runtime.reads(), 1); assert.equal(result.events.length, 1);
+    assert.equal(result.events[0].eventType, "wearable-steps-summary");
+    assert.deepEqual(Object.keys(result.events[0].payload).sort(), ["aggregation","provider","unit","value"]);
+    assert.equal(runtime.calls.health.length + runtime.calls.nutrition.length, 0);
+    assert.doesNotMatch(JSON.stringify(result), /SECRET_NATIVE/);
+  });
+  await test("Önizleme yoksa sıfır örnek uydurulmaz, kaynak uyarısı görünür", async () => {
+    const runtime = nativeRuntime(); runtime.context.TodayWearableContextSession.getSnapshot = () => null;
+    const result = await runtime.context.TodayAIContextSources.collectEvents({
+      consent: createConsent({ coreClasses: [], healthClasses: ["wearable-steps"] }), window: windowRequest, requestedAt });
+    assert.equal(result.events.length, 0);
+    assert.equal(result.warnings[0].reason, "wearable-preview-empty");
+  });
+  await test("Asenkron toplama sırasında geri alınan saat önizlemesi dışarı verilmez", async () => {
+    const runtime = nativeRuntime(); let release;
+    runtime.context.TodayNutritionStorage.queryRecords = () => new Promise(resolve => { release = resolve; });
+    const pending = runtime.context.TodayAIContextSources.collectEvents({
+      consent: createConsent({ coreClasses: [], healthClasses: ["wearable-steps","hydration"] }), window: windowRequest, requestedAt });
+    runtime.revoke(); release([]); const result = await pending;
+    assert.equal(result.events.length, 0);
+    assert.equal(result.warnings.some(row => row.reason === "wearable-preview-changed"), true);
+  });
+  await test("Manuel ve saat kayıtları ortak tavana ulaşınca kayıp sayısı sessizce saklanmaz", async () => {
+    const runtime = nativeRuntime();
+    const result = await runtime.context.TodayAIContextSources.collectEvents({
+      consent: createConsent({ coreClasses: [], healthClasses: ["sleep","wearable-steps"] }),
+      window: { ...windowRequest, maxEventsPerSource: 1 }, requestedAt });
+    assert.equal(result.events.length, 1);
+    assert.equal(result.warnings.some(row => row.reason === "source-event-limit" && row.omitted === 1), true);
+  });
+
   const failures = results.filter(result => !result.success);
   failures.forEach(result => {
     console.error(`FAIL — ${result.name}`);

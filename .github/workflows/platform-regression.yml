@@ -177,9 +177,26 @@ jobs:
         working-directory: native/android
 
       - name: Verify merged Android read permissions
+        id: android_manifest
         if: matrix.platform == 'android'
         run: npm run verify:android-permissions
         working-directory: native
+
+      - name: Checksum Android device preview
+        if: matrix.platform == 'android' && steps.android_manifest.outcome == 'success'
+        run: sha256sum app-debug.apk > SHA256SUMS
+        working-directory: native/android/app/build/outputs/apk/debug
+
+      - name: Upload Android device preview
+        if: matrix.platform == 'android' && steps.android_manifest.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: today-android-preview-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            native/android/app/build/outputs/apk/debug/app-debug.apk
+            native/android/app/build/outputs/apk/debug/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Compile unsigned iOS simulator preview
         if: matrix.platform == 'ios'

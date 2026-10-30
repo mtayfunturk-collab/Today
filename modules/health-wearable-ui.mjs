@@ -1,5 +1,6 @@
 /** Request-scoped, read-only wearable preview. No persistence or automatic AI transfer. */
 import { createNativeWearableReader } from "./wearable-native-provider.mjs";
+import { replaceWearablePreview, clearWearablePreview } from "./wearable-context-session.mjs";
 
 export const PURPOSE = "Kişisel sağlık verilerimin seçtiğim günlük özetlerini cihazımda incelemek";
 const mounts = new WeakMap();
@@ -66,7 +67,7 @@ async function buildPanel(panel, readerFactory) {
   const consentLabel = make("label", {});
   const consent = make("input", { id: "wearableReadConsent", type: "checkbox" });
   consentLabel.append(consent, document.createTextNode(
-    " Seçtiğim türleri ve dönemi yalnız bu inceleme için okumayı onaylıyorum. Sonuçlar bu ekranda geçicidir; kaydedilmez veya AI'a otomatik gönderilmez."));
+    " Seçtiğim türleri ve dönemi yalnız bu inceleme için okumayı onaylıyorum. Sonuçlar bu uygulama oturumunda geçicidir; kaydedilmez veya AI'a otomatik gönderilmez. AI'da kullanmak için ayrıca seçim ve onay gerekir."));
   const read = make("button", { id: "btnWearableRead", type: "button", disabled: "" }, "Seçtiğim verileri oku");
   const clear = make("button", { id: "btnWearableClear", type: "button" }, "Önizlemeyi temizle");
   const status = make("p", { id: "wearableReadStatus", role: "status", "aria-live": "polite" });
@@ -84,6 +85,7 @@ async function buildPanel(panel, readerFactory) {
   const invalidate = (message = "") => {
     epoch += 1;
     activeController?.abort();
+    clearWearablePreview();
     hasResult = false;
     consent.checked = false;
     results.replaceChildren();
@@ -122,6 +124,7 @@ async function buildPanel(panel, readerFactory) {
     activeController = requestController;
     busy = true;
     hasResult = false;
+    clearWearablePreview();
     results.replaceChildren();
     status.textContent = "Seçtiğin özetler okunuyor. Telefonunda erişim izni sorulabilir.";
     updateReadButton();
@@ -135,6 +138,12 @@ async function buildPanel(panel, readerFactory) {
       }
       if (!result.samples.length) {
         status.textContent = "Bu dönem için okunabilir veri bulunamadı. Bu, izni reddettiğin anlamına gelmeyebilir; üretici eşitlemesini ve paylaşımını kontrol edebilirsin.";
+        return;
+      }
+      const snapshot = replaceWearablePreview({ samples: result.samples, capturedAt: new Date().toISOString(),
+        window: { startDate: localDateKey(start), endDate: localDateKey(end) } });
+      if (!snapshot.ok) {
+        status.textContent = "Veriler güvenli biçimde doğrulanamadı. Daha sonra tekrar deneyebilirsin.";
         return;
       }
       const list = make("ul", {});
