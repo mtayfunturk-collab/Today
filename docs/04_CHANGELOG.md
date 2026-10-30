@@ -31,6 +31,12 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.2c — CI kapanış kaydı
+
+Actions41126865552 / a9f4f04 completed/success, platform ve iki native derleme ile Chromium/WebKit işi başarılı. Job logu Chromium14+WebKit14=28PASS/0FAIL verdi. Önceki WebKit ağ fixture hatası kapandı. Runtime c4ac76d ve App2.21.1 aynı; yalnız sonuç belgesi güncellendi, test tekrar edilmedi. Yerel platform1161/entegrasyon300/Engine403/benchmark16/native15/Chromium14 PASS; gerçek ses ve cihaz kabulü yok. Sıradaki küçük görev tek audio yöneticisi.
+
+---
+
 ## NUT-RADIO.2c — WebKit ağ fixture izolasyonu
 
 CI41126002787 browser27PASS/1FAIL: WebKit'te Service Worker, page.route taklidini atlayıp gerçek filtrelenmemiş dizin yanıtını aldı (3beklenirken2güvenli kayıt). Trace /json/servers ve /json/stations/search?hidebroken=true&limit=30&offset=0&is_https=true gerçek API yanıtlarını kanıtladı. Kullanıcı sağlık/geçmiş/not verisi yok; izole sentetik test profili kullanıldı. Ürün hatası diye doğrulama gevşetilmedi.
