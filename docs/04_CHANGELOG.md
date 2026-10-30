@@ -31,6 +31,16 @@ Each entry should include:
 
 ---
 
+## NUT-019.3 — iPhone 15 / Mi Band 8 kabul kapsamı
+
+Tarih: 30 Ekim 2026. App 2.20.0/kod 06ebb6c aynı.
+
+- Kullanıcı cihazı iPhone 15/iOS 18.7.8, tek bilekliği Mi Band 8/Mi Fitness; Windows erişimi ve Mac/Xcode yokluğu kaydedildi. Bu bilgi fiziksel test sonucu sayılmadı.
+- Apple Sağlık'ta Mi Fitness kaynaklı tür kontrolü, PWA sınırı ve bulut macOS→imzalı iOS→TestFlight hazırlığının hesap/yetki koşulları açıklandı. Android APK/simulator telefona kurulum yolu olarak önerilmez. İmzalama/hesap/dağıtım işlemi yapılmadı.
+- Yalnız belgeler değişti; uygulama testleri tekrar edilmedi. Diff ve kayıt tutarlılığı kontrol edildi; cihaz PASS/FAIL yok, tüm fiziksel kontroller bekliyor. Commit: docs: tailor device acceptance to iPhone 15 and Mi Band 8.
+
+---
+
 ## NUT-019.3 — İndirilen Android paketinin bütünlüğü
 
 Tarih: 30 Ekim 2026; App 2.20.0/kod 06ebb6c aynı.
