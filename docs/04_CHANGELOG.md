@@ -31,6 +31,16 @@ Each entry should include:
 
 ---
 
+## NUT-019.3 — İndirilen Android paketinin bütünlüğü
+
+Tarih: 30 Ekim 2026; App 2.20.0/kod 06ebb6c aynı.
+
+- Artifact 12999152208 indirildi; ZIP digest, iki dosyalı envanter ve APK SHA256SUMS eşleşmesi doğrulandı. Yedi kritik paket dosyası 06ebb6c ile byte düzeyinde eşleşti; native plugin/bootstrap ve paket dışlamaları kontrol edildi.
+- APK SHA256: cb39769772f51d89651bbafe051c7cd327f31c0dcf2c96f33b256d4865817f7e. Kontroller PASS, FAIL 0; uygulama testleri tekrar edilmedi. İmza ve fiziksel cihaz/OS teslimi testi değildir.
+- Genel run 41101231255 API'de completed/success olarak doğrulandı; önceki queued/null tutarsızlığı kapandı. Ayrıntı docs/NUT-019.3-IMPLEMENTATION.md içinde. Yalnız belgeler değişti; mevcut veriler ve uygulama kodu korundu. Commit: docs: verify downloaded notification preview package.
+
+---
+
 ## NUT-019.3 — Uzak test kanıtı ve cihaz kabul devri
 
 Tarih: 30 Ekim 2026. Uygulama sürümü 2.20.0 ve kod 06ebb6c değişmedi.
