@@ -31,6 +31,18 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.2b — Radio tasarım önizlemesi
+
+App 2.21.0; Core şema 2; foundation-076 / 124 kabuk kaydı.
+
+- Radio, Registry/Router içinde dördüncü modül/dokuzuncu rota/yedinci görünüm oldu; ortak alt navigasyon dört sütuna geçti. Core/Health/Sky ve geri/odak/aria davranışı korundu.
+- Açık etiketli örnek katalog: arama, ülke/dil/tür filtreleri, boş/hata/yükleme/iptal durumları; iptal/rota veya filtre değişimi eski sonucu dışlar. Otomatik ağ, yayın/oynatıcı, favori/kalıcı geçmiş veya AI yok. Doğrulanmış Radio Browser DTO adaptörü örnek yanıtlarla kullanılır.
+- İlk tarayıcı koşusu Registry'nin Radio alt gezinme bağını beklediğini gösterdi; dört modüllü navigasyon eklendi. Ekran görüntüsü incelemesi genel wrap ve Health’in sonradan eklediği global !important hizalamanın mobil üst hizalamayı ezdiğini gösterdi; media kuralı sonraya taşınıp route niteliğiyle kapsamı belirginleştirildi, mobil scrollbar rezervi kaldırıldı.
+- Yerel UI 8/8, entegrasyon 292/292, platform 1161/1161, Engine 403 kontrol, benchmark 16/16, native 15/15 ve Chromium 14/14 PASS; FAIL 0. Son CSS düzeltmesi hedefli mobil/Radio E2E 2/2 ve statik 30/30 kapısıyla doğrulandı; uzak CI sonucu PR #2'de. Fiziksel iPhone/Windows testi yapılmadı.
+- Önceki CI 41122648364 success: WebKit Touch engeli kapandı. Yeni sürümün dağıtıldığı veya canlı istasyonların çalıştığı iddia edilmez.
+
+---
+
 ## NUT-RADIO.2a — İzole dizin adaptörü
 
 Yeni radio-directory.mjs: doğrulanmış HTTPS/UUID DTO, TR/dünya arama/ülke/dil/tür filtresi, sınırlı pagination/ayna/timeout, iptal/eski sonuç, 512KiB yanıt tavanı ve kayıt tekilleştirme. Mount/ağ/oynatma/depo/AI yok; adaptör yalnız açık kullanıcı eylemiyle kullanılabilir. Kullanıcı arayüzü sonraki dilimdir.

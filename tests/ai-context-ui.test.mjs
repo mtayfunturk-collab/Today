@@ -671,12 +671,12 @@ await test("Runtime dosyaları doğru sırayla yüklenir ve çevrimdışı kabu�
   )?.[1] || "";
   const shellFiles = [...shellBlock.matchAll(/"(\.\/[^"\n]*)"/g)]
     .map(match => match[1]);
-  assert.equal(shellFiles.length, 122);
+  assert.equal(shellFiles.length, 124);
   assert.equal(new Set(shellFiles).size, shellFiles.length);
   await Promise.all(shellFiles.map(file =>
     access(new URL(`../${file.slice(2)}`, import.meta.url))
   ));
-  assert.match(swSource, /today-v2-foundation-075/);
+  assert.match(swSource, /today-v2-foundation-076/);
 });
 
 const watchInput = document.querySelector('[data-ai-context-class="wearable-steps"]');

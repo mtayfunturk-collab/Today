@@ -17,7 +17,7 @@
   const BACKUP_KEY = "today_store_v2_backup";
 
   const SCHEMA_VERSION = 2;
-  const APP_VERSION = "2.20.1";
+  const APP_VERSION = "2.21.0";
 
   /**
    * Yeni ve boş Today veri modeli.

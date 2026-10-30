@@ -89,3 +89,13 @@ radio-directory.mjs ve 19 hedefli test eklendi; birleşik test koşucusuna kayde
 Bu modül henüz index/router/SW tarafından yüklenmez; kullanıcıya Radio varmış gibi gösterilmez. Depo/AI/ses/history/logo/click yok; yeni uygulama sürümü veya migration yok. Ayna keşfi/sağlayıcı click koşulu halen açık. Sonraki küçük dilim sahte adaptörle erişilebilir Radio arama/filtre/empty/error ekranıdır. Canlı dizin ve oynatıcı ayrı kapılardır.
 
 Ana dal Touch test düzeltmesi ede686d: Event üstünde sentetik touches/changedTouches kullanılır; hedefli Chromium1/1. Bu sentetik handler sözleşmesidir, fiziksel parmak kaydırması değildir. Uzak WebKit sonucu SHA/PR ile izlenir; başarılı doğrulanmadan engel kapandı denmez.
+
+## Aşama 2b — Ayrı Radio görünümü, örnek katalog
+
+App2.21.0, schema2, foundation-076/124. Önceki 1c16eb6 CI41122648364 completed/success ile WebKit sentetik touch engeli kapandı. Radio UI, dokuzuncu router rotası/yedinci fiziksel görünüm ve dördüncü Registry modülüdür; üç ortak alt navigasyona Radio eklendi. Yeni module startup-ready sonrası idempotent mount edilir, ilk açılışta istek/oynatma/depo yoktur.
+
+createPreviewDirectory, gerçek DTO doğrulayıcısına örnek veriler döndürür; örnek kayıtlar açık etiketlidir ve hiçbir yayın adresine gidilmez. Ülke/dil/tür/isim filtresi yalnız submit'te işler. Busy sırasında iptal/filtre değişimi/rota çıkışı eski yanıtın görünmesini engeller; hata retry sunar. Sonuç adları textContent ile basılır; logo/link/audio yoktur. Sağlayıcı click/kimlik/koşul ve gerçek HLS kararları açıkken canlı katalog bağlanmaz. Ekranda favori, son dinlenen veya mini-player varmış gibi gösterilmez.
+
+UI8 yeni kontrol entegrasyona eklendi: toplam292. Platform1161, Engine403, benchmark16/0ihlal, native15 ve Chromium14 geçti. Yeni gerçek Chromium senaryosu393px'de Radio açma→3örnek→ülke/tür filtresi→tek sonuç→boş arama→geri→Core koruması ve dış ağ0 kontrol eder. Son media cascade/Health global hizalama düzeltmesinden sonra mobil/Radio hedefi 2/2 ve statik30/30 geçti; fiziksel telefon kanıtı değildir. Native Android asset/sync hazırlığı geçti, yeni imzalı dağıtım yapılmadı. Statik kimlik/rota/kart/hash/envanter referansları eklenen sözleşmeye göre güncellendi; kapsam azaltılmadı.
+
+Sonraki küçük dilim: Radio Browser sağlayıcı beklentisini/privacy sınırını netleştirip izinli gerçek katalogya geçiş; sonra tek audio çekirdeği ve mini-player. Geçmiş/AI için yeni depo oluşturulmadı. Önizleme UI'si bu tüm-modül tesliminin tamamlandığı anlamına gelmez.

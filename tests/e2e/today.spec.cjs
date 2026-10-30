@@ -459,3 +459,28 @@ test('Mobile layout fits the viewport and module swipes leave vertical scroll an
   }
   expect(await coreDay(page)).toEqual(before);
 });
+
+test('Radio preview filters example stations without external requests or changing Core',async({page,context},testInfo)=>{
+  await page.setViewportSize({width:393,height:852});const external=[];
+  context.on('request',r=>{if(new URL(r.url()).hostname!=='127.0.0.1')external.push(r.url());});
+  await open(page);await saveCore(page);const before=await coreDay(page);
+  await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
+  await page.locator('#btnModuleRadio').click();
+  await expect(page.locator('#radioTitle')).toBeVisible();
+  const card=await page.locator('.screen').boundingBox();expect(card.y).toBeLessThan(30);
+  await expect(page.locator('#radioStatus')).toContainText('Henüz arama yapılmadı');
+  await page.locator('#btnRadioSearch').click();
+  await expect(page.locator('#radioResults li')).toHaveCount(3);
+  await page.locator('#radioCountry').selectOption('TR');
+  await page.locator('#radioGenre').selectOption('news');
+  await page.locator('#btnRadioSearch').click();
+  await expect(page.locator('#radioResults li')).toHaveCount(1);
+  await expect(page.locator('#radioResults')).toContainText('Örnek Haber');
+  await page.locator('#radioQuery').fill('olmayan');await page.locator('#btnRadioSearch').click();
+  await expect(page.locator('#radioStatus')).toContainText('bulunamadı');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.screenshot({path:testInfo.outputPath('radio-preview.png'),fullPage:true});
+  await page.locator('#btnRadioBack').click();
+  await expect(page.locator('#modulesTitle')).toBeVisible();
+  expect(await coreDay(page)).toEqual(before);expect(external).toEqual([]);
+});

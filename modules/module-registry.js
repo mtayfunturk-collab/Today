@@ -32,7 +32,8 @@
       id: "sky",
       route: "sky",
       view: "sky"
-    })
+    }),
+    Object.freeze({id:"radio",route:"radio",view:"radio"})
   ]);
 
   const MODULE_IDS = Object.freeze(

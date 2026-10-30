@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.20.0
+Application Version: 2.21.0
 Data Schema: 2
-Active Shell: today-v2-foundation-074
+Active Shell: today-v2-foundation-076
 Last Updated: 30 October 2026
 
 ---
@@ -446,3 +446,5 @@ Phase 2 result: **294/294 successful, 0 failures**. GitHub Pages deployment comp
 `notification-store` yalnız onaylı `today_ai_delivery_v1` anahtarını yönetir; mevcut şema 2 değişmez. `notification-service` rezervasyon/tekilleştirme, 7 günlük arşiv, sessiz saat ve izin denetimini; `native-notification-adapter` generic OS içeriğini; `notification-ui` açık etkinleştirme/arşiv açma/sıfırlamayı sağlar. AI tamamlanma olayı yalnız taze, onaylı ve gerçekten üretilen gözlemi aktarır. Ham kaynak/not veya cihaz kimliği arşive/OS yüküne yazılmaz. Arka plan AI/Health okuması, push sunucusu ve platformlar arası senkronizasyon yoktur.
 
 Tercihen Web Locks kullanılır. Yalnız üretilen tek WebView native kabuk açık `singleContext` yeteneğiyle, Web Locks yoksa ortak modül kilidini kullanabilir. İkinci WebView/arka plan JS yazıcısı eklenmeden önce native ortak kilit gerekir. PWA'da kilitsiz yazma kapalıdır. Ayrıntı: `NUT-019.3-IMPLEMENTATION.md`.
+
+Radio önizlemesi: radio-directory.mjs + radio-ui.mjs; ayrı radio route/Registry kaydı, yedinci fiziksel görünüm. Örnek katalog gerçek fetch yapmaz; tek merkezli canlı audio henüz eklenmedi. Core/Health/AI store ve şemaları değişmez. Ayrıntı TODAY-RADIO-IMPLEMENTATION.md.

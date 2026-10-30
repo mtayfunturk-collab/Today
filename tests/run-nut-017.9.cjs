@@ -19,7 +19,8 @@ const GROUPS = Object.freeze([
   "tests/native-notification-adapter.test.mjs",
   "tests/notification-service.test.mjs",
   "tests/notification-ui.test.mjs",
-  "tests/radio-directory.test.mjs"
+  "tests/radio-directory.test.mjs",
+  "tests/radio-ui.test.mjs"
 ]);
 
 let passed = 0;

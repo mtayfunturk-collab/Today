@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-075";
+const VERSION = "today-v2-foundation-076";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -56,6 +56,8 @@ const APP_SHELL = [
   "./modules/notification-service.mjs",
   "./modules/native-notification-adapter.mjs",
   "./modules/notification-ui.mjs",
+  "./modules/radio-directory.mjs",
+  "./modules/radio-ui.mjs",
   "./vendor/moment/moment.min.js",
   "./vendor/moment-timezone/moment-timezone-with-data.min.js",
   "./vendor/astronomy-engine/astronomy.browser.min.js",

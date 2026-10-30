@@ -94,6 +94,7 @@ class MockDocument {
       "pick",
       "health",
       "sky",
+      "radio",
       "calendar"
     ].forEach((viewName) => {
       if (viewName === missingView) {
@@ -319,7 +320,7 @@ function test(name, callback) {
 }
 
 test(
-  "Genel API ve sekiz rota yayımlanıyor",
+  "Genel API ve dokuz rota yayımlanıyor",
   () => {
     const runtime = createRuntime();
     const router =
@@ -335,6 +336,7 @@ test(
         "pick",
         "health",
         "sky",
+        "radio",
         "calendar",
         "statistics",
         "settings"
@@ -352,7 +354,7 @@ test(
 );
 
 test(
-  "Altı fiziksel görünüm sözleşmesi doğrulanıyor",
+  "Yedi fiziksel görünüm sözleşmesi doğrulanıyor",
   () => {
     const runtime = createRuntime();
     const validation =
@@ -360,7 +362,7 @@ test(
         .validateViews();
 
     assert.equal(validation.valid, true);
-    assert.equal(validation.views.size, 6);
+    assert.equal(validation.views.size, 7);
     assert.deepEqual(
       [...validation.missingViews],
       []

@@ -69,7 +69,8 @@ class MockDocument {
     [
       "core",
       "health",
-      "sky"
+      "sky",
+      "radio"
     ].forEach(moduleId => {
       if (
         moduleId !== options.missingCard
@@ -191,6 +192,7 @@ function createRouter(options = {}) {
         options.healthView ||
         "health"
     },
+    radio: {name:"radio",view:"radio"},
     sky: {
       name: "sky",
       view: "sky"
@@ -315,7 +317,7 @@ function test(name, callback) {
 }
 
 test(
-  "Genel API ve üç görünür modül değişmez olarak yayımlanıyor",
+  "Genel API ve dört görünür modül değişmez olarak yayımlanıyor",
   () => {
     const { registry } =
       createRuntime();
@@ -334,7 +336,8 @@ test(
       [
         "core",
         "health",
-        "sky"
+        "sky",
+        "radio"
       ]
     );
     assert.deepEqual(
@@ -352,7 +355,7 @@ test(
           "health",
           "health"
         ],
-        ["sky", "sky", "sky"]
+        ["sky", "sky", "sky"], ["radio", "radio", "radio"]
       ]
     );
   }
@@ -490,7 +493,7 @@ test(
 );
 
 test(
-  "Üç kart ve dokuz alt navigasyon tetikleyicisi doğrulanıyor",
+  "Dört kart ve on iki alt navigasyon tetikleyicisi doğrulanıyor",
   () => {
     const runtime = createRuntime();
     const validation =
@@ -501,11 +504,11 @@ test(
     assert.equal(validation.valid, true);
     assert.equal(
       validation.cards.length,
-      3
+      4
     );
     assert.equal(
       validation.openTriggers.length,
-      9
+      12
     );
   }
 );
@@ -624,8 +627,8 @@ test(
 
     assert.equal(result.success, true);
     assert.equal(result.changed, true);
-    assert.equal(result.moduleCount, 3);
-    assert.equal(result.triggerCount, 12);
+    assert.equal(result.moduleCount, 4);
+    assert.equal(result.triggerCount, 16);
     assert.equal(
       runtime.document.listeners.click
         .length,
@@ -747,7 +750,7 @@ test(
 );
 
 test(
-  "Üç kayıt doğru Router rotasına açılıyor",
+  "Dört kayıt doğru Router rotasına açılıyor",
   () => {
     const runtime = createRuntime();
 
@@ -759,7 +762,8 @@ test(
     [
       "core",
       "health",
-      "sky"
+      "sky",
+      "radio"
     ].forEach(moduleId => {
       const result =
         runtime.registry.open(
@@ -783,7 +787,8 @@ test(
       [
         "pick",
         "health",
-        "sky"
+        "sky",
+        "radio"
       ]
     );
     assert.ok(
