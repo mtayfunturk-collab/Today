@@ -31,6 +31,16 @@ Each entry should include:
 
 ---
 
+## NUT-019.3 — Uzak test kanıtı ve cihaz kabul devri
+
+Tarih: 30 Ekim 2026. Uygulama sürümü 2.20.0 ve kod 06ebb6c değişmedi.
+
+- Actions 41101231255 iş logları: platform 1161, Engine 403, entegrasyon 265, benchmark 16, native 15/OS, Chromium 12 + WebKit 12 PASS; FAIL 0. Android/iOS derleme ve Android merged manifest doğrulandı. Genel durum API'si queued/null kaldığından run success sonucu iddia edilmedi.
+- Bildirim kodunu içeren APK artifact 12999152208, ZIP digest/son erişim ve gerçek cihaz kabul sonuç formu uygulama kaydına eklendi. Fiziksel cihaz testleri çalıştırılmadı.
+- Yalnız belgeler değişti; doğrulanmış testler tekrar edilmedi. Bağlantı/kimlik/test sayısı ve diff kontrolleri yapıldı. Commit: docs: record notification CI evidence and device handoff.
+
+---
+
 ## NUT-019.3 — Onaylı yerel bildirim ve sınırlı gözlem arşivi
 
 Tarih: 30 Ekim 2026. App 2.20.0; Core şema 2; foundation-074 / 122 kabuk kaydı.
