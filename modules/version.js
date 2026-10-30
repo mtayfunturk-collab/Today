@@ -13,7 +13,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "2.21.1";
+  const APP_VERSION = "2.22.0";
   const SCHEMA_VERSION = 2;
 
   /**

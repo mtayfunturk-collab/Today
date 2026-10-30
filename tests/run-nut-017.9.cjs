@@ -20,7 +20,8 @@ const GROUPS = Object.freeze([
   "tests/notification-service.test.mjs",
   "tests/notification-ui.test.mjs",
   "tests/radio-directory.test.mjs",
-  "tests/radio-ui.test.mjs"
+  "tests/radio-ui.test.mjs",
+  "tests/radio-player.test.mjs"
 ]);
 
 let passed = 0;

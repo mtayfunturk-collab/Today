@@ -31,4 +31,21 @@ await check('leaving Radio revokes live consent and suppresses a late result',as
 await check('unrelated route changes do not invent a prior directory connection',()=>{
  let calls=0;const f=fixture({cancel(){},async search(){calls++;}},{mode:'live'});f.view.TodayRouter.getState=()=>({route:'pick'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.match(f.doc.getElementById('radioStatus').textContent,/Henüz arama yapılmadı/);assert.equal(calls,0);
 });
+function playerFixture(){let state={status:'idle',station:null},plays=[],stops=0;const listeners=[];const player={getState:()=>state,subscribe:fn=>listeners.push(fn),play(station,options){plays.push({station,options});state={status:'playing',station};listeners.forEach(fn=>fn(state));return{ok:true};},stop(){stops++;state={...state,status:'stopped'};listeners.forEach(fn=>fn(state));}};return{player,plays,stops:()=>stops};}
+await check('station play requires separate publisher consent and supports stop/retry',async()=>{
+ const p=playerFixture();const station={id:'station-one',name:'Test stream',countryCode:'TR',languages:[],genres:[],codec:'MP3'};
+ const f=fixture({cancel(){},async search(){return{ok:true,stations:[station]};}},{mode:'live',player:p.player});f.doc.getElementById('radioDirectoryConsent').checked=true;f.submit();await tick();
+ f.doc.querySelector('[data-radio-play]').click();assert.equal(p.plays.length,0);assert.match(f.doc.getElementById('radioPlayerStatus').textContent,/yayıncıya bağlantı izni/);
+ const c=f.doc.getElementById('radioStreamConsent');c.checked=true;f.doc.querySelector('[data-radio-play]').click();assert.equal(p.plays.length,1);assert.equal(p.plays[0].options.userConfirmed,true);assert.match(f.doc.getElementById('radioPlayerStatus').textContent,/Çalıyor/);
+ f.doc.getElementById('btnRadioStop').click();assert.equal(p.stops(),1);f.doc.getElementById('btnRadioRetry').click();assert.equal(p.plays.length,2);
+ c.checked=false;c.dispatchEvent(new f.view.Event('change'));assert.equal(p.stops(),2);f.doc.getElementById('btnRadioRetry').click();assert.equal(p.plays.length,2);assert.equal(f.view.localStorage.length,0);
+});
+await check('route changes preserve active playback while closing directory consent',async()=>{
+ const p=playerFixture();const f=fixture({cancel(){},async search(){return{ok:true,stations:[]};}},{mode:'live',player:p.player});const c=f.doc.getElementById('radioStreamConsent');c.checked=true;
+ p.player.play({name:'Test stream',id:'one'},{userConfirmed:true});f.view.TodayRouter.getState=()=>({route:'health'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.equal(p.stops(),0);assert.equal(c.checked,true);assert.equal(f.doc.getElementById('radioDirectoryConsent').checked,false);
+ p.player.stop();assert.equal(c.checked,false);assert.match(f.doc.getElementById('radioPlayerStatus').textContent,/Durduruldu/);
+});
+await check('inactive publisher consent is cleared on route exit',()=>{
+ const p=playerFixture();const f=fixture({cancel(){}},{mode:'live',player:p.player});const c=f.doc.getElementById('radioStreamConsent');c.checked=true;f.view.TodayRouter.getState=()=>({route:'modules'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.equal(c.checked,false);assert.equal(p.plays.length,0);
+});
 console.log(`NUT-RADIO UI: ${passed}/${passed} başarılı`);

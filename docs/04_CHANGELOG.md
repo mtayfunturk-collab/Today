@@ -31,6 +31,19 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.2d — Tek oynatma yöneticisi
+
+App2.22.0, Core şema2, foundation-078 /125 kabuk kaydı.
+
+- radio-player.mjs tek ortak sahip/aktif oturum sağlar. Audio nesnesi yalnız açık Dinle eyleminde oluşturulur; kaynak değişiminden önce eski akış boşaltılır. Nesne oturum başına yenilenerek eski olay/reject/timeout yeni oturumu etkilemez; rota değişimi nesne yaratmaz. Çalıyor yalnız playing olayında, waiting/stalled buffer ve bağlantı hatasında açık hata/durdurma; otomatik retry yok.
+- Radio Browser izninden ayrı yayıncı bağlantısı checkbox'ı; Dinle/Durdur/Tekrar dinle ve durum bölümü eklendi. Yayın izni geri alınca akış durur. Rota değişiminde aktif ses sürer; sayfa yenilenince otomatik başlamaz. Dinleme geçmişi/AI veya yeni kalıcı depo yok.
+- İlk kapsam MP3/AAC/AAC+ ve cihazın native HLS desteği. Anonim CORS zorunlu, global no-referrer meta; CORS vermeyen veya desteklenmeyen yayın hata verir. Proxy/hls.js/ambient cross-origin credentials eklenmedi. Ses düzeyi şimdilik sistem tuşlarıyla; arka plan/lockscreen garantisi yok.
+- Player21/UI15 dahil entegrasyon324, platform1161, Engine403, benchmark16/0ihlal, native15, Chromium15 PASS/0FAIL. Yeni browser senaryosu kendimiz ürettiğimiz sessiz MP3'ü route fixture üzerinden gerçek medya öğesinde oynatır; izin/no stream→playing→modül değişimi/yeni kaynak yok→stop→reload/no autoplay ve Core korunması doğrulanır. Ticari yayın veya fiziksel cihaz testi değildir.
+- Ağ fixture'larında serviceWorkers:block nedeniyle oluşan beklenen kayıt hatası bildirimi, uzayan formun düğmelerini örtüyordu. Yalnız Radio test grubunda no-SW destek yolu açıkça seçildi; diğer13 offline/SW testi aynen korunur, gerçek ürün hatası gizlenmez.
+- Sonraki küçük dilim ana ekran mini-player; Media Session, ses düzeyi yetenek kontrolü, uyku zamanlayıcısı ve fiziksel iPhone/Windows kabulü sonra. Yeni CI/commit kanıtı PR #2'de.
+
+---
+
 ## NUT-RADIO.2c — CI kapanış kaydı
 
 Actions41126865552 / a9f4f04 completed/success, platform ve iki native derleme ile Chromium/WebKit işi başarılı. Job logu Chromium14+WebKit14=28PASS/0FAIL verdi. Önceki WebKit ağ fixture hatası kapandı. Runtime c4ac76d ve App2.21.1 aynı; yalnız sonuç belgesi güncellendi, test tekrar edilmedi. Yerel platform1161/entegrasyon300/Engine403/benchmark16/native15/Chromium14 PASS; gerçek ses ve cihaz kabulü yok. Sıradaki küçük görev tek audio yöneticisi.

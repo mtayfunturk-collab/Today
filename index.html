@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
   <meta name="theme-color" content="#0b1220" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Today" />
@@ -87,7 +88,7 @@
     .radioFilters label{display:grid;gap:6px;min-width:0;color:var(--muted);font-size:14px}
     .radioFilters input:not([type="checkbox"]),.radioFilters select{width:100%;min-width:0;padding:12px;border:1px solid var(--stroke);border-radius:12px;background:var(--bg0);color:var(--text)}
     .radioFilters .radioQuery{grid-column:1/-1}
-    .radioFilters .radioConsent{grid-column:1/-1;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+    .radioConsent{grid-column:1/-1;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
     .radioConsent input{width:20px;height:20px;flex:0 0 20px;margin:2px 0 0;accent-color:var(--accent)}
     .radioActions{display:flex;gap:10px;flex-wrap:wrap;grid-column:1/-1}
     .radioList{list-style:none;padding:0;display:grid;gap:12px}
@@ -1770,7 +1771,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 
       <section class="inner" data-view="radio" role="main" aria-labelledby="radioTitle" aria-hidden="true">
         <div class="topbar"><h1 class="title" id="radioTitle" data-view-title tabindex="-1">Today Radio</h1><button class="back" id="btnRadioBack" type="button">Modüller</button></div>
-        <p class="sub">Türkiye ve dünyadan istasyonları keşfet. Yayın dinleme henüz açık değil.</p>
+        <p class="sub">Türkiye ve dünyadan istasyonları keşfet ve dinle.</p>
         <p class="mini">Arama için Radio Browser’a bağlantı izni gerekir. Sayfayı açmak bağlantı başlatmaz; dinleme geçmişi tutulmaz.</p>
         <div id="radioPanel"></div>
       </section>

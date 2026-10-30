@@ -462,6 +462,11 @@ test('Mobile layout fits the viewport and module swipes leave vertical scroll an
 
 test.describe('Radio catalog with isolated network fixtures',()=>{
   test.use({serviceWorkers:'block'});
+  test.beforeEach(async({page})=>{
+    // Radio network fixtures intentionally exercise the supported no-SW path.
+    // The other browser tests retain real SW install/update/offline coverage.
+    await page.addInitScript(()=>Object.defineProperty(navigator,'serviceWorker',{value:undefined,configurable:true}));
+  });
 test('Radio catalog requests require consent and preserve Core without contacting a stream',async({page,context},testInfo)=>{
   await page.setViewportSize({width:393,height:852});const external=[],requests=[];
   const rows=[
@@ -484,7 +489,7 @@ test('Radio catalog requests require consent and preserve Core without contactin
   await expect(page.locator('#radioStatus')).toContainText('Henüz arama yapılmadı');expect(requests).toHaveLength(0);
   await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioStatus')).toContainText('izin');expect(requests).toHaveLength(0);
   await page.locator('#radioDirectoryConsent').check();await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioResults li')).toHaveCount(3);
-  await expect(page.locator('#radioResults')).toContainText('Canlı yayın doğrulanmadı');
+  await expect(page.locator('#radioResults')).toContainText('Yayın durumu oynatırken doğrulanır');
   await page.locator('#radioCountry').selectOption('TR');await page.locator('#radioGenre').selectOption('news');await page.locator('#btnRadioSearch').click();
   await expect(page.locator('#radioResults li')).toHaveCount(1);await expect(page.locator('#radioResults')).toContainText('Test Haber');
   await page.locator('#radioQuery').fill('olmayan');await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioStatus')).toContainText('bulunamadı');
@@ -492,5 +497,33 @@ test('Radio catalog requests require consent and preserve Core without contactin
   await page.locator('#btnRadioBack').click();await expect(page.locator('#modulesTitle')).toBeVisible();await page.locator('#btnModuleRadio').click();await expect(page.locator('#radioDirectoryConsent')).not.toBeChecked();
   expect(await coreDay(page)).toEqual(before);expect(requests.filter(u=>u.pathname.includes('/stations/'))).toHaveLength(3);
   expect(external.every(u=>new URL(u).hostname.endsWith('.api.radio-browser.info'))).toBe(true);expect(requests.every(u=>!u.href.includes('Sentetik'))).toBe(true);
+});
+test('Radio playback starts only with publisher consent, survives module changes and stops its source',async({page,context})=>{
+  const audio=require('./radio-audio-fixture.cjs');const streams=[],network=[];
+  const row={stationuuid:'00000000-0000-4000-8000-000000000001',name:'Synthetic Test Radio',url_resolved:'https://stream.example/test.mp3',countrycode:'TR',language:'turkish',tags:'classical',codec:'MP3',hls:0,lastcheckok:1};
+  await context.route('**/*',async route=>{
+    const request=route.request(),u=new URL(request.url());
+    if(u.hostname==='127.0.0.1'){await route.continue();return;}
+    network.push(u.href);
+    if(u.hostname==='stream.example'){
+      streams.push(request.headers());await route.fulfill({status:200,contentType:'audio/mpeg',headers:{'Access-Control-Allow-Origin':'*','Accept-Ranges':'none'},body:audio});return;
+    }
+    if(u.hostname.endsWith('.api.radio-browser.info')){await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(u.pathname==='/json/servers'?[{name:'de1.api.radio-browser.info'}]:[row])});return;}
+    await route.abort();
+  });
+  await open(page);await saveCore(page);const before=await coreDay(page);
+  await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));
+  await page.locator('#radioDirectoryConsent').check();await page.locator('#btnRadioSearch').click();
+  await expect(page.locator('[data-radio-play]')).toHaveCount(1);expect(streams).toHaveLength(0);
+  await page.locator('[data-radio-play]').click();await expect(page.locator('#radioPlayerStatus')).toContainText('yayıncıya bağlantı izni');expect(streams).toHaveLength(0);
+  await page.locator('#radioStreamConsent').check();await page.locator('[data-radio-play]').click();
+  await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');expect(streams.length).toBeGreaterThan(0);const loads=streams.length;
+  expect(streams.every(h=>!h.referer&&!h.cookie)).toBe(true);
+  await page.evaluate(()=>TodayRouter.navigate('health',{moveFocus:false}));await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');
+  await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));expect(streams).toHaveLength(loads);
+  await page.locator('#btnRadioStop').click();await expect(page.locator('#radioPlayerStatus')).toContainText('Durduruldu');
+  expect(await coreDay(page)).toEqual(before);await page.reload();await ready(page);await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));
+  await expect(page.locator('#radioPlayerStatus')).toContainText('Henüz yayın başlatılmadı');await expect(page.locator('#radioStreamConsent')).not.toBeChecked();expect(streams).toHaveLength(loads);
+  expect(network.every(url=>!url.includes('/url/')&&!url.includes('/vote/'))).toBe(true);
 });
 });

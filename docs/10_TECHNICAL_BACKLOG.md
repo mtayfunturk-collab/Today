@@ -397,3 +397,7 @@ Review
 ## Güncel öncelik — NUT-020 mobil deneyim
 
 Apple Developer maliyeti nedeniyle NUT-019 saat/bildirim fiziksel kabulü 2–4 ay veya üyelik mümkün olana kadar ertelendi; mevcut kod korunur. Önce iPhone PWA hizalama/taşma/scroll kararlılığı ve kontrollü yatay gezinme; sonra modül içerik/tasarım geliştirmesi; ardından az veri için belirsizliği gösteren AI gözlemleri. Native veya Web Push alternatifi bu ertelemeyi aşmak için başlatılmaz.
+
+## NUT-RADIO güncel devir
+
+feature/today-radio / Draft PR #2: katalog ve tek aktif ses yöneticisi uygulandı (App2.22.0). Yayıncı izni/dinle/stop/format/timeout; önceki platform1161/entegrasyon324/Engine403/benchmark16/Chromium15 yerel kapıları geçti. Son SHA CI'sını önce kontrol et; ardından ana ekran mini-player aynı singleton'a abone olacak. Fiziksel iPhone/Windows, Media Session/volume/sleep timer ve favori/geçmiş/AI hâlâ açık. Saat/bildirim ertelemesi değişmedi.
