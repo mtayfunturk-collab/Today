@@ -31,6 +31,14 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.2c — WebKit ağ fixture izolasyonu
+
+CI41126002787 browser27PASS/1FAIL: WebKit'te Service Worker, page.route taklidini atlayıp gerçek filtrelenmemiş dizin yanıtını aldı (3beklenirken2güvenli kayıt). Trace /json/servers ve /json/stations/search?hidebroken=true&limit=30&offset=0&is_https=true gerçek API yanıtlarını kanıtladı. Kullanıcı sağlık/geçmiş/not verisi yok; izole sentetik test profili kullanıldı. Ürün hatası diye doğrulama gevşetilmedi.
+
+Yalnız Radio katalog E2E'sinde serviceWorkers:block + context.route ile deterministik yanıt ve diğer dış origin'lere abort uygulandı. Diğer13SW/offline/gezinme testinin ayarları korunur. Hedefli Chromium ve yeni WebKit CI sonucu PR #2'de; ürün sürümü/depolar değişmedi.
+
+---
+
 ## NUT-RADIO.2c — İzinli gerçek istasyon kataloğu
 
 App 2.21.1; Core şema 2; foundation-077 / 124 kayıt.

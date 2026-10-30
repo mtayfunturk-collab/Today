@@ -460,6 +460,8 @@ test('Mobile layout fits the viewport and module swipes leave vertical scroll an
   expect(await coreDay(page)).toEqual(before);
 });
 
+test.describe('Radio catalog with isolated network fixtures',()=>{
+  test.use({serviceWorkers:'block'});
 test('Radio catalog requests require consent and preserve Core without contacting a stream',async({page,context},testInfo)=>{
   await page.setViewportSize({width:393,height:852});const external=[],requests=[];
   const rows=[
@@ -467,10 +469,13 @@ test('Radio catalog requests require consent and preserve Core without contactin
     {stationuuid:'00000000-0000-4000-8000-000000000002',name:'Test Jazz',url_resolved:'https://stream.example/jazz',countrycode:'US',language:'english',tags:'jazz',codec:'AAC',hls:0,lastcheckok:1},
     {stationuuid:'00000000-0000-4000-8000-000000000003',name:'Test Haber',url_resolved:'https://stream.example/news',countrycode:'TR',language:'turkish',tags:'news',codec:'AAC',hls:1,lastcheckok:1}
   ];
-  await page.route('https://*.api.radio-browser.info/**',async route=>{
-    const u=new URL(route.request().url());requests.push(u);
+  await context.route('**/*',async route=>{
+    const u=new URL(route.request().url());
+    if(u.hostname==='127.0.0.1'){await route.continue();return;}
+    if(!u.hostname.endsWith('.api.radio-browser.info')){await route.abort();return;}
+    requests.push(u);
     const p=u.searchParams;const data=u.pathname==='/json/servers'?[{name:'de1.api.radio-browser.info'}]:rows.filter(r=>(!p.get('countrycode')||r.countrycode===p.get('countrycode'))&&(!p.get('tag')||r.tags===p.get('tag'))&&(!p.get('name')||r.name.includes(p.get('name'))));
-    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});
+    await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(data)});
   });
   context.on('request',r=>{if(new URL(r.url()).hostname!=='127.0.0.1')external.push(r.url());});
   await open(page);await saveCore(page);const before=await coreDay(page);
@@ -487,4 +492,5 @@ test('Radio catalog requests require consent and preserve Core without contactin
   await page.locator('#btnRadioBack').click();await expect(page.locator('#modulesTitle')).toBeVisible();await page.locator('#btnModuleRadio').click();await expect(page.locator('#radioDirectoryConsent')).not.toBeChecked();
   expect(await coreDay(page)).toEqual(before);expect(requests.filter(u=>u.pathname.includes('/stations/'))).toHaveLength(3);
   expect(external.every(u=>new URL(u).hostname.endsWith('.api.radio-browser.info'))).toBe(true);expect(requests.every(u=>!u.href.includes('Sentetik'))).toBe(true);
+});
 });

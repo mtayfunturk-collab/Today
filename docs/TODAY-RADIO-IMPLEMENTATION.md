@@ -111,3 +111,9 @@ Sonraki30 kayıt offset ile yüklenir; filtre/yeniden arama offset'i sıfırlar.
 İki resmî endpoint HTTPS araştırma istemcisinde HTTP200/CORS* döndürdü: /json/servers ve TR limit3 is_https araması. Bu oynatma veya kullanıcının iPhone'u için kabul değildir. Sentetik browser route fixture gerçek API şemasını kullanır; onaysız0istek, izinli discovery/search, filtre, no stream, Core koruma ve sayfadan çıkınca izin geri alma sınanır. Node directory23/UI12 ve birleşik300, platform1161/Engine403/benchmark16/native15 PASS. Chromium14/14 PASS; yeni uzak CI sonucu PR #2'de SHA ile izlenir.
 
 Sıradaki küçük iş: tek audio state manager ve açık oynat/durdur; önce sağlayıcı click bildirimi tercihini metin ve testlerle somutlaştır. Playlist/HLS/codec uyumluluğu ve yayın/logo kullanım hakları dağıtım öncesi kapıdır; açık API müzik/logo lisansı değildir. iPhone fiziksel kabulü yapılmadı; Apple Developer/native bildirim ertelemesi korunur.
+
+### WebKit fixture hatası ve düzeltmesi
+
+Runtime c4ac76d CI41126002787 üç başarılı job, browser27PASS/1FAIL verdi. İndirilen sentetik diagnostic artifact13009604800 ağ trace'i WebKit'in /json/servers ve filtresiz /json/stations/search isteğinde gerçek Radio Browser response/header/body aldığını gösterdi. page.route Service Worker yolunu yakalamamıştı; iki doğrulanabilir gerçek kayıt üç sabit fixture kaydı yerine geldi. Sağlık/geçmiş/Core notu aktarımı yoktu, yalnız boş arama ve limit/HTTPS alanları vardı.
+
+Sadece Radio E2E describe'ı serviceWorkers:block kullanır; context.route tüm ağı kontrol eder, yerel uygulama isteklerini geçirir, Radio Browser için CORS* fixture döndürür, diğer tüm dış origin'leri abort eder. Böylece test canlı sunucuya bağlı değildir; diğer offline/SW testleri etkilenmez. Beklenen3kaydı2yaparak veya test atlayarak hata gizlenmedi. Ürün kodu/filtre ve sürüm bu düzeltmede değişmez. Yeni CI'da WebKit doğrulanmadan bu test engeli kapandı işaretlenmez.
