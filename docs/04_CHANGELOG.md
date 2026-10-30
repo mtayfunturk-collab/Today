@@ -31,6 +31,18 @@ Each entry should include:
 
 ---
 
+## NUT-020.1 — Mobil yerleşim ve modül kaydırma
+
+App 2.20.1, Core şema 2, foundation-075 / 122 kayıt.
+
+- Saat/bildirim fiziksel kabulü maliyet nedeniyle kullanıcı isteğiyle ertelendi.
+- Dar ekranda 94vw kart + dış padding taşması giderildi; mobil üst hizalama/svh ve 16px form yazısı ile viewport değişimi/odak zoom etkisi azaltıldı. Görseller ve başlık satırı mevcut alana sığar. iOS işletim sistemi hareketlerinin tümü engellendi iddiası yoktur.
+- Core–Health–Sky ana sayfaları arasında 80px yatay hareketle sıralı geçiş; dikey/çoklu/kenar/uzun hareket, seçim, form, odaklı giriş, yatay kaydırılabilir alan ve Health alt ekranları dışlanır. İlk/son sayfada döngü yok; mevcut düğme/geri gezinmesi korunur. Veri deposu değişmedi.
+- Router 15/15; platform 1161/1161, entegrasyon 265/265, AI 403/403, benchmark 16/16, Chromium 13/13 PASS; FAIL 0. Uzak WebKit/native CI sonucu PR #1’de izlenir. İlk yeni E2E koşusunda testin yanlış getRoute çağrısı düzeltildi; ürün beklentisi gevşetilmedi. Fiziksel iPhone kabulü bekliyor.
+- Sonraki dilim: içerik ve görsel hiyerarşi; AI ayrı aşamada az veride gözlem/örüntü/güven sınırını ayırır.
+
+---
+
 ## NUT-019.3 — iPhone 15 / Mi Band 8 kabul kapsamı
 
 Tarih: 30 Ekim 2026. App 2.20.0/kod 06ebb6c aynı.

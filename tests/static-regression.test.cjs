@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "a9d6078070c4f6393733b198cbd6925582d79b023e2130f9bd8bbbdbf4599979",
+    "46c649ac6e79899547116503b883badcae12ce12b3d48f71dfcd35e5ebc9bcf6",
   "sw.js":
-    "05bbec1d0f231195230c0fc064286447d9deff28992027d3d2cac2fdc5f8a555",
+    "66fe88d9a41dc8aed6aef1769dfe115284761146601b7b8d1f8def614619fc95",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -45,9 +45,9 @@ const expectedProductionHashes = {
   "modules/nutrition-ui.js":
     "66d5811449440e94ba18c24d6e93ebe6cb20d16e40b718fbb9f673dc66a7324e",
   "storage.js":
-    "3aebc88163fae0be0fcbd60903f31f7cc17bc7a199d14d9ae439289c2a1f2f36",
+    "28d0450b05882b74689c86ae251a5b21f512ed61641a8920f37e39c359420ea1",
   "version.js":
-    "eea6e3e1cdd8c2370ac554180666600e7a2d515a0a85a0d99d785b2106881c3a",
+    "4e179a9346968f4319335929ab385cc77eec494147ebf62aabdb9b8fd1dc4acb",
   "migration.js":
     "8862194d0b240944cc0cab9149fb923416e76498eedd33245b28f0d3ef8dba3d",
   "day-manager.js":
@@ -55,7 +55,7 @@ const expectedProductionHashes = {
   "state-manager.js":
     "e513c919ad4088f09a06d5890ce05578e955488254d6bf45af7ca54d5507d2d1",
   "router.js":
-    "4afc06c5cd7d4af4cdf9fdb25a75cbf9f90161e6808e2a8c3a6279bb031a9c68",
+    "a71e4847f559f3203e619931d5477a309a687608e7955a8af829fdd2d321a789",
   "module-registry.js":
     "9678b6a3f73789f50e961257a0fa2115006b60ae521a6867340ea11975be8356",
   "service-worker-manager.js":
@@ -1224,7 +1224,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-074 ve 122 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-075 ve 122 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1236,7 +1236,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-074"'
+        'const VERSION = "today-v2-foundation-075"'
       )
     );
     assert.ok(shellMatch);

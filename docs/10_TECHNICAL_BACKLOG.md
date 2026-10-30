@@ -393,3 +393,7 @@ Review
 🟢 Completed
 
 🔴 Blocked
+
+## Güncel öncelik — NUT-020 mobil deneyim
+
+Apple Developer maliyeti nedeniyle NUT-019 saat/bildirim fiziksel kabulü 2–4 ay veya üyelik mümkün olana kadar ertelendi; mevcut kod korunur. Önce iPhone PWA hizalama/taşma/scroll kararlılığı ve kontrollü yatay gezinme; sonra modül içerik/tasarım geliştirmesi; ardından az veri için belirsizliği gösteren AI gözlemleri. Native veya Web Push alternatifi bu ertelemeyi aşmak için başlatılmaz.

@@ -415,3 +415,40 @@ test('Synthetic notification bridge archives a consented observation, opens afte
   expect(await page.evaluate(() => localStorage.getItem('__unrelatedSentinel'))).toBe('keep');
   expect(await coreDay(page)).toEqual(before);
 });
+
+test('Mobile layout fits the viewport and module swipes leave vertical scroll and inputs alone', async ({ page }) => {
+  await page.setViewportSize({width:393,height:852});
+  await open(page); await saveCore(page);
+  const before=await coreDay(page);
+  const gesture=async(dx,dy=0,target='.screen')=>page.evaluate(({dx,dy,target})=>{
+    const el=document.querySelector(target), x=dx<0?290:100;
+    const send=(type,end)=>{const t=new Touch({identifier:1,target:el,clientX:x+(end?dx:0),clientY:250+(end?dy:0)});el.dispatchEvent(new TouchEvent(type,{bubbles:true,touches:type==='touchend'?[]:[t],changedTouches:[t]}));};
+    send('touchstart',false);send('touchmove',true);send('touchend',true);
+  },{dx,dy,target});
+  await page.locator('#note').blur();
+  await gesture(150);
+  expect(await page.evaluate(()=>TodayRouter.getState().route)).toBe('pick');
+  await gesture(-150,70);
+  expect(await page.evaluate(()=>TodayRouter.getState().route)).toBe('pick');
+  await gesture(-150,0,'#note');
+  expect(await page.evaluate(()=>TodayRouter.getState().route)).toBe('pick');
+  await page.locator('#note').blur();
+  await gesture(-150);
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('health');
+  await gesture(-150);
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('sky');
+  await gesture(-150);
+  expect(await page.evaluate(()=>TodayRouter.getState().route)).toBe('sky');
+  await gesture(150);
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('health');
+  await page.evaluate(()=>TodayHealthHub.showSection('wellness',{focus:false}));
+  await gesture(-150);
+  expect(await page.evaluate(()=>TodayRouter.getState().route)).toBe('health');
+  for(const route of ['home','modules','pick','health','sky','settings']){
+    await page.evaluate(route=>TodayRouter.navigate(route,{moveFocus:false}),route);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const box=await page.locator('.screen:not(.hidden)').first().boundingBox().catch(()=>null);
+    if(box){expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(394);}
+  }
+  expect(await coreDay(page)).toEqual(before);
+});
