@@ -5,7 +5,7 @@ Document: Changelog
 Version: 1.0
 Status: Active
 Owner: Today Master Project
-Last Updated: 29 October 2026
+Last Updated: 30 October 2026
 
 ---
 
@@ -28,6 +28,18 @@ Each entry should include:
 ---
 
 # Version History
+
+---
+
+## NUT-019.2 — Çoklu ekosistem hedefi ve bildirim içeriği
+
+Tarih: 30 Ekim 2026. App 2.17.0 / Core şema 2 / foundation-071 değişmedi.
+
+- Kullanıcı Apple Watch, Android ve Xiaomi/Mi Fitness ile Zepp Life dahil geniş saat/bileklik desteğini istedi. HealthKit ve Health Connect yolları belgelendi; tüm model/sürümlere destek sözü verilmedi. Belgelenen Xiaomi akışındaki üretici bulut koşulu açıklandı.
+- Henüz uygulamada yüklenmeyen saat sözleşmesine iki değiştirilemez bildirim şablonu eklendi: güncelleme başlığı tam Today Yenilik; AI gövdesi tam Today, yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin. Eski önizleme export'u korundu.
+- Değişen dosyalar: modules/wearable-read-adapter.mjs, tests/wearable-read-adapter.test.mjs, AGENTS.md, yol haritası, fazlar, backlog, NUT-019.1 kaydı ve yeni docs/NUT-019.2-COMPATIBILITY.md. Aday faz numaraları gerçekleşen işlerle hizalandı; veri güveni/pilot kapıları korunuyor.
+- İçerik/okuma sözleşmesi testleri 10/10 geçti. Yerel platform 1156/1156, AI Engine 364/364, entegrasyon 114/114, benchmark 16/16 ve 0 güvenlik ihlali; FAIL 0. SHA bazlı CI kanıtı PR #1'de tutulur.
+- Sonuç: kapsam/içerik dilimi hazır; native sağlayıcı, Health bağlantı akışı, günlük AI onayı/zamanlayıcısı ve gerçek telefon bildirimi henüz uygulanmadı. Veri/depo şeması veya dış aktarım değişmedi. Sonraki teknik öncelik iki OS sağlayıcısını dar okuma kapsamında hazırlamak ve gerçek cihaz kabulüdür; NUT-019.2 bütünü tamamlandı işaretlenmedi.
 
 ---
 

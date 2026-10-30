@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createWearableReader, NOTIFICATION_PREVIEW } from '../modules/wearable-read-adapter.mjs';
+import { createWearableReader, NOTIFICATION_PREVIEW, NOTIFICATION_TEMPLATES } from '../modules/wearable-read-adapter.mjs';
 let count = 0;
 async function check(callback) { await callback(); count += 1; }
 const options = { userConfirmed: true, purpose: 'Today gözlemleri', types: ['steps'], startDate: '2026-10-01', endDate: '2026-10-29' };
@@ -43,8 +43,24 @@ await check(async () => {
   assert.equal(result.error.code, 'provider-read-failed'); assert.equal(JSON.stringify(result).includes('private health'), false);
 });
 await check(() => {
+  assert.equal(NOTIFICATION_PREVIEW, NOTIFICATION_TEMPLATES.aiObservation);
   assert.equal(NOTIFICATION_PREVIEW.title, 'Today');
-  assert.doesNotMatch(NOTIFICATION_PREVIEW.body, /uyku|adım|nabız|yorgun|teşhis/i);
-  assert.equal(Object.isFrozen(NOTIFICATION_PREVIEW), true);
+  assert.equal(NOTIFICATION_PREVIEW.body, 'Today, yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin.');
+});
+await check(() => {
+  assert.deepEqual(NOTIFICATION_TEMPLATES.appUpdate, {
+    title: 'Today Yenilik',
+    body: 'Today’in yeni sürümü hazır. Yenilikleri görmek için uygulamayı aç.'
+  });
+  assert.notEqual(NOTIFICATION_TEMPLATES.appUpdate, NOTIFICATION_TEMPLATES.aiObservation);
+  assert.doesNotMatch(NOTIFICATION_TEMPLATES.appUpdate.body, /gözlem/i);
+});
+await check(() => {
+  assert.equal(Object.isFrozen(NOTIFICATION_TEMPLATES), true);
+  for (const template of Object.values(NOTIFICATION_TEMPLATES)) {
+    assert.equal(Object.isFrozen(template), true);
+    assert.doesNotMatch(`${template.title} ${template.body}`, /uyku|adım|nabız|yorgun|teşhis/i);
+    assert.throws(() => { template.body = 'private health details'; }, TypeError);
+  }
 });
 console.log(`NUT-019.1 Wearable Read Contract: ${count}/${count} başarılı`);

@@ -3,7 +3,7 @@
 
 Sürüm: 2.0
 Durum: Aktif plan
-Güncelleme: 29 Ekim 2026
+Güncelleme: 30 Ekim 2026
 Sürüm kaynağı: `modules/version.js`; şema kaynağı ilgili depolama sözleşmeleri
 Aktif iş: NUT-018 / `nut-018-ci-stabilization` / taslak PR #1
 
@@ -27,7 +27,7 @@ Fazın ürün pilotuna geçiş kapısı: desteklenen fiziksel iPhone Safari + An
 
 ## Faz 4 — Kurucunun seçeceği günlük değer döngüsü
 
-Önerilen iş paketi ailesi: NUT-019. Henüz kod kapsamı kesinleştirilmiş değildir; ilk alt iş aşağıdaki kabul envanteridir.
+İş paketi ailesi: NUT-019. 30 Ekim güncellemesi, önceki aday alt iş numaralarını gerçekleşen NUT-019.1 ve istenen NUT-019.2 kapsamıyla hizalar. Native sağlık okuması bu yetenek için öne alınır; mağazaya yayın Faz 7'de kalır.
 
 Giriş:
 
@@ -37,10 +37,11 @@ Giriş:
 
 Küçük teslim sırası:
 
-1. **NUT-019.1 — Kabul ve veri güveni envanteri:** kurucunun Core, Health ve isteğe bağlı Sky içinde kullandığı yolları, gereksiz kayıt adımlarını, eksik geri bildirimi ve tam yedek/geri yükleme boşluklarını somut örneklerle belirle. Gerçek kullanıcı pilotuna kadar eksik veri güveni işleri zorunlu blokerdır.
-2. **NUT-019.2 — Bir günlük akış dilimi:** yeniden seçilecek ürün vaadine göre mevcut modüllerden tek küçük sürtünmeyi gider; düşük çabalı kayıt, anlaşılır gözlem ve isteğe bağlı sonraki adım döngüsünü tasarla. Bu günlük akış henüz seçilmemiş ve uygulanmış değildir. Kalıcı hedef kaydı yeni veri yapısı gerektirirse önce veri etkisi ve onay kapısı tamamlanır. Kayıt durumu ve boş/eksik veri açıklamaları sadeleşir. Yeni veri modeli yerine mevcut API'leri kullan.
-3. **NUT-019.3 — Bir açıklanabilir AI dilimi:** mevcut iki günlük kural ve yedi günlük gözlemin anlaşılabilirliğini incele. Daha geniş modüller arası örüntü keşfi ayrı doğrulanacak hipotezdir; mevcut kural kataloğu genel öğrenen bir sistemmiş gibi anlatılmaz. Her çıktı dayanak, belirsizlik, seçenek ve geçerli onay durumunu korur; eşleşme yoksa veri uydurmaz.
-4. **NUT-019.4 — Kişisel kullanım kabulü:** önerilen 14 günlük kullanım; kayıt/yeniden açılış/güncelleme, üç somut fayda örneği, kullanılmayan yüzeyler ve açık sorunlar belgelenir. Bu süre kullanıcı benimsemesi veya pazar sonucu sayılmaz.
+1. **NUT-019.1 — Çok dönemli AI gözlemleri:** 1/7/30/90 günlük ilk beş metrik gözlem dilimi ve saat okuma sözleşmesi doğrulandı; sınırlar [uygulama kaydında](NUT-019.1-IMPLEMENTATION.md). Genel öğrenen sistem, gerçek saat bağlantısı veya telefon teslimi iddiası yoktur.
+2. **NUT-019.2 — Saat bağlantısı ve iki bildirim türü:** Apple Health/HealthKit ve Android Health Connect; Xiaomi/Mi Fitness ve Zepp Life için gerçekten erişilebilen veri yolu. Güncelleme ve günlük AI metin sözleşmesi hazır; native sağlayıcılar, Health akışı, günlük veri/onay/zamanlama ve gerçek teslim açık. Tüm model/sürümler desteklenmiş sayılmaz. Kabul ölçütleri [uyumluluk kaydında](NUT-019.2-COMPATIBILITY.md).
+3. **Önerilen NUT-019.3 — Kabul ve veri güveni envanteri:** kurucunun Core, Health ve isteğe bağlı Sky içinde kullandığı yolları, gereksiz kayıt adımlarını, eksik geri bildirimi ve tam yedek/geri yükleme boşluklarını somut örneklerle belirle. Gerçek kullanıcı pilotuna kadar eksik veri güveni işleri zorunlu blokerdır.
+4. **Önerilen NUT-019.4 — Günlük akış ve açıklanabilirlik:** ürün vaadine göre mevcut modüllerden küçük bir sürtünmeyi gider; düşük çabalı kayıt, anlaşılır gözlem ve isteğe bağlı sonraki adım. İki günlük kural, yedi günlük ve yeni çok dönemli gözlemlerin anlaşılabilirliğini incele. Her çıktı dayanak, belirsizlik ve geçerli onay durumunu korur; eşleşme yoksa veri uydurmaz. Yeni kalıcı veri gerekiyorsa önce veri etkisi/onay kapısı tamamlanır.
+5. **Önerilen NUT-019.5 — Kişisel kullanım kabulü:** önerilen 14 günlük kullanım; kayıt/yeniden açılış/güncelleme, üç somut fayda örneği, kullanılmayan yüzeyler ve açık sorunlar belgelenir. Bu süre kullanıcı benimsemesi veya pazar sonucu sayılmaz.
 
 Çıkış:
 
@@ -100,7 +101,7 @@ Küçük teslim sırası:
 1. Capacitor uyumluluk/bağımlılık envanteri; aynı uygulama akışlarını kullanan ince native kabuk.
 2. iOS/Android build ve imzalama hazırlığı; gizli anahtarlar kaynak depoya girmez. Hesap, sertifika veya mağaza bağlantısı için açık onay alınır.
 3. PWA → native veri taşıma ve sürüm yükseltme planı; aynı origin/depo varsayımı yapılmaz. Veri etkili şema/taşıma tasarımı uygulamadan önce onaya sunulur.
-4. Yalnız ürün için gereken izin/adaptörler; ret/iptal/geri alma davranışı test edilir. HealthKit/Health Connect ve arka plan bildirimleri ayrıca ihtiyaç doğrulaması ister.
+4. Yalnız ürün için gereken izin/adaptörler; ret/iptal/geri alma davranışı test edilir. Kullanıcının istediği HealthKit/Health Connect ve bildirim dilimi NUT-019.2'de başlar; burada native yükseltme, fiziksel cihaz ve mağaza beyanları yeniden doğrulanır. Hazırlık sözleşmesi gerçek cihaz kabulü sayılmaz.
 5. Fiziksel iOS/Android regresyonu ve TestFlight/Play kapalı test; yedek/geri yükleme, uygulama güncellemesi, ekran okuyucu, klavye, güvenli alan ve offline senaryoları.
 6. Gerçek veri akışına uygun gizlilik politikası, destek ve mağaza formları. Hesap varsa hesap/veri silme; ücretli dijital özellik varsa güncel mağaza ödeme ve abonelik gereklilikleri karşılanır.
 7. Mağaza görselleri/açıklaması sağlık teşhisi veya AI doğruluğu iddiası içermez; uygulamanın somut faydasını anlatır. Gönderim için ayrı açık kullanıcı onayı alınır.

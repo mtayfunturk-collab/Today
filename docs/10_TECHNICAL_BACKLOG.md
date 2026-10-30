@@ -311,13 +311,13 @@ Sürekli geliştirme ortamı Codex'tir. Kullanıcı verileri/şemaları ve mevcu
 | NUT-018.2 | Bağımlılık güvenliği ve aktif sürüm tutarlılığı | Doğrulandı: df47b0e / Actions 40938911892; audit 0, paket/aktif sürüm 2.16.0; 1155/335/96/16 PASS |
 | NUT-018.3 | Gerçek tarayıcı otomasyonu ve iPhone PWA doğrulama hazırlığı | Hazırlık uygulandı: Chromium 6 PASS, platform 1156 PASS; Chromium/WebKit CI kanıtı PR #1'de. Fiziksel iPhone/Android kabulü bekliyor |
 | NUT-019.1 | Günlük / 7 / 30 / 90 günlük gözlemler; saat adaptör sözleşmesi | Yerel 1156/364/112/16 kapıları ve yeni Chromium senaryosu başarılı. Gerçek saat okuma ve telefon bildirimi bağlı değildir; kayıt docs/NUT-019.1-IMPLEMENTATION.md içinde. |
-| NUT-019.2 | Health kişisel sağlık verisi native bağlantısı ve bildirim taşıyıcısı | Platform, salt okunur veri türleri ve native/Web Push yöntemi için somut tasarım hazır; gerçek izin ve cihaz doğrulaması bekleniyor. |
+| NUT-019.2 | Health kişisel sağlık verisi native bağlantısı ve bildirim taşıyıcısı | Açık: Apple Watch/Android/Xiaomi/Mi Fitness/Zepp Life hedefi ve iki bildirim metni netleşti. Şablon/okuma sözleşmesi otomasyonda; native sağlayıcı, Health akışı, günlük onay/zamanlayıcı ve gerçek bildirim teslimi henüz yok. Tüm model/sürüm garantisi verilmez; kapsam docs/NUT-019.2-COMPATIBILITY.md içinde. |
 
 Tam modül yedekleme/geri yükleme, veri kaybı sınırları ve gizlilik bilgilendirmesi doğrulanmadan gerçek kişilerle pilot başlatılmaz. Yeni model sağlayıcısı, dış aktarım, hesap/senkronizasyon ve şema değişiklikleri ayrı karar gerektirir. Güncel ürün kapıları docs/02_ROADMAP.md ve docs/03_PHASES.md içindedir.
 
 # Phase 3 — Native Mobile / Capacitor (önceki aday planı)
 
-Aşağıdaki liste korunmuş teknik envanterdir. Güncel sıra PWA kişisel kullanım ve pazar doğrulamasından sonra yerel mağaza hazırlığıdır; Capacitor'a hemen geçme kararı değildir.
+Aşağıdaki liste korunmuş teknik envanterdir. Mağaza hazırlığı kişisel kullanım ve pazar doğrulamasından sonra gelir. 30 Ekim kullanıcının istediği saat bağlantısı için dar native sağlık köprüsü NUT-019.2 kapsamında öne alınır; bu tam native yeniden yazım veya mağaza yayını kararı değildir.
 
 Phase 3 task IDs will be finalized only after technical discovery and a fresh repository review. Application code must not change before the relevant backlog ID is assigned.
 

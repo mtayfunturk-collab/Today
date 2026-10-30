@@ -1,10 +1,18 @@
 // Contract for a future native HealthKit/Health Connect provider.
 // This module neither registers a provider nor requests access on import.
 export const READ_TYPES = Object.freeze(["sleep", "steps", "activity"]);
-export const NOTIFICATION_PREVIEW = Object.freeze({
-  title: "Today",
-  body: "Today’de yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin."
+// Content contract only: importing these templates never schedules or sends a notification.
+export const NOTIFICATION_TEMPLATES = Object.freeze({
+  appUpdate: Object.freeze({
+    title: "Today Yenilik",
+    body: "Today’in yeni sürümü hazır. Yenilikleri görmek için uygulamayı aç."
+  }),
+  aiObservation: Object.freeze({
+    title: "Today",
+    body: "Today, yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin."
+  })
 });
+export const NOTIFICATION_PREVIEW = NOTIFICATION_TEMPLATES.aiObservation;
 
 const dateKey = value => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
   Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;

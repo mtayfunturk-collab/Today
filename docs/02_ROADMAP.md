@@ -3,7 +3,7 @@
 
 Sürüm: 2.0
 Durum: Aktif plan; gelecek fazlar tamamlanmış değildir
-Güncelleme: 29 Ekim 2026
+Güncelleme: 30 Ekim 2026
 Güncel uygulama sürümünün kaynağı: `modules/version.js`
 Aktif iş: NUT-018, `nut-018-ci-stabilization`, taslak PR #1
 
@@ -13,6 +13,8 @@ Today, **Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsam
 
 29 Ekim kararı, önceki plandaki “hemen Capacitor'a geç” sırasını değiştirir. Native paketleme, kullanıcı değerini kanıtlamanın ön koşulu değildir. Mevcut Core, Health, Sky modülleri ve AI Engine/Connect sınırları korunur; yeni bir uygulama veya paralel veri modeli kurulmaz. Faz 1–2 tarihsel kayıtları aşağıda korunmuştur.
 
+30 Ekim kapsam kararı: Apple Watch, Android ve Xiaomi/Mi Fitness ile Zepp Life dahil mümkün olan en geniş saat/bileklik desteği hedeflenir. Native sağlık adaptörü bu istenen yetenek için gereklidir; mağazaya gönderim veya tüm modellerde uyumluluk onayı anlamına gelmez. HealthKit ve Health Connect üzerinden gerçekten aktarılabilen türler alınır. Tüm sürümler için destek iddiası yerine model/telefon/üretici uygulaması bazında kabul kaydı tutulur. Güncelleme başlığı `Today Yenilik`; günlük AI gövdesi `Today, yeni bir gözlemin var. Uygulamayı açıp inceleyebilirsin.` olur. [Uyumluluk, üretici bulutu ve bildirim sınırları](NUT-019.2-COMPATIBILITY.md).
+
 ## Bugünkü ürün ile hedef arasındaki fark
 
 | Alan | Mevcut taban | Sıradaki değer hipotezi |
@@ -20,7 +22,7 @@ Today, **Core, Health ve Sky kayıtlarını kullanıcının izin verdiği kapsam
 | Core | Günlük seçim, renk, isteğe bağlı not, takvim ve istatistik | 30–60 saniyede tamamlanan ve kaydedildiği açıkça görülen günlük kontrol |
 | Health | Yerel beslenme kayıtları/kütüphanesi/planlama; hareket/antrenman yüzeyleri; uyku, enerji, toparlanma gibi kaynaklar | Diğer modüllerle aynı zaman çizgisinde anlaşılabilen, düşük çabalı beden/alışkanlık kayıtları; ürünün tek odağı olduğu varsayılmaz |
 | Sky | Doğum profili, harita ve dönem/yansıtma yüzeyleri | İsteyen kullanıcının açtığı ayrı bir sembolik düşünme alanı; sağlık veya duygu çıkarımına dayanak olmaz |
-| AI Engine | Cihaz içi, sağlayıcısız iki deterministik günlük kural; yedi günlük Core–uyku tekrar gözlemi; onay/ret/düzenleme ve geçici geri bildirim | “Bugün bende ne dikkat çekiyor, dayanağı ne, istersem ne yapabilirim?” sorusuna yararlı ve kısa yanıt |
+| AI Engine | Cihaz içi iki günlük kural ve yedi günlük Core–uyku gözlemi; ayrıca açık istek onayıyla 1/7/30/90 günlük beş metrik özeti ve sınırlı ön örüntüler; geçici geri bildirim | “Bugün bende ne dikkat çekiyor, dayanağı ne, istersem ne yapabilirim?” sorusuna yararlı ve kısa yanıt |
 | Connect | Adaptör sınırı; AI önerisi gerçek dış işlem yapmaz | Yalnız doğrulanmış ihtiyaç varsa kullanıcı onaylı dar bir işlem; ilk pilot için zorunlu değil |
 
 AI Engine şu an bir dil modeli, kişiyi öğrenen kalıcı hafıza veya genel sohbet asistanı değildir. Sentetik testlerin geçmesi kullanıcı faydası ya da klinik doğruluk kanıtı değildir. Geçici AI kararları/geri bildirimleri yenilemede sıfırlanır; kalıcıymış gibi anlatılmaz.
@@ -45,7 +47,7 @@ Faz numaraları ilerleme sırasını belirtir; tüm modülleri tek tek yeniden y
 2. **Anlaşılır AI desteği:** farklı zamanlardaki izinli kayıtları karşılaştırıp tekrarlayan ilişkileri görünür kılmak yarar hipotezidir; bugünkü iki kuralın geniş kişisel örüntü keşfini zaten yaptığı iddia edilmez. Core günlük seçimi, uyku ve enerji yalnız kullanıcının izin verdiği açıklanabilir bağlamı destekler. Kullanıcı seçtiği veri kapsamını görür; bir gözlem, dayanak, eksik bilgi ve en fazla birkaç seçenek alır. Yetersiz veride neyin eksik olduğunu açıklar, öneri uydurmaz. Günlük analiz ve haftalık gözlemin mevcut davranışı korunarak erişimi sadeleştirilebilir.
 3. **Haftalık değerlendirme:** kullanıcının seçtiği yaşam alanlarında fark ettiği tekrarlar ve kolay/zor bulduğu adımlar, kayıt kapsamı ve gözlenen birliktelikler gösterilir; eksik gün suçluluk, seri kaybı veya başarısızlık puanına dönüştürülmez. Kilo odaklılık, öğün “iyi/kötü” yargısı veya aşırı egzersiz teşviki yapılmaz; nedensellik/kişilik hükmü kurulmaz. Kullanıcı “bana uyuyor/uymuyor/emin değilim” diyebilir. Kalıcı geri bildirim veya tercih yeni bir kapsamdır; onaylı tasarım ve veri etkisi incelemesi olmadan saklanmaz.
 4. **Kayıt ve veri güveni:** tüm modüller için nelerin cihazda tutulduğunu, dışa aktarımın neleri içerdiğini ve neleri içermediğini anlaşılır kıl. Tam yedek/geri yükleme eksikse gerçek kullanıcı pilotundan önce ayrı iş olarak tamamla; Core CSV'yi tam yedek diye sunma.
-5. **İsteğe bağlı hatırlatma:** yalnız günlük kullanımda ihtiyaç doğrulanırsa, kullanıcının seçtiği zamanda ve kapatılabilir yerel hatırlatma. Mevcut “onaylandı” AI taslağı gerçek bildirim planlandığı anlamına gelmez; gerçek cihaz izni/iptal akışı ayrı teslimdir.
+5. **İsteğe bağlı bildirim:** kullanıcının istediği güncelleme ve günlük AI türleri ayrı tercihler olur. Güncelleme yalnız yeni sürüm gerçekten hazırsa; AI bildirimi yalnız açılabilir yeni gözlem varsa, seçilen yerel zamanda en fazla günde bir kez hedeflenir. Bildirim varsayılan kapalı ve kapatılabilir olmalıdır. Mevcut istek-süreli AI onayı arka plan çalışmasına izin vermez; zamanlanmış analiz/veri kapsamı ayrıca açıkça onaylanır. Şablonların test edilmesi gerçek cihaz teslimi değildir; native izin/iptal/zamanlama ayrı kabul kapısıdır.
 
 Bu liste uygulandı iddiası değil, test edilecek ürün hipotezidir. Her dilim en az bir gözlenen sorunu çözer; kişisel kullanım sonucu yarar üretmeyen zenginlik çıkarılabilir.
 
@@ -55,7 +57,7 @@ Bu liste uygulandı iddiası değil, test edilecek ürün hipotezidir. Her dilim
 - Genel amaçlı sohbet, yalnız etiket için dil modeli ekleme, gizli bulut aktarımı veya varsayılan serbest metin toplama.
 - Teşhis, tedavi, kesin astrolojik hüküm; Sky'dan sağlık/duygu nedeni çıkarma.
 - Otomatik takvim/e-posta işlemleri, geniş Connect izinleri veya denetlenmeyen kişisel AI hafızası.
-- Kanıtlanmış ihtiyaç olmadan sosyal akış, reklam profili, abonelik duvarı, HealthKit/Health Connect veya kapsamlı native yeniden yazım.
+- Kanıtlanmış ihtiyaç olmadan sosyal akış, reklam profili, abonelik duvarı veya kapsamlı native yeniden yazım. İstenen HealthKit/Health Connect adaptörleri mevcut modülleri yeniden yazmadan, dar ve salt okunur kapsamda geliştirilir.
 
 ## Pazar doğrulaması: önerilen ölçüm planı
 
