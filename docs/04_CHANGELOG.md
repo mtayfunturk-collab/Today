@@ -31,6 +31,12 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.3c — Modüller ekranı ve aynı medya öğesinde sürdürme
+
+App2.23.2/schema2/foundation-081/125. Telefon tekrarında mini replay başarısız bildirildi; fiziksel olay/log bulunmadığı için tek bir OS nedeni kesinleştirilmedi. Önceki stop kaynağı unload edip yeni Audio oluşturuyordu. Mini kontrol artık pause/resume ile aynı audio/src/currentTime'ı kullanır; tam stop/izin iptali hâlâ kaynağı boşaltır. Eski play promise reddi ve gecikmiş pause olayı resume'u bozamaz; yeni playing olayı olmadan başarı gösterilmez. Canlı yayın tamponu/zaman aşımı tarayıcıya bağlıdır, kesin DVR/aynı saniye garantisi yoktur. Mini-player Başla ekranından kaldırıldı, modüller ekranına taşındı. Player25 testi ve gerçek HTMLAudio same-element/currentTime E2E genişletildi. CI ve canlı sürüm kanıtı PR #2'de; fiziksel tekrar sonucu gelmeden radyo aşaması kapanmaz.
+
+---
+
 ## NUT-RADIO.3b — Mini oynatıcıdan tekrar dinleme
 
 App2.23.1/schema2/foundation-080/125. Telefon testinde bildirilen eksik mini replay akışı düzeltildi: Durdur düğmesi aynı oturumda Tekrar dinle olur; aynı seçilmiş istasyonu, Radio UI'ın mevcut yayıncı iznini denetleyerek kullanıcı dokunuşuyla başlatır. Stop izni geri çekmez. Checkbox'ı kaldırmak akışı durdurur ve mini replay'i kapatır; reload oturum seçimini/iznini temizler. Yeni kalıcı veri veya ikinci audio yoktur. Canlı radyoda yeniden başlatma güncel yayın noktasına bağlanır. UI21 testi; yeni birleşik mini-stop/replay/revoke senaryosu ve gerçek HTMLAudio E2E genişletildi. Son test ve CI kanıtı PR #2'de; fiziksel tekrar testi bekliyor.

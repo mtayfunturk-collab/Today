@@ -500,6 +500,7 @@ test('Radio catalog requests require consent and preserve Core without contactin
 });
 test('Radio playback starts only with publisher consent, survives module changes and stops its source',async({page,context},testInfo)=>{
   const audio=require('./radio-audio-fixture.cjs');const streams=[],network=[];
+  await page.addInitScript(()=>{window.__radioAudios=[];window.Audio=new Proxy(window.Audio,{construct(target,args){const a=Reflect.construct(target,args);window.__radioAudios.push(a);return a;}});});
   const row={stationuuid:'00000000-0000-4000-8000-000000000001',name:'Synthetic Test Radio',url_resolved:'https://stream.example/test.mp3',countrycode:'TR',language:'turkish',tags:'classical',codec:'MP3',hls:0,lastcheckok:1};
   await context.route('**/*',async route=>{
     const request=route.request(),u=new URL(request.url());
@@ -512,7 +513,8 @@ test('Radio playback starts only with publisher consent, survives module changes
     await route.abort();
   });
   await open(page);await saveCore(page);const before=await coreDay(page);
-  await page.evaluate(()=>TodayRouter.navigate('home',{moveFocus:false}));
+  await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
+  await expect(page.locator('[data-view="home"] .radioMini')).toHaveCount(0);
   await expect(page.locator('.radioMini')).toBeVisible();
   await expect(page.locator('.radioMiniStatus')).toContainText('Bir istasyon seç');expect(streams).toHaveLength(0);
   await page.locator('.radioMiniActions button').filter({hasText:'Radio’yu aç'}).click();
@@ -524,16 +526,19 @@ test('Radio playback starts only with publisher consent, survives module changes
   await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');expect(streams.length).toBeGreaterThan(0);const loads=streams.length;
   expect(streams.every(h=>!h.referer&&!h.cookie)).toBe(true);
   await page.evaluate(()=>TodayRouter.navigate('health',{moveFocus:false}));await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');
-  await page.evaluate(()=>TodayRouter.navigate('home',{moveFocus:false}));
+  await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
   await expect(page.locator('.radioMiniStatus')).toContainText('Canlı · Çalıyor');await expect(page.locator('.radioMiniName')).toHaveText('Synthetic Test Radio');expect(streams).toHaveLength(loads);
   await page.setViewportSize({width:320,height:740});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:testInfo.outputPath('radio-mini-player.png'),fullPage:true});
   await page.locator('.radioMiniActions button').filter({hasText:'Durdur'}).click();
   await expect(page.locator('.radioMiniStatus')).toContainText('Durduruldu');
+  const pausedTime=await page.evaluate(()=>window.__radioAudios[0].currentTime);
+  await page.waitForTimeout(300);
   await page.locator('.radioMiniActions button').filter({hasText:'Tekrar dinle'}).click();
   await expect(page.locator('.radioMiniStatus')).toContainText('Canlı · Çalıyor');
-  expect(streams.length).toBeGreaterThan(loads);const replayLoads=streams.length;
+  expect(await page.evaluate(()=>window.__radioAudios[0].currentTime)).toBeGreaterThanOrEqual(pausedTime-0.05);
+  expect(await page.evaluate(()=>window.__radioAudios.length)).toBe(1);const replayLoads=streams.length;
   await page.locator('.radioMiniActions button').filter({hasText:'Durdur'}).click();
   await page.locator('.radioMiniActions button').filter({hasText:'Radio’yu aç'}).click();
   await expect(page.locator('#radioPlayerStatus')).toContainText('Durduruldu');await expect(page.locator('#radioStreamConsent')).toBeChecked();expect(streams).toHaveLength(replayLoads);

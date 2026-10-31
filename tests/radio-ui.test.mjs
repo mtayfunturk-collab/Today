@@ -49,7 +49,7 @@ await check('inactive publisher consent is cleared on route exit',()=>{
  const p=playerFixture();const f=fixture({cancel(){}},{mode:'live',player:p.player});const c=f.doc.getElementById('radioStreamConsent');c.checked=true;f.view.TodayRouter.getState=()=>({route:'modules'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.equal(c.checked,false);assert.equal(p.plays.length,0);
 });
 function miniFixture(){
- const dom=new JSDOM('<div data-view="home"><button id="btnStart">Başla</button><div id="buildTag"></div></div>',{url:'https://today.example'});
+ const dom=new JSDOM('<div data-view="modules"><button id="btnStart">Başla</button><div id="buildTag"></div></div>',{url:'https://today.example'});
  let state={status:'idle',station:null},stops=0,plays=0,route;const listeners=[];
  const player={getState:()=>state,subscribe:fn=>{listeners.push(fn);},play(){plays++;},stop(){stops++;update({...state,status:'stopped'});}};
  function update(next){state=next;listeners.forEach(fn=>fn(state));}
@@ -57,7 +57,7 @@ function miniFixture(){
  const api=mountRadioMiniPlayer({root:dom.window.document,player});
  return{doc:dom.window.document,view:dom.window,player,api,update,listeners,stops:()=>stops,plays:()=>plays,route:()=>route};
 }
-await check('home mini player mounts once and starts no playback or storage',()=>{
+await check('modules mini player mounts once and starts no playback or storage',()=>{
  const f=miniFixture();assert.equal(mountRadioMiniPlayer({root:f.doc,player:f.player}),f.api);assert.equal(f.doc.querySelectorAll('.radioMini').length,1);assert.equal(f.listeners.length,1);assert.equal(f.plays(),0);assert.equal(f.view.localStorage.length,0);assert.equal(f.doc.querySelectorAll('audio,img,a').length,0);assert.match(f.doc.querySelector('.radioMiniStatus').textContent,/Bir istasyon seç/);assert.equal(f.doc.querySelector('.radioMiniActions button').hidden,true);
 });
 await check('mini player distinguishes real playing from connection, buffer and failure',()=>{
@@ -79,7 +79,7 @@ await check('mini renders untrusted station names as text and exposes no stream 
 await check('mini stop and replay retain only session consent and explicit revocation blocks replay',async()=>{
  const p=playerFixture(),station={id:'one',name:'Station',countryCode:'TR',languages:[],genres:[],codec:'MP3'};
  const f=fixture({cancel(){},async search(){return{ok:true,stations:[station]};}},{mode:'live',player:p.player});
- const home=f.doc.createElement('div');home.dataset.view='home';f.doc.body.append(home);mountRadioMiniPlayer({root:f.doc,player:p.player});
+ const home=f.doc.createElement('div');home.dataset.view='modules';f.doc.body.append(home);mountRadioMiniPlayer({root:f.doc,player:p.player});
  f.doc.getElementById('radioDirectoryConsent').checked=true;f.submit();await tick();
  const consent=f.doc.getElementById('radioStreamConsent');consent.checked=true;f.doc.querySelector('[data-radio-play]').click();
  f.view.TodayRouter.getState=()=>({route:'home'});f.view.dispatchEvent(new f.view.Event('today:routechange'));

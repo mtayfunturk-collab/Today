@@ -14,14 +14,29 @@ export function createRadioPlayer({audioFactory=()=>new globalThis.Audio(),setTi
  function fail(session,error){if(current!==session)return;unload();emit('error',error);}
  function arm(session){clearTimer(session.timer);session.timer=setTimer(()=>fail(session,'connection-timeout'),timeoutMs);}
  function stop(){unload();emit(state.station?'stopped':'idle');return{ok:true,status:state.status};}
+ function pause(){
+  if(!current)return stop();const session=current;session.attempt++;clearTimer(session.timer);emit('paused');
+  try{session.audio.pause();return{ok:true,status:'paused'};}catch{fail(session,'playback-error');return{ok:false,error:'playback-error'};}
+ }
+ function attemptPlay(session){
+  const attempt=++session.attempt;
+  const result=session.audio.play();
+  Promise.resolve(result).catch(error=>{if(current===session&&attempt===session.attempt)fail(session,error?.name==='NotAllowedError'?'play-blocked':'playback-error');});
+ }
+ function resume({userConfirmed=false}={}){
+  if(userConfirmed!==true)return{ok:false,error:'play-consent-required'};
+  if(!current||state.status!=='paused')return{ok:false,error:'no-paused-session'};
+  const session=current;emit('loading');arm(session);
+  try{attemptPlay(session);return{ok:true,status:'loading'};}catch{fail(session,'playback-error');return{ok:false,error:'playback-error'};}
+ }
  function play(input,{userConfirmed=false}={}){
   if(userConfirmed!==true)return{ok:false,error:'play-consent-required'};
   const station=stationDto(input);if(!station)return{ok:false,error:'invalid-station'};
-  if(current&&current.station.id===station.id&&current.station.streamUrl===station.streamUrl)return{ok:true,status:'already-active'};
+  if(current&&current.station.id===station.id&&current.station.streamUrl===station.streamUrl)return state.status==='paused'?resume({userConfirmed:true}):{ok:true,status:'already-active'};
   unload();const visible=Object.freeze({id:station.id,name:station.name,codec:station.codec,hls:station.hls});
   let audio;
   try{audio=audioFactory();}catch{emit('error','audio-unavailable',visible);return{ok:false,error:'audio-unavailable'};}
-  const session={audio,station,events:[],timer:null};current=session;
+  const session={audio,station,events:[],timer:null,attempt:0};current=session;
   const on=(name,fn)=>{const guarded=()=>{if(current===session)fn();};session.events.push([name,guarded]);audio.addEventListener(name,guarded);};
   try{
    const hls=station.hls||new URL(station.streamUrl).pathname.toLowerCase().endsWith('.m3u8');
@@ -31,19 +46,18 @@ export function createRadioPlayer({audioFactory=()=>new globalThis.Audio(),setTi
    // The first slice requires CORS-enabled streams rather than sending ambient
    // cross-origin credentials. No proxy, recording or Web Audio workaround.
    audio.crossOrigin='anonymous';
-   on('playing',()=>{clearTimer(session.timer);emit('playing');});
-   for(const name of ['waiting','stalled'])on(name,()=>{if(state.status!=='buffering'){emit('buffering');arm(session);}});
-   on('pause',()=>{unload();emit('stopped');});
+   on('playing',()=>{if(state.status==='paused')return;clearTimer(session.timer);emit('playing');});
+   for(const name of ['waiting','stalled'])on(name,()=>{if(state.status!=='paused'&&state.status!=='buffering'){emit('buffering');arm(session);}});
+   on('pause',()=>{if(state.status==='paused'||audio.paused===false)return;unload();emit('stopped');});
    on('ended',()=>{unload();emit('ended');});
    on('error',()=>fail(session,({1:'interrupted',2:'network-error',3:'decode-error',4:'source-unavailable'})[audio.error?.code]||'playback-error'));
    emit('loading',null,visible);arm(session);audio.src=station.streamUrl;audio.load();
    if(current!==session)return{ok:false,error:state.error||'interrupted'};
-   const attempt=audio.play();
-   Promise.resolve(attempt).catch(error=>fail(session,error?.name==='NotAllowedError'?'play-blocked':'playback-error'));
+   attemptPlay(session);
    return{ok:true,status:'loading'};
   }catch{fail(session,'playback-error');return{ok:false,error:'playback-error'};}
  }
- return Object.freeze({play,stop,getState:()=>state,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);}});
+ return Object.freeze({play,pause,resume,stop,getState:()=>state,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);}});
 }
 let shared;
 export function getRadioPlayer(){return shared??=createRadioPlayer();}

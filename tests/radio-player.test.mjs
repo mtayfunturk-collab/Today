@@ -38,4 +38,19 @@ await check('stop cancels loading and ignores later browser events',()=>{const f
 await check('OS pause or stream end releases the session and requires another user play',()=>{for(const name of ['pause','ended']){const f=fixture();f.player.play(station(),{userConfirmed:true});f.audios[0].event(name);assert.equal(f.active(),0);assert.equal(f.timers.size,0);assert.equal(f.audios.length,1);assert.equal(f.player.getState().status,name==='ended'?'ended':'stopped');}});
 await check('sync media failures and factory failures stay recoverable',()=>{const f=fixture({throws:true});assert.equal(f.player.play(station(),{userConfirmed:true}).ok,false);assert.equal(f.active(),0);const p=createRadioPlayer({audioFactory(){throw Error('unavailable');}});assert.equal(p.play(station(),{userConfirmed:true}).error,'audio-unavailable');});
 await check('state is immutable, minimal and supports safe unsubscription',()=>{const f=fixture();let events=0;const unsub=f.player.subscribe(()=>{events++;});f.player.subscribe(()=>{throw Error('consumer');});f.player.play(station(),{userConfirmed:true});assert.equal(events,1);assert(Object.isFrozen(f.player.getState().station));assert.equal('streamUrl'in f.player.getState().station,false);unsub();f.player.stop();assert.equal(events,1);});
+await check('pause retains the source and resume reuses the same element without load',()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});const a=f.audios[0];a.currentTime=4;a.event('playing');const loads=a.loads.length;
+ f.player.pause();assert.equal(f.player.getState().status,'paused');assert.equal(f.active(),0);assert.equal(f.timers.size,0);a.event('pause');a.event('playing');a.event('waiting');assert.equal(f.player.getState().status,'paused');
+ assert.equal(f.player.resume().error,'play-consent-required');assert.equal(f.active(),0);
+ assert(f.player.resume({userConfirmed:true}).ok);assert.equal(f.audios.length,1);assert.equal(a.loads.length,loads);assert.equal(a.currentTime,4);assert.equal(f.player.getState().status,'loading');a.event('playing');assert.equal(f.player.getState().status,'playing');f.player.stop();
+});
+await check('interrupted old play promise and queued pause cannot kill resumed playback',async()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});const a=f.audios[0],oldReject=a.reject;f.player.pause();f.player.resume({userConfirmed:true});oldReject(Error('aborted previous play'));a.paused=false;a.event('pause');await flush();assert.equal(f.player.getState().status,'loading');a.event('playing');assert.equal(f.player.getState().status,'playing');f.player.stop();
+});
+await check('full stop after pause removes the source and prevents resume',()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});f.player.pause();f.player.stop();assert.equal(f.audios[0].src,'');assert.equal(f.player.resume({userConfirmed:true}).error,'no-paused-session');assert.equal(f.active(),0);
+});
+await check('rejected resume fails truthfully without leaking browser details',async()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});f.player.pause();f.player.resume({userConfirmed:true});const e=Error('private');e.name='NotAllowedError';f.audios[0].reject(e);await flush();assert.equal(f.player.getState().error,'play-blocked');assert.equal(f.active(),0);assert.equal(f.audios[0].src,'');
+});
 console.log(`NUT-RADIO Player: ${passed}/${passed} başarılı`);
