@@ -2,6 +2,8 @@ import { createRadioDirectory, createLiveRadioDirectory } from './radio-director
 import {getRadioPlayer} from './radio-player.mjs';
 const mounts=new WeakMap();
 const miniMounts=new WeakMap();
+// Session-only replay authority stays in the consent-owning Radio UI.
+const replayActions=new WeakMap();
 export function mountRadioMiniPlayer({root=document,player=getRadioPlayer()}={}){
  const home=root.querySelector('[data-view="home"]');if(!home)return null;
  if(miniMounts.has(home))return miniMounts.get(home);
@@ -16,12 +18,13 @@ export function mountRadioMiniPlayer({root=document,player=getRadioPlayer()}={})
  const open=doc.createElement('button');open.type='button';open.className='back';open.textContent='Radio’yu aç';
  const stop=doc.createElement('button');stop.type='button';stop.className='back';stop.textContent='Durdur';
  open.addEventListener('click',()=>view.TodayRouter?.navigate('radio'));
- stop.addEventListener('click',()=>player.stop());actions.append(stop,open);card.append(icon,info,actions);
+ stop.addEventListener('click',()=>{if(['loading','playing','buffering'].includes(player.getState().status))player.stop();else replayActions.get(player)?.replay();});actions.append(stop,open);card.append(icon,info,actions);
  function reflect(state=player.getState()){
   const active=['loading','playing','buffering'].includes(state.status);
   name.textContent=state.station?.name||'Today Radio';
-  status.textContent=({idle:'Bir istasyon seç, gününe eşlik etsin.',loading:'Yayına bağlanılıyor…',playing:'Canlı · Çalıyor',buffering:'Bağlantı bekleniyor…',stopped:'Durduruldu · Radio’dan tekrar dinleyebilirsin.',ended:'Yayın sona erdi.',error:'Yayın açılamadı · Radio’dan inceleyebilirsin.'})[state.status]||'Yayın durumu bilinmiyor.';
-  stop.hidden=!active;stop.disabled=!active;card.dataset.playback=state.status;
+  status.textContent=({idle:'Bir istasyon seç, gününe eşlik etsin.',loading:'Yayına bağlanılıyor…',playing:'Canlı · Çalıyor',buffering:'Bağlantı bekleniyor…',stopped:'Durduruldu.',ended:'Yayın sona erdi.',error:'Yayın açılamadı · Radio’dan inceleyebilirsin.'})[state.status]||'Yayın durumu bilinmiyor.';
+  const canReplay=replayActions.get(player)?.canReplay()===true;
+  stop.textContent=active?'Durdur':'Tekrar dinle';stop.hidden=!active&&!canReplay;stop.disabled=stop.hidden;card.dataset.playback=state.status;
  }
  player.subscribe(reflect);reflect();home.insertBefore(card,home.querySelector('#buildTag'));
  const api=Object.freeze({});miniMounts.set(home,api);return api;
@@ -55,19 +58,19 @@ export function mountRadioUI({root=document,directory=createLiveRadioDirectory()
  const list=make('ul',{id:'radioResults',class:'radioList','aria-label':preview?'Örnek istasyon sonuçları':'İstasyon sonuçları'});const next=make('button',{class:'back',type:'button',id:'btnRadioNext'},'Sonraki 30 kayıt');next.hidden=true;panel.append(form,status,list,next);
  let chosen=null;
  const playback=make('section',{class:'radioStation','aria-label':'Radyo oynatma'}),streamConsent=make('input',{id:'radioStreamConsent',type:'checkbox'});
- const streamLabel=make('label',{class:'radioConsent'},'Seçtiğim istasyonun yayıncısına bağlanmayı kabul ediyorum. IP adresim ve tarayıcı bağlantı bilgilerim yayıncıya iletilir. Ses kaydedilmez.');streamLabel.prepend(streamConsent);
+ const streamLabel=make('label',{class:'radioConsent'},'Seçtiğim istasyonun yayıncısına bağlanmayı kabul ediyorum. IP adresim ve tarayıcı bağlantı bilgilerim yayıncıya iletilir. Ses kaydedilmez. İzin bu oturumda yeniden dinlemek için korunur; işareti kaldırarak iptal edebilirsin.');streamLabel.prepend(streamConsent);
  const playerStatus=make('p',{id:'radioPlayerStatus',role:'status','aria-live':'polite'}),retry=make('button',{class:'back',type:'button',id:'btnRadioRetry'},'Tekrar dinle'),stopButton=make('button',{class:'back',type:'button',id:'btnRadioStop'},'Durdur');
  const states={idle:'Henüz yayın başlatılmadı.',loading:'Yayına bağlanılıyor…',playing:'Çalıyor',buffering:'Bağlantı bekleniyor…',stopped:'Durduruldu.',ended:'Yayın sona erdi.'};
  const errors={'unsupported-format':'Bu yayın biçimi bu cihazda desteklenmiyor.','play-blocked':'Tarayıcı oynatmayı engelledi. Dinle düğmesine tekrar dokunabilirsin.','connection-timeout':'Yayına bağlanılamadı. Bağlantını kontrol edip tekrar deneyebilirsin.'};
  function reflectPlayer(state=player.getState()){
    playerStatus.textContent=(state.station?`${state.station.name} · `:'')+(state.status==='error'?(errors[state.error]||'Bu yayın açılamadı. Başka bir istasyon deneyebilirsin.'):states[state.status]||'Yayın durumu bilinmiyor.');
    stopButton.disabled=!['loading','playing','buffering'].includes(state.status);retry.hidden=!chosen||!stopButton.disabled;
-   if(view.TodayRouter?.getState?.().route!=='radio'&&stopButton.disabled)streamConsent.checked=false;
  }
  function start(station){
    if(!streamConsent.checked){playerStatus.textContent='Önce yayıncıya bağlantı iznini seç.';return;}
    chosen=station;const result=player.play(station,{userConfirmed:true});if(!result.ok&&result.error==='invalid-station')playerStatus.textContent='Bu istasyonun yayın adresi kullanılamıyor.';
  }
+ replayActions.set(player,{canReplay:()=>Boolean(chosen&&streamConsent.checked),replay:()=>{if(chosen)start(chosen);}});
  streamConsent.addEventListener('change',()=>{if(!streamConsent.checked)player.stop();});
  stopButton.addEventListener('click',()=>player.stop());retry.addEventListener('click',()=>{if(chosen)start(chosen);});
  playback.append(streamLabel,playerStatus,retry,stopButton,make('p',{class:'mini'},'Canlı yayın internet kullanır. Bağlantı kesilirse otomatik yeniden başlamaz. Kesintisiz arka plan oynatma garanti edilmez. Bu cihazda ses düzeyini sistem tuşlarıyla ayarlayabilirsin.'));
@@ -97,7 +100,7 @@ export function mountRadioUI({root=document,directory=createLiveRadioDirectory()
  cancel.addEventListener('click',()=>stop('Arama iptal edildi.'));
  root.querySelector('#btnRadioBack')?.addEventListener('click',()=>{consent.checked=false;stop('Arama iptal edildi.');view.TodayRouter?.navigate('modules');});
  view.addEventListener('today:routechange',()=>{if(view.TodayRouter?.getState?.().route!=='radio'&&(busy||lastQuery||consent.checked)){consent.checked=false;stop('Dizin bağlantısı kapatıldı. Yeniden aramak için izin seçebilirsin.');}});
- view.addEventListener('today:routechange',()=>{if(view.TodayRouter?.getState?.().route!=='radio'&&!['loading','playing','buffering'].includes(player.getState().status))streamConsent.checked=false;});
+ view.addEventListener('today:routechange',()=>{if(view.TodayRouter?.getState?.().route!=='radio'&&!chosen&&!['loading','playing','buffering'].includes(player.getState().status))streamConsent.checked=false;});
  const api=Object.freeze({cancel:()=>stop('Arama iptal edildi.')});mounts.set(panel,api);return api;
 }
 if(typeof window!=='undefined'&&typeof document!=='undefined'){

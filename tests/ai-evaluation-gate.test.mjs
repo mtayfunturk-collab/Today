@@ -144,9 +144,9 @@ await test("Benchmark geliştirme kapısıdır ve kullanıcı ekranına taşınm
 });
 
 await test("Today runtime yeni günlük kural kataloğu sürümünü taşır", () => {
-  assert.match(versionSource, /const APP_VERSION = "2\.23\.0"/);
+  assert.match(versionSource, /const APP_VERSION = "2\.23\.1"/);
   assert.match(versionSource, /const SCHEMA_VERSION = 2/);
-  assert.match(serviceWorkerSource, /const VERSION = "today-v2-foundation-079"/);
+  assert.match(serviceWorkerSource, /const VERSION = "today-v2-foundation-080"/);
 });
 
 await test("Rapor ham olay veya yanıltıcı doğruluk yüzdesi taşımaz", () => {

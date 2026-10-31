@@ -531,10 +531,14 @@ test('Radio playback starts only with publisher consent, survives module changes
   await page.screenshot({path:testInfo.outputPath('radio-mini-player.png'),fullPage:true});
   await page.locator('.radioMiniActions button').filter({hasText:'Durdur'}).click();
   await expect(page.locator('.radioMiniStatus')).toContainText('Durduruldu');
+  await page.locator('.radioMiniActions button').filter({hasText:'Tekrar dinle'}).click();
+  await expect(page.locator('.radioMiniStatus')).toContainText('Canlı · Çalıyor');
+  expect(streams.length).toBeGreaterThan(loads);const replayLoads=streams.length;
+  await page.locator('.radioMiniActions button').filter({hasText:'Durdur'}).click();
   await page.locator('.radioMiniActions button').filter({hasText:'Radio’yu aç'}).click();
-  await expect(page.locator('#radioPlayerStatus')).toContainText('Durduruldu');await expect(page.locator('#radioStreamConsent')).not.toBeChecked();expect(streams).toHaveLength(loads);
+  await expect(page.locator('#radioPlayerStatus')).toContainText('Durduruldu');await expect(page.locator('#radioStreamConsent')).toBeChecked();expect(streams).toHaveLength(replayLoads);
   expect(await coreDay(page)).toEqual(before);await page.reload();await ready(page);await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));
-  await expect(page.locator('#radioPlayerStatus')).toContainText('Henüz yayın başlatılmadı');await expect(page.locator('#radioStreamConsent')).not.toBeChecked();expect(streams).toHaveLength(loads);
+  await expect(page.locator('#radioPlayerStatus')).toContainText('Henüz yayın başlatılmadı');await expect(page.locator('#radioStreamConsent')).not.toBeChecked();expect(streams).toHaveLength(replayLoads);
   expect(network.every(url=>!url.includes('/url/')&&!url.includes('/vote/'))).toBe(true);
 });
 });

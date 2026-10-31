@@ -43,7 +43,7 @@ await check('station play requires separate publisher consent and supports stop/
 await check('route changes preserve active playback while closing directory consent',async()=>{
  const p=playerFixture();const f=fixture({cancel(){},async search(){return{ok:true,stations:[]};}},{mode:'live',player:p.player});const c=f.doc.getElementById('radioStreamConsent');c.checked=true;
  p.player.play({name:'Test stream',id:'one'},{userConfirmed:true});f.view.TodayRouter.getState=()=>({route:'health'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.equal(p.stops(),0);assert.equal(c.checked,true);assert.equal(f.doc.getElementById('radioDirectoryConsent').checked,false);
- p.player.stop();assert.equal(c.checked,false);assert.match(f.doc.getElementById('radioPlayerStatus').textContent,/Durduruldu/);
+ p.player.stop();assert.equal(c.checked,true);assert.match(f.doc.getElementById('radioPlayerStatus').textContent,/Durduruldu/);
 });
 await check('inactive publisher consent is cleared on route exit',()=>{
  const p=playerFixture();const f=fixture({cancel(){}},{mode:'live',player:p.player});const c=f.doc.getElementById('radioStreamConsent');c.checked=true;f.view.TodayRouter.getState=()=>({route:'modules'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.equal(c.checked,false);assert.equal(p.plays.length,0);
@@ -75,5 +75,16 @@ await check('mini stop uses the shared owner and cannot restart after stopping',
 });
 await check('mini renders untrusted station names as text and exposes no stream address',()=>{
  const f=miniFixture();f.update({status:'playing',station:{name:'<img src=x onerror=alert(1)>',streamUrl:'https://secret.example/live'}});assert.equal(f.doc.querySelectorAll('img').length,0);assert.match(f.doc.querySelector('.radioMiniName').textContent,/<img/);assert(!f.doc.querySelector('.radioMini').outerHTML.includes('secret.example'));assert.equal(f.doc.querySelector('.radioMiniStatus').getAttribute('aria-live'),'polite');
+});
+await check('mini stop and replay retain only session consent and explicit revocation blocks replay',async()=>{
+ const p=playerFixture(),station={id:'one',name:'Station',countryCode:'TR',languages:[],genres:[],codec:'MP3'};
+ const f=fixture({cancel(){},async search(){return{ok:true,stations:[station]};}},{mode:'live',player:p.player});
+ const home=f.doc.createElement('div');home.dataset.view='home';f.doc.body.append(home);mountRadioMiniPlayer({root:f.doc,player:p.player});
+ f.doc.getElementById('radioDirectoryConsent').checked=true;f.submit();await tick();
+ const consent=f.doc.getElementById('radioStreamConsent');consent.checked=true;f.doc.querySelector('[data-radio-play]').click();
+ f.view.TodayRouter.getState=()=>({route:'home'});f.view.dispatchEvent(new f.view.Event('today:routechange'));
+ const toggle=home.querySelector('.radioMiniActions button');toggle.click();assert.equal(p.stops(),1);assert(consent.checked);assert.equal(toggle.textContent,'Tekrar dinle');assert(!toggle.hidden);
+ toggle.click();assert.equal(p.plays.length,2);assert.equal(p.plays[1].station,station);assert.equal(toggle.textContent,'Durdur');
+ consent.checked=false;consent.dispatchEvent(new f.view.Event('change'));assert(toggle.hidden&&toggle.disabled);toggle.click();assert.equal(p.plays.length,2);assert.equal(f.view.localStorage.length,0);
 });
 console.log(`NUT-RADIO UI: ${passed}/${passed} başarılı`);
