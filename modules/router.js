@@ -57,6 +57,8 @@
       focusSelector: null
     }),
 
+    radio: Object.freeze({name:"radio",view:"radio",parent:"modules",panel:null,focusSelector:null}),
+
     calendar: Object.freeze({
       name: "calendar",
       view: "calendar",

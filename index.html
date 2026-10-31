@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
   <meta name="theme-color" content="#0b1220" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Today" />
@@ -82,12 +83,28 @@
     .topbar{flex-wrap:wrap}
     .topbar > *{min-width:0}
     img,svg,canvas{max-width:100%}
-    @media(max-width:600px){
-      .wrap{min-height:calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom));align-items:flex-start;padding:12px}
-      .inner{padding:20px}
-      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea{font-size:16px;max-width:100%}
-    }
 
+    .radioFilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+    .radioFilters label{display:grid;gap:6px;min-width:0;color:var(--muted);font-size:14px}
+    .radioFilters input:not([type="checkbox"]),.radioFilters select{width:100%;min-width:0;padding:12px;border:1px solid var(--stroke);border-radius:12px;background:var(--bg0);color:var(--text)}
+    .radioFilters .radioQuery{grid-column:1/-1}
+    .radioConsent{grid-column:1/-1;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+    .radioConsent input{width:20px;height:20px;flex:0 0 20px;margin:2px 0 0;accent-color:var(--accent)}
+    .radioActions{display:flex;gap:10px;flex-wrap:wrap;grid-column:1/-1}
+    .radioList{list-style:none;padding:0;display:grid;gap:12px}
+    .radioStation{padding:16px;border:1px solid var(--stroke);border-radius:16px;overflow-wrap:anywhere;background:var(--card)}
+    .radioStation h2{font-size:17px;margin:0 0 8px}.radioStation p{margin:6px 0;color:var(--muted);font-size:14px}
+    .radioMini{display:flex;align-items:center;gap:12px;text-align:left;margin:20px 0 12px;padding:14px;border:1px solid var(--stroke);border-radius:16px;background:var(--card);min-width:0}
+    .radioModule{border:2px solid var(--stroke);border-radius:24px;background:var(--card);overflow:hidden;min-width:0}
+    .radioModule>.moduleCard{border:0;box-shadow:none;background:transparent;border-radius:22px}
+    .radioModule .radioMini{margin:0;border:0;border-top:1px solid var(--stroke);border-radius:0;background:transparent}
+    .radioModule .radioMiniIcon{display:none}
+    .radioMini[hidden]{display:none}
+    .radioMiniIcon{font-size:24px;color:var(--accent);flex:0 0 auto}
+    .radioMiniInfo{display:grid;gap:5px;min-width:0;flex:1;overflow-wrap:anywhere}
+    .radioMiniName{font-size:14px}.radioMiniStatus{font-size:12px;line-height:1.5;color:var(--muted)}
+    .radioMiniActions{display:flex;gap:8px;flex-wrap:wrap}.radioMiniActions button{min-height:44px}
+    @media(max-width:480px){.radioMini{flex-wrap:wrap}.radioMiniActions{width:100%;justify-content:flex-end}}
     .skipLink{
       position:fixed;
       z-index:1000;
@@ -140,6 +157,14 @@
       overflow:hidden;
     }
     .inner{ padding:24px; }
+    @media(max-width:600px){
+      html{scrollbar-gutter:auto}
+      body[data-route] .wrap{min-height:calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom));align-items:flex-start!important;padding:12px}
+      body[data-route="home"] .wrap{align-items:center!important}
+      .inner{padding:20px}
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea{font-size:16px;max-width:100%}
+    }
+
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -1189,7 +1214,7 @@ html[data-theme="light"] .healthSelect {
   bottom: calc(7px + env(safe-area-inset-bottom));
   z-index: 5;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 4px;
   margin-top: 16px;
   padding: 7px;
@@ -1749,11 +1774,21 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
       </span>
     </button>
 
+  <div class="radioModule">
+  <button class="moduleCard" id="btnModuleRadio" type="button" data-module="radio" aria-label="Today Radio">
+    <span class="moduleIcon" aria-hidden="true">♫</span><span class="moduleText"><strong>Today Radio</strong><small>Türkiye ve dünyadan istasyonlar</small></span>
+  </button>
   </div>
-
-
+  </div>
   <div class="status" id="statusModules" role="status" aria-live="polite" aria-atomic="true"></div>
 </div>
+
+      <section class="inner" data-view="radio" role="main" aria-labelledby="radioTitle" aria-hidden="true">
+        <div class="topbar"><h1 class="title" id="radioTitle" data-view-title tabindex="-1">Today Radio</h1><button class="back" id="btnRadioBack" type="button">Modüller</button></div>
+        <p class="sub">Türkiye ve dünyadan istasyonları keşfet ve dinle.</p>
+        <p class="mini">Arama için Radio Browser’a bağlantı izni gerekir. Sayfayı açmak bağlantı başlatmaz; dinleme geçmişi tutulmaz.</p>
+        <div id="radioPanel"></div>
+      </section>
 
       <!-- TODAY CORE -->
 <div
@@ -1888,7 +1923,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
     <span class="navIcon" aria-hidden="true">☆</span>
     <span>Sky</span>
   </button>
-</nav>
+<button class="navItem" type="button" data-open-module="radio" aria-label="Today Radio"><span class="navIcon" aria-hidden="true">♫</span><span>Radio</span></button></nav>
       </div>
 
 <!-- TODAY HEALTH -->
@@ -2470,7 +2505,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
       <span class="navIcon" aria-hidden="true">☆</span>
       <span>Sky</span>
     </button>
-  </nav>
+  <button class="navItem" type="button" data-open-module="radio" aria-label="Today Radio"><span class="navIcon" aria-hidden="true">♫</span><span>Radio</span></button></nav>
 </div>
 
 <!-- TODAY SKY -->
@@ -2539,7 +2574,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
       <span class="navIcon navIconActive" aria-hidden="true">✦</span>
       <span>Sky</span>
     </button>
-  </nav>
+  <button class="navItem" type="button" data-open-module="radio" aria-label="Today Radio"><span class="navIcon" aria-hidden="true">♫</span><span>Radio</span></button></nav>
 </div>
 
       <!-- CALENDAR + STATS + SETTINGS -->
@@ -3129,6 +3164,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 <script type="module" src="./modules/ai-context-ui.mjs"></script>
 <script type="module" src="./modules/health-wearable-ui.mjs"></script>
 <script type="module" src="./modules/notification-ui.mjs"></script>
+<script type="module" src="./modules/radio-ui.mjs"></script>
 <script src="./modules/router.js"></script>
 <script src="./modules/module-registry.js"></script>
 <script src="./modules/startup-manager.js"></script>

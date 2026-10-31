@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import {createRadioPlayer,getRadioPlayer} from '../modules/radio-player.mjs';
+import {normalizeStation} from '../modules/radio-directory.mjs';
+let passed=0;async function check(name,fn){await fn();passed++;console.log(`PASS ${name}`);}
+const flush=()=>new Promise(r=>setTimeout(r,0));
+const station=(id=1,patch={})=>normalizeStation({stationuuid:`00000000-0000-4000-8000-${String(id).padStart(12,'0')}`,name:`Station ${id}`,countrycode:'TR',language:'turkish',tags:'news',url_resolved:`https://stream.example/${id}`,codec:'MP3',hls:0,lastcheckok:1,...patch});
+function fixture({supported=['audio/mpeg','audio/aac'],throws=false}={}){
+ const audios=[],timers=new Map();let next=0;
+ const player=createRadioPlayer({audioFactory:()=>{
+  const listeners=new Map(),history=new Map();const a={src:'',active:false,loads:[],
+   canPlayType:m=>supported.includes(m)?'maybe':'',
+   addEventListener(n,fn){listeners.set(n,fn);history.set(n,fn);},removeEventListener(n){listeners.delete(n);},
+   removeAttribute(n){if(n==='src')this.src='';},load(){this.loads.push(this.src);},pause(){this.active=false;},
+   play(){if(throws)throw Error('private URL');this.active=true;return new Promise((resolve,reject)=>{this.resolve=resolve;this.reject=reject;});},
+   event:n=>listeners.get(n)?.(),late:n=>history.get(n)?.()
+  };audios.push(a);return a;
+ },setTimer:fn=>{timers.set(++next,fn);return next;},clearTimer:id=>timers.delete(id)});
+ return{player,audios,timers,active:()=>audios.filter(a=>a.active).length,tick:()=>{for(const fn of [...timers.values()])fn();}};
+}
+await check('construction and unconfirmed play create no audio or network source',()=>{const f=fixture();assert.equal(f.audios.length,0);assert.equal(f.player.play(station()).error,'play-consent-required');assert.equal(f.audios.length,0);});
+await check('one singleton owner is shared without creating an audio at import',()=>assert.equal(getRadioPlayer(),getRadioPlayer()));
+await check('invalid and HTTP sources are rejected without interrupting current playback',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});assert.equal(f.player.play({...station(),streamUrl:'http://stream.example/a'},{userConfirmed:true}).error,'invalid-station');assert.equal(f.active(),1);f.player.stop();});
+await check('accepted play remains loading until the playing event',()=>{const f=fixture();assert.equal(f.player.play(station(),{userConfirmed:true}).status,'loading');assert.equal(f.player.getState().status,'loading');f.audios[0].event('playing');assert.equal(f.player.getState().status,'playing');assert.equal(f.timers.size,0);f.player.stop();});
+await check('play promise resolution alone never claims actual playback',async()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});f.audios[0].resolve();await flush();assert.equal(f.player.getState().status,'loading');f.player.stop();});
+await check('anonymous CORS and no preload are configured before source playback',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});assert.equal(f.audios[0].crossOrigin,'anonymous');assert.equal(f.audios[0].preload,'none');assert.equal(f.audios[0].autoplay,false);assert.equal(f.active(),1);f.player.stop();});
+await check('duplicate same-station clicks reuse the current active session',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});assert.equal(f.player.play(station(),{userConfirmed:true}).status,'already-active');assert.equal(f.audios.length,1);f.player.stop();});
+await check('switching stations unloads old source before starting the new one',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});f.player.play(station(2),{userConfirmed:true});assert.equal(f.audios[0].src,'');assert.equal(f.audios[0].active,false);assert.equal(f.active(),1);assert.equal(f.player.getState().station.name,'Station 2');f.player.stop();});
+await check('late old events and rejected promises cannot corrupt the new session',async()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});const old=f.audios[0];f.player.play(station(2),{userConfirmed:true});old.late('playing');old.late('error');old.reject(Error('old private URL'));await flush();assert.equal(f.player.getState().status,'loading');assert.equal(f.player.getState().station.name,'Station 2');f.player.stop();});
+await check('native HLS is allowed only when the browser reports support',()=>{for(const supported of [[],['application/vnd.apple.mpegurl']]){const f=fixture({supported});const result=f.player.play(station(1,{hls:1,codec:'UNKNOWN'}),{userConfirmed:true});assert.equal(result.ok,supported.length>0);if(!supported.length)assert.equal(f.active(),0);f.player.stop();}});
+await check('m3u8 sources also require HLS support even when mislabelled MP3',()=>{const f=fixture();assert.equal(f.player.play(station(1,{url_resolved:'https://stream.example/live.m3u8'}),{userConfirmed:true}).error,'unsupported-format');assert.equal(f.active(),0);});
+await check('unknown codecs are not guessed from station labels',()=>{const f=fixture();assert.equal(f.player.play(station(1,{codec:'UNKNOWN'}),{userConfirmed:true}).error,'unsupported-format');assert.equal(f.audios[0].src,'');});
+await check('loading timeout cancels the source without auto reconnect',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});f.tick();assert.equal(f.player.getState().error,'connection-timeout');assert.equal(f.active(),0);assert.equal(f.audios.length,1);assert.equal(f.timers.size,0);});
+await check('buffering has one bounded deadline and playing clears it',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});const a=f.audios[0];a.event('playing');a.event('waiting');const id=[...f.timers.keys()][0];a.event('stalled');assert.deepEqual([...f.timers.keys()],[id]);assert.equal(f.player.getState().status,'buffering');a.event('playing');assert.equal(f.timers.size,0);f.player.stop();});
+await check('buffering timeout never counts as playing or starts another source',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});f.audios[0].event('playing');f.audios[0].event('waiting');f.tick();assert.equal(f.player.getState().status,'error');assert.equal(f.active(),0);assert.equal(f.audios.length,1);});
+await check('browser denial is a safe error and does not expose rejection text',async()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});const e=Error('private stream token');e.name='NotAllowedError';f.audios[0].reject(e);await flush();assert.equal(f.player.getState().error,'play-blocked');assert.doesNotMatch(JSON.stringify(f.player.getState()),/token/);assert.equal(f.active(),0);});
+await check('network and decode errors stop rather than silently retry',()=>{for(const [code,error]of [[2,'network-error'],[3,'decode-error'],[4,'source-unavailable']]){const f=fixture();f.player.play(station(),{userConfirmed:true});f.audios[0].error={code};f.audios[0].event('error');assert.equal(f.player.getState().error,error);assert.equal(f.active(),0);assert.equal(f.timers.size,0);}});
+await check('stop cancels loading and ignores later browser events',()=>{const f=fixture();f.player.play(station(),{userConfirmed:true});f.player.stop();f.audios[0].late('playing');assert.equal(f.player.getState().status,'stopped');assert.equal(f.active(),0);assert.equal(f.audios[0].src,'');});
+await check('OS pause or stream end releases the session and requires another user play',()=>{for(const name of ['pause','ended']){const f=fixture();f.player.play(station(),{userConfirmed:true});f.audios[0].event(name);assert.equal(f.active(),0);assert.equal(f.timers.size,0);assert.equal(f.audios.length,1);assert.equal(f.player.getState().status,name==='ended'?'ended':'stopped');}});
+await check('sync media failures and factory failures stay recoverable',()=>{const f=fixture({throws:true});assert.equal(f.player.play(station(),{userConfirmed:true}).ok,false);assert.equal(f.active(),0);const p=createRadioPlayer({audioFactory(){throw Error('unavailable');}});assert.equal(p.play(station(),{userConfirmed:true}).error,'audio-unavailable');});
+await check('state is immutable, minimal and supports safe unsubscription',()=>{const f=fixture();let events=0;const unsub=f.player.subscribe(()=>{events++;});f.player.subscribe(()=>{throw Error('consumer');});f.player.play(station(),{userConfirmed:true});assert.equal(events,1);assert(Object.isFrozen(f.player.getState().station));assert.equal('streamUrl'in f.player.getState().station,false);unsub();f.player.stop();assert.equal(events,1);});
+await check('pause retains the source and resume reuses the same element without load',()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});const a=f.audios[0];a.currentTime=4;a.event('playing');const loads=a.loads.length;
+ f.player.pause();assert.equal(f.player.getState().status,'paused');assert.equal(f.active(),0);assert.equal(f.timers.size,0);a.event('pause');a.event('playing');a.event('waiting');assert.equal(f.player.getState().status,'paused');
+ assert.equal(f.player.resume().error,'play-consent-required');assert.equal(f.active(),0);
+ assert(f.player.resume({userConfirmed:true}).ok);assert.equal(f.audios.length,1);assert.equal(a.loads.length,loads);assert.equal(a.currentTime,4);assert.equal(f.player.getState().status,'loading');a.event('playing');assert.equal(f.player.getState().status,'playing');f.player.stop();
+});
+await check('interrupted old play promise and queued pause cannot kill resumed playback',async()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});const a=f.audios[0],oldReject=a.reject;f.player.pause();f.player.resume({userConfirmed:true});oldReject(Error('aborted previous play'));a.paused=false;a.event('pause');await flush();assert.equal(f.player.getState().status,'loading');a.event('playing');assert.equal(f.player.getState().status,'playing');f.player.stop();
+});
+await check('full stop after pause removes the source and prevents resume',()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});f.player.pause();f.player.stop();assert.equal(f.audios[0].src,'');assert.equal(f.player.resume({userConfirmed:true}).error,'no-paused-session');assert.equal(f.active(),0);
+});
+await check('rejected resume fails truthfully without leaking browser details',async()=>{
+ const f=fixture();f.player.play(station(),{userConfirmed:true});f.player.pause();f.player.resume({userConfirmed:true});const e=Error('private');e.name='NotAllowedError';f.audios[0].reject(e);await flush();assert.equal(f.player.getState().error,'play-blocked');assert.equal(f.active(),0);assert.equal(f.audios[0].src,'');
+});
+console.log(`NUT-RADIO Player: ${passed}/${passed} başarılı`);

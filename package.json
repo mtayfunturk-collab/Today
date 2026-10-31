@@ -1,6 +1,6 @@
 {
   "name": "today-app",
-  "version": "2.20.1",
+  "version": "2.23.3",
   "private": true,
   "description": "Today App platform regression gate",
   "scripts": {

@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "46c649ac6e79899547116503b883badcae12ce12b3d48f71dfcd35e5ebc9bcf6",
+    "77e2283d83790441bc2b2b62fe08e08dc78abd4aaa781e931ad85fc19c6f6450",
   "sw.js":
-    "66fe88d9a41dc8aed6aef1769dfe115284761146601b7b8d1f8def614619fc95",
+    "3e84639f37e5f6019d082534b66f1154a9221b7adb8316a7322540ecca8def6c",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -45,9 +45,9 @@ const expectedProductionHashes = {
   "modules/nutrition-ui.js":
     "66d5811449440e94ba18c24d6e93ebe6cb20d16e40b718fbb9f673dc66a7324e",
   "storage.js":
-    "28d0450b05882b74689c86ae251a5b21f512ed61641a8920f37e39c359420ea1",
+    "b9127ee797b8e4927ed434136c7d3244022686b885488a457465ed28acf66f0f",
   "version.js":
-    "4e179a9346968f4319335929ab385cc77eec494147ebf62aabdb9b8fd1dc4acb",
+    "c5981ed84fa0ada11197e439f8a36bf0f56f035ff9b4ec40ce73e38a597e38a5",
   "migration.js":
     "8862194d0b240944cc0cab9149fb923416e76498eedd33245b28f0d3ef8dba3d",
   "day-manager.js":
@@ -55,9 +55,9 @@ const expectedProductionHashes = {
   "state-manager.js":
     "e513c919ad4088f09a06d5890ce05578e955488254d6bf45af7ca54d5507d2d1",
   "router.js":
-    "a71e4847f559f3203e619931d5477a309a687608e7955a8af829fdd2d321a789",
+    "1878a494c9885ed33650766bb98bbd62b1c1837d89ef639cbffac90aa67b1294",
   "module-registry.js":
-    "9678b6a3f73789f50e961257a0fa2115006b60ae521a6867340ea11975be8356",
+    "393d6cbfd275f94ffa8f0177291a0217f83d8ae3154dae7346e3d59668191fb4",
   "service-worker-manager.js":
     "c42c5f1e13ccb58e062f1b05a736025a8fc1c5121759635847efbce768c6a75d"
 };
@@ -144,11 +144,13 @@ const expectedHtmlIds = [
   "btnHomeFromPick",
   "btnModuleCore",
   "btnModuleHealth",
+  "btnModuleRadio",
   "btnModuleSky",
   "btnModulesFromHealth",
   "btnModulesFromSky",
   "btnOpenSettings",
   "btnOpenStats",
+  "btnRadioBack",
   "btnResetToday",
   "btnStart",
   "btnStats",
@@ -238,6 +240,8 @@ const expectedHtmlIds = [
   "note",
   "pickTitle",
   "pillDate",
+  "radioPanel",
+  "radioTitle",
   "skipToContent",
   "skyTitle",
   "statusHome",
@@ -347,14 +351,14 @@ test(
 );
 
 test(
-  "NUT-018 taban çizgisindeki 182 HTML kimliği benzersiz",
+  "NUT-018 taban çizgisindeki 186 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 182);
+    assert.equal(updatedIds.length, 186);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -367,7 +371,7 @@ test(
 );
 
 test(
-  "Altı görünüm ve görünüm adları değişmedi",
+  "Yedi görünüm, Radio dahil doğrulanıyor",
   () => {
     const updatedViews = matches(
       updatedHtml,
@@ -391,6 +395,7 @@ test(
         "home",
         "modules",
         "pick",
+        "radio",
         "sky"
       ]
     );
@@ -447,6 +452,7 @@ test(
       "./modules/ai-context-ui.mjs",
       "./modules/health-wearable-ui.mjs",
       "./modules/notification-ui.mjs",
+      "./modules/radio-ui.mjs",
       "./modules/router.js",
       "./modules/module-registry.js",
       "./modules/startup-manager.js"
@@ -756,7 +762,7 @@ test(
 );
 
 test(
-  "Üç modül kartı ve dokuz alt navigasyon tetikleyicisi korunuyor",
+  "Dört modül kartı ve on iki alt navigasyon tetikleyicisi korunuyor",
   () => {
     assert.deepEqual(
       matches(
@@ -766,7 +772,8 @@ test(
       [
         "core",
         "health",
-        "sky"
+        "sky",
+        "radio"
       ]
     );
     assert.deepEqual(
@@ -778,12 +785,15 @@ test(
         "core",
         "health",
         "sky",
+        "radio",
         "core",
         "health",
         "sky",
+        "radio",
         "core",
         "health",
-        "sky"
+        "sky",
+        "radio"
       ]
     );
   }
@@ -1224,7 +1234,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-075 ve 122 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-082 ve 125 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1236,7 +1246,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-075"'
+        'const VERSION = "today-v2-foundation-082"'
       )
     );
     assert.ok(shellMatch);
@@ -1246,7 +1256,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 122);
+    assert.equal(shellEntries.length, 125);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);

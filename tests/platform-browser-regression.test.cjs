@@ -602,7 +602,7 @@ test(
         .querySelectorAll(
           "[data-module]"
         ).length,
-      3
+      4
     );
   }
 );
@@ -628,12 +628,12 @@ test(
 );
 
 test(
-  "Üç modül kartı Registry üzerinden doğru rotaları açıyor",
+  "Dört modül kartı Registry üzerinden doğru rotaları açıyor",
   () => {
     const cases = [
       ["core", "pick"],
       ["health", "health"],
-      ["sky", "sky"]
+      ["sky", "sky"], ["radio", "radio"]
     ];
 
     cases.forEach(
@@ -662,12 +662,13 @@ test(
 );
 
 test(
-  "Dokuz ortak alt navigasyon tetikleyicisi doğru modülleri açıyor",
+  "On iki ortak alt navigasyon tetikleyicisi doğru modülleri açıyor",
   () => {
     const expectedRoutes = {
       core: "pick",
       health: "health",
-      sky: "sky"
+      sky: "sky",
+      radio: "radio"
     };
     const triggers = [
       ...normal.window.document
@@ -678,7 +679,7 @@ test(
 
     assert.equal(
       triggers.length,
-      9
+      12
     );
 
     triggers.forEach(trigger => {

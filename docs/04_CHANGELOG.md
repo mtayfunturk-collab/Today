@@ -31,6 +31,95 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.3d — Tek Radio kartı ve ortalanmış başlangıç
+
+App2.23.3/schema2/foundation-082/125. Mini kontroller modüller altında ayrı panel olmaktan çıkarılıp mevcut Radio kartının tek görsel kabuğuna alındı. Kart açma ve oynatma düğmeleri kardeştir; iç içe button yoktur. Seçim yapılmadan mini alan gizli; seçili istasyonda ad/durum/durdur-devam aynı kartta görünür. Mobile home route, flex-start kuralından ayrılarak dikey merkeze döner; diğer rotalar üst hizayı korur. Ses/izin/veri yapısı değişmedi. UI22 ve gerçek tarayıcıda viewport merkez/tek kart kontrolleri; son kapılar PR #2'de izlenir. Yeni radyo kapsamı açılmaz; son fiziksel kabul beklenir.
+
+---
+
+## NUT-RADIO.3c — Modüller ekranı ve aynı medya öğesinde sürdürme
+
+App2.23.2/schema2/foundation-081/125. Telefon tekrarında mini replay başarısız bildirildi; fiziksel olay/log bulunmadığı için tek bir OS nedeni kesinleştirilmedi. Önceki stop kaynağı unload edip yeni Audio oluşturuyordu. Mini kontrol artık pause/resume ile aynı audio/src/currentTime'ı kullanır; tam stop/izin iptali hâlâ kaynağı boşaltır. Eski play promise reddi ve gecikmiş pause olayı resume'u bozamaz; yeni playing olayı olmadan başarı gösterilmez. Canlı yayın tamponu/zaman aşımı tarayıcıya bağlıdır, kesin DVR/aynı saniye garantisi yoktur. Mini-player Başla ekranından kaldırıldı, modüller ekranına taşındı. Player25 testi ve gerçek HTMLAudio same-element/currentTime E2E genişletildi. CI ve canlı sürüm kanıtı PR #2'de; fiziksel tekrar sonucu gelmeden radyo aşaması kapanmaz.
+
+---
+
+## NUT-RADIO.3b — Mini oynatıcıdan tekrar dinleme
+
+App2.23.1/schema2/foundation-080/125. Telefon testinde bildirilen eksik mini replay akışı düzeltildi: Durdur düğmesi aynı oturumda Tekrar dinle olur; aynı seçilmiş istasyonu, Radio UI'ın mevcut yayıncı iznini denetleyerek kullanıcı dokunuşuyla başlatır. Stop izni geri çekmez. Checkbox'ı kaldırmak akışı durdurur ve mini replay'i kapatır; reload oturum seçimini/iznini temizler. Yeni kalıcı veri veya ikinci audio yoktur. Canlı radyoda yeniden başlatma güncel yayın noktasına bağlanır. UI21 testi; yeni birleşik mini-stop/replay/revoke senaryosu ve gerçek HTMLAudio E2E genişletildi. Son test ve CI kanıtı PR #2'de; fiziksel tekrar testi bekliyor.
+
+---
+
+## NUT-RADIO.3a — Ana ekran mini oynatıcısı
+
+31 Ekim 2026; App2.23.0/schema2/foundation-079/125. radio-ui.mjs ana ekrana tek idempotent mini oynatıcı ekler: sembol, istasyon adı, gerçek oynatma/bağlanma/bekleme/hata durumu, Durdur ve Radio'yu aç. Radio ekranıyla aynı singleton kullanılır; ikinci audio veya yeni istek oluşturmaz. Durdurdan sonra yeniden başlatma Radio'daki görünür yayıncı izninden geçer. İlk açılış sessizdir; kalıcı veri, favori/geçmiş/AI eklenmedi. Küçük ekranda düğmeler alt satıra iner, uzun adlar kırılır; 44px dokunma hedefleri ve erişilebilir durum metni vardır. UI20/20 (yeni5 mini kontrol), static30/30 geçti. Birleşik kapılar ve uzak CI sonucu PR #2'de kaydedilir. Sürüm testi eski2.22 beklentisiyle10/11 verdi; yeni2.23 sürümüne güncellendikten sonra11/11 geçti. Sıradaki dilim Media Session ve uyku zamanlayıcısıdır; fiziksel iPhone/Windows, ticari yayın ve arka plan kabulü açık kalır.
+
+---
+
+## NUT-RADIO.2d — Tek oynatma yöneticisi
+
+App2.22.0, Core şema2, foundation-078 /125 kabuk kaydı.
+
+- radio-player.mjs tek ortak sahip/aktif oturum sağlar. Audio nesnesi yalnız açık Dinle eyleminde oluşturulur; kaynak değişiminden önce eski akış boşaltılır. Nesne oturum başına yenilenerek eski olay/reject/timeout yeni oturumu etkilemez; rota değişimi nesne yaratmaz. Çalıyor yalnız playing olayında, waiting/stalled buffer ve bağlantı hatasında açık hata/durdurma; otomatik retry yok.
+- Radio Browser izninden ayrı yayıncı bağlantısı checkbox'ı; Dinle/Durdur/Tekrar dinle ve durum bölümü eklendi. Yayın izni geri alınca akış durur. Rota değişiminde aktif ses sürer; sayfa yenilenince otomatik başlamaz. Dinleme geçmişi/AI veya yeni kalıcı depo yok.
+- İlk kapsam MP3/AAC/AAC+ ve cihazın native HLS desteği. Anonim CORS zorunlu, global no-referrer meta; CORS vermeyen veya desteklenmeyen yayın hata verir. Proxy/hls.js/ambient cross-origin credentials eklenmedi. Ses düzeyi şimdilik sistem tuşlarıyla; arka plan/lockscreen garantisi yok.
+- Player21/UI15 dahil entegrasyon324, platform1161, Engine403, benchmark16/0ihlal, native15, Chromium15 PASS/0FAIL. Yeni browser senaryosu kendimiz ürettiğimiz sessiz MP3'ü route fixture üzerinden gerçek medya öğesinde oynatır; izin/no stream→playing→modül değişimi/yeni kaynak yok→stop→reload/no autoplay ve Core korunması doğrulanır. Ticari yayın veya fiziksel cihaz testi değildir.
+- Ağ fixture'larında serviceWorkers:block nedeniyle oluşan beklenen kayıt hatası bildirimi, uzayan formun düğmelerini örtüyordu. Yalnız Radio test grubunda no-SW destek yolu açıkça seçildi; diğer13 offline/SW testi aynen korunur, gerçek ürün hatası gizlenmez.
+- Sonraki küçük dilim ana ekran mini-player; Media Session, ses düzeyi yetenek kontrolü, uyku zamanlayıcısı ve fiziksel iPhone/Windows kabulü sonra. Yeni CI/commit kanıtı PR #2'de.
+
+---
+
+## NUT-RADIO.2c — CI kapanış kaydı
+
+Actions41126865552 / a9f4f04 completed/success, platform ve iki native derleme ile Chromium/WebKit işi başarılı. Job logu Chromium14+WebKit14=28PASS/0FAIL verdi. Önceki WebKit ağ fixture hatası kapandı. Runtime c4ac76d ve App2.21.1 aynı; yalnız sonuç belgesi güncellendi, test tekrar edilmedi. Yerel platform1161/entegrasyon300/Engine403/benchmark16/native15/Chromium14 PASS; gerçek ses ve cihaz kabulü yok. Sıradaki küçük görev tek audio yöneticisi.
+
+---
+
+## NUT-RADIO.2c — WebKit ağ fixture izolasyonu
+
+CI41126002787 browser27PASS/1FAIL: WebKit'te Service Worker, page.route taklidini atlayıp gerçek filtrelenmemiş dizin yanıtını aldı (3beklenirken2güvenli kayıt). Trace /json/servers ve /json/stations/search?hidebroken=true&limit=30&offset=0&is_https=true gerçek API yanıtlarını kanıtladı. Kullanıcı sağlık/geçmiş/not verisi yok; izole sentetik test profili kullanıldı. Ürün hatası diye doğrulama gevşetilmedi.
+
+Yalnız Radio katalog E2E'sinde serviceWorkers:block + context.route ile deterministik yanıt ve diğer dış origin'lere abort uygulandı. Diğer13SW/offline/gezinme testinin ayarları korunur. Hedefli Chromium ve yeni WebKit CI sonucu PR #2'de; ürün sürümü/depolar değişmedi.
+
+---
+
+## NUT-RADIO.2c — İzinli gerçek istasyon kataloğu
+
+App 2.21.1; Core şema 2; foundation-077 / 124 kayıt.
+
+- Örnek katalog yerine Radio Browser bağlantısı; ilk açılışta istek yok. IP/arama/filtre aktarımı açıkça belirtilen, varsayılan boş oturumluk izin ve yükle eylemi gerekir. İzin kaldırma/rota çıkışı istek ve sonuçları temizler; kalıcı tercih/depo yoktur.
+- HTTPS sunucu keşfi yalnız sağlayıcı hostname'lerini kabul eder, IP alanlarını kullanmaz; doğrulanmış en çok üç ayna, tek timeout bütçesi, bootstrap fallback. Bugünkü resmî keşif iki IP kaydında aynı de1 hostname'ini verdi; birden çok bağımsız canlı sunucu varmış gibi raporlanmadı. Arama is_https=true; DTO son URL'yi ayrıca doğrular.
+- 30'luk sayfalama, artan offset, filtrede sıfırlama, ayıklanan kayıt açıklaması ve doğrulanmamış yayın etiketi. Logo, click/oy, stream, audio, favori/geçmiş/AI isteği yok.
+- Directory23 ve UI12 hedefli test, birleşik300 PASS; platform1161, Engine403, benchmark16/0ihlal ve native15 geçti. Chromium14/14 PASS; uzak CI kanıtı PR #2'de tutulur. İki resmî API HTTP200/CORS kontrolü yapıldı; radyo sesi dinlenmedi. İlk E2E'nin bulduğu erken rota değişiminde yanlış bağlantı kapalı mesajı düzeltildi ve regresyon testi eklendi.
+- Önceki CI41124365909 success olarak doğrulandı. Gerçek iPhone/Windows cihaz kabulü veya site yayını yapılmadı.
+
+---
+
+## NUT-RADIO.2b — Radio tasarım önizlemesi
+
+App 2.21.0; Core şema 2; foundation-076 / 124 kabuk kaydı.
+
+- Radio, Registry/Router içinde dördüncü modül/dokuzuncu rota/yedinci görünüm oldu; ortak alt navigasyon dört sütuna geçti. Core/Health/Sky ve geri/odak/aria davranışı korundu.
+- Açık etiketli örnek katalog: arama, ülke/dil/tür filtreleri, boş/hata/yükleme/iptal durumları; iptal/rota veya filtre değişimi eski sonucu dışlar. Otomatik ağ, yayın/oynatıcı, favori/kalıcı geçmiş veya AI yok. Doğrulanmış Radio Browser DTO adaptörü örnek yanıtlarla kullanılır.
+- İlk tarayıcı koşusu Registry'nin Radio alt gezinme bağını beklediğini gösterdi; dört modüllü navigasyon eklendi. Ekran görüntüsü incelemesi genel wrap ve Health’in sonradan eklediği global !important hizalamanın mobil üst hizalamayı ezdiğini gösterdi; media kuralı sonraya taşınıp route niteliğiyle kapsamı belirginleştirildi, mobil scrollbar rezervi kaldırıldı.
+- Yerel UI 8/8, entegrasyon 292/292, platform 1161/1161, Engine 403 kontrol, benchmark 16/16, native 15/15 ve Chromium 14/14 PASS; FAIL 0. Son CSS düzeltmesi hedefli mobil/Radio E2E 2/2 ve statik 30/30 kapısıyla doğrulandı; uzak CI sonucu PR #2'de. Fiziksel iPhone/Windows testi yapılmadı.
+- Önceki CI 41122648364 success: WebKit Touch engeli kapandı. Yeni sürümün dağıtıldığı veya canlı istasyonların çalıştığı iddia edilmez.
+
+---
+
+## NUT-RADIO.2a — İzole dizin adaptörü
+
+Yeni radio-directory.mjs: doğrulanmış HTTPS/UUID DTO, TR/dünya arama/ülke/dil/tür filtresi, sınırlı pagination/ayna/timeout, iptal/eski sonuç, 512KiB yanıt tavanı ve kayıt tekilleştirme. Mount/ağ/oynatma/depo/AI yok; adaptör yalnız açık kullanıcı eylemiyle kullanılabilir. Kullanıcı arayüzü sonraki dilimdir.
+
+Radio 19/19, birleşik entegrasyon 284/284; platform 1161, Engine 403 ve benchmark 16 PASS/0 FAIL. Bu aşama sahte API kullanır; gerçek radyo/iPhone testi değildir. Ana geliştirme dalındaki sentetik Touch sürücüsü düzeltmesi bu dala da alındı; yerel Chromium hedefi 1/1. WebKit CI sonucu PR'lerde izlenir.
+
+---
+
+## NUT-RADIO.1 — Mimari ve uygulanabilirlik
+
+feature/today-radio, taban d10f1eb; ürün sürümü/depolar değişmedi. Modül/mini-player/tek audio, API/HTTPS/CORS/HLS, dış bağlantı gizliliği, önerilen ayrı depolar ve aşamalar raporlandı. İki API HTTP kontrolü 2 PASS/0 FAIL; gerçek yayın/cihaz testi yapılmadı. Taban CI 41116016970: 25 tarayıcı PASS/1 FAIL; WebKit testindeki Touch kurucusu uyumsuzluğu entegrasyon önkoşulu. Mevcut dal, saat/bildirim kodu ve ertelenme kararı korundu. Ayrıntı docs/TODAY-RADIO-IMPLEMENTATION.md.
+
+---
+
 ## NUT-020.1 — WebKit test sürücüsü düzeltmesi
 
 CI 41116016970 WebKit'te constructible olmayan Touch nedeniyle 25 PASS/1 FAIL verdi. Sentetik gesture testinde Event + salt okunur touches/changedTouches payload kullanıldı; ürün router/CSS ve test beklentileri değiştirilmedi. Gerçek parmak/OS hareketi ayrı cihaz kabulüdür. Yerel hedefli Chromium sonucu ve uzak WebKit CI kanıtı PR #1'de izlenir. Bu dilimde Radio kodu yoktur.
