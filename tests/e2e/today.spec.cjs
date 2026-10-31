@@ -512,12 +512,16 @@ test('Radio playback starts only with publisher consent, survives module changes
     if(u.hostname.endsWith('.api.radio-browser.info')){await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(u.pathname==='/json/servers'?[{name:'de1.api.radio-browser.info'}]:[row])});return;}
     await route.abort();
   });
-  await open(page);await saveCore(page);const before=await coreDay(page);
+  await open(page);
+  const homeCard=await page.locator('.screen').boundingBox();const viewport=page.viewportSize();
+  expect(Math.abs(homeCard.y+homeCard.height/2-viewport.height/2)).toBeLessThan(5);
+  await saveCore(page);const before=await coreDay(page);
   await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
   await expect(page.locator('[data-view="home"] .radioMini')).toHaveCount(0);
-  await expect(page.locator('.radioMini')).toBeVisible();
+  await expect(page.locator('.radioMini')).toBeHidden();
+  await expect(page.locator('.radioModule .radioMini')).toHaveCount(1);
   await expect(page.locator('.radioMiniStatus')).toContainText('Bir istasyon seç');expect(streams).toHaveLength(0);
-  await page.locator('.radioMiniActions button').filter({hasText:'Radio’yu aç'}).click();
+  await page.locator('#btnModuleRadio').click();
   await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));
   await page.locator('#radioDirectoryConsent').check();await page.locator('#btnRadioSearch').click();
   await expect(page.locator('[data-radio-play]')).toHaveCount(1);expect(streams).toHaveLength(0);
@@ -540,7 +544,7 @@ test('Radio playback starts only with publisher consent, survives module changes
   expect(await page.evaluate(()=>window.__radioAudios[0].currentTime)).toBeGreaterThanOrEqual(pausedTime-0.05);
   expect(await page.evaluate(()=>window.__radioAudios.length)).toBe(1);const replayLoads=streams.length;
   await page.locator('.radioMiniActions button').filter({hasText:'Durdur'}).click();
-  await page.locator('.radioMiniActions button').filter({hasText:'Radio’yu aç'}).click();
+  await page.locator('#btnModuleRadio').click();
   await expect(page.locator('#radioPlayerStatus')).toContainText('Durduruldu');await expect(page.locator('#radioStreamConsent')).toBeChecked();expect(streams).toHaveLength(replayLoads);
   expect(await coreDay(page)).toEqual(before);await page.reload();await ready(page);await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));
   await expect(page.locator('#radioPlayerStatus')).toContainText('Henüz yayın başlatılmadı');await expect(page.locator('#radioStreamConsent')).not.toBeChecked();expect(streams).toHaveLength(replayLoads);

@@ -87,4 +87,11 @@ await check('mini stop and replay retain only session consent and explicit revoc
  toggle.click();assert.equal(p.plays.length,2);assert.equal(p.plays[1].station,station);assert.equal(toggle.textContent,'Durdur');
  consent.checked=false;consent.dispatchEvent(new f.view.Event('change'));assert(toggle.hidden&&toggle.disabled);toggle.click();assert.equal(p.plays.length,2);assert.equal(f.view.localStorage.length,0);
 });
+await check('mini controls live inside the existing Radio card and remain hidden before selection',()=>{
+ const f=miniFixture();
+ // Fresh mount with a real module host; controls must not nest inside a button.
+ const dom=new JSDOM('<div data-view="modules"><div class="radioModule"><button id="btnModuleRadio">Today Radio</button></div></div>');
+ mountRadioMiniPlayer({root:dom.window.document,player:f.player});const card=dom.window.document.querySelector('.radioMini');assert(card.hidden);assert.equal(card.parentElement.className,'radioModule');assert.equal(card.querySelectorAll('button').length,1);assert.equal(dom.window.document.querySelectorAll('button button').length,0);
+ f.update({status:'playing',station:{name:'Station'}});assert(!card.hidden);
+});
 console.log(`NUT-RADIO UI: ${passed}/${passed} başarılı`);

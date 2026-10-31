@@ -31,6 +31,12 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.3d — Tek Radio kartı ve ortalanmış başlangıç
+
+App2.23.3/schema2/foundation-082/125. Mini kontroller modüller altında ayrı panel olmaktan çıkarılıp mevcut Radio kartının tek görsel kabuğuna alındı. Kart açma ve oynatma düğmeleri kardeştir; iç içe button yoktur. Seçim yapılmadan mini alan gizli; seçili istasyonda ad/durum/durdur-devam aynı kartta görünür. Mobile home route, flex-start kuralından ayrılarak dikey merkeze döner; diğer rotalar üst hizayı korur. Ses/izin/veri yapısı değişmedi. UI22 ve gerçek tarayıcıda viewport merkez/tek kart kontrolleri; son kapılar PR #2'de izlenir. Yeni radyo kapsamı açılmaz; son fiziksel kabul beklenir.
+
+---
+
 ## NUT-RADIO.3c — Modüller ekranı ve aynı medya öğesinde sürdürme
 
 App2.23.2/schema2/foundation-081/125. Telefon tekrarında mini replay başarısız bildirildi; fiziksel olay/log bulunmadığı için tek bir OS nedeni kesinleştirilmedi. Önceki stop kaynağı unload edip yeni Audio oluşturuyordu. Mini kontrol artık pause/resume ile aynı audio/src/currentTime'ı kullanır; tam stop/izin iptali hâlâ kaynağı boşaltır. Eski play promise reddi ve gecikmiş pause olayı resume'u bozamaz; yeni playing olayı olmadan başarı gösterilmez. Canlı yayın tamponu/zaman aşımı tarayıcıya bağlıdır, kesin DVR/aynı saniye garantisi yoktur. Mini-player Başla ekranından kaldırıldı, modüller ekranına taşındı. Player25 testi ve gerçek HTMLAudio same-element/currentTime E2E genişletildi. CI ve canlı sürüm kanıtı PR #2'de; fiziksel tekrar sonucu gelmeden radyo aşaması kapanmaz.
