@@ -1,7 +1,7 @@
 # Today Radio — iPhone kabul kaydı
 
 Tarih: 31 Ekim 2026. Donanım: kullanıcının iPhone15/iOS18.7.8 telefonu.
-Durum: **Kullanıcının iPhone testinde ses ve mini gösterim doğrulandı; durdurma sonrası yeniden oynatma deneyimi açık.**
+Durum: **Kullanıcı2.23.3 sürümünü kabul etti. Mevcut radyo geliştirme aşaması kapatıldı; canlı sürüm bu haliyle korunur.**
 
 ## Hazır sürüm
 
@@ -71,3 +71,11 @@ Kullanıcı mevcut Radio kartı altında tekrar eden ayrı panel istemedi; Başl
 Yerel platform1161, entegrasyon335, UI22/static30 ve hedef Chromium2/2 PASS. İlk browser1PASS/1FAIL hidden/flex kuralından kaynaklandı; açık hidden display:none sonrası2/2 geçti.320px screenshot incelendi, tek kart düzeni doğrulandı. CI41200404053 completed/success, dört job başarılı: platform1161/entegrasyon335/Engine403 raporlanan kontrol/benchmark16 ve0 güvenlik ihlali, Chromium15+WebKit15=30PASS/0FAIL. Android/iOS derlemeleri başarılı.
 
 Doğrulanan commit Pages test dalına fast-forward aktarıldı. Canlı sürüm sonucu PR #2'de kaydedilir. Telefon son kabulü: build2.23.3, Başla ortada, modüllerde tek Radio kartı, seçili yayında aynı kart içinde mini kontroller ve durdur/sürdür ses dönüşü. Son fiziksel onay gelmeden bütün radyo aşaması kapatılmaz. Yeni radyo kapsamı başlatılmayacak.
+
+## Kullanıcı kabulü ve aşama kapanışı
+
+Kullanıcının son yanıtı: “Tamamdır olmuş. bu şekilde kalsın.” Son görsel düzeltmeler ve mevcut2.23.3 hali kabul edildi; radyo geliştirme aşaması kapatıldı. Mevcut Pages yayını57989f943bdb74a65a83df0a010918fd47a17253/App2.23.3/schema2/foundation-082 olarak korunur. Yeni radyo özelliği veya görsel değişiklik başlatılmaz. main değişmedi, PR #2 taslak; merge yapılmadı.
+
+Kabulün kapsamı kullanıcının bildirdiği iPhone kullanımı ve son düzenlemelerin onayıdır. Safari ve Ana Ekran PWA ayrı sonuçları, uzun süreli arka plan/kilit ekranı, Windows ve tüm istasyon uyumluluğu ayrıca kanıtlanmış sayılmaz. Önceki kabul bekleniyor notları tarihsel aşamalardır; raporlanmayan test satırları otomatik PASS yapılmaz. Kullanıcının onayı genel platform destek garantisi değildir.
+
+Ürün kodu değiştirilmedi; son CI41200404053 kanıtı korunur: platform1161/entegrasyon335/Engine403 raporlanan kontrol/benchmark16 ve Chromium-WebKit30 başarılı, FAIL0. Bu kapanış yalnız belgedir, testler ve yayın gereksiz tekrar edilmedi. Sonraki ürün geliştirmesi kullanıcı yönlendirmesiyle ayrı aşamada açılır.
