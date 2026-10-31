@@ -1,7 +1,7 @@
 # Today Radio — iPhone kabul kaydı
 
 Tarih: 31 Ekim 2026. Donanım: kullanıcının iPhone15/iOS18.7.8 telefonu.
-Durum: **Yayın yetkisi nedeniyle bekliyor; fiziksel test yapılmadı.**
+Durum: **2.23.0 yayımlandı ve canlı dosyalar doğrulandı; fiziksel test sonucu bekleniyor.**
 
 ## Hazır sürüm
 
@@ -9,7 +9,7 @@ App2.23.0, schema2, foundation-079/125. Test edilmiş commit ff1b56361fd29583fb5
 Sabit yayın dalı: `preview/iphone-radio-2.23.0`. Bu dal geliştirme dalından bağımsız sabit tutulur; sonraki geliştirme push'ları kendiliğinden yayına çıkmaz.
 [CI41176201646](https://github.com/mtayfunturk-collab/Today/actions/runs/41176201646) başarılı: platform1161, entegrasyon329, Engine403 raporlanan kontrol, benchmark16 ve browser30 PASS; FAIL0. Android/iOS derlemeleri geçti.
 
-## Yayın engeli
+## Önceki yayın engeli — kullanıcı işlemiyle kapandı
 
 Pages adresi https://mtayfunturk-collab.github.io/Today/ ve kaynak main/root. Kontrolde yayımlanan modüller App2.16.0/foundation-067, son başarılı Pages build commit'i3dbd265b9180034fd9439ee51e23375c4802e459 idi.
 Pages kaynağını sabit test dalına değiştirme API isteği GitHub tarafından403 Resource not accessible by integration ile reddedildi. Ayar değişmedi; kullanıcıdan geniş yetki/token istenmez. Bu bir otomatik onay reddi değil, GitHub entegrasyon yetkisi sınırıdır. main'e yazma veya merge yapılmadı.
@@ -38,4 +38,8 @@ Safari ve ana ekrana ekli PWA ayrı kaydedilir. Güncelleme isteği varsa kabul 
 
 CORS izni olmayan veya desteklenmeyen yayınların açılmaması bilinen sınırdır. Tüm istasyonlar başarısızsa aşama geçmedi sayılır; bir hata adını/metnini ve Safari mi PWA mı olduğunu raporla. Kullanıcı sağlık kayıtlarının içeriğini paylaşmak gerekmez. Kilit ekranı/arka plan bu aşamanın kabul garantisi değildir.
 
-Sonraki adım: kullanıcı Pages kaynağını seçtikten sonra canlı sürümü doğrula; yukarıdaki telefon sonuçlarını al ve bu tabloyu güncelle. Telefon sonucu gelmeden fiziksel kabulü tamamlandı işaretleme.
+Sonraki adım: yukarıdaki telefon sonuçlarını al ve bu tabloyu güncelle. Telefon sonucu gelmeden fiziksel kabulü tamamlandı işaretleme.
+
+## Canlı yayın doğrulaması
+
+Kullanıcı Pages kaynağını seçti. API source preview/iphone-radio-2.23.0/root ve son Pages build ff1b56361fd29583fb5ec9ad6c35d1f0c9c757ba için built, hata yok; updated_at2026-10-31T06:59:36Z. Canlı HTTPS istekleriyle modules/version.js=2.23.0, sw.js=foundation-079 ve radio-ui.mjs/mini-player ile radio-player.mjs/ortak oynatıcı HTTP200 doğrulandı. İlk building kontrolünde eski2.16 ve Radio404 görülmüştü; build bitince yeni dosyalar doğrulandı. main değişmedi. Temiz yerel Chromium ile ek canlı smoke denemesi bulut ortamında ERR_CERT_AUTHORITY_INVALID nedeniyle sayfa yüklenmeden durdu; TLS doğrulaması kapatılmadı, bu kontrol PASS sayılmadı. Önceki CI30/30 tarayıcı sonucu ayrı kanıttır. Telefon testi henüz yapılmadı; Safari/PWA tablosu bekliyor.
