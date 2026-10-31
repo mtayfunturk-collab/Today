@@ -1,7 +1,7 @@
 # Today Radio — iPhone kabul kaydı
 
 Tarih: 31 Ekim 2026. Donanım: kullanıcının iPhone15/iOS18.7.8 telefonu.
-Durum: **2.23.0 yayımlandı ve canlı dosyalar doğrulandı; fiziksel test sonucu bekleniyor.**
+Durum: **Kullanıcının iPhone testinde ses ve mini gösterim doğrulandı; durdurma sonrası yeniden oynatma deneyimi açık.**
 
 ## Hazır sürüm
 
@@ -43,3 +43,9 @@ Sonraki adım: yukarıdaki telefon sonuçlarını al ve bu tabloyu güncelle. Te
 ## Canlı yayın doğrulaması
 
 Kullanıcı Pages kaynağını seçti. API source preview/iphone-radio-2.23.0/root ve son Pages build ff1b56361fd29583fb5ec9ad6c35d1f0c9c757ba için built, hata yok; updated_at2026-10-31T06:59:36Z. Canlı HTTPS istekleriyle modules/version.js=2.23.0, sw.js=foundation-079 ve radio-ui.mjs/mini-player ile radio-player.mjs/ortak oynatıcı HTTP200 doğrulandı. İlk building kontrolünde eski2.16 ve Radio404 görülmüştü; build bitince yeni dosyalar doğrulandı. main değişmedi. Temiz yerel Chromium ile ek canlı smoke denemesi bulut ortamında ERR_CERT_AUTHORITY_INVALID nedeniyle sayfa yüklenmeden durdu; TLS doğrulaması kapatılmadı, bu kontrol PASS sayılmadı. Önceki CI30/30 tarayıcı sonucu ayrı kanıttır. Telefon testi henüz yapılmadı; Safari/PWA tablosu bekliyor.
+
+## Kullanıcının ilk fiziksel telefon sonucu
+
+Kullanıcı Türkiye ve Hindistan istasyonlarında gerçek ses duyduğunu, mini oynatıcı gösteriminin çalıştığını ve başka modüllere geçerken sesin sürdüğünü bildirdi. Mini-player Durdur sonrası yeniden oynatamadığını bildirdi. Safari mi Ana Ekran PWA mı olduğu henüz belirtilmedi; iki platform tablosuna birden PASS yazılmaz. Açılışta sessizlik, reload, kayıt korunması ve scroll ayrıca doğrulanmadı.
+
+Kod incelemesi: mini-player yalnız Durdur/Radio’yu aç sunar; Radio’yu aç oynatmayı başlatmaz. reflectPlayer, Radio dışında inaktif duruma geçince yayıncı checkbox’ını temizler. Tekrar dinle ise aynı checkbox onayını ister. Bu nedenle home’da durdurma sonrası yeniden dinleme, Radio ekranında yayıncı iznini yeniden seçmeden çalışmaz. Kullanıcı deneyimi açığıdır; bağlantı hatası olduğu doğrulanmadı. Mevcut geçici yol: Radio’yu aç → yayıncı bağlantı iznini yeniden seç → Tekrar dinle. Sonraki küçük düzeltme, stop ile izin geri çekmeyi ayıran anlaşılır kullanıcı eylemli tekrar dinleme akışıdır; otomatik başlatma ve reload sonrası izin saklama eklenmemeli. Bu kayıt yalnız dokümandır; canlı2.23 kodu değiştirilmedi. Telefon kabulü kısmi, aşama tamamen kapatılmadı.
