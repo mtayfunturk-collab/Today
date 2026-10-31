@@ -31,6 +31,12 @@ Each entry should include:
 
 ---
 
+## NUT-RADIO.3a — Ana ekran mini oynatıcısı
+
+31 Ekim 2026; App2.23.0/schema2/foundation-079/125. radio-ui.mjs ana ekrana tek idempotent mini oynatıcı ekler: sembol, istasyon adı, gerçek oynatma/bağlanma/bekleme/hata durumu, Durdur ve Radio'yu aç. Radio ekranıyla aynı singleton kullanılır; ikinci audio veya yeni istek oluşturmaz. Durdurdan sonra yeniden başlatma Radio'daki görünür yayıncı izninden geçer. İlk açılış sessizdir; kalıcı veri, favori/geçmiş/AI eklenmedi. Küçük ekranda düğmeler alt satıra iner, uzun adlar kırılır; 44px dokunma hedefleri ve erişilebilir durum metni vardır. UI20/20 (yeni5 mini kontrol), static30/30 geçti. Birleşik kapılar ve uzak CI sonucu PR #2'de kaydedilir. Sürüm testi eski2.22 beklentisiyle10/11 verdi; yeni2.23 sürümüne güncellendikten sonra11/11 geçti. Sıradaki dilim Media Session ve uyku zamanlayıcısıdır; fiziksel iPhone/Windows, ticari yayın ve arka plan kabulü açık kalır.
+
+---
+
 ## NUT-RADIO.2d — Tek oynatma yöneticisi
 
 App2.22.0, Core şema2, foundation-078 /125 kabuk kaydı.

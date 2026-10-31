@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {JSDOM} from 'jsdom';
-import {mountRadioUI,createPreviewDirectory} from '../modules/radio-ui.mjs';
+import {mountRadioUI,mountRadioMiniPlayer,createPreviewDirectory} from '../modules/radio-ui.mjs';
 let passed=0;async function check(name,fn){await fn();passed++;console.log(`PASS ${name}`);}
 const tick=()=>new Promise(r=>setTimeout(r,0));
 function fixture(directory,options={}){const dom=new JSDOM('<button id="btnRadioBack">Back</button><div id="radioPanel"></div>',{url:'https://today.example'});const doc=dom.window.document;let navigated;dom.window.TodayRouter={getState:()=>({route:'radio'}),navigate:r=>{navigated=r;}};const ui=mountRadioUI({root:doc,directory:directory||createPreviewDirectory(),mode:'preview',...options});return{doc,view:dom.window,ui,navigated:()=>navigated,submit:()=>doc.querySelector('form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}))};}
@@ -47,5 +47,33 @@ await check('route changes preserve active playback while closing directory cons
 });
 await check('inactive publisher consent is cleared on route exit',()=>{
  const p=playerFixture();const f=fixture({cancel(){}},{mode:'live',player:p.player});const c=f.doc.getElementById('radioStreamConsent');c.checked=true;f.view.TodayRouter.getState=()=>({route:'modules'});f.view.dispatchEvent(new f.view.Event('today:routechange'));assert.equal(c.checked,false);assert.equal(p.plays.length,0);
+});
+function miniFixture(){
+ const dom=new JSDOM('<div data-view="home"><button id="btnStart">Başla</button><div id="buildTag"></div></div>',{url:'https://today.example'});
+ let state={status:'idle',station:null},stops=0,plays=0,route;const listeners=[];
+ const player={getState:()=>state,subscribe:fn=>{listeners.push(fn);},play(){plays++;},stop(){stops++;update({...state,status:'stopped'});}};
+ function update(next){state=next;listeners.forEach(fn=>fn(state));}
+ dom.window.TodayRouter={navigate:next=>{route=next;}};
+ const api=mountRadioMiniPlayer({root:dom.window.document,player});
+ return{doc:dom.window.document,view:dom.window,player,api,update,listeners,stops:()=>stops,plays:()=>plays,route:()=>route};
+}
+await check('home mini player mounts once and starts no playback or storage',()=>{
+ const f=miniFixture();assert.equal(mountRadioMiniPlayer({root:f.doc,player:f.player}),f.api);assert.equal(f.doc.querySelectorAll('.radioMini').length,1);assert.equal(f.listeners.length,1);assert.equal(f.plays(),0);assert.equal(f.view.localStorage.length,0);assert.equal(f.doc.querySelectorAll('audio,img,a').length,0);assert.match(f.doc.querySelector('.radioMiniStatus').textContent,/Bir istasyon seç/);assert.equal(f.doc.querySelector('.radioMiniActions button').hidden,true);
+});
+await check('mini player distinguishes real playing from connection, buffer and failure',()=>{
+ const f=miniFixture();for(const [status,text,active]of [['loading','bağlanılıyor',true],['playing','Canlı · Çalıyor',true],['buffering','bekleniyor',true],['error','açılamadı',false],['ended','sona erdi',false],['stopped','Durduruldu',false]]){
+  f.update({status,station:{name:'Test Radio'}});assert(f.doc.querySelector('.radioMiniStatus').textContent.includes(text));assert.equal(f.doc.querySelector('.radioMiniActions button').hidden,!active);assert.equal(f.doc.querySelector('.radioMiniName').textContent,'Test Radio');
+ }
+});
+await check('mini player navigation never bypasses publisher consent or restarts a source',()=>{
+ const f=miniFixture();const open=f.doc.querySelectorAll('.radioMiniActions button')[1];
+ for(const status of ['idle','playing','stopped','error']){f.update({status,station:{name:'Station'}});open.click();assert.equal(f.route(),'radio');}
+ assert.equal(f.plays(),0);assert.equal(f.stops(),0);
+});
+await check('mini stop uses the shared owner and cannot restart after stopping',()=>{
+ const f=miniFixture();f.update({status:'buffering',station:{name:'Station'}});const stop=f.doc.querySelector('.radioMiniActions button');stop.click();assert.equal(f.stops(),1);assert.equal(f.player.getState().status,'stopped');assert(stop.hidden&&stop.disabled);stop.click();assert.equal(f.stops(),1);assert.equal(f.plays(),0);
+});
+await check('mini renders untrusted station names as text and exposes no stream address',()=>{
+ const f=miniFixture();f.update({status:'playing',station:{name:'<img src=x onerror=alert(1)>',streamUrl:'https://secret.example/live'}});assert.equal(f.doc.querySelectorAll('img').length,0);assert.match(f.doc.querySelector('.radioMiniName').textContent,/<img/);assert(!f.doc.querySelector('.radioMini').outerHTML.includes('secret.example'));assert.equal(f.doc.querySelector('.radioMiniStatus').getAttribute('aria-live'),'polite');
 });
 console.log(`NUT-RADIO UI: ${passed}/${passed} başarılı`);

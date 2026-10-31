@@ -1,6 +1,31 @@
 import { createRadioDirectory, createLiveRadioDirectory } from './radio-directory.mjs';
 import {getRadioPlayer} from './radio-player.mjs';
 const mounts=new WeakMap();
+const miniMounts=new WeakMap();
+export function mountRadioMiniPlayer({root=document,player=getRadioPlayer()}={}){
+ const home=root.querySelector('[data-view="home"]');if(!home)return null;
+ if(miniMounts.has(home))return miniMounts.get(home);
+ const doc=home.ownerDocument,view=doc.defaultView;
+ const card=doc.createElement('section');card.className='radioMini';card.setAttribute('aria-label','Today Radio mini oynatıcı');
+ const icon=doc.createElement('span');icon.className='radioMiniIcon';icon.textContent='♫';icon.setAttribute('aria-hidden','true');
+ const info=doc.createElement('div');info.className='radioMiniInfo';
+ const name=doc.createElement('strong');name.className='radioMiniName';
+ const status=doc.createElement('span');status.className='radioMiniStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+ info.append(name,status);
+ const actions=doc.createElement('div');actions.className='radioMiniActions';
+ const open=doc.createElement('button');open.type='button';open.className='back';open.textContent='Radio’yu aç';
+ const stop=doc.createElement('button');stop.type='button';stop.className='back';stop.textContent='Durdur';
+ open.addEventListener('click',()=>view.TodayRouter?.navigate('radio'));
+ stop.addEventListener('click',()=>player.stop());actions.append(stop,open);card.append(icon,info,actions);
+ function reflect(state=player.getState()){
+  const active=['loading','playing','buffering'].includes(state.status);
+  name.textContent=state.station?.name||'Today Radio';
+  status.textContent=({idle:'Bir istasyon seç, gününe eşlik etsin.',loading:'Yayına bağlanılıyor…',playing:'Canlı · Çalıyor',buffering:'Bağlantı bekleniyor…',stopped:'Durduruldu · Radio’dan tekrar dinleyebilirsin.',ended:'Yayın sona erdi.',error:'Yayın açılamadı · Radio’dan inceleyebilirsin.'})[state.status]||'Yayın durumu bilinmiyor.';
+  stop.hidden=!active;stop.disabled=!active;card.dataset.playback=state.status;
+ }
+ player.subscribe(reflect);reflect();home.insertBefore(card,home.querySelector('#buildTag'));
+ const api=Object.freeze({});miniMounts.set(home,api);return api;
+}
 // This explicit design preview uses the real validator, never a network fetch.
 const samples=[
  {stationuuid:'00000000-0000-4000-8000-000000000001',name:'Örnek Klasik · Türkiye',countrycode:'TR',language:'turkish',tags:'classical',codec:'MP3',hls:0,lastcheckok:0,url_resolved:'https://radio.example/classical'},
@@ -76,6 +101,6 @@ export function mountRadioUI({root=document,directory=createLiveRadioDirectory()
  const api=Object.freeze({cancel:()=>stop('Arama iptal edildi.')});mounts.set(panel,api);return api;
 }
 if(typeof window!=='undefined'&&typeof document!=='undefined'){
- const boot=()=>{if(window.TodayStartup?.getStatus?.().phase==='ready')mountRadioUI();};
+ const boot=()=>{if(window.TodayStartup?.getStatus?.().phase==='ready'){mountRadioUI();mountRadioMiniPlayer();}};
  window.addEventListener('today:startup-ready',boot);document.addEventListener('DOMContentLoaded',boot,{once:true});boot();
 }

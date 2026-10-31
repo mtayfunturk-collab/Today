@@ -2,9 +2,9 @@
 ## System Architecture
 Version: 1.0
 Status: Active
-Application Version: 2.22.0
+Application Version: 2.23.0
 Data Schema: 2
-Active Shell: today-v2-foundation-078
+Active Shell: today-v2-foundation-079
 Last Updated: 30 October 2026
 
 ---
@@ -447,4 +447,4 @@ Phase 2 result: **294/294 successful, 0 failures**. GitHub Pages deployment comp
 
 Tercihen Web Locks kullanılır. Yalnız üretilen tek WebView native kabuk açık `singleContext` yeteneğiyle, Web Locks yoksa ortak modül kilidini kullanabilir. İkinci WebView/arka plan JS yazıcısı eklenmeden önce native ortak kilit gerekir. PWA'da kilitsiz yazma kapalıdır. Ayrıntı: `NUT-019.3-IMPLEMENTATION.md`.
 
-Radio önizlemesi: radio-directory.mjs + radio-ui.mjs; ayrı radio route/Registry kaydı, yedinci fiziksel görünüm. Katalog yalnız oturumluk açık izin ve yükle eylemiyle Radio Browser keşif/arama isteği yapar; radio-player.mjs tek aktif ses oturumunu açık yayıncı izniyle yönetir. Dinleme geçmişi veya AI aktarımı yoktur. Core/Health/AI store ve şemaları değişmez. Ayrıntı TODAY-RADIO-IMPLEMENTATION.md.
+Radio: radio-directory.mjs + radio-ui.mjs; ayrı radio route/Registry kaydı, yedinci fiziksel görünüm. Katalog yalnız oturumluk açık izin ve yükle eylemiyle Radio Browser keşif/arama isteği yapar; radio-player.mjs tek aktif ses oturumunu açık yayıncı izniyle yönetir. Ana ekran mini oynatıcısı aynı singleton durumuna abonedir; durdurma ve Radio'ya geçiş sunar, ayrı audio oluşturmaz veya onayı atlayarak yeniden başlatmaz. Dinleme geçmişi veya AI aktarımı yoktur. Core/Health/AI store ve şemaları değişmez. Ayrıntı TODAY-RADIO-IMPLEMENTATION.md.

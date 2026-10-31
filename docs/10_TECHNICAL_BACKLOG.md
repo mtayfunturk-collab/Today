@@ -400,4 +400,4 @@ Apple Developer maliyeti nedeniyle NUT-019 saat/bildirim fiziksel kabulü 2–4 
 
 ## NUT-RADIO güncel devir
 
-feature/today-radio / Draft PR #2: katalog ve tek aktif ses yöneticisi uygulandı (App2.22.0). Yayıncı izni/dinle/stop/format/timeout; önceki platform1161/entegrasyon324/Engine403/benchmark16/Chromium15 yerel kapıları geçti. Son SHA CI'sını önce kontrol et; ardından ana ekran mini-player aynı singleton'a abone olacak. Fiziksel iPhone/Windows, Media Session/volume/sleep timer ve favori/geçmiş/AI hâlâ açık. Saat/bildirim ertelemesi değişmedi.
+feature/today-radio / Draft PR #2: katalog, tek aktif ses yöneticisi ve aynı singleton'a abone ana ekran mini-player uygulandı (App2.23.0). Önceki oynatma CI41174378955 dört job ve30 browser testi başarılı. Yeni mini-player istasyon/durum/stop/Radio geçişi sağlar, açılışta ağ/oynatma başlatmaz. Yayın durduktan sonra Radio'daki izin akışı gerekir. Son SHA CI sonucu PR #2'de izlenir; ardından Media Session ve uyku zamanlayıcısı ayrı küçük dilimlerdir. Fiziksel iPhone/Windows, volume ve favori/geçmiş/AI hâlâ açık. Saat/bildirim ertelemesi değişmedi.
