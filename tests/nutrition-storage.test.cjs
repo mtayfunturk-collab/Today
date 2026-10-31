@@ -29,6 +29,7 @@ const EVENT_LATER =
   "2026-08-05T18:00:00.000Z";
 
 function createRuntime(options = {}) {
+  let uuidSequence = 0;
   const factory =
     options.factory ||
     new IDBFactory();
@@ -55,7 +56,7 @@ function createRuntime(options = {}) {
       globalThis.structuredClone,
     crypto: {
       randomUUID() {
-        return "11111111-2222-4333-8444-555555555555";
+        return `${(++uuidSequence).toString(16).padStart(8, "0")}-2222-4333-8444-555555555555`;
       }
     },
     localStorage,
@@ -67,6 +68,7 @@ function createRuntime(options = {}) {
   };
   const context = vm.createContext({
     window,
+    Date: options.Date || Date,
     console: window.console
   });
 
@@ -1015,7 +1017,14 @@ test(
 test(
   "Yedekten dönüş önce mevcut durumun kurtarma kopyasını alıyor",
   async () => {
-    const { api } = createRuntime();
+    // Both backups deliberately share a millisecond; UUIDs must still be unique.
+    class FixedDate extends Date {
+      constructor(...args) {
+        super(...(args.length ? args : [NOW]));
+      }
+      static now() { return Date.parse(NOW); }
+    }
+    const { api } = createRuntime({ Date: FixedDate });
     await api.saveRecord(profile());
     const backup = await api.createBackup(
       "before_change"
@@ -1031,6 +1040,10 @@ test(
     );
     assert.equal(result.restoredBackupId, backup.id);
     assert.ok(result.backupId);
+    assert.notEqual(result.backupId, backup.id);
+    const backups = await api.listBackups();
+    assert.equal(backups.length, 2);
+    assert.equal(backups[0].createdAt, backups[1].createdAt);
     assert.equal(
       (
         await api.getRecord(
