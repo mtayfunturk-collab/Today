@@ -8,7 +8,7 @@ export const APP_ROOT = path.resolve(NATIVE_ROOT, '..');
 // This is an application-asset allowlist, never a recursive repository copy.
 export function isPackagedPath(name) {
   if (typeof name !== 'string' || name.includes('\\') || name.split('/').some(part => part === '..' || part.startsWith('.'))) return false;
-  if (['index.html', 'manifest.json', 'nutrition-unit-rules.json'].includes(name)) return true;
+  if (['index.html', 'backup.html', 'manifest.json', 'nutrition-unit-rules.json'].includes(name)) return true;
   if (/^(?:today-icon-v9-(?:192|512)|apple-touch-icon-v9)\.png$/.test(name)) return true;
   return /^(?:modules\/[\w/-]+\.(?:m?js)|Today-AI-Engine\/src\/[\w/-]+\.mjs|vendor\/[\w/.-]+\.js|assets\/[\w/-]+\.(?:jpg|png|svg|webp)|data\/sky-cities-15000\.json)$/.test(name);
 }

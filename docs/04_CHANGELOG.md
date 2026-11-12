@@ -1,3 +1,8 @@
+### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
+
+İlk uzak CI Android paket hazırlığında `backup.html` izin listesi yüzünden durdu. Yalnız bu uygulama dosyası eklendi; native test ve web paket yerelde geçti. Rapor: `docs/TODAY-LIVE-CANDIDATE-2026-11-12.md`.
+
+
 ### 2026-11-12 — Salt okunur restore önizleme ekranı
 
 Yarım kalan backup.html önizleme formu ayrı onayla tamamlandı; SW foundation-100/141 kabuğu, çevrimdışı Chromium ve platform1446/1446 doğrulandı. Üretim restore hâlâ kapalı. Rapor: `docs/TODAY-LIVE-RESTORE-UI.md`.

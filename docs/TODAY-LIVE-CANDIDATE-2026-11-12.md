@@ -7,3 +7,7 @@ Kabul: `npm test` **1446/1446 PASS** (41 grup); AI/Radio birleşik **335/335 PAS
 Veri etkisi: uygulama kayıt anahtarı, Nutrition store/şema ve migration değiştirilmedi; testler ayrı sentetik profilde çalıştı. SW kabuğu `foundation-100` ve 141 dosyadır. Canlı Pages `App2.23.3/foundation-082` olarak kaldı.
 
 Uzak aday için amaç Radio dalını hedefleyen **taslak**, birleştirilmemiş PR ve yeni CI kanıtı oluşturmaktır. GitHub Pages yayını için ayrıca üretim geri yükleme güvenliği, adayın gerçek iPhone Safari/kurulu PWA ve Windows kabulü gerekir. `main` doğrudan değiştirilmeyecek.
+
+## İlk uzak CI ve native paket düzeltmesi
+
+Commit `acc991ef` yeni `task/t90-261101-live-synthetic-recovery` dalına gönderildi; Radio dalına karşı taslak PR #3 açıldı. Run `43288730436` platform job'ı başarılı, Android native preview `Prepare bundled native preview` adımında `Asset is outside the native allowlist: backup.html` ile başarısız oldu. Yeni yedek sayfası SW uygulama kabuğunda mevcut; native paketleyici yalnız `index.html` gibi açık kök dosyalarını kabul ediyordu. Dar düzeltme `backup.html` dosyasını native uygulama varlık izin listesine ekler; kullanıcı dosyası veya depo dışı yol kabul edilmez. Yerel `npm --prefix native test` **1/1 PASS** ve `npm --prefix native run build:web` **PASS** (140 izinli varlık + üç bootstrap/privacy/license dosyası). Diğer CI job'ları ilk run sırasında henüz tamamlanmamıştı; yeni commit için uzak CI sonucu ayrıca izlenmelidir.
