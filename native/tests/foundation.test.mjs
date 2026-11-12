@@ -9,7 +9,7 @@ import { verifyHealthPermissions, verifyNativePrivacy, verifyNotificationPermiss
 const manifestWith = permissions => `<manifest xmlns:android="http://schemas.android.com/apk/res/android">${permissions.map(name => `<uses-permission android:name="${name}" />`).join('')}<application /></manifest>`;
 
 test('Native asset allowlist excludes repository, tests and user-file paths', () => {
-  for (const name of ['index.html', 'modules/health-wearable-ui.mjs', 'Today-AI-Engine/src/context-builder.mjs', 'data/sky-cities-15000.json', 'assets/sport/cycling.jpg']) assert.equal(isPackagedPath(name), true, name);
+  for (const name of ['index.html', 'backup.html', 'modules/health-wearable-ui.mjs', 'Today-AI-Engine/src/context-builder.mjs', 'data/sky-cities-15000.json', 'assets/sport/cycling.jpg']) assert.equal(isPackagedPath(name), true, name);
   for (const name of ['AGENTS.md', '.env', '.git/config', 'docs/02_ROADMAP.md', 'tests/private.json', 'data/private-health.json', 'node_modules/secret.js', '../index.html', '/index.html', 'modules/../index.html', 'modules\\storage.js']) assert.equal(isPackagedPath(name), false, name);
 });
 

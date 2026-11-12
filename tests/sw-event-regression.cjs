@@ -4,7 +4,7 @@ const vm = require("node:vm");
 const SOURCE_PATH = "sw.js";
 const ORIGIN = "https://today.test";
 const ACTIVE_CACHE =
-  "today-cache-today-v2-foundation-082";
+  "today-cache-today-v2-foundation-100";
 const OLD_CACHE =
   "today-cache-today-v2-foundation-019";
 const FOREIGN_CACHE = "unrelated-cache";
@@ -153,7 +153,10 @@ function createRuntime(source, options = {}) {
     location: {
       origin: ORIGIN
     },
+    registration: { scope: `${ORIGIN}/` },
+    navigator: options.withLocks ? { locks: { request: async (_name, _options, fn) => fn() } } : {},
     clients: {
+      async matchAll() { return options.clients || []; },
       async claim() {
         claimCalls += 1;
       }
@@ -270,10 +273,11 @@ function createRuntime(source, options = {}) {
     };
   }
 
-  async function triggerMessage(data) {
+  async function triggerMessage(data, extras = {}) {
     let pending;
     const event = {
       data,
+      ...extras,
       waitUntil(value) {
         pending = Promise.resolve(value);
       }
@@ -352,13 +356,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Cache sürümü foundation-082",
+    "Cache sürümü foundation-100",
     async () => {
       assert(
         source.includes(
-          'const VERSION = "today-v2-foundation-082"'
+          'const VERSION = "today-v2-foundation-100"'
         ),
-        "foundation-082 sürüm etiketi yok."
+        "foundation-100 sürüm etiketi yok."
       );
     }
   );
@@ -441,10 +445,10 @@ function assert(condition, message) {
   );
 
   await test(
-    "Install 125 uygulama kabuğu isteği yapıyor",
+    "Install 141 uygulama kabuğu isteği yapıyor",
     async () => {
       assert(
-        runtime.fetchCalls.length === 125,
+        runtime.fetchCalls.length === 141,
         `${runtime.fetchCalls.length} istek yapıldı.`
       );
     }
@@ -463,13 +467,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Install 125 dosyayı aktif cache'e yazıyor",
+    "Install 141 dosyayı aktif cache'e yazıyor",
     async () => {
       const cache =
         await runtime.caches.open(ACTIVE_CACHE);
       const keys = await cache.keys();
       assert(
-        keys.length === 125,
+        keys.length === 141,
         `${keys.length} cache girdisi var.`
       );
     }
@@ -993,6 +997,30 @@ function assert(condition, message) {
       );
     }
   );
+
+  await test("Yedek navigasyonu normal index cache girdisini değiştirmiyor", async () => {
+    const scoped = createRuntime(source);
+    const main = new MockRequest(`${ORIGIN}/index.html`, { mode: "navigate" });
+    const backup = new MockRequest(`${ORIGIN}/backup.html`, { mode: "navigate" });
+    await scoped.triggerFetch(main);
+    await scoped.triggerFetch(backup);
+    const cache = await scoped.caches.open(ACTIVE_CACHE);
+    assert((await (await cache.match("./index.html")).text()) === "NETWORK:/index.html", "index cache yedekle ezildi");
+    scoped.setOnline(false);
+    const offline = await scoped.triggerFetch(backup);
+    assert((await offline.response.text()) === "NETWORK:/backup.html", "yedek offline yanlış sayfa");
+  });
+
+  await test("Yedek protokolü tek doğru client ve lock yokluğunu ayırıyor", async () => {
+    const clients = [{id:"backup-client",url:`${ORIGIN}/backup.html`}];
+    const scoped = createRuntime(source,{clients,withLocks:true});
+    let payload;
+    await scoped.triggerMessage({type:"TODAY_BACKUP_CHECK"},{source:{id:"backup-client"},ports:[{postMessage:value=>{payload=value;}}]});
+    assert(payload?.protocol===1 && payload?.scope===`${ORIGIN}/` && payload.navigationLock===true && payload.onlyClient===true,"valid client reddedildi");
+    const old = createRuntime(source,{clients,withLocks:false});
+    await old.triggerMessage({type:"TODAY_BACKUP_CHECK"},{source:{id:"other"},ports:[{postMessage:value=>{payload=value;}}]});
+    assert(payload?.navigationLock===false && payload?.onlyClient===false,"eksik lock veya farklı client kabul edildi");
+  });
 
   const passed =
     results.filter(result => result.ok).length;

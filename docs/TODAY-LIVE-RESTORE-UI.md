@@ -1,0 +1,9 @@
+# Yerel aday — salt okunur geri yükleme önizleme arayüzü
+
+12 Kasım 2026, TSİ. Dal `task/t90-261101-live-synthetic-recovery`, taban `b57dbceb53eb6a9aacc3bde709b4de096b77e38f`. Denetimde yarım kaldığı bildirilen `backup.html` önizleme formu tamamlandı. Dosya ve parola seçimi ile **ayrı okuma onayı** ister; mevcut semantik doğrulayıcı ve tek pencere Worker/Web Locks bariyerini kullanır. Yalnız Core gün sayısı ve bilinen veri alanlarındaki ekleme/değiştirme/kaldırma sayılarını gösterir. Dosya parolası ve seçimi işlem sonunda temizlenir. Arayüzde apply veya veri yazma kontrolü yoktur; `backup-recovery.mjs` üretim sayfasına import edilmez.
+
+Çevrimdışı sayfada bütün doğrulayıcı bağımlılıkları bulunması için SW kabuğuna dokuz dosya eklendi: foundation-100, 141 dosya. Bağlı sürüm ve kabuk testleri güncellendi; üretim veri anahtarları, Nutrition store/şema ve migration değiştirilmedi.
+
+Hedefli statik **30/30**, SW **38/38**, Core statik **26/26**, AI değerlendirme **11/11**, AI arayüz **40/40 PASS**. İlk statik koşu SW parmak izi beklentisi eski kaldığı için **29/30 FAIL** verdi; yeni kabuk incelenip beklenen hash güncellendikten sonra **30/30 PASS**. Gerçek Chromium backup sayfası **4/4 PASS**; yeni senaryo onaysız önizlemeyi reddeder, çevrimiçi ve çevrimdışı sentetik dosyayı açar, Core kaydının değişmediğini ve recovery DB oluşmadığını doğrular. Core çevrimdışı gezinme **3/3 PASS**. Tam `npm test` **1446/1446 PASS** (41 grup, exit0). Kanıt `/workspace/.cache/today-evidence/synthetic-recovery-20261112/preview-ui-platform.log` ve `preview-ui-offline-form.log`.
+
+WebKit bu ortamda eksik sistem kütüphaneleri nedeniyle çalıştırılamadı; gerçek iPhone Safari/PWA kabulü yoktur. Bu arayüz yerel adaydadır; GitHub Pages eski Radio2.23.3/foundation-082 sürümündedir. Üretim restore, kesinti/kurtarma, BFCache ve uzak CI kapıları açık. Commit/push/PR/merge/deploy yapılmadı.

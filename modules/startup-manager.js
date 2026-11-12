@@ -225,6 +225,16 @@
   }
 
   function showFailureSurface(errorCode) {
+    // Keep failure handling synchronous and independent of the optional dictionary.
+    const copyText = (key, fallback) => {
+      try {
+        const value = window.TodayStartupCopy?.[key];
+        return typeof value === "string" && value.trim() ? value : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    };
+
     removeFailureSurface();
 
     const mountTarget =
@@ -272,7 +282,7 @@
 
     const title = document.createElement("h1");
     title.id = "todayStartupErrorTitle";
-    title.textContent = "Today başlatılamadı";
+    title.textContent = copyText("startup.failed", "Today başlatılamadı");
     title.style.cssText = [
       "margin:0 0 12px",
       "font-size:24px",
@@ -283,19 +293,9 @@
     text.id = "todayStartupErrorText";
     text.textContent =
       typeof errorCode === "string" &&
-      errorCode.startsWith(
-        "TODAY-MIGRATION-"
-      )
-        ? (
-            "Veriler güvenli biçimde hazırlanamadı. " +
-            "Mevcut kayıtların ve güvenlik kopyan korundu. " +
-            "Yeniden dene."
-          )
-        : (
-            "Uygulama dosyalarından biri yüklenemedi. " +
-            "Kayıtların silinmedi. İnternet bağlantını " +
-            "kontrol edip yeniden dene."
-          );
+      errorCode.startsWith("TODAY-MIGRATION-")
+        ? copyText("startup.migrationFailed", "Veriler güvenli biçimde hazırlanamadı. Mevcut kayıtların ve güvenlik kopyan korundu. Yeniden dene.")
+        : copyText("startup.moduleFailed", "Uygulama dosyalarından biri yüklenemedi. Kayıtların silinmedi. İnternet bağlantını kontrol edip yeniden dene.");
     text.style.cssText = [
       "margin:0 0 20px",
       "color:#cbd3df",
@@ -306,7 +306,7 @@
     const retryButton =
       document.createElement("button");
     retryButton.type = "button";
-    retryButton.textContent = "Yeniden dene";
+    retryButton.textContent = copyText("common.retry", "Yeniden dene");
     retryButton.style.cssText = [
       "width:100%",
       "min-height:48px",
@@ -326,7 +326,8 @@
     );
 
     const code = document.createElement("p");
-    code.textContent = `Başlangıç kodu: ${errorCode}`;
+    code.textContent = copyText("startup.code", "Başlangıç kodu: {code}")
+      .replace(/\{code\}/g, () => String(errorCode));
     code.style.cssText = [
       "margin:14px 0 0",
       "color:#8994a6",

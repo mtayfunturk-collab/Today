@@ -214,17 +214,17 @@ test(
 );
 
 test(
-  "Koşucu 25 platform grubunu ve test envanterinin tam kapsamını doğruluyor",
+  "Koşucu 41 platform grubunu ve test envanterinin tam kapsamını doğruluyor",
   () => {
     const files = [
       ...runner.matchAll(
-        /file:\s*\n?\s*"([^"]+\.cjs)"/g
+        /file:\s*\n?\s*"([^"]+\.(?:cjs|mjs))"/g
       )
     ].map(match => match[1]);
 
     assert.equal(
       files.length,
-      25
+      41
     );
     assert.equal(
       new Set(files).size,
@@ -259,7 +259,7 @@ test(
 );
 
 test(
-  "Koşucu Türkiye saat dilimi ve 1161 kontrollük güncel platform kapısını kilitliyor",
+  "Koşucu Türkiye saat dilimi ve 1446 kontrollük güncel platform kapısını kilitliyor",
   () => {
     assert.ok(
       runner.includes(
@@ -281,7 +281,7 @@ test(
           sum + value,
         0
       ),
-      1161
+      1446
     );
   }
 );

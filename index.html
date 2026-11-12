@@ -38,6 +38,11 @@
       --cYellow:#ffcc00;
       --cGreen:#34c759;
       --cBlack:#0b0f18;
+      --cPink:#ed64a6;
+      --cPurple:#a78bfa;
+      --cTeal:#14b8a6;
+      --cMint:#a3e4b8;
+      --cGray:#94a3b8;
     }
 
     /* Theme overrides */
@@ -261,6 +266,12 @@
     .cbtn[data-color="yellow"]{ background:var(--cYellow); }
     .cbtn[data-color="green"]{ background:var(--cGreen); }
     .cbtn[data-color="deep"]{ background:var(--cBlack); }
+
+    .cbtn[data-color="pink"]{ background:var(--cPink); }
+    .cbtn[data-color="purple"]{ background:var(--cPurple); }
+    .cbtn[data-color="teal"]{ background:var(--cTeal); }
+    .cbtn[data-color="mint"]{ background:var(--cMint); }
+    .cbtn[data-color="gray"]{ background:var(--cGray); }
 
     .cbtn.selected{ outline:3px solid color-mix(in srgb, var(--accent) 60%, transparent); }
     .cbtn.selected::after{
@@ -1685,6 +1696,107 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
     .healthConsumptionInput{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);padding:9px 10px;font:inherit}
     .healthConsumptionInput[aria-invalid="true"]{border-color:currentColor}
     @media(max-width:520px){.healthConsumptionEditor{grid-template-columns:1fr 96px auto}}
+
+/* PO1-UX02: Core layout only; existing routes, handlers and palette stay intact. */
+[data-view="pick"] button {min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+[data-view="pick"] .topbar {
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) 44px;
+  gap:8px;
+  margin-bottom:16px;
+}
+[data-view="pick"] .topbar > button {
+  width:44px; min-height:44px; padding:0; font-size:1rem;
+}
+[data-view="pick"] #pillDate {
+  justify-self:center; min-width:0; text-align:center;
+  white-space:normal; overflow-wrap:anywhere; font-size:.875rem;
+}
+[data-view="pick"] .q {font-size:1.25rem;line-height:1.35;margin:16px 0;overflow-wrap:anywhere}
+[data-view="pick"] .choices {gap:12px}
+[data-view="pick"] .choice {padding:16px;min-width:0}
+[data-view="pick"] .choice > div:last-child {min-width:0;overflow-wrap:anywhere}
+[data-view="pick"] .ctitle {font-size:1rem;line-height:1.5}
+[data-view="pick"] .cdesc {font-size:.875rem;line-height:1.5}
+[data-view="pick"] .colors {width:min(100%,240px);gap:8px;margin:24px auto 8px}
+[data-view="pick"] .cbtn {flex:0 0 44px}
+[data-view="pick"] .noteWrap {margin-top:24px;min-width:0}
+[data-view="pick"] #note {display:block;min-width:0;min-height:120px;font-size:1rem;line-height:1.5}
+[data-view="pick"] .row2 {flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+[data-view="pick"] .row2 > button {min-height:44px;max-width:100%;font-size:1rem;white-space:normal;overflow-wrap:anywhere}
+[data-view="pick"] #statusPick {flex:1 1 10rem;min-width:0;margin:0;font-size:.875rem;line-height:1.5;overflow-wrap:anywhere}
+[data-view="pick"] .navItem {min-height:44px}
+/* End PO1-UX02 */
+
+/* PO1-NAV01: accessible module controls and wrapping hint. */
+#btnHomeFromPick {display:inline-flex;align-items:center;justify-content:center}
+#btnCoreFromModules {min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#coreModulesHint {font-size:.875rem;line-height:1.5;overflow-wrap:anywhere;text-align:center}
+/* End PO1-NAV01 */
+/* PO1-UX03: scoped Health alignment; no route or data changes. */
+[data-view="health"] > .topbar {display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;margin-bottom:16px}
+[data-view="health"] > .topbar .pill {position:static;transform:none;min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:center;font-size:1.125rem;line-height:1.4;padding:0;justify-self:center}
+[data-view="health"] > .topbar > button {width:44px;min-height:44px;padding:0;font-size:1rem}
+[data-view="health"].healthView :is(button,input,select,textarea) {min-width:0;max-width:100%;min-height:44px;font-size:1rem}
+[data-view="health"] button {white-space:normal;overflow-wrap:anywhere}
+[data-view="health"] :is(h1,h2,h3,p,label,strong,small) {overflow-wrap:anywhere}
+[data-view="health"] :is(h1,h2) {line-height:1.35}
+[data-view="health"] :is(.healthHub,.nutritionHub,.wellnessHub,.sportHub,.healthDashboard,.healthCard,.healthLibraryPicker,.healthLibraryEditor) {width:100%;min-width:0;margin-left:auto;margin-right:auto}
+[data-view="health"] :is(.healthHubHeader,.nutritionHubHeader,.wellnessHubHeader,.sportHubHeader) {text-align:center}
+[data-view="health"] :is(.healthHubCard,.nutritionHubCard,.wellnessHubCard,.sportHubCard) {min-width:0;gap:12px}
+[data-view="health"] .healthDayNav {flex-wrap:wrap}
+@media(max-width:420px) {
+ [data-view="health"] :is(.healthLibraryEditorGrid,.healthLibraryNutritionGrid,.healthLibraryMetaGrid,.healthRecipeIngredientControls,.healthConsumptionEditor) {grid-template-columns:minmax(0,1fr)}
+}
+[data-view="health"].healthView select {background:var(--bg0);color:var(--text);color-scheme:dark}
+html[data-theme="light"] [data-view="health"] select {color-scheme:light}
+/* UX03 inner forms: show exercise filters in wrapping rows. */
+[data-view="health"] .sportLibraryFilters {flex-wrap:wrap;overflow-x:visible}
+[data-view="health"] :is(.sportProgramMove,.sportProgramRemove) {min-width:44px;min-height:44px}
+@media(max-width:520px) {
+ [data-view="health"] .sportDayTitleEditor {grid-template-columns:minmax(0,1fr)}
+ [data-view="health"] .sportProgramExerciseRow {display:grid;grid-template-columns:minmax(0,1fr)}
+ [data-view="health"] .sportProgramExerciseRow > :last-child {display:flex;gap:8px;justify-content:flex-end}
+}
+/* End PO1-UX03 */
+/* PO1-UX04: Sky layout only; preserve calculations and profile actions. */
+[data-view="sky"].skyView > .topbar {display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;margin-bottom:16px}
+[data-view="sky"].skyView > .topbar .pill {position:static;transform:none;min-width:0;max-width:100%;white-space:normal;overflow:visible;text-overflow:initial;overflow-wrap:anywhere;text-align:center;font-size:1.125rem;line-height:1.4;padding:0;justify-self:center}
+[data-view="sky"].skyView > .topbar > button {width:44px;min-height:44px;padding:0;font-size:1rem}
+[data-view="sky"].skyView :is(button,input,select,textarea,summary) {min-width:0;max-width:100%;min-height:44px;font-size:1rem}
+[data-view="sky"] :is(button,summary) {white-space:normal;overflow-wrap:anywhere}
+[data-view="sky"] :is(h1,h2,h3,p,label,strong,small) {overflow-wrap:anywhere}
+[data-view="sky"] :is(h1,h2) {line-height:1.35}
+[data-view="sky"] :is(.skyHub,.skyPanelShell,.skyBirthPanel) {width:100%;min-width:0;margin-left:auto;margin-right:auto}
+[data-view="sky"].skyView select {background:var(--bg0);color:var(--text);color-scheme:dark}
+html[data-theme="light"] [data-view="sky"] select {color-scheme:light}
+/* End PO1-UX04 */
+/* PO1-UX05: scoped Radio, shared mini-player and AI presentation only. */
+[data-view="radio"] > .topbar {display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:16px}
+[data-view="radio"] #radioTitle {margin:0;text-align:center;font-size:1.5rem;line-height:1.35;overflow-wrap:anywhere}
+[data-view="radio"] :is(button,input:not([type="checkbox"]),select,textarea) {min-width:0;max-width:100%;min-height:44px;font-size:1rem}
+[data-view="radio"] button {white-space:normal;overflow-wrap:anywhere}
+[data-view="radio"] :is(p,h2,label) {overflow-wrap:anywhere}
+[data-view="radio"] .radioConsent {min-height:44px}
+[data-view="radio"] select {background:var(--bg0);color:var(--text);color-scheme:dark}
+html[data-theme="light"] [data-view="radio"] select {color-scheme:light}
+.radioMiniActions {max-width:100%}
+.radioMiniActions button {min-width:44px;max-width:100%;min-height:44px;font-size:1rem;white-space:normal;overflow-wrap:anywhere}
+.radioMiniName {font-size:1rem;line-height:1.4}
+.radioMiniStatus {font-size:.875rem;line-height:1.5}
+#aiContextPanel {min-width:0;max-width:100%}
+#aiContextPanel > h3 {text-align:center;line-height:1.35}
+#aiContextPanel :is(button,input:not([type="checkbox"]),select,textarea,summary) {min-width:0;max-width:100%;min-height:44px;font-size:1rem}
+#aiContextPanel :is(input:not([type="checkbox"]),select,textarea) {width:100%}
+#aiContextPanel :is(button,summary,h3,h4,h5,p,li,label,strong) {overflow-wrap:anywhere}
+#aiContextPanel :is(button,summary) {white-space:normal}
+#aiContextPanel label:has(input[type="checkbox"]) {display:flex;align-items:flex-start;gap:10px;min-height:44px}
+#aiContextPanel label input[type="checkbox"] {flex:0 0 auto}
+#aiContextPanel .smallBtns {flex-wrap:wrap;gap:12px}
+#aiContextPanel select {background:var(--bg0);color:var(--text);color-scheme:dark}
+html[data-theme="light"] #aiContextPanel select {color-scheme:light}
+@media(max-width:420px) {[data-view="radio"] .radioFilters {grid-template-columns:minmax(0,1fr)}}
+/* End PO1-UX05 */
 </style>
 </head>
 
@@ -1722,6 +1834,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 
   <div class="moduleCenterHead">
     <h1 class="title" id="modulesTitle" data-view-title tabindex="-1">TODAY</h1>
+    <button class="ghost" id="btnCoreFromModules" type="button">Core’a dön</button>
   </div>
 
   <div class="moduleCards" role="group" aria-label="Today modülleri">
@@ -1803,9 +1916,9 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
             class="back"
             id="btnHomeFromPick"
             type="button"
-            aria-label="Modül merkezine dön"
+            aria-label="Modülleri aç" aria-describedby="coreModulesHint"
           >
-            <span aria-hidden="true">←</span>
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           </button>
           <span class="pill" id="pillDate">—</span>
           <button
@@ -1817,6 +1930,8 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
             <span aria-hidden="true">📅</span>
           </button>
         </div>
+
+        <p class="hint" id="coreModulesHint">Diğer modüller için ızgara simgesine dokun.</p>
 
         <h1 class="q" id="pickTitle" data-view-title tabindex="-1">Bugün sende ne oldu?</h1>
 
@@ -1879,6 +1994,11 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
           <button class="cbtn" type="button" data-color="yellow" title="Sarı" aria-label="Sarı" aria-pressed="false"></button>
           <button class="cbtn" type="button" data-color="green" title="Yeşil" aria-label="Yeşil" aria-pressed="false"></button>
           <button class="cbtn" type="button" data-color="deep" title="Derin" aria-label="Derin" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="pink" title="Pembe" aria-label="Pembe" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="purple" title="Mor" aria-label="Mor" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="teal" title="Turkuaz" aria-label="Turkuaz" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="mint" title="Nane" aria-label="Nane" aria-pressed="false"></button>
+          <button class="cbtn" type="button" data-color="gray" title="Gri" aria-label="Gri" aria-pressed="false"></button>
         </div>
         <div class="mini" style="text-align:center; margin-top:2px;">Renk seçmek zorunlu değil.</div>
 
@@ -2747,6 +2867,10 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
               Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur.
             </div>
 
+            <div class="field" style="margin-top:12px;">
+              <button class="btn" id="btnBackupLaunch" type="button" data-backup-launch>Tam yedek</button>
+            </div>
+
             <section
               class="aiContextPanel"
               id="aiContextPanel"
@@ -3161,6 +3285,8 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 <script src="./modules/core-sky-link-ui.js"></script>
 <script src="./modules/sky-hub.js"></script>
 <script src="./modules/ai-context-source-adapters.js"></script>
+<script type="module" src="./modules/core-static-copy-ui.mjs"></script>
+<script type="module" src="./modules/backup-export-ui.mjs"></script>
 <script type="module" src="./modules/ai-context-ui.mjs"></script>
 <script type="module" src="./modules/health-wearable-ui.mjs"></script>
 <script type="module" src="./modules/notification-ui.mjs"></script>
@@ -3183,6 +3309,16 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
     );
 
   const showStartupManagerFailure = () => {
+    // Keep failure handling synchronous and independent of the optional dictionary.
+    const copyText = (key, fallback) => {
+      try {
+        const value = window.TodayStartupCopy?.[key];
+        return typeof value === "string" && value.trim() ? value : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    };
+
     if (
       document.getElementById(
         "todayStartupError"
@@ -3219,22 +3355,19 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
     ].join(";");
 
     const title = document.createElement("h1");
-    title.textContent = "Today başlatılamadı";
+    title.textContent = copyText("startup.failed", "Today başlatılamadı");
     title.style.cssText =
       "margin:0 0 12px;font-size:24px;line-height:1.25";
 
     const text = document.createElement("p");
-    text.textContent =
-      "Başlangıç yöneticisi yüklenemedi. " +
-      "Kayıtların silinmedi. İnternet bağlantını " +
-      "kontrol edip yeniden dene.";
+    text.textContent = copyText("startup.managerFailed", "Başlangıç yöneticisi yüklenemedi. Kayıtların silinmedi. İnternet bağlantını kontrol edip yeniden dene.");
     text.style.cssText =
       "margin:0 0 20px;color:#cbd3df;font-size:16px;line-height:1.55";
 
     const retryButton =
       document.createElement("button");
     retryButton.type = "button";
-    retryButton.textContent = "Yeniden dene";
+    retryButton.textContent = copyText("common.retry", "Yeniden dene");
     retryButton.style.cssText = [
       "width:100%",
       "min-height:48px",
@@ -3502,6 +3635,11 @@ const logObj = (dateKey) =>
     yellow:getComputedStyle(document.documentElement).getPropertyValue("--cYellow").trim(),
     green:getComputedStyle(document.documentElement).getPropertyValue("--cGreen").trim(),
     deep:getComputedStyle(document.documentElement).getPropertyValue("--cBlack").trim(),
+    pink:getComputedStyle(document.documentElement).getPropertyValue("--cPink").trim(),
+    purple:getComputedStyle(document.documentElement).getPropertyValue("--cPurple").trim(),
+    teal:getComputedStyle(document.documentElement).getPropertyValue("--cTeal").trim(),
+    mint:getComputedStyle(document.documentElement).getPropertyValue("--cMint").trim(),
+    gray:getComputedStyle(document.documentElement).getPropertyValue("--cGray").trim(),
   }[c] || "#88a9ff");
 
   const applyAccentFor = (k) => {
@@ -3532,14 +3670,19 @@ const logObj = (dateKey) =>
    8) TODAY MODULE PLATFORM
    ========================= */
 
-/* HOME → MODULE CENTER */
+/* PO1-NAV01: user-initiated Core entry and module access. */
 $("#btnStart").addEventListener("click", () => {
+  router.navigate("pick");
+});
+$("#btnHomeFromPick").addEventListener("click", () => {
   router.navigate("modules");
+});
+$("#btnCoreFromModules").addEventListener("click", () => {
+  router.backTo("pick");
 });
 
 /* Modüllerden merkeze dönüş */
 [
-  "#btnHomeFromPick",
   "#btnModulesFromHealth",
   "#btnModulesFromSky"
 ].forEach(selector => {
@@ -3581,6 +3724,9 @@ $("#btnStart").addEventListener("click", () => {
     });
   };
 
+  // Unsaved note drafts stay in memory, isolated by their input date.
+  const pendingNotes = new Map();
+
   const loadPickUI = (k) => {
     const d = dayObj(k);
     const editable = canEditDate(k);
@@ -3592,13 +3738,13 @@ $("#btnStart").addEventListener("click", () => {
     syncColorControls(d.color, editable);
 
     // not
-    $("#note").value = d.note || "";
+    $("#note").value = pendingNotes.get(k)?.text ?? (d.note || "");
 
     // bugün değilse: tüm seçim alanlarını disable gibi yap
     $("#note").disabled = !editable;
     $("#btnResetToday").disabled = !editable;
 
-    $("#statusPick").textContent = editable ? "" : "Geçmiş günler düzenlenemez.";
+    $("#statusPick").textContent = editable ? "" : coreMessage("core.readOnly", "Geçmiş günler düzenlenemez.");
   };
 
   const logChange = (k, what) => {
@@ -3625,6 +3771,38 @@ $("#btnStart").addEventListener("click", () => {
     });
   };
 
+  const trySaveCoreChange = () => {
+    try {
+      return save().success === true;
+    } catch(error) {
+      reportError("today:stateerror", {
+        errorCode: "TODAY-STATE-001",
+        errorName: error?.name
+      });
+      return false;
+    }
+  };
+
+  const calendarDate = (date, kind, fallback) => {
+    try {
+      const format = window.TodayCalendarCopy?.format;
+      const value = typeof format === "function" ? format(date, kind) : null;
+      return typeof value === "string" && value.trim() ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  };
+
+  const calendarText = (key, fallback) => {
+    const value = window.TodayCalendarCopy?.messages?.[key];
+    return typeof value === "string" && value.trim() ? value : fallback;
+  };
+
+  const coreMessage = (key, fallback) => {
+    const value = window.TodayCoreMessages?.[key];
+    return typeof value === "string" && value.trim() ? value : fallback;
+  };
+
   // seçim
   $$("#choices .choice").forEach(el => {
     el.addEventListener("click", () => {
@@ -3636,9 +3814,11 @@ $("#btnStart").addEventListener("click", () => {
       applyAccentFor(k);
       logChange(k, `Seçim: ${d.choice}`);
 
-      save();
+      const saved = trySaveCoreChange();
       syncChoiceControls(d.choice, true);
-      flash($("#statusPick"), "Kaydedildi.");
+      flash($("#statusPick"), saved
+        ? coreMessage("core.saved", "Kaydedildi.")
+        : coreMessage("core.changeFailed", "Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin."));
       renderCalendar(); // takvim noktası güncellensin
       renderSummary();  // özet güncellensin
     });
@@ -3692,29 +3872,45 @@ $("#btnStart").addEventListener("click", () => {
       d.color = btn.dataset.color;
       applyAccentFor(k);
       logChange(k, `Renk: ${d.color}`);
-      save();
+      const saved = trySaveCoreChange();
 
       syncColorControls(d.color, true);
 
-      flash($("#statusPick"), "Renk kaydedildi.");
+      flash($("#statusPick"), saved
+        ? coreMessage("core.colorSaved", "Renk kaydedildi.")
+        : coreMessage("core.changeFailed", "Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin."));
       renderCalendar();
       renderChart(currentMode); // grafikte vurgu rengi
     });
   });
 
-  // not
-  let noteTimer = null;
+  // Capture the input text and date before navigation can reload the editor.
   $("#note").addEventListener("input", () => {
     const k = todayKey();
     if(!canEditDate(k)) return;
 
-    clearTimeout(noteTimer);
-    noteTimer = setTimeout(() => {
+    clearTimeout(pendingNotes.get(k)?.timer);
+    const draft = { text: $("#note").value || "", timer: null };
+    pendingNotes.set(k, draft);
+    draft.timer = setTimeout(() => {
       const d = dayObj(k);
-      d.note = $("#note").value || "";
+      d.note = draft.text;
       logChange(k, "Not güncellendi");
-      save();
-      flash($("#statusPick"), "Not kaydedildi.");
+      let saved = false;
+      try {
+        saved = save().success;
+      } catch(error) {
+        reportError("today:stateerror", {
+          errorCode: "TODAY-STATE-001",
+          errorName: error?.name
+        });
+      }
+      if(saved) pendingNotes.delete(k);
+      if(router.getState().route === "pick" && todayKey() === k){
+        flash($("#statusPick"), saved
+          ? coreMessage("core.noteSaved", "Not kaydedildi.")
+          : coreMessage("core.noteFailed", "Not kaydedilemedi. Taslak bu oturumda korunuyor."));
+      }
     }, 450);
   });
 
@@ -3728,15 +3924,19 @@ $("#btnStart").addEventListener("click", () => {
       reason: "core_reset"
     });
 
+    clearTimeout(pendingNotes.get(k)?.timer);
+    pendingNotes.delete(k);
     state.days[k] = { choice:"", color:"", note:"" };
     logChange(k, "Bugün sıfırlandı");
-    save();
+    const saved = trySaveCoreChange();
     applyAccentFor(k);
     loadPickUI(k);
     renderCalendar();
     renderSummary();
     renderChart(currentMode);
-    flash($("#statusPick"), "Bugün temizlendi.");
+    flash($("#statusPick"), saved
+      ? coreMessage("core.todayCleared", "Bugün temizlendi.")
+      : coreMessage("core.changeFailed", "Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin."));
   });
 
   /* =========================
@@ -3771,8 +3971,8 @@ $("#btnStart").addEventListener("click", () => {
     const tKey = todayKey();
     const {year,month,cells} = buildCalendarMatrix(now);
 
-    $("#monthTitle").textContent = now.toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
-    $("#calPill").textContent = "Takvim";
+    $("#monthTitle").textContent = calendarDate(now, "month", now.toLocaleDateString("tr-TR",{month:"long",year:"numeric"}));
+    $("#calPill").textContent = window.TodayCalendarCopy?.title || "Takvim";
 
     const grid = $("#calGrid");
     grid.innerHTML = "";
@@ -3790,7 +3990,7 @@ $("#btnStart").addEventListener("click", () => {
       ["Cum","Cuma"],
       ["Cmt","Cumartesi"],
       ["Paz","Pazar"]
-    ].forEach(([shortName, fullName])=>{
+    ].map((labels, index) => window.TodayCalendarCopy?.weekdays?.[index] || labels).forEach(([shortName, fullName])=>{
       const div=document.createElement("div");
       div.className="dow";
       div.textContent=shortName;
@@ -3827,40 +4027,41 @@ $("#btnStart").addEventListener("click", () => {
       const isFuture = parseKey(k) > parseKey(tKey);
       const editable = k===tKey;
       const hasRecord = Boolean(d && (d.choice||d.color||d.note));
-      const dateLabel = dt.toLocaleDateString("tr-TR", {
+      const dateLabel = calendarDate(dt, "day", dt.toLocaleDateString("tr-TR", {
         weekday:"long",
         day:"numeric",
         month:"long",
         year:"numeric"
-      });
+      }));
       const recordParts = [];
 
-      if(d && d.choice) recordParts.push(choiceLabelTR(d.choice));
-      if(d && d.color) recordParts.push(`renk ${colorLabelTR(d.color)}`);
-      if(d && d.note) recordParts.push("not var");
+      if(d && d.choice) recordParts.push(coreDisplayLabel("choices", d.choice, choiceLabelTR(d.choice)));
+      if(d && d.color) recordParts.push(calendarText("color", "renk {color}").replace("{color}", () => coreDisplayLabel("colors", d.color, colorLabelTR(d.color))));
+      if(d && d.note) recordParts.push(calendarText("hasNote", "not var"));
 
       const timeLabel =
         isPast
-          ? "geçmiş gün"
+          ? calendarText("past", "geçmiş gün")
           : isFuture
-            ? "gelecek gün"
-            : "bugün";
+            ? calendarText("future", "gelecek gün")
+            : calendarText("today", "bugün");
       const recordLabel =
         hasRecord
           ? recordParts.join(", ")
-          : "kayıt yok";
+          : calendarText("noRecord", "kayıt yok");
 
       cell.className = "day" + ((isPast||isFuture) ? " disabled" : "");
       cell.tabIndex = editable ? 0 : -1;
       cell.setAttribute("aria-disabled", String(!editable));
-      cell.setAttribute(
-        "aria-label",
-        `${dateLabel}, ${timeLabel}, ${recordLabel}${
+      const fallbackLabel = `${dateLabel}, ${timeLabel}, ${recordLabel}${
           editable
-            ? ". Düzenlemek için Enter veya Boşluk tuşuna basın"
+            ? calendarText("editHint", ". Düzenlemek için Enter veya Boşluk tuşuna basın")
             : ""
-        }`
-      );
+        }`;
+      const translatedLabel = window.TodayCalendarCopy?.dayLabel?.({
+        dateLabel, timeLabel, recordLabel, editable
+      });
+      cell.setAttribute("aria-label", typeof translatedLabel === "string" ? translatedLabel : fallbackLabel);
 
       if(editable) cell.setAttribute("aria-current", "date");
 
@@ -3999,8 +4200,28 @@ $("#btnStart").addEventListener("click", () => {
     blue:"Mavi",
     yellow:"Sarı",
     green:"Yeşil",
-    deep:"Derin"
+    deep:"Derin",
+    pink:"Pembe",
+    purple:"Mor",
+    teal:"Turkuaz",
+    mint:"Nane",
+    gray:"Gri"
   }[c] || "");
+
+  const statisticsText = (value, fallback) =>
+    typeof value === "string" && value.trim() ? value : fallback;
+
+  // Read-only label presentation; never use this adapter in export or storage.
+  const coreDisplayLabel = (kind, id, fallback) => {
+    if (typeof fallback !== "string" || !fallback) return fallback;
+    try {
+      const labels = window.TodayCoreLabels?.[kind];
+      const value = labels && Object.hasOwn(labels, id) ? labels[id] : null;
+      return typeof value === "string" && value.trim() ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  };
 
   const renderSummary = () => {
     // son 7 gün içinde en çok seçilen
@@ -4015,7 +4236,10 @@ $("#btnStart").addEventListener("click", () => {
     const freq = {};
     last7.forEach(x => freq[x]=(freq[x]||0)+1);
     const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
-    const topText = top ? `Son 7 günde en çok: “${choiceLabelTR(top[0])}” (${top[1]} kez)` : "Son 7 günde seçim yok.";
+    const topText = top
+      ? statisticsText(window.TodayStatisticsCopy?.summary?.(coreDisplayLabel("choices", top[0], choiceLabelTR(top[0])), top[1]),
+          `Son 7 günde en çok: “${coreDisplayLabel("choices", top[0], choiceLabelTR(top[0]))}” (${top[1]} kez)`)
+      : statisticsText(window.TodayStatisticsCopy?.empty, "Son 7 günde seçim yok.");
     $("#summaryText").textContent = topText;
   };
 
@@ -4195,10 +4419,10 @@ $("#btnStart").addEventListener("click", () => {
     $("#line").setAttribute("stroke", hex);
 
     let arr;
-    if(mode==="hour"){ arr = seriesHour(); $("#chartLabel").textContent = "Gün içi giriş ritmi (00:00 → 23:59)"; }
-    if(mode==="day"){ arr = seriesDay(); $("#chartLabel").textContent = "Son 7 gün ivmesi"; }
-    if(mode==="week"){ arr = seriesWeek(); $("#chartLabel").textContent = "Son 4 hafta ivmesi"; }
-    if(mode==="month"){ arr = seriesMonth(); $("#chartLabel").textContent = "Son 12 ay ivmesi"; }
+    if(mode==="hour"){ arr = seriesHour(); $("#chartLabel").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.hour, "Gün içi giriş ritmi (00:00 → 23:59)"); }
+    if(mode==="day"){ arr = seriesDay(); $("#chartLabel").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.day, "Son 7 gün ivmesi"); }
+    if(mode==="week"){ arr = seriesWeek(); $("#chartLabel").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.week, "Son 4 hafta ivmesi"); }
+    if(mode==="month"){ arr = seriesMonth(); $("#chartLabel").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.month, "Son 12 ay ivmesi"); }
 
     const {line, area} = toPath(arr);
 
@@ -4207,9 +4431,10 @@ $("#btnStart").addEventListener("click", () => {
     animatePath($("#line"), line);
 
     const total = arr[arr.length - 1] || 0;
-    $("#chartSummary").textContent =
+    $("#chartSummary").textContent = statisticsText(
+      window.TodayStatisticsCopy?.chartSummary?.($("#chartLabel").textContent, total),
       `${$("#chartLabel").textContent}. ` +
-      `Dönem sonundaki birikimli giriş sayısı: ${total}.`;
+      `Dönem sonundaki birikimli giriş sayısı: ${total}.`);
 
     $$(".mode").forEach(button => {
       const active = button.dataset.mode === mode;
@@ -4234,7 +4459,7 @@ $("#btnStart").addEventListener("click", () => {
       const k = todayKey();
 
       $("#pillDate").textContent =
-        prettyTR(k);
+        calendarDate(parseKey(k), "core", prettyTR(k));
       applyAccentFor(k);
       loadPickUI(k);
     }

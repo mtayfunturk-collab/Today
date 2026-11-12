@@ -1,4 +1,179 @@
+### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
+
+İlk uzak CI Android paket hazırlığında `backup.html` izin listesi yüzünden durdu. Yalnız bu uygulama dosyası eklendi; native test ve web paket yerelde geçti. Rapor: `docs/TODAY-LIVE-CANDIDATE-2026-11-12.md`.
+
+
+### 2026-11-12 — Salt okunur restore önizleme ekranı
+
+Yarım kalan backup.html önizleme formu ayrı onayla tamamlandı; SW foundation-100/141 kabuğu, çevrimdışı Chromium ve platform1446/1446 doğrulandı. Üretim restore hâlâ kapalı. Rapor: `docs/TODAY-LIVE-RESTORE-UI.md`.
+
+### 2026-11-12 — Geri yükleme tek pencere kilidi kabulü
+
+Mevcut Web Locks/Worker bariyeri sentetik restore commit/rollback testine bağlandı; ikinci Today sekmesi kilit öncesinde reddedildi. Chromium4/4, WebKit/iPhone açık. Rapor: `docs/TODAY-LIVE-WRITER-ADMISSION.md`.
+
+### 2026-11-12 — Native IndexedDB sentetik kurtarma testi
+
+Güncel adayın geri yükleme prototipi gerçek Chromium veritabanında sentetik commit, rollback ve önizleme sonrası ikinci sekme değişikliğiyle sınandı. WebKit ortam bağımlılıkları ve fiziksel iPhone kabulü açık. Rapor: `docs/TODAY-LIVE-NATIVE-RECOVERY-ACCEPTANCE.md`.
+
+
+### 2026-11-12 — Ayrı sentetik hedefte geri yükleme
+
+Güncel Radio adayına yalnız çağrılabilir sentetik kurtarma prototipi ve 36 regresyon testi taşındı. Üretim UI/SW bağlantısı ve canlı restore kapalı. Rapor: `docs/TODAY-LIVE-SYNTHETIC-RECOVERY.md`.
+
+
+### 2026-11-12 — Salt okunur restore önizlemesi
+
+Şifreli dosyanın güncel2.23.3 adayına salt okunur semantik önizleyicisi taşındı;Health52 ID/10 alias eşleşti. Apply kapalı. Rapor: `docs/TODAY-LIVE-RESTORE-PREVIEW.md`.
+
+### 2026-11-12 — Ayarlar tam yedek girişi
+
+Ayarlar yedek düğmesi güncel SW güvenlik sorgusuyla ayrı şifreli dosya sayfasını açar. Core TR sözlük136 taslak/EN kilitli;gerçek iki motor sentetik dosya kontrolü geçti. Rapor: `docs/TODAY-LIVE-BACKUP-LAUNCH.md`. Restore/fiziksel/canlı kapıları açık.
+
+### 2026-11-12 — Canlı aday yedek sayfası
+
+Yedek sayfası/UI ve worker tek pencere/lock protokolü yerel adayda;cache097/shell132. Başlangıçta veri erişimi yok, restore yok. Rapor: `docs/TODAY-LIVE-BACKUP-PAGE.md`.
+
+### 2026-11-12 — Canlı aday yedek export çekirdeği
+
+Eski şifreli yedek export modülü güncel adayda izole ve UI/SW bağımsız taşındı;23 LS/3 store sentetik test kapsamı eklendi. Rapor: `docs/TODAY-LIVE-EXPORT-PORT.md`. Restore ve canlı yayın açık.
+
+### 2026-11-12 — Canlı yayın kapısı
+
+Kullanıcının canlıya geçiş isteğiyle Pages2.23.3/082, yerel096 ve Netlify401 salt okunur karşılaştırıldı. Güncel adayın tam backup/restore ve cihaz kabulü açık. Rapor: `docs/TODAY-LIVE-RELEASE-GATE-2026-11-12.md`. Sıradaki dar iş güncel kalıcı veri envanteri.
+
+### 2026-11-12 — PO1-I18N02 modül EN kaynak matrisi
+
+Dört eski katalogda283 EN taslak kaynak literaline eşleşti;36 satır işareti güncel konumdan kaymış. Health kartındaki iki metin ayrımı açık. Rapor: `docs/T90-261101-PO1-I18N02-EN-MODULE-MATRIX.md`.
+
+### 2026-11-12 — PO1-I18N02 EN bağlama tasarımı
+
+Mevcut I18N01 tercihi, güncel135 Core taslağı ve runtime sahipliği beş küçük kabul dilimine eşlendi. 12 ana grubun ilerleme ölçüsü belgelendi. Rapor: `docs/T90-261101-PO1-I18N02-EN-BINDING-DESIGN.md`.
+
+### 2026-11-12 — PO1-I18N02 dinamik EN envanteri
+
+Dinamik Core/ortak 14 üretici grubu güncel koda göre yeniden sınıflandırıldı; Health kartı metin ayrımı I18N03 sahibi olarak açık. Rapor: `docs/T90-261101-PO1-I18N02-EN-RUNTIME-INVENTORY.md`.
+
+### 2026-11-12 — PO1-I18N02 EN taslak incelemesi
+
+135 Core/ortak EN taslağı gözden geçirildi; 11 katalog metni iyileştirildi. EN yayın kilidi korunuyor. Rapor: `docs/T90-261101-PO1-I18N02-EN-REVIEW.md`.
+
+### 2026-11-12 — PO1-I18N02 EN taslak hazırlığı
+
+Core/ortak katalogda 69 boş EN taslağı dolduruldu; 135/135 taslak, sıfır editoryal onay. TR çalışma dili ve EN yayın kilidi korunuyor. Yerel rapor: `docs/T90-261101-PO1-I18N02-EN-DRAFT.md`.
+
 # TODAY MASTER PROJECT
+
+## 12 Kasım 2026 — PO1-I18N02 ortak fallback/metaveri metinleri
+
+[İlk grafik açıklaması ve sürüm etiketi](T90-261101-PO1-I18N02-COMMON-FALLBACKS.md), task/t90-261101-po1-i18n02-common-fallbacks yerel dalı. İki dictionary key;yalnız başlangıç fallback'i ve gerçek sürüm değerinin literal sunumu. Canlı grafik özeti/alt kontroller/versiyon/HTML/writer/veri aynı.135 key,eski133 korunur;EN/tercih kapalı. Hedef8/8,katalog12/12,tam platform1322/1322,AI/Radio335/335,seçili browser16/16 (8+8),bütünlük6/6 PASS,0FAIL/exit0. Dar dilim yerel olarak tamam;tüm E2E/genel I18N02/fiziksel kabul değildir. Kaynak82 dosya korunur;cache096,shell129,App2.23.3/schema2/lockfile aynı. Genel I18N02/veri/restore/fiziksel/pilot kapıları açık. Sonraki ayrı öneri Core/ortak İngilizce taslaklarını tamamlama/inceleme;EN UI açılmaz (Luna/Sol Medium). Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 12 Kasım 2026 — PO1-I18N02 saf tarih sunumu
+
+[Core/ay/takvim tarih sunumu](T90-261101-PO1-I18N02-DATE-PRESENTATION.md), task/t90-261101-po1-i18n02-date-presentation yerel dalı. Saf formatter ve day stili;active provider açık TR,classic guard bağımsız TR fallback. Yerel gün key/parse/DST/editability/CSV/kayıt aynı;EN/tercih açılmaz. Yeni hedef12/12,takvim13/13,katalog12/12,tam platform1314/1314,AI/Radio335/335,bütünlük6/6 PASS. Browser ilk16PASS/2FAIL,test fixture replacement `$&` hatasıydı;callback ile düzeltilen iki hedef2/2 PASS.18 ayrı senaryo doğrulandı,tek18/18 koşusu iddiası yok;açık hata yok. Dar dilim yerel olarak tamam,genel I18N02/fiziksel kabul değildir. Kaynak78 dosya korunur;cache095,shell129(tek ek bağımlılık),App2.23.3/schema2/133 dictionary/lockfile aynı. Genel I18N02/veri/restore/fiziksel/pilot kapıları açık. Sonraki ayrı öneri kalan fallback/metaveri sunumu (Luna/Sol Medium). Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 12 Kasım 2026 — PO1-I18N02 ayrı seçim-renk UI etiketleri
+
+[Takvim/özet etiket sunumu](T90-261101-PO1-I18N02-CORE-LABELS.md), task/t90-261101-po1-i18n02-core-labels yerel dalı. Üç seçim/12 renk için donmuş provider;dört UI çağrısı/senkron TR fallback. choiceLabelTR/colorLabelTR ve CSV/writer/kimlikler aynı;133 dictionary key/metin korunur,EN/tercih yok. Yeni hedef10/10,istatistik8/8,katalog12/12;tam platform1302/1302,AI/Radio335/335,seçili browser16/16 (8+8) ve bütünlük6/6 PASS,0FAIL/exit0. Dar etiket dilimi yerel olarak tamam;tüm E2E/İngilizce/fiziksel kabul değildir. Kaynak75 dosya korunur;cache094,shell128,App2.23.3/schema2/lockfile aynı. Genel I18N02/veri/restore/fiziksel/pilot kapıları açık;sonraki ayrı öneri tarih sunumunu kayıt anahtarlarından bağımsız yerelleştirme hazırlığı (Sol Medium). Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 12 Kasım 2026 — PO1-I18N02 kapsam ve İngilizce hazırlık denetimi
+
+[Core/ortak kapsam denetimi](T90-261101-PO1-I18N02-COVERAGE-REVIEW.md) ve kaynak/hash bağlı JSON envanteri task/t90-261101-po1-i18n02-coverage-review yerel dalında.146 statik aday:81 bağlı,2 dinamik bağlı,53 devredilen,8 marka,1 build etiketi,1 transient fallback;14 runtime üretici grubu ayrıca incelendi.133 katalog girdisi66 EN taslak+67 çevrilmemiş,0 reviewed. UI seçim/renk adları CSV ile aynı TR helper'ı kullanıyor;sonraki ayrı öneri sadece UI etiketi köprüsü (Sol Medium). Kaynak73 yerel dosya korunur;yalnız5 belge,runtime/test/şema/key/lockfile/cache093 aynı. İlk envanter7/8 parent/text node varsayımı düzeltildi;son8/8,katalog12/12 PASS. Kapsam/bütünlük6/6 PASS,0 nihai FAIL;dar denetim tamamlandı;tam platform/AI/browser değişmeyen runtime için tekrarlanmadı. Genel I18N02/veri/restore/fiziksel/pilot kapıları açık. Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 12 Kasım 2026 — PO1-I18N02 güncelleme paneli metinleri
+
+[Mevcut SW güncelleme paneli sunumu](T90-261101-PO1-I18N02-UPDATE-COPY.md), task/t90-261101-po1-i18n02-update-copy yerel dalı. Altı metin opsiyonel donmuş provider/senkron TR fallback;Today Yenilik aynı. Kullanıcı onayı/defer/activation/controllerchange/reload/veri korunur.133 key,eski127 aynı;EN/tercih kapalı. Yeni hedef8/8,katalog12/12,tam platform1292/1292,AI/Radio335/335,seçili browser10/10 (5+5) ve bütünlük6/6 PASS,0FAIL/exit0. Dar dilim yerel olarak tamam;genel çok dillilik/tüm E2E/fiziksel kabul değildir. Kaynak69 yerel dosya korunur;cache093,shell128,App2.23.3/schema2/lockfile aynı. Native bildirim/yayın başlatılmadı;genel I18N02/veri/restore/fiziksel/pilot kapıları açık. Sonraki ayrı öneri Core/ortak metin kapsamı ve İngilizce hazırlık eksiklerini denetleme (Sol Medium). Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 12 Kasım 2026 — PO1-I18N02 merkezi hata metinleri
+
+[Merkezi hata sunumu](T90-261101-PO1-I18N02-ERROR-COPY.md), task/t90-261101-po1-i18n02-error-copy yerel dalı.13 bilinen mesaj ve kontrol/kod şablonu salt okunur provider ile yalnız UI'da biçimlenir. Bilinmeyen/özel metin ve frozen log/console/event/kod/recovery aynı; ESM yoksa bağımsız senkron TR.127 key,eski110 korunur,EN/tercih kapalı. Yeni hedef12/12,katalog12/12 PASS;katalogun ilk dosya yolu düzenleme hatası düzeltildi. Platform1284/1284,AI/Radio335/335,seçili browser18/18 (9+9) ve bütünlük6/6 PASS,0 nihai FAIL/exit0;dar hata sunumu yerel olarak tamam. Tüm E2E/fiziksel kabul değildir. Kaynak65 dosya korunur;cache092,shell128,App2.23.3/schema2/lockfile aynı. Genel I18N02/veri/restore/fiziksel/pilot kapıları açık. Sonraki ayrı öneri mevcut SW güncelleme paneli metinleri (Sol Medium);native bildirim işi başlatılmaz. Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 12 Kasım 2026 — PO1-I18N02 başlangıç hata sunumu
+
+[Başlangıç hata metinleri](T90-261101-PO1-I18N02-STARTUP-COPY.md), task/t90-261101-po1-i18n02-startup-copy dalında. İki hata yüzeyi opsiyonel/donmuş provider kullanır; erken ESM yüklenemezse senkron TR fallback bağımsızdır.110 key,eski106 aynı;EN/tercih kapalı. Kod/diagnostic,migration,kurtarma/focus/reload ve kayıtlar korunur. Hedef8/8,katalog12/12,platform1272/1272,AI/Radio335/335 PASS. Browser ilk10PASS/2FAIL yeni testin diagnostic satırı varsayımıydı; kaynak sözleşmesine göre tam satır testi düzeltildi. Hedefli tekrar+regresyon10/10 ve bütünlük6/6 PASS; ilk geçen10 ile20 ayrı browser senaryosu doğrulandı,tek20/20 koşu iddiası yok. Açık hata yok;dar başlangıç dilimi yerel olarak tamam. Kaynak61 yerel dosya korunur;cache091,shell128,App2.23.3/schema2/lockfile aynı. Merkezi error-manager bu dilimde değişmedi; genel I18N02/fiziksel/veri/restore/pilot kapıları açık. Commit/push/PR/merge/deploy/CI rerun yok;sonraki ayrı öneri ortak merkezi hata sunumu (Sol Medium).
+
+## 12 Kasım 2026 — PO1-I18N02 dinamik istatistik metinleri
+
+[Dinamik özet/grafik sunumu](T90-261101-PO1-I18N02-STATISTICS-DYNAMIC.md), task/t90-261101-po1-i18n02-statistics-dynamic dalında. Hesaplanmış label/count/title/total salt okunur provider ile biçimlenir; senkron TR fallback ve literal parametreler.7 gün/eşitlik/seri/toplam/CSV/writer aynı.106 sözlük,eski103 aynı;3 key/parametre,EN kapalı. Hedef8/8 ve katalog12/12 PASS; platform1264/1264,AI/Radio335/335,seçili browser60/60 (30+30) ve bütünlük6/6 da PASS,0FAIL/exit0. Gerçek Türkçe CSV iki motorda değişmez; dar dilim yerel olarak tamam, tüm E2E/genel çok dillilik kabulü değildir. Kaynak58 dosya korunur;cache090,shell128,App2.23.3/schema2 aynı. Yayın hazırlığı başlatılmadı;commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri ortak başlangıç/hata/fallback metinleri (Sol Medium); genel dil/veri/restore/fiziksel/pilot kapıları açık.
+
+## 12 Kasım 2026 — PO1-I18N02 takvim günü aria metinleri ve genel durum
+
+[Kaydı açıklayan takvim aria sunumu](T90-261101-PO1-I18N02-CALENDAR-ARIA.md), task/t90-261101-po1-i18n02-calendar-aria dalında.103 sözlük,eski95 aynı;8 yeni key ve iki parametreli metin. Ham not aktarılmadan tarih/durum/kayıt/hint birleştirilir; hesap/key/editability/CSV ve kayıtlar aynı. Hedef13/13,katalog12/12,platform1256/1256,AI/Radio335/335 PASS; seçili browser58/58 (29+29) ve bütünlük6/6 da PASS,0FAIL/exit0. Bu dar dilim yerel otomatik kabulüyle tamam; tüm E2E/genel çok dillilik tamamlandı iddiası yok. Kaynak56 dosya korunur;cache089,shell128,App2.23.3/schema2 aynı. [Ana talimat durum tablosu](TODAY-CURRENT-STATUS.md) güncellendi: UX yerel,aktif I18N02; diğer diller,ses/Radio ekleri,AUTH tasarımı,veri güveni/fiziksel kabul/pilot açık; kesin bitiş tarihi yok. Commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri dinamik istatistik sunumu (Sol Medium).
+
+## 12 Kasım 2026 — PO1-I18N02 dinamik takvim, ilk dilim
+
+[Core/ay tarih başlığı ve hafta günü sunumu](T90-261101-PO1-I18N02-CALENDAR-COPY.md) task/t90-261101-po1-i18n02-calendar-copy yerel dalında. Synchronous TR fallback/donmuş calendar köprüsü; local Date/gün anahtarı/Pazartesi sırası/editable kuralları aynı.95 sözlük, eski81 aynı;14 hafta günü etiketi, EN kapalı. İlk hedef6/8 iki yanlış test varsayımı; sözleşme doğrulanarak son8/8 PASS. Son platform1251/1251,AI/Radio335/335,seçili browser56/56 (28+28) ve bütünlük6/6 PASS,0 nihai FAIL/exit0; bu dar dilim yerel olarak tamam. Tüm E2E ve genel çok dillilik kabulü değildir. Üretim index/entry/sözlük/cache088;128 shell,App2.23.3/schema2/writer/lockfile aynı. Kaynak53 yerel dosya korunur. Fiziksel kabul/tercih/commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri gün hücresi aria açıklamaları (Sol Medium); genel dil/veri/restore/pilot kapıları açık.
+
+## 11 Kasım 2026 — PO1-I18N02 dinamik Core mesajları
+
+[Dinamik Core mesaj bağlaması](T90-261101-PO1-I18N02-CORE-MESSAGES.md) ayrı task/t90-261101-po1-i18n02-core-messages dalında: yedi salt okunur metin, senkron TR fallback; save guard/debounce/Map/rota/tarih aynı. Yeni core.changeFailed ile81 sözlük, önceki80 aynı; EN/tercih yok. Hedef24/24, katalog12/12, platform1243/1243 ve AI/Radio335/335 PASS; seçili browser56/56 (28+28) ve bütünlük6/6 da PASS,0FAIL/exit0. Bu dar dilim yerel otomatik kabulüyle tamam; tüm E2E/çok dillilik tamamlandı iddiası yok. Writer/şema/key/lockfile ve128 kabuk aynı; cache087. Kısmi yazma rollback'i eklenmedi. Kaynak51 dosya korunur; fiziksel kabul/yayın/commit/push/PR/merge/CI rerun yok. Sonraki ayrı öneri I18N02 dinamik takvim sunumu (Sol Medium); genel dil/veri/restore/pilot kapıları açık.
+
+## 11 Kasım 2026 — Core başarısız kayıt mesajı düzeltmesi
+
+[Seçim/renk/reset sonuç mesajı düzeltmesi](CORE-SAVE-STATUS.md) task/t90-261101-po1-core-save-status yerel dalında. Eski callback'ler save sonucunu incelemiyordu; yeni yerel helper false/exception'da doğru hata mesajı, true'da eski başarı mesajını verir. Writer/şema/key/migration/dependency aynı; RAM rollback eklenmedi, canonical başarısızken legacy değişmiş olabilir. Eski hedef3PASS/9FAIL→12/12 PASS; son platform1231/1231, AI/Radio335/335 PASS. Core browser48/48 (24+24), seçili offline/SW/Radio8/8 (4+4) ve bütünlük6/6 PASS,0 nihai FAIL/exit0. Dar mesaj düzeltmesi yerel otomatik kabulüyle tamam; tek tam E2E iddiası yok. Kaynak49 yerel dosya korunur. Üretim index+cache foundation-086;128 shell ve App2.23.3/schema2 aynı. EN/tercih, fiziksel kabul/commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri I18N02 dinamik Core mesajlarını sözlüğe bağlamak (Sol High/Medium); veri/restore/pilot kapıları açık.
+
+## 11 Kasım 2026 — PO1-I18N02 dinamik metin sözleşmesi ve kayıt sonucu riski
+
+[15 üreticinin kaynak/parametre/sahiplik doğrulaması](T90-261101-PO1-I18N02-DYNAMIC-CONTRACT.md), task/t90-261101-po1-i18n02-dynamic-contract yerel dalında; eski3 Kasım tasarımı kullanıldı. Yerel tarih,7 günlük özet/eşitlik, grafik entry sayısı, CSV ortak helper ve kalıcı log metni sınırları kaydedildi. Üç timezone'da33 kaynak karakterizasyonu: seçim/renk/reset save=false iken başarı mesajına ilerliyor; not guard'ı doğru. Üç risk akışı sentetik olarak yeniden üretildi, düzeltilmedi; bu sonuç ürün PASS'i değildir. Kaynak/belge/kapsam7/7 PASS,0FAIL/exit0; uygulama kusurları bu sayıya başarı diye dahil edilmez. Yalnız4 belge; runtime/test/şema/key/lockfile/cache/sözlük aynı. Uygulama paketleri tekrarlanmadı, eski sonuçlar yeni kabul sayılmaz. Sonraki öncelik dinamik çeviriden önce dar Core başarısız kayıt mesajı düzeltmesi/kota doğrulaması (Sol High). Fiziksel/restore/pilot kapıları açık; uzak CI/commit/push/PR/merge/deploy yok.
+
+## 11 Kasım 2026 — PO1-I18N02 istatistik statik TR bağlaması
+
+[İstatistik panelinin14 statik hedefi](T90-261101-PO1-I18N02-STATISTICS-BINDINGS.md) task/t90-261101-po1-i18n02-statistics-bindings yerel dalında; önceki67 hedef aynı, toplam81. Kaynaktaki5 eksik mode title/log açıklamasıyla katalog/sözlük80 girdi; eski75 aynı, İngilizce kapalı. Grafik başlık/erişilebilir özet ve hesaplar renderChart/renderSummary sahipliğinde. Hedef26/26, katalog12/12, yeni browser4/4, platform1219/1219 ve AI/Radio335/335 PASS,0FAIL/exit0; ilgili browser regresyon36/36 (18+18) ve bütünlük6/6 da PASS. Yeni4+mevcut36 ayrı seçilmiş koşulardır; tek tam E2E iddiası yok. Bu oturumda başarısız koşu olmadı. Dar istatistik dilimi yerel otomatik kabulüyle tamam, genel I18N02 açık. Üretim yalnız bağlayıcı/TR sözlük/cache foundation-085;128 kabuk/index/entry/şema/key/migration/lockfile aynı. Kaynak45 değişiklik korunur. Tercih yazımı, fiziksel kabul, uzak CI/commit/push/PR/merge/deploy yok. Sonraki ayrı öneri I18N02 dinamik metinlerde mevcut kaynak/parametre/sahiplik sözleşmesini güncel üreticilerle doğrulama (Sol Medium); genel çok dillilik ve veri/restore/pilot kapıları açık.
+
+## 11 Kasım 2026 — PO1-I18N02 ortak statik TR bağlaması
+
+[Modül merkezi/Takvim/Ayarlar statik metin dilimi](T90-261101-PO1-I18N02-SHARED-BINDINGS.md) task/t90-261101-po1-i18n02-shared-bindings yerel dalında. Önceki43 hedefe24 ortak hedef; toplam67, aynı75 TR sözlük. İlk browser6PASS/4FAIL HealthHub'ın kart açıklamasını başlangıçta değiştirdiğini gösterdi; alan statik kapsamdan çıkarılıp korunma testine alındı, mevcut Health kodu aynı. Son hedef21/21, platform1214/1214, AI/Radio335/335 ve bütünlük6/6 PASS. Seçili browser birleşik39PASS/1FAIL; WebKit'te bilinçli kaynak hatasının mevcut uyarısını kullanıcı Kapat eylemiyle doğrulayan test düzeltmesinden sonra iki motorda hedef2/2 PASS.38 diğer+2 son hata akışı=40 benzersiz doğrulama; tek40/40 koşu iddiası yok, çözülmemiş hata yok. Dar dilim yerel olarak tamam; genel I18N02 açık. Üretim yalnız bağlayıcı + cache foundation-084; kabuk128, index/entry/sözlük/şema/key/migration/lockfile aynı. Kaynak43 yerel değişiklik korunur. İngilizce/tercih yazımı/fiziksel kabul/yayın yok; uzak CI yeni patch için çalışmadı, commit/push/PR/merge/deploy yok. Sonraki ayrı öneri I18N02 kalan istatistik statik metinleri (Sol Medium); dinamik ve genel çok dillilik kabulü açık.
+
+## 11 Kasım 2026 — PO1-I18N02 Home/Core statik TR bağlaması
+
+[Dar Home/Core metin bağlaması](T90-261101-PO1-I18N02-CORE-BINDINGS.md) task/t90-261101-po1-i18n02-core-bindings yerel dalında:43 açık metin/aria/title/placeholder hedefi, leaf-only/idempotent uygulama, aynı Türkçe HTML fallback'i. Not değeri/odak/seçim/ikon/listener/dinamik durumlar ve Radio tek oynatıcı korunur. Çevrimdışı3 modül eklenerek kabuk128 dosya/cache foundation-083; App2.23.3/schema2/key/migration/lockfile aynı. Kaynak34 yerel değişiklik korunur. Hedef14/14, son platform1207/1207, AI/Radio335/335, tam browser82/82 (41+41) ve bütünlük6/6 PASS,0 nihai FAIL/exit0. Bu dar dilim yerel otomatik kabulüyle tamam; I18N02 diğer ortak/dinamik yüzeylerde devam eder. Ara cache envanter/etiket ve yeni testin henüz oluşmamış notu okuma hataları kök nedenleriyle belgeli; beklenti gevşetme/skip/retry yok. Yeni dil/tercih/İngilizce açılmadı; fiziksel kabul yok. Uzak CI yeni patch için çalışmadı, commit/push/PR/merge/deploy yok. Sonraki ayrı öneri I18N02 modül merkezi ve Takvim/Ayarlar statik ortak metinleri (Sol Medium); genel çok dillilik ve veri/restore/pilot kapıları açık.
+
+## 11 Kasım 2026 — PO1-I18N02 Core kataloğu ve TR sözlük
+
+[Core katalog rebase ve Türkçe sözlük hazırlığı](T90-261101-PO1-I18N02-CORE-PREPARATION.md) task/t90-261101-po1-i18n02-core-tr yerel dalında: eski67 girdiden66 korunur, eski Core geri etiketi emekli edilir,9 güncel gezinme/renk/not hata girdisiyle75 kayıt hazırlanır. mint/Nane ve diğer kalıcı kimlikler aynı; İngilizce taslak/kapalıdır. Yeni donmuş CORE_TR hiçbir UI/SW tüketicisine bağlanmadı; tercih/veri yazımı yok. Hedef12/12, automation8/8 ve tam platform1193/1193 PASS,0FAIL/exit0; alt hedefler toplamın içindedir. Kaynak uygulama/şema/key/lockfile/SW değişmedi; önceki30 yerel değişiklik korundu. Ayrı browser/AI/benchmark tekrarlanmadı, fiziksel kabul yok. Yeni uzak CI/commit/push/PR/merge/deploy yok. Sonraki ayrı öneri aynı I18N02 içinde dar Home/Core statik TR bağlaması (Sol Medium); kalan dinamik/ortak metin, kalıcı tercih ve bütün uygulama İngilizce kabulü açıktır.
+
+## 11 Kasım 2026 — PO1-I18N01 salt okunur çözümleyici
+
+[Saf dil çözümleyicisi ve yerel test kanıtı](T90-261101-PO1-I18N01-RESOLVER.md) ayrı task/t90-261101-po1-i18n01-resolver dalında tamamlandı. Manuel öncelik, auto/BCP47, yalnız hazır tr ve güvenli fallback; DOM/storage/ağ/tercih yazımı/UI bağlantısı yoktur. İngilizce etkinleştirilmedi. Hedef20/20, automation8/8 ve son platform1181/1181 PASS,0 FAIL/exit0; alt hedefler toplamın içindedir. İlk kapıdaki test grubu sırası hatası beklenti gevşetilmeden düzeltildi, başarısız log korundu. Yalnız modül/test/runner/envanter ve3 belge; kullanıcı verisi/key/şema/migration/lockfile/SW aynı. Kaynak yerel değişiklikler korunur. Ayrı browser/Engine/benchmark/AI entegrasyonu tekrarlanmadı; fiziksel kabul yok. Uzak CI yeni patch için çalışmadı; commit/push/PR/merge/deploy yok. Sonraki ayrı öneri I18N02 güncel Core katalog eşleme/TR sözlük hazırlığı (Sol Medium); kalıcı tercih ayrıca açık.
+
+## 11 Kasım 2026 — PO1-I18N01 güncel tasarım doğrulaması
+
+[Mevcut dil tasarımı güncel Radio/UI tabanıyla doğrulandı](T90-261101-PO1-I18N01-LANGUAGE-DESIGN.md);3 Kasım tasarımı yeniden icat edilmedi. metadata.language manuel tercih değildir; settings.uiLanguage auto/tr/en yalnız öneri, yeni alan/anahtar yoktur. Eski67 metinli katalog güncel NAV01/COR01/not metinleriyle eşlenmeli; eski Mercan önerisi güncel mint/Nane kimliğini değiştirmez. Eski NUT backup modülleri güncel Radio'da yoktur; tam restore kabulü varsayılmaz. Manuel öncelik, yalnız hazır dil, read-only başlangıç, güvenli fallback, AI kanonik sözleşme/DOM/state koruma ve gelecek kabul planı güncellendi. Yalnız3 belge; kaynak/bütünlük5/5 PASS,0FAIL/exit0. Bunlar dil davranışı testleri değildir. Runtime/çeviri/tercih yazıcısı/EN seçimi uygulanmadı, uygulama testleri tekrar çalıştırılmadı. Sonraki ayrı öneri I18N01 saf salt okunur çözümleyici; I18N02 tasarımını yeniden yazma yok. Commit/push/PR/merge/deploy/CI rerun yok.
+
+## 11 Kasım 2026 — PO1-UX05 Radio/AI hizalaması
+
+[Radio/AI dar sunum patch'i](T90-261101-PO1-UX05-RADIO-AI-ALIGNMENT.md) task/t90-261101-po1-ux05-radio-ai-alignment yerel dalında hazırlandı: Radio orta eksen/tek sütun filtre,44px kontrol/onay etiketleri, sarılan tek mini-player ve AI açıklama/düzenleme alanları. Üretim delta yalnız scoped CSS; oynatma/izin/AI davranışı/anahtar/şema/JS/lockfile/SW aynı. Yeni2 senaryo/motor;10 durum/motor180 düzen, gerçek sessiz HTMLAudio pause/resume ve gerçek açıklanabilir AI çıktısı. İlk0/4 ve ikinci2/4 sonuçlarının geometri ve test SW/izin izolasyonu kök nedenleri raporda; son Radio hedef2/2 PASS. Son platform1161/1161, AI/Radio335/335, tek tam browser76/76 (38+38) ve bütünlük4/4 PASS,0 nihai FAIL/exit0. UX05 listelenen yüzeylerde yerel otomatik sunum kabulünü tamamladı; fiziksel/koşullu sınırlar raporda. Gerçek kullanıcı verisi/yayın/commit/push/PR/merge/deploy/CI rerun yok; fiziksel kabul/restore/pilot kapıları açık. Sonraki ayrı öneri PO1-I18N01 dil altyapısı/kalıcı tercih tasarımıdır; henüz başlanmadı.
+
+## 11 Kasım 2026 — PO1-UX04 Sky hizalaması
+
+[Sky dar sunum patch'i](T90-261101-PO1-UX04-SKY-ALIGNMENT.md) task/t90-261101-po1-ux04-sky-alignment yerel dalında hazırlandı: ortalı/sarılan üst şerit,44px kontrol/summary ve tema uyumlu native select. Doğum profili, hesaplama, konum ve kayıt JS'si aynen korunur. Profilsiz/profilli6 panel,320/393/520px,100/200% kök yazı ve3 tema;216 düzen/motor. Sentetik doğum/şehir seçimi ve açık düğmeyle canlı gökyüzü de kapsanır. İlk fixture düğme belirsizliği ile başlık kırpma/39px kontroller ve selector öncelik sorunu, ara FAIL loglarıyla belgeli; son hedef4/4, canlı hedef2/2 PASS. Son platform1161/1161, AI/Radio335/335, tek tam browser72/72 (36+36) ve bütünlük4/4 PASS,0 nihai FAIL/exit0. UX04 yerel otomatik sunum kabulü tamamlandı; koşullu/fiziksel kapsam sınırları raporda. Şema/key/migration/lockfile/SW aynı; gerçek kullanıcı verisi yok. Commit/push/PR/merge/deploy/CI rerun yok. Fiziksel kabul/veri restore/pilot kapıları açık; sonraki ayrı öneri UX05 Radio/AI sunumudur.
+
+## 10 Kasım 2026 — PO1-UX03 Health iç formları
+
+[İç form ölçümü ve spor düzeltmesi](T90-261101-PO1-UX03-HEALTH-FORMS.md) task/t90-261101-po1-ux03-health-forms yerel dalında hazırlandı. Hareket filtreleri satırlara sarılır;520px altında gün adı/hareket satırları tek sütun, taşı/kaldır44px.14 yüzey/motor84 düzen, sentetik dolu3 günlük spor programı/gün editörü/antrenman ve öğün/besin/tarif/uyku/enerji/semptom ekranları kapsanır. İlk kaynak4PASS/2FAIL filtre şeridi; ikinci4PASS/2FAIL dolu editör sıkışması; spor hedefi2/2 PASS. Son platform1161/1161, AI/Radio335/335, tek tam browser68/68 (34+34) ve bütünlük4/4 PASS,0 nihai FAIL/exit0. UX03 listelenen ana yüzey ve iç formlarda yerel otomatik sunum kabulünü tamamladı; kapsam sınırları raporda. Yalnız index CSS ve test/hash/belge deltası; veri/şema/key/JS/lockfile/SW aynı. Gerçek iPhone/PWA ve tam yedek/restore kabulü açık; commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri PO1-UX04 Sky ölçümü.
+
+## 10 Kasım 2026 — PO1-UX03 Health ana yüzey hizalaması
+
+[İlk dar Health dilimi](T90-261101-PO1-UX03-HEALTH-ALIGNMENT.md) ayrı task/t90-261101-po1-ux03-health-alignment dalında hazırlandı. Tek index CSS bloğu: ortalı/sarılan üst başlık,44px kontroller, sarılan metin/alanlar, dar ekranda bazı form grid'leri ve native select tema/kontrast düzeltmesi. Altı yüzey/motor36 düzen ve3 tema; tüm Health iç formlarının kabulü değildir. Son platform1161/1161, AI/Radio335/335, tek tam browser62/62 (31+31) ve bütünlük4/4 PASS,0 nihai FAIL/exit0. İlk42px öncelik hatası ve WebKit okunabilirlik sorunu, ara koşu kesintisi ve nihai sayılar raporda. HTML/JS/state/route/şema/key/migration/lockfile/SW aynı; gerçek veri yok. Yeni uzak CI/commit/push/PR/merge/deploy yapılmadı. UX03 iç form doğrulaması ve fiziksel iPhone/PWA kabulü açık; UX04'e geçilmedi.
+
+## 10 Kasım 2026 — PO1-COR01 Core paleti 12 renk
+
+[Genişletilmiş palet](T90-261101-PO1-COR01-PALETTE.md) ayrı task/t90-261101-po1-cor01-palette yerel dalında tamamlandı. Orijinal7 ID/ton korunarak pembe, mor, turkuaz, nane, gri eklendi; mevcut44px kontroller4×3 sarılır. Vurgu/takvim/CSV etiketleri aynı ID'lerle uyumlu; yeni key/şema/migration yok. Hedef4/4, platform1161/1161, AI/Radio335/335, tam browser58/58 ve bütünlük4/4 PASS,0FAIL/exit0. Eski not güveni ve gezinme testleri korunur; yeni2 senaryo/motor12 rengin reload/iki depo/not korunumu ve üç temada dar ekran/klavye erişimini denetler. Tek üretim dosyası index; diğer modüller, yazıcılar, lockfile/SW aynı. Fiziksel kabul ve veri/restore kapıları açık; commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri PO1-UX03 Health hizalaması.
+
+## 10 Kasım 2026 — Core taslağı hızlı dönüşte korunuyor
+
+[Dar not güveni düzeltmesi](CORE-NOTE-SAFETY.md) yerel task/core-note-safety dalında tamamlandı: giriş anında tarih/metin yakalama, tarih bazlı bellek taslakları ve bağımsız450ms zamanlayıcı, reset iptali, kayıt hatasında taslak koruma/doğru hata metni. İlk hedef16PASS/2FAIL legacy kota istisnasını gösterdi; yalnız not callback'inde yakalanınca kota2/2 PASS oldu. Son platform1161/1161, AI/Radio335/335, tek tam browser54/54 (27+27) ve bütünlük4/4 PASS;0 nihai FAIL. Eski NAV01 testleri aynen; yeni4 senaryo/motor gece yarısı/son düzenleme/boşaltma/reset/kotayı kapsar. NAV01 yerel otomatik engeli kapandı; fiziksel kabul ve T90-07/08 açık. Şema/key/migration/lockfile/SW ve kullanıcı verisi değişmedi; yeni kalıcı taslak yok. Bekleyen metin sekme kapanmasında kurtarılmış sayılmaz, atomik rollback eklenmedi. Commit/push/PR/merge/deploy/CI rerun yok. Sonraki ayrı öneri PO1-COR01.
+
+## 10 Kasım 2026 — PO1-NAV01 yerel akış ve not güveni engeli
+
+[Core başlangıç/modül gezinme patch'i ve engel raporu](T90-261101-PO1-NAV01-CORE-NAVIGATION.md) ayrı task/t90-261101-po1-nav01-core-navigation dalında hazırlandı: Başla→Core, ızgara/yönerge→modüller, açık Core’a dön, iki router fallback'i. Eski görünüm ve Radio sürekliliği korunur. Platform1161/1161, AI/Radio335/335 ve mevcut browser regresyon36/36 PASS. Yeni hedef8PASS/2FAIL: kayıt öncesi hızlı modül dönüşünde taslak kaybı. Sabit saatli eski sürüm kontrolü iki motorda aynı hatayı üretti; mevcut450ms yazıcının DOM'u sonradan okuması kök nedendir. NAV01 tamamlanmadı/yayın adayı değil; ayrı dar not güveni düzeltmesi sıradaki öneridir, COR01'e geçilmez. Yazıcı/şema/key/migration/lockfile/SW/kullanıcı verisi değişmedi. Commit/push/PR/merge/deploy/CI rerun yok; fiziksel kabul bekler.
+
+## 10 Kasım 2026 — PO1-UX02 Core hizalama yerel uygulaması
+
+[Mevcut Core görünümünü koruyan dar CSS patch'i](T90-261101-PO1-UX02-CORE-ALIGNMENT.md) eklendi: simetrik44px kontroller/ortalanmış-sarılan tarih, seçenek aralıkları,7 renk4+3, okunabilir not ve sarılan durum satırı. Yalnız Core seçicileri; script/HTML/ID/metin/handler/renk kimlikleri aynı. Yeni3 E2E senaryosu/motor; ilk4 ve sonra2 hedef FAIL'in kök nedenleri/düzeltmeleri raporda, loglar korunur. Son matris2/2, platform1161/1161, AI/Radio335/335 ve Chromium18+WebKit18=36/36 PASS,0 son FAIL,exit0; bütünlük4/4 PASS. Static testte yalnız index checksum güncellendi. Üretim modülleri/SW/şema/lockfile/kullanıcı verisi değişmedi. Yayın/commit/push/PR/merge/CI rerun yok. Yeni CSS için fiziksel kabul bekler; sonraki öneri ayrı NAV01 yerel akış dilimi.
+
+## 10 Kasım 2026 — Radio test tabanı yeniden doğrulandı
+
+[Radio2.23.3 taban envanteri ve sonuçları](T90-261101-07-RADIO-TEST-BASELINE.md): platform1161/1161, Today AI/Radio entegrasyonu335/335, Engine raporlanan403/403, benchmark16/16 vaka/güvenlik ihlali0; Chromium15/15 ve son WebKit15/15 PASS,0 son FAIL. İlk browser29PASS/1FAIL korundu: WebKit/GStreamer /var/tmp salt-okunur olduğundan yapay MP3 temp dosyasını oluşturamadı. Yalnız test komutuna /var/tmp yazma erişimi verilince native probe ve WebKit15 geçti; runtime/fixture/expectation/timeout/retry değişmedi. Envanter zaten eksiksiz25+19 kök ve9 Engine grubu; UUID fixture zaten aynı. Test/helper taşınmadı. Yalnız4 belge/envanter, bütünlük4/4 PASS; kullanıcı verisi/şema/lockfile/uygulama görünümü değişmedi. Commit/push/PR/merge/deploy/CI rerun yok. Sonraki öneri yerel Core UX02 hedeflenmiş CSS patch'i; veri/restore/pilot kapıları açık.
 ## CHANGELOG
 
 Document: Changelog

@@ -1,0 +1,149 @@
+{
+  "purpose": "Radio-only test baseline inventory; does not include unintegrated NUT runtime/prototype features",
+  "baseSha": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+  "appVersion": "2.23.3",
+  "runtimeChanged": false,
+  "productionRestoreEnabled": false,
+  "platform": [
+    {
+      "file": "tests/nutrition-contracts.test.cjs",
+      "expectedCount": 60
+    },
+    {
+      "file": "tests/nutrition-storage.test.cjs",
+      "expectedCount": 50
+    },
+    {
+      "file": "tests/nutrition-migrations.test.cjs",
+      "expectedCount": 20
+    },
+    {
+      "file": "tests/nutrition-calculations.test.cjs",
+      "expectedCount": 84
+    },
+    {
+      "file": "tests/nutrition-profile.test.cjs",
+      "expectedCount": 82
+    },
+    {
+      "file": "tests/nutrition-library.test.cjs",
+      "expectedCount": 98
+    },
+    {
+      "file": "tests/nutrition-library-ui.test.cjs",
+      "expectedCount": 52
+    },
+    {
+      "file": "tests/nutrition-entry.test.cjs",
+      "expectedCount": 90
+    },
+    {
+      "file": "tests/nutrition-planning.test.cjs",
+      "expectedCount": 110
+    },
+    {
+      "file": "tests/nutrition-history.test.cjs",
+      "expectedCount": 54
+    },
+    {
+      "file": "tests/nutrition-ui.test.cjs",
+      "expectedCount": 106
+    },
+    {
+      "file": "tests/nutrition-consumption-editor.test.cjs",
+      "expectedCount": 27
+    },
+    {
+      "file": "tests/health-hub.test.cjs",
+      "expectedCount": 16
+    },
+    {
+      "file": "tests/adapter-interfaces.test.cjs",
+      "expectedCount": 42
+    },
+    {
+      "file": "tests/error-manager.test.cjs",
+      "expectedCount": 28
+    },
+    {
+      "file": "tests/migration-integration.test.cjs",
+      "expectedCount": 10
+    },
+    {
+      "file": "tests/migration.test.cjs",
+      "expectedCount": 31
+    },
+    {
+      "file": "tests/module-registry.test.cjs",
+      "expectedCount": 18
+    },
+    {
+      "file": "tests/router.test.cjs",
+      "expectedCount": 15
+    },
+    {
+      "file": "tests/service-worker-manager.test.cjs",
+      "expectedCount": 31
+    },
+    {
+      "file": "tests/startup-manager.test.cjs",
+      "expectedCount": 15
+    },
+    {
+      "file": "tests/static-regression.test.cjs",
+      "expectedCount": 30
+    },
+    {
+      "file": "tests/sw-event-regression.cjs",
+      "expectedCount": 36
+    },
+    {
+      "file": "tests/automation-contract.test.cjs",
+      "expectedCount": 8
+    },
+    {
+      "file": "tests/platform-browser-regression.test.cjs",
+      "expectedCount": 48
+    }
+  ],
+  "platformExpected": 1161,
+  "integration": [
+    "tests/ai-context-source-adapters.test.cjs",
+    "tests/ai-context-bridge.test.mjs",
+    "tests/ai-analysis-bridge.test.mjs",
+    "tests/ai-approval-bridge.test.mjs",
+    "tests/ai-pattern-bridge.test.mjs",
+    "tests/ai-pattern-feedback-bridge.test.mjs",
+    "tests/ai-context-ui.test.mjs",
+    "tests/ai-evaluation-gate.test.mjs",
+    "tests/wearable-read-adapter.test.mjs",
+    "tests/wearable-native-provider.test.mjs",
+    "tests/health-wearable-ui.test.mjs",
+    "tests/wearable-context-session.test.mjs",
+    "tests/notification-store.test.mjs",
+    "tests/native-notification-adapter.test.mjs",
+    "tests/notification-service.test.mjs",
+    "tests/notification-ui.test.mjs",
+    "tests/radio-directory.test.mjs",
+    "tests/radio-ui.test.mjs",
+    "tests/radio-player.test.mjs"
+  ],
+  "engine": [
+    "context-builder.test.mjs",
+    "daily-support-analyzer.test.mjs",
+    "approval-decision-processor.test.mjs",
+    "decision-receipt-builder.test.mjs",
+    "pattern-observer.test.mjs",
+    "pattern-feedback-processor.test.mjs",
+    "synthetic-benchmark-evaluator.test.mjs",
+    "multi-window-observer.test.mjs",
+    "wearable-context.test.mjs"
+  ],
+  "fixtureSha256": "cc035a8c9c5a7a9fa21d27212ef651c850218cab3b5979821bb71b4b07fecd41",
+  "nutFixtureAlreadyPresent": true,
+  "inventoryComplete": true,
+  "registeredRootGroups": 44,
+  "requiredNutFilesCopied": [],
+  "runnersChanged": false,
+  "physicalAcceptanceTransferred": false
+}

@@ -15,6 +15,70 @@ const TEST_GROUPS = Object.freeze([
     count: 60
   },
   {
+    file: "tests/backup-export-port.test.mjs",
+    count: 5
+  },
+  {
+    file: "tests/backup-export-ui.test.mjs",
+    count: 40
+  },
+  {
+    file: "tests/backup-restore-preview.test.mjs",
+    count: 41
+  },
+  {
+    file: "tests/backup-recovery.test.mjs",
+    count: 36
+  },
+  {
+    file: "tests/language-resolver.test.cjs",
+    count: 20
+  },
+  {
+    file: "tests/core-tr-catalog.test.cjs",
+    count: 12
+  },
+  {
+    file: "tests/core-static-copy.test.cjs",
+    count: 26
+  },
+  {
+    file: "tests/core-save-status.test.cjs",
+    count: 24
+  },
+  {
+    file: "tests/calendar-copy.test.cjs",
+    count: 13
+  },
+  {
+    file: "tests/common-fallbacks.test.cjs",
+    count: 8
+  },
+  {
+    file: "tests/date-presentation.test.cjs",
+    count: 12
+  },
+  {
+    file: "tests/core-labels.test.cjs",
+    count: 10
+  },
+  {
+    file: "tests/update-copy.test.cjs",
+    count: 8
+  },
+  {
+    file: "tests/error-copy.test.cjs",
+    count: 12
+  },
+  {
+    file: "tests/startup-copy.test.cjs",
+    count: 8
+  },
+  {
+    file: "tests/statistics-copy.test.cjs",
+    count: 8
+  },
+  {
     file:
       "tests/nutrition-storage.test.cjs",
     count: 50
@@ -122,7 +186,7 @@ const TEST_GROUPS = Object.freeze([
   {
     file:
       "tests/sw-event-regression.cjs",
-    count: 36
+    count: 38
   },
   {
     file:

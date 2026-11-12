@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Read-only dynamic-copy design contract; not loaded or activated by Today. Characterization is not feature acceptance.",
+  "runtimeActivated": false,
+  "sourceRef": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+  "sourceBranch": "task/t90-261101-po1-i18n02-statistics-bindings",
+  "sources": {
+    "index.html": "d099faad4f01fbceb434ec39a2040657998e9e91950ec2516e493bfd8f631111",
+    "modules/day-manager.js": "a99e2c56b72e7b970182c6395fa3ea049feb18200b63bfb2248ed58150f49e89"
+  },
+  "priorDesignSha256": "06c676b018313c1180b8e711c14f5292d168b5875f806c5aea4e0fc8874e4875",
+  "completeEnglishRelease": false,
+  "contracts": [
+    {
+      "id": "core.readOnly",
+      "owner": "loadPickUI",
+      "target": "#statusPick",
+      "messageKeys": [
+        "core.readOnly"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3735,
+          "lineText": "    $(\"#statusPick\").textContent = editable ? \"\" : \"Geçmiş günler düzenlenemez.\";"
+        }
+      ],
+      "preservationRule": "editable false shows existing text; true clears; no edit-permission change",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "core.saved",
+      "owner": "choice click callback",
+      "target": "#statusPick",
+      "messageKeys": [
+        "core.saved"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3775,
+          "lineText": "      flash($(\"#statusPick\"), \"Kaydedildi.\");"
+        }
+      ],
+      "preservationRule": "Current callback ignores save result; do not treat translated message as a save guarantee",
+      "qualityGate": "blocked-by-failed-save-status"
+    },
+    {
+      "id": "core.colorSaved",
+      "owner": "color click callback",
+      "target": "#statusPick",
+      "messageKeys": [
+        "core.colorSaved"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3833,
+          "lineText": "      flash($(\"#statusPick\"), \"Renk kaydedildi.\");"
+        }
+      ],
+      "preservationRule": "Current callback ignores save result; keep color ID and log data raw",
+      "qualityGate": "blocked-by-failed-save-status"
+    },
+    {
+      "id": "core.noteSaved",
+      "owner": "note debounce callback",
+      "target": "#statusPick",
+      "messageKeys": [
+        "core.noteSaved"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3863,
+          "lineText": "          ? \"Not kaydedildi.\""
+        }
+      ],
+      "preservationRule": "Only after save().success true, correct current date/route,450ms draft lifecycle unchanged",
+      "qualityGate": "existing-success-guard"
+    },
+    {
+      "id": "core.noteFailed",
+      "owner": "note debounce callback",
+      "target": "#statusPick",
+      "messageKeys": [
+        "core.noteFailed"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3864,
+          "lineText": "          : \"Not kaydedilemedi. Taslak bu oturumda korunuyor.\");"
+        }
+      ],
+      "preservationRule": "False or throw retains in-memory draft; no success or durable recovery promise",
+      "qualityGate": "existing-success-guard"
+    },
+    {
+      "id": "core.todayCleared",
+      "owner": "reset click callback",
+      "target": "#statusPick",
+      "messageKeys": [
+        "core.todayCleared"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3889,
+          "lineText": "    flash($(\"#statusPick\"), \"Bugün temizlendi.\");"
+        }
+      ],
+      "preservationRule": "Current callback ignores save result; no new rollback/reset behavior in localization",
+      "qualityGate": "blocked-by-failed-save-status"
+    },
+    {
+      "id": "core.date",
+      "owner": "handleRouteChange(pick) + TodayDay.prettyTR",
+      "target": "#pillDate",
+      "messageKeys": [
+        "core.date"
+      ],
+      "parameters": [
+        {
+          "name": "dateKey",
+          "type": "existing valid local YYYY-MM-DD",
+          "source": "todayKey()"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "modules/day-manager.js",
+          "line": 95,
+          "lineText": "  function prettyTR(dateKey) {"
+        },
+        {
+          "file": "index.html",
+          "line": 4392,
+          "lineText": "        prettyTR(k);"
+        },
+        {
+          "file": "modules/day-manager.js",
+          "line": 89,
+          "lineText": "    return new Date(year, month - 1, day);"
+        }
+      ],
+      "preservationRule": "Keep local date validation/interpretation and tr-TR day2-digit/monthlong/yearnumeric; no UTC slicing or persistence",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "calendar.month",
+      "owner": "renderCalendar",
+      "target": "#monthTitle",
+      "messageKeys": [
+        "calendar.month"
+      ],
+      "parameters": [
+        {
+          "name": "date",
+          "type": "existing local Date",
+          "source": "new Date() in renderCalendar"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3924,
+          "lineText": "    $(\"#monthTitle\").textContent = now.toLocaleDateString(\"tr-TR\",{month:\"long\",year:\"numeric\"});"
+        }
+      ],
+      "preservationRule": "Keep current local calendar month/year; format only, no timezone or grid recalculation",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "calendar.weekdays",
+      "owner": "renderCalendar",
+      "target": "calendar columnheader nodes",
+      "messageKeys": [
+        "calendar.weekdays"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3936,
+          "lineText": "      [\"Pzt\",\"Pazartesi\"],"
+        },
+        {
+          "file": "index.html",
+          "line": 3937,
+          "lineText": "      [\"Sal\",\"Salı\"],"
+        },
+        {
+          "file": "index.html",
+          "line": 3938,
+          "lineText": "      [\"Çar\",\"Çarşamba\"],"
+        },
+        {
+          "file": "index.html",
+          "line": 3939,
+          "lineText": "      [\"Per\",\"Perşembe\"],"
+        },
+        {
+          "file": "index.html",
+          "line": 3940,
+          "lineText": "      [\"Cum\",\"Cuma\"],"
+        },
+        {
+          "file": "index.html",
+          "line": 3941,
+          "lineText": "      [\"Cmt\",\"Cumartesi\"],"
+        },
+        {
+          "file": "index.html",
+          "line": 3942,
+          "lineText": "      [\"Paz\",\"Pazar\"]"
+        }
+      ],
+      "preservationRule": "Preserve Monday-first ordering, short visible labels and full aria labels; no DOM/grid remount for language alone",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "calendar.day.accessible",
+      "owner": "renderCalendar",
+      "target": "calendar gridcell aria-label",
+      "messageKeys": [
+        "calendar.day.accessible"
+      ],
+      "parameters": [
+        {
+          "name": "dateLabel",
+          "type": "formatted current cell date",
+          "source": "dt.toLocaleDateString"
+        },
+        {
+          "name": "relation",
+          "type": "past|future|today",
+          "source": "existing comparisons against tKey"
+        },
+        {
+          "name": "choiceLabel",
+          "type": "mapped label or current empty fallback",
+          "source": "choiceLabelTR; raw choice ID unchanged"
+        },
+        {
+          "name": "colorLabel",
+          "type": "mapped label or current empty fallback",
+          "source": "colorLabelTR; raw color ID unchanged"
+        },
+        {
+          "name": "hasNote",
+          "type": "boolean",
+          "source": "Boolean(d && d.note); never raw note text"
+        },
+        {
+          "name": "hasRecord",
+          "type": "boolean",
+          "source": "Boolean(d && (d.choice||d.color||d.note))"
+        },
+        {
+          "name": "editable",
+          "type": "boolean",
+          "source": "existing k===tKey"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 3980,
+          "lineText": "      const dateLabel = dt.toLocaleDateString(\"tr-TR\", {"
+        },
+        {
+          "file": "index.html",
+          "line": 3988,
+          "lineText": "      if(d && d.choice) recordParts.push(choiceLabelTR(d.choice));"
+        },
+        {
+          "file": "index.html",
+          "line": 3989,
+          "lineText": "      if(d && d.color) recordParts.push(`renk ${colorLabelTR(d.color)}`);"
+        },
+        {
+          "file": "index.html",
+          "line": 3990,
+          "lineText": "      if(d && d.note) recordParts.push(\"not var\");"
+        },
+        {
+          "file": "index.html",
+          "line": 4008,
+          "lineText": "        `${dateLabel}, ${timeLabel}, ${recordLabel}${"
+        }
+      ],
+      "preservationRule": "Preserve date/relation/record order, empty-record message and keyboard suffix only for editable date; user notes stay private/raw",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "statistics.summary.empty",
+      "owner": "renderSummary",
+      "target": "#summaryText",
+      "messageKeys": [
+        "statistics.summary.empty"
+      ],
+      "parameters": [],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 4173,
+          "lineText": "    const topText = top ? `Son 7 günde en çok: “${choiceLabelTR(top[0])}” (${top[1]} kez)` : \"Son 7 günde seçim yok.\";"
+        }
+      ],
+      "preservationRule": "Only existing no-top branch; seven local dates including today; no inference or record changes",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "statistics.summary.most",
+      "owner": "renderSummary",
+      "target": "#summaryText",
+      "messageKeys": [
+        "statistics.summary.most"
+      ],
+      "parameters": [
+        {
+          "name": "choiceLabel",
+          "type": "existing display mapping",
+          "source": "choiceLabelTR(top[0]); unknown raw ID retained"
+        },
+        {
+          "name": "count",
+          "type": "integer1..7 for current seven-day loop",
+          "source": "top[1]"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 4172,
+          "lineText": "    const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];"
+        },
+        {
+          "file": "index.html",
+          "line": 4173,
+          "lineText": "    const topText = top ? `Son 7 günde en çok: “${choiceLabelTR(top[0])}” (${top[1]} kez)` : \"Son 7 günde seçim yok.\";"
+        }
+      ],
+      "preservationRule": "Keep current window inclusive bounds, stable tie behavior and Turkish “kez”; no new ranking rule",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "statistics.chart.title",
+      "owner": "renderChart",
+      "target": "#chartLabel",
+      "messageKeys": [
+        "statistics.hour",
+        "statistics.day",
+        "statistics.week",
+        "statistics.month"
+      ],
+      "parameters": [
+        {
+          "name": "mode",
+          "type": "hour|day|week|month",
+          "source": "existing currentMode/handler dataset"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 4353,
+          "lineText": "    if(mode===\"hour\"){ arr = seriesHour(); $(\"#chartLabel\").textContent = \"Gün içi giriş ritmi (00:00 → 23:59)\"; }"
+        },
+        {
+          "file": "index.html",
+          "line": 4354,
+          "lineText": "    if(mode===\"day\"){ arr = seriesDay(); $(\"#chartLabel\").textContent = \"Son 7 gün ivmesi\"; }"
+        },
+        {
+          "file": "index.html",
+          "line": 4355,
+          "lineText": "    if(mode===\"week\"){ arr = seriesWeek(); $(\"#chartLabel\").textContent = \"Son 4 hafta ivmesi\"; }"
+        },
+        {
+          "file": "index.html",
+          "line": 4356,
+          "lineText": "    if(mode===\"month\"){ arr = seriesMonth(); $(\"#chartLabel\").textContent = \"Son 12 ay ivmesi\"; }"
+        }
+      ],
+      "preservationRule": "Only change display selection; preserve series and currentMode; week means rolling28 days, not ISO week",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "statistics.chart.accessible",
+      "owner": "renderChart",
+      "target": "#chartSummary",
+      "messageKeys": [
+        "statistics.chart.accessible"
+      ],
+      "parameters": [
+        {
+          "name": "title",
+          "type": "existing visible chart title",
+          "source": "$(\"#chartLabel\").textContent"
+        },
+        {
+          "name": "total",
+          "type": "existing cumulative series final value",
+          "source": "arr[arr.length - 1] || 0"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 4364,
+          "lineText": "    const total = arr[arr.length - 1] || 0;"
+        },
+        {
+          "file": "index.html",
+          "line": 4367,
+          "lineText": "      `Dönem sonundaki birikimli giriş sayısı: ${total}.`;"
+        }
+      ],
+      "preservationRule": "Use the supplied count unchanged; entry logs are not choice counts; no new arithmetic/units",
+      "qualityGate": "presentation-contract-only"
+    },
+    {
+      "id": "common.build",
+      "owner": "initialization",
+      "target": "#buildTag",
+      "messageKeys": [
+        "common.build"
+      ],
+      "parameters": [
+        {
+          "name": "version",
+          "type": "raw current appVersion",
+          "source": "TodayVersion.getCurrentVersion()"
+        }
+      ],
+      "anchors": [
+        {
+          "file": "index.html",
+          "line": 4423,
+          "lineText": "  `build: ${versionInfo.appVersion}`;"
+        }
+      ],
+      "preservationRule": "Keep technical version unchanged; no release/version/cache update for this contract",
+      "qualityGate": "presentation-contract-only"
+    }
+  ],
+  "knownRiskFlows": [
+    "core.saved",
+    "core.colorSaved",
+    "core.todayCleared"
+  ],
+  "outOfScope": [
+    "runtime implementation",
+    "storage/migration/writer changes",
+    "CSV columns and persisted logChange.what translation",
+    "startup/global error rendering",
+    "Health-owned module description",
+    "English activation",
+    "manual-language persistence"
+  ]
+}
