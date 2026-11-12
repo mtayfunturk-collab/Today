@@ -608,7 +608,7 @@ test(
 );
 
 test(
-  "Başla düğmesi Modül Merkezi rotasını açıyor",
+  "Başla düğmesi Core rotasını açıyor",
   () => {
     click(
       normal.window,
@@ -618,11 +618,11 @@ test(
     assert.equal(
       normal.window.TodayRouter
         .getState().route,
-      "modules"
+      "pick"
     );
     assert.deepEqual(
       visibleViews(normal.window),
-      ["modules"]
+      ["pick"]
     );
   }
 );

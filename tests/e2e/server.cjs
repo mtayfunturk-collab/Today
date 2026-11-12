@@ -6,7 +6,7 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "../..");
 const revisions = new Map();
 const rootFiles = new Set([
-  "index.html", "sw.js", "manifest.json", "storage.js", "version.js",
+  "index.html", "backup.html", "sw.js", "manifest.json", "storage.js", "version.js",
   "health-hub.js", "nutrition-unit-rules.json", "today-icon-v9-192.png",
   "today-icon-v9-512.png", "apple-touch-icon-v9.png"
 ]);

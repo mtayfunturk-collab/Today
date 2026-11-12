@@ -1,0 +1,2446 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Read-only source coverage inventory, not loaded by Today. Counts are candidate fields, not readiness percentages or complete application coverage.",
+  "task": "T90-261101-PO1-I18N02 coverage review",
+  "sourceRef": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+  "sourceBranch": "task/t90-261101-po1-i18n02-update-copy",
+  "files": {
+    "index.html": "6459b08fdae59aae01977818376985ccb6a5e3ad5d93e91318c4c6d28a7bd6b4",
+    "modules/core-static-copy.mjs": "a33a4b04913af87666b9e90766ff9795b29cce74afab3f15835431bfb4a18412",
+    "modules/core-static-copy-ui.mjs": "c2c0f353fad7a49e9aa3a2d496f4213fff526fa6b8aa841a18cd4779ca7269e9",
+    "modules/locales/core-tr.mjs": "b66302621afd8be1e627305c8e0b675f895fb3be7037cd61f4056780a4667ebb",
+    "modules/language-resolver.mjs": "5d632328fbbafd12609bc5d6fa5cf6fccffb73e5446e0c25f461cc9298587f01",
+    "modules/startup-manager.js": "054fc93946c437620cd3a5011b343f72541e7669491e9156c1282018fb06c96f",
+    "modules/error-manager.js": "a58bddcc987af902ce05718f68b1c2e03e2ed8d7ebd1a6474c4806e6bcd59fd2",
+    "modules/service-worker-manager.js": "5444e7af03101053ed4a1357384ac8f20c947deb0caf4c7b5d9fdbebb76a4989",
+    "modules/health-hub.js": "44c85b72e60780d6e51b0b757ab5eb80621472dd008ef37a48067057bfad0434"
+  },
+  "scope": {
+    "views": [
+      "home",
+      "modules",
+      "pick",
+      "calendar"
+    ],
+    "fields": [
+      "text nodes with letters",
+      "aria-label",
+      "title",
+      "placeholder"
+    ],
+    "exclusions": [
+      "Other module views",
+      "CSS generated content",
+      "Runtime-generated surfaces are explicitly reviewed as producer groups, not included in static DOM count",
+      "AI panel belongs to I18N06",
+      "No completeness or readiness percentage"
+    ]
+  },
+  "staticBindingTargets": 81,
+  "staticCandidateCounts": {
+    "bound": 81,
+    "brand-label": 8,
+    "delegated": 53,
+    "dynamic-bound-tr": 2,
+    "metadata-label": 1,
+    "transient-fallback": 1
+  },
+  "staticCandidates": [
+    {
+      "view": "home",
+      "anchor": "#homeTitle",
+      "field": "text",
+      "text": "TODAY",
+      "textNodeIndex": 0,
+      "line": 1817,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "home.title"
+      ]
+    },
+    {
+      "view": "home",
+      "anchor": "#appContent > div:nth-child(1) > div:nth-child(2)",
+      "field": "text",
+      "text": "verileriniz sadece bu cihazda kaydedilmektedir.",
+      "textNodeIndex": 0,
+      "line": 1818,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "home.privacy"
+      ]
+    },
+    {
+      "view": "home",
+      "anchor": "#btnStart",
+      "field": "text",
+      "text": "Başla",
+      "textNodeIndex": 0,
+      "line": 1820,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "home.start"
+      ]
+    },
+    {
+      "view": "home",
+      "anchor": "#buildTag",
+      "field": "text",
+      "text": "build: —",
+      "textNodeIndex": 0,
+      "line": 1822,
+      "classification": "metadata-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "modules",
+      "anchor": "#modulesTitle",
+      "field": "text",
+      "text": "TODAY",
+      "textNodeIndex": 0,
+      "line": 1836,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "home.title"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#btnCoreFromModules",
+      "field": "text",
+      "text": "Core’a dön",
+      "textNodeIndex": 0,
+      "line": 1837,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.returnCore"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#appContent > div:nth-child(2) > div:nth-child(2)",
+      "field": "aria-label",
+      "text": "Today modülleri",
+      "textNodeIndex": null,
+      "line": 1840,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.label"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#moduleCoreTitle",
+      "field": "text",
+      "text": "Today Core",
+      "textNodeIndex": 0,
+      "line": 1853,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.core.title"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#moduleCoreDesc",
+      "field": "text",
+      "text": "Günlük, notlar ve ajanda",
+      "textNodeIndex": 0,
+      "line": 1854,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.core.description"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#moduleHealthTitle",
+      "field": "text",
+      "text": "Today Health",
+      "textNodeIndex": 0,
+      "line": 1869,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.health.title"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#moduleHealthDesc",
+      "field": "text",
+      "text": "Beslenme, su ve yaşam",
+      "textNodeIndex": 0,
+      "line": 1870,
+      "classification": "delegated",
+      "owner": "I18N03-Health-owner",
+      "keys": []
+    },
+    {
+      "view": "modules",
+      "anchor": "#moduleSkyTitle",
+      "field": "text",
+      "text": "Today Sky",
+      "textNodeIndex": 0,
+      "line": 1885,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.sky.title"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#moduleSkyDesc",
+      "field": "text",
+      "text": "Haritan ve gökyüzü",
+      "textNodeIndex": 0,
+      "line": 1886,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.sky.description"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#btnModuleRadio",
+      "field": "aria-label",
+      "text": "Today Radio",
+      "textNodeIndex": null,
+      "line": 1891,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.radio.title"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#btnModuleRadio > span:nth-child(2) > strong:nth-child(1)",
+      "field": "text",
+      "text": "Today Radio",
+      "textNodeIndex": 0,
+      "line": 1892,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.radio.title"
+      ]
+    },
+    {
+      "view": "modules",
+      "anchor": "#btnModuleRadio > span:nth-child(2) > small:nth-child(2)",
+      "field": "text",
+      "text": "Türkiye ve dünyadan istasyonlar",
+      "textNodeIndex": 0,
+      "line": 1892,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "modules.radio.description"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#btnHomeFromPick",
+      "field": "aria-label",
+      "text": "Modülleri aç",
+      "textNodeIndex": null,
+      "line": 1915,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.openModules"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#btnCalendar",
+      "field": "aria-label",
+      "text": "Takvimi aç",
+      "textNodeIndex": null,
+      "line": 1924,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.openCalendar"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#coreModulesHint",
+      "field": "text",
+      "text": "Diğer modüller için ızgara simgesine dokun.",
+      "textNodeIndex": 0,
+      "line": 1934,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.modulesHint"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#pickTitle",
+      "field": "text",
+      "text": "Bugün sende ne oldu?",
+      "textNodeIndex": 0,
+      "line": 1936,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.question"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#choiceATitle",
+      "field": "text",
+      "text": "Bir şey oldu ama adı yok",
+      "textNodeIndex": 0,
+      "line": 1950,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.choice.a.title"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#choiceADesc",
+      "field": "text",
+      "text": "Adını koyma. Sadece fark et.",
+      "textNodeIndex": 0,
+      "line": 1951,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.choice.a.description"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#choiceBTitle",
+      "field": "text",
+      "text": "Her şey çok net",
+      "textNodeIndex": 0,
+      "line": 1966,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.choice.b.title"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#choiceBDesc",
+      "field": "text",
+      "text": "Bir cümleyle söyleyebiliyorsan tamam.",
+      "textNodeIndex": 0,
+      "line": 1967,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.choice.b.description"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#choiceCTitle",
+      "field": "text",
+      "text": "Zordu bugün",
+      "textNodeIndex": 0,
+      "line": 1982,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.choice.c.title"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#choiceCDesc",
+      "field": "text",
+      "text": "zorluklar olgunlaşma için gereklidir",
+      "textNodeIndex": 0,
+      "line": 1983,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.choice.c.description"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5)",
+      "field": "aria-label",
+      "text": "Renk seçimi, opsiyonel",
+      "textNodeIndex": null,
+      "line": 1989,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.colors.label"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(1)",
+      "field": "aria-label",
+      "text": "Lacivert",
+      "textNodeIndex": null,
+      "line": 1990,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.navy"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(1)",
+      "field": "title",
+      "text": "Lacivert",
+      "textNodeIndex": null,
+      "line": 1990,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.navy"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(2)",
+      "field": "aria-label",
+      "text": "Turuncu",
+      "textNodeIndex": null,
+      "line": 1991,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.orange"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(2)",
+      "field": "title",
+      "text": "Turuncu",
+      "textNodeIndex": null,
+      "line": 1991,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.orange"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(3)",
+      "field": "aria-label",
+      "text": "Kırmızı",
+      "textNodeIndex": null,
+      "line": 1992,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.red"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(3)",
+      "field": "title",
+      "text": "Kırmızı",
+      "textNodeIndex": null,
+      "line": 1992,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.red"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(4)",
+      "field": "aria-label",
+      "text": "Mavi",
+      "textNodeIndex": null,
+      "line": 1993,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.blue"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(4)",
+      "field": "title",
+      "text": "Mavi",
+      "textNodeIndex": null,
+      "line": 1993,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.blue"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(5)",
+      "field": "aria-label",
+      "text": "Sarı",
+      "textNodeIndex": null,
+      "line": 1994,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.yellow"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(5)",
+      "field": "title",
+      "text": "Sarı",
+      "textNodeIndex": null,
+      "line": 1994,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.yellow"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(6)",
+      "field": "aria-label",
+      "text": "Yeşil",
+      "textNodeIndex": null,
+      "line": 1995,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.green"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(6)",
+      "field": "title",
+      "text": "Yeşil",
+      "textNodeIndex": null,
+      "line": 1995,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.green"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(7)",
+      "field": "aria-label",
+      "text": "Derin",
+      "textNodeIndex": null,
+      "line": 1996,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.deep"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(7)",
+      "field": "title",
+      "text": "Derin",
+      "textNodeIndex": null,
+      "line": 1996,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.deep"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(8)",
+      "field": "aria-label",
+      "text": "Pembe",
+      "textNodeIndex": null,
+      "line": 1997,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.pink"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(8)",
+      "field": "title",
+      "text": "Pembe",
+      "textNodeIndex": null,
+      "line": 1997,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.pink"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(9)",
+      "field": "aria-label",
+      "text": "Mor",
+      "textNodeIndex": null,
+      "line": 1998,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.purple"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(9)",
+      "field": "title",
+      "text": "Mor",
+      "textNodeIndex": null,
+      "line": 1998,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.purple"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(10)",
+      "field": "aria-label",
+      "text": "Turkuaz",
+      "textNodeIndex": null,
+      "line": 1999,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.teal"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(10)",
+      "field": "title",
+      "text": "Turkuaz",
+      "textNodeIndex": null,
+      "line": 1999,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.teal"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(11)",
+      "field": "aria-label",
+      "text": "Nane",
+      "textNodeIndex": null,
+      "line": 2000,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.mint"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(11)",
+      "field": "title",
+      "text": "Nane",
+      "textNodeIndex": null,
+      "line": 2000,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.mint"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(12)",
+      "field": "aria-label",
+      "text": "Gri",
+      "textNodeIndex": null,
+      "line": 2001,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.gray"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(5) > button:nth-child(12)",
+      "field": "title",
+      "text": "Gri",
+      "textNodeIndex": null,
+      "line": 2001,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "color.gray"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(6)",
+      "field": "text",
+      "text": "Renk seçmek zorunlu değil.",
+      "textNodeIndex": 0,
+      "line": 2003,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.colors.optional"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > div:nth-child(7) > label:nth-child(1)",
+      "field": "text",
+      "text": "Not (opsiyonel)",
+      "textNodeIndex": 0,
+      "line": 2007,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.note.label"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#note",
+      "field": "placeholder",
+      "text": "Bugünden küçük bir not…",
+      "textNodeIndex": null,
+      "line": 2008,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.note.placeholder"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#btnResetToday",
+      "field": "text",
+      "text": "Bugünü sıfırla",
+      "textNodeIndex": 0,
+      "line": 2012,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "core.resetToday"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9)",
+      "field": "aria-label",
+      "text": "Today ana modülleri",
+      "textNodeIndex": null,
+      "line": 2015,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "navigation.label"
+      ]
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(1)",
+      "field": "aria-label",
+      "text": "Today Core",
+      "textNodeIndex": null,
+      "line": 2016,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(1) > span:nth-child(2)",
+      "field": "text",
+      "text": "Core",
+      "textNodeIndex": 0,
+      "line": 2024,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(2)",
+      "field": "aria-label",
+      "text": "Today Health",
+      "textNodeIndex": null,
+      "line": 2027,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(2) > span:nth-child(2)",
+      "field": "text",
+      "text": "Health",
+      "textNodeIndex": 0,
+      "line": 2034,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(3)",
+      "field": "aria-label",
+      "text": "Today Sky",
+      "textNodeIndex": null,
+      "line": 2037,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(3) > span:nth-child(2)",
+      "field": "text",
+      "text": "Sky",
+      "textNodeIndex": 0,
+      "line": 2044,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(4)",
+      "field": "aria-label",
+      "text": "Today Radio",
+      "textNodeIndex": null,
+      "line": 2046,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "pick",
+      "anchor": "#appContent > div:nth-child(4) > nav:nth-child(9) > button:nth-child(4) > span:nth-child(2)",
+      "field": "text",
+      "text": "Radio",
+      "textNodeIndex": 0,
+      "line": 2046,
+      "classification": "brand-label",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnBackToPick",
+      "field": "aria-label",
+      "text": "Today Core'a dön",
+      "textNodeIndex": null,
+      "line": 2709,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "calendar.backCore"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#calPill",
+      "field": "text",
+      "text": "Takvim",
+      "textNodeIndex": 0,
+      "line": 2719,
+      "classification": "dynamic-bound-tr",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnStats",
+      "field": "aria-label",
+      "text": "İstatistiği aç",
+      "textNodeIndex": null,
+      "line": 2722,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "calendar.openStatistics"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#calHint",
+      "field": "text",
+      "text": "Sadece bu ay görünür.",
+      "textNodeIndex": 0,
+      "line": 2736,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "calendar.currentMonth"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnOpenStats",
+      "field": "text",
+      "text": "İstatistik",
+      "textNodeIndex": 0,
+      "line": 2754,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnOpenSettings",
+      "field": "text",
+      "text": "Ayarlar",
+      "textNodeIndex": 0,
+      "line": 2763,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "settings.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsHead > span:nth-child(1)",
+      "field": "text",
+      "text": "İstatistik",
+      "textNodeIndex": 0,
+      "line": 2778,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#chartLabel",
+      "field": "text",
+      "text": "Gün içi giriş ritmi (00:00 → 23:59)",
+      "textNodeIndex": 0,
+      "line": 2783,
+      "classification": "dynamic-bound-tr",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#chartMini",
+      "field": "text",
+      "text": "Soldan sağa: gün akışı. Aşağıdan yukarı: biriken ivme.",
+      "textNodeIndex": 0,
+      "line": 2802,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.chartHint"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#chartSummary",
+      "field": "text",
+      "text": "Grafik verisi hazırlanıyor.",
+      "textNodeIndex": 0,
+      "line": 2805,
+      "classification": "transient-fallback",
+      "owner": "I18N02",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5)",
+      "field": "aria-label",
+      "text": "Grafik zaman aralığı",
+      "textNodeIndex": null,
+      "line": 2807,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.range"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(1)",
+      "field": "aria-label",
+      "text": "Saatlik grafik",
+      "textNodeIndex": null,
+      "line": 2808,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.hour.aria"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(1)",
+      "field": "title",
+      "text": "Saat",
+      "textNodeIndex": null,
+      "line": 2808,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.mode.hour.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(2)",
+      "field": "aria-label",
+      "text": "Son 7 gün grafiği",
+      "textNodeIndex": null,
+      "line": 2809,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.day.aria"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(2)",
+      "field": "title",
+      "text": "Gün",
+      "textNodeIndex": null,
+      "line": 2809,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.mode.day.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(3)",
+      "field": "aria-label",
+      "text": "Son 4 hafta grafiği",
+      "textNodeIndex": null,
+      "line": 2810,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.week.aria"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(3)",
+      "field": "title",
+      "text": "Hafta",
+      "textNodeIndex": null,
+      "line": 2810,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.mode.week.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(4)",
+      "field": "aria-label",
+      "text": "Son 12 ay grafiği",
+      "textNodeIndex": null,
+      "line": 2811,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.month.aria"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(1) > div:nth-child(5) > button:nth-child(4)",
+      "field": "title",
+      "text": "Ay",
+      "textNodeIndex": null,
+      "line": 2811,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.mode.month.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accSummaryHead > span:nth-child(1)",
+      "field": "text",
+      "text": "Özet",
+      "textNodeIndex": 0,
+      "line": 2824,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.summary"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnExport",
+      "field": "text",
+      "text": "CSV indir",
+      "textNodeIndex": 0,
+      "line": 2832,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.export"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnClearTodayLogs",
+      "field": "text",
+      "text": "Bugün loglarını temizle",
+      "textNodeIndex": 0,
+      "line": 2833,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.clearTodayLogs"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accStatsBody > div:nth-child(4)",
+      "field": "text",
+      "text": "Not: “değişim logları” sadece bugün görünür, yarına kalmaz (ama veri saklanır).",
+      "textNodeIndex": 0,
+      "line": 2836,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "statistics.logsNotice"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accSettingsHead > span:nth-child(1)",
+      "field": "text",
+      "text": "Ayarlar",
+      "textNodeIndex": 0,
+      "line": 2852,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "settings.title"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accSettingsBody > div:nth-child(1) > label:nth-child(1)",
+      "field": "text",
+      "text": "Tema",
+      "textNodeIndex": 0,
+      "line": 2857,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "settings.theme"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#themeSelect > option:nth-child(1)",
+      "field": "text",
+      "text": "Varsayılan",
+      "textNodeIndex": 0,
+      "line": 2859,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "theme.system"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#themeSelect > option:nth-child(2)",
+      "field": "text",
+      "text": "Açık",
+      "textNodeIndex": 0,
+      "line": 2860,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "theme.light"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#themeSelect > option:nth-child(3)",
+      "field": "text",
+      "text": "Koyu",
+      "textNodeIndex": 0,
+      "line": 2861,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "theme.dark"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#themeSelect > option:nth-child(4)",
+      "field": "text",
+      "text": "Kontrastlı",
+      "textNodeIndex": 0,
+      "line": 2862,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "theme.contrast"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#accSettingsBody > div:nth-child(2)",
+      "field": "text",
+      "text": "Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur.",
+      "textNodeIndex": 0,
+      "line": 2866,
+      "classification": "bound",
+      "owner": "I18N02",
+      "keys": [
+        "settings.storage"
+      ]
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextTitle",
+      "field": "text",
+      "text": "Kişisel öneri",
+      "textNodeIndex": 0,
+      "line": 2875,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > p:nth-child(2)",
+      "field": "text",
+      "text": "Amaç:",
+      "textNodeIndex": 0,
+      "line": 2876,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > p:nth-child(2)",
+      "field": "text",
+      "text": ". Hangi bilgilerin\n                kullanılacağını sen seçersin; seçimlerin kaydedilmez.",
+      "textNodeIndex": 2,
+      "line": 2877,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(1) > legend:nth-child(1)",
+      "field": "text",
+      "text": "Günlük kayıtlar",
+      "textNodeIndex": 0,
+      "line": 2883,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(1) > label:nth-child(2)",
+      "field": "text",
+      "text": "Günlük seçim",
+      "textNodeIndex": 2,
+      "line": 2890,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(1) > label:nth-child(3)",
+      "field": "text",
+      "text": "Günlük renk",
+      "textNodeIndex": 2,
+      "line": 2899,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(1) > label:nth-child(4)",
+      "field": "text",
+      "text": "Günlük not metni",
+      "textNodeIndex": 2,
+      "line": 2907,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > legend:nth-child(1)",
+      "field": "text",
+      "text": "Sağlık kayıtları",
+      "textNodeIndex": 0,
+      "line": 2913,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(2)",
+      "field": "text",
+      "text": "Uyku",
+      "textNodeIndex": 2,
+      "line": 2920,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(3)",
+      "field": "text",
+      "text": "Enerji",
+      "textNodeIndex": 2,
+      "line": 2929,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(4)",
+      "field": "text",
+      "text": "Aktivite",
+      "textNodeIndex": 2,
+      "line": 2938,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(5)",
+      "field": "text",
+      "text": "Su kayıtları",
+      "textNodeIndex": 2,
+      "line": 2947,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(6)",
+      "field": "text",
+      "text": "Belirti kayıtları",
+      "textNodeIndex": 2,
+      "line": 2955,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(7)",
+      "field": "text",
+      "text": "Beslenme özeti",
+      "textNodeIndex": 2,
+      "line": 2963,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(8)",
+      "field": "text",
+      "text": "Kilo referansı",
+      "textNodeIndex": 2,
+      "line": 2971,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(2) > label:nth-child(9)",
+      "field": "text",
+      "text": "Sağlık not metinleri",
+      "textNodeIndex": 2,
+      "line": 2975,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(3) > legend:nth-child(1)",
+      "field": "text",
+      "text": "Sky (sembolik)",
+      "textNodeIndex": 0,
+      "line": 2981,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(3) > label:nth-child(2)",
+      "field": "text",
+      "text": "İsteğe bağlı Sky özeti",
+      "textNodeIndex": 2,
+      "line": 2987,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > div:nth-child(3) > fieldset:nth-child(3) > p:nth-child(3)",
+      "field": "text",
+      "text": "Varsayılan olarak kapalıdır. Yalnız kullanıcının bağladığı,\n                    yorumsuz sembolik kayıt alınır; sağlık veya duygunun nedeni\n                    sayılmaz.",
+      "textNodeIndex": 0,
+      "line": 2990,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPanel > label:nth-child(4)",
+      "field": "text",
+      "text": "Seçtiğim bilgilerin yalnız cihazımda ve yalnız bu işlem için\n                kullanılmasını onaylıyorum.",
+      "textNodeIndex": 2,
+      "line": 2999,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiContextPreview",
+      "field": "text",
+      "text": "Seçimi önizle",
+      "textNodeIndex": 0,
+      "line": 3005,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiContextClear",
+      "field": "text",
+      "text": "Temizle",
+      "textNodeIndex": 0,
+      "line": 3008,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPreviewTitle",
+      "field": "text",
+      "text": "Kullanılacak bilgiler",
+      "textNodeIndex": 0,
+      "line": 3027,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiContextPreview > p:nth-child(5)",
+      "field": "text",
+      "text": "Henüz öneri veya başka bir işlem oluşturulmadı. Bilgiler\n                  cihazından çıkarılmadı.",
+      "textNodeIndex": 0,
+      "line": 3031,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisRequest > p:nth-child(1)",
+      "field": "text",
+      "text": "Bugünkü öneriye bak; günlük seçim, uyku ve enerji kayıtlarını\n                  değerlendirir. “Zordu bugün” ile kısa uyku ya da düşük enerji\n                  ve fazla yorgunluk aynı günde birlikteyse küçük bir öneri\n                  hazırlayabilir. Son 7 güne bak yalnız günlük seçim ile kısa\n                  uyku tekrarını inceler. Sky bu değerlendirmelerde kullanılmaz.",
+      "textNodeIndex": 0,
+      "line": 3038,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiAnalysis",
+      "field": "text",
+      "text": "Bugünkü öneriye bak",
+      "textNodeIndex": 0,
+      "line": 3046,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiPattern",
+      "field": "text",
+      "text": "Son 7 güne bak",
+      "textNodeIndex": 0,
+      "line": 3049,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiRuleEvaluationTitle",
+      "field": "text",
+      "text": "Neden öneri oluşmadı?",
+      "textNodeIndex": 0,
+      "line": 3065,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisTitle",
+      "field": "text",
+      "text": "Bugün için küçük bir öneri",
+      "textNodeIndex": 0,
+      "line": 3077,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisOutput > h5:nth-child(4)",
+      "field": "text",
+      "text": "Neye dayanıyor?",
+      "textNodeIndex": 0,
+      "line": 3081,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisOutput > p:nth-child(6) > strong:nth-child(1)",
+      "field": "text",
+      "text": "Güven düzeyi:",
+      "textNodeIndex": 0,
+      "line": 3085,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisOutput > details:nth-child(7) > summary:nth-child(1)",
+      "field": "text",
+      "text": "Aklında olsun",
+      "textNodeIndex": 0,
+      "line": 3090,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisOutput > details:nth-child(8) > summary:nth-child(1)",
+      "field": "text",
+      "text": "Diğer seçenekler",
+      "textNodeIndex": 0,
+      "line": 3095,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiApprove",
+      "field": "text",
+      "text": "Onayla",
+      "textNodeIndex": 0,
+      "line": 3113,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiReject",
+      "field": "text",
+      "text": "Reddet",
+      "textNodeIndex": 0,
+      "line": 3116,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiEdit",
+      "field": "text",
+      "text": "Düzenle",
+      "textNodeIndex": 0,
+      "line": 3119,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiEditPanel > label:nth-child(1)",
+      "field": "text",
+      "text": "Hatırlatma saati",
+      "textNodeIndex": 0,
+      "line": 3124,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiEditSave",
+      "field": "text",
+      "text": "Yeni taslağı hazırla",
+      "textNodeIndex": 0,
+      "line": 3127,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#btnAiEditCancel",
+      "field": "text",
+      "text": "Vazgeç",
+      "textNodeIndex": 0,
+      "line": 3130,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiDecisionReceipt > summary:nth-child(1)",
+      "field": "text",
+      "text": "Karar geçmişi",
+      "textNodeIndex": 0,
+      "line": 3146,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiDecisionReceipt > p:nth-child(3)",
+      "field": "text",
+      "text": "Bu geçmiş yalnız bu ekran açıkken tutulur.",
+      "textNodeIndex": 0,
+      "line": 3148,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiAnalysisOutput > p:nth-child(11)",
+      "field": "text",
+      "text": "Kararın yalnız bu ekranda tutulur. Bu aşamada hatırlatıcı\n                  oluşturulmaz ve cihaz dışına bilgi gönderilmez.",
+      "textNodeIndex": 0,
+      "line": 3155,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternTitle",
+      "field": "text",
+      "text": "Son 7 günde gördüğüm tekrar",
+      "textNodeIndex": 0,
+      "line": 3167,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternOutput > h5:nth-child(3)",
+      "field": "text",
+      "text": "Neye dayanıyor?",
+      "textNodeIndex": 0,
+      "line": 3170,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternOutput > p:nth-child(5) > strong:nth-child(1)",
+      "field": "text",
+      "text": "Gözlem gücü:",
+      "textNodeIndex": 0,
+      "line": 3174,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternOutput > details:nth-child(6) > summary:nth-child(1)",
+      "field": "text",
+      "text": "Aklında olsun",
+      "textNodeIndex": 0,
+      "line": 3179,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternOutput > details:nth-child(7) > summary:nth-child(1)",
+      "field": "text",
+      "text": "Seçeneklerin",
+      "textNodeIndex": 0,
+      "line": 3184,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternOutput > div:nth-child(10) > p:nth-child(1) > strong:nth-child(1)",
+      "field": "text",
+      "text": "Bu gözlem sana uyuyor mu?",
+      "textNodeIndex": 0,
+      "line": 3192,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternFeedbackControls > button:nth-child(1)",
+      "field": "text",
+      "text": "Bana uyuyor",
+      "textNodeIndex": 0,
+      "line": 3203,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternFeedbackControls > button:nth-child(2)",
+      "field": "text",
+      "text": "Bana uymuyor",
+      "textNodeIndex": 0,
+      "line": 3211,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternFeedbackControls > button:nth-child(3)",
+      "field": "text",
+      "text": "Emin değilim",
+      "textNodeIndex": 0,
+      "line": 3219,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    },
+    {
+      "view": "calendar",
+      "anchor": "#aiPatternOutput > p:nth-child(11)",
+      "field": "text",
+      "text": "Bu gözlem ve seçimin yalnız bu ekranda tutulur. Gözlem\n                  değiştirilmez, herhangi bir işlem başlatılmaz ve cihaz\n                  dışına bilgi gönderilmez.",
+      "textNodeIndex": 0,
+      "line": 3231,
+      "classification": "delegated",
+      "owner": "I18N06-AI",
+      "keys": []
+    }
+  ],
+  "producerGroups": [
+    {
+      "surface": "Core status messages",
+      "status": "bound-tr",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "coreMessage(\"core.saved\"",
+          "occurrences": [
+            {
+              "line": 3810,
+              "lineText": "        ? coreMessage(\"core.saved\", \"Kaydedildi.\")"
+            }
+          ]
+        },
+        {
+          "file": "modules/core-static-copy-ui.mjs",
+          "literal": "'core.noteFailed'",
+          "occurrences": [
+            {
+              "line": 9,
+              "lineText": "  'core.noteFailed', 'core.todayCleared', 'core.changeFailed'];"
+            }
+          ]
+        }
+      ],
+      "decision": "Seven source messages are bound; preserve save outcome guards and drafts."
+    },
+    {
+      "surface": "Calendar title and weekday names",
+      "status": "bound-tr",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "window.TodayCalendarCopy?.weekdays",
+          "occurrences": [
+            {
+              "line": 3983,
+              "lineText": "    ].map((labels, index) => window.TodayCalendarCopy?.weekdays?.[index] || labels).forEach(([shortName, fullName])=>{"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "window.TodayCalendarCopy?.title",
+          "occurrences": [
+            {
+              "line": 3965,
+              "lineText": "    $(\"#calPill\").textContent = window.TodayCalendarCopy?.title || \"Takvim\";"
+            }
+          ]
+        }
+      ],
+      "decision": "Current TR presentation is wired; English readiness is separate."
+    },
+    {
+      "surface": "Core date and month title locale",
+      "status": "partial-tr-locale",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "modules/core-static-copy-ui.mjs",
+          "literal": "date.toLocaleDateString('tr-TR', options[kind])",
+          "occurrences": [
+            {
+              "line": 40,
+              "lineText": "        return date.toLocaleDateString('tr-TR', options[kind]);"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "calendarDate(parseKey(k), \"core\", prettyTR(k))",
+          "occurrences": [
+            {
+              "line": 4440,
+              "lineText": "        calendarDate(parseKey(k), \"core\", prettyTR(k));"
+            }
+          ]
+        }
+      ],
+      "decision": "Provider still fixes tr-TR. A future locale adapter must preserve local dates, day keys and current options."
+    },
+    {
+      "surface": "Calendar accessible full date",
+      "status": "unbound-date-locale",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "const dateLabel = dt.toLocaleDateString(\"tr-TR\", {",
+          "occurrences": [
+            {
+              "line": 4020,
+              "lineText": "      const dateLabel = dt.toLocaleDateString(\"tr-TR\", {"
+            }
+          ]
+        }
+      ],
+      "decision": "Route through presentation locale without changing date comparisons or editability."
+    },
+    {
+      "surface": "Choice and color labels in calendar and summary",
+      "status": "partial-shared-data-helper",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "const choiceLabelTR =",
+          "occurrences": [
+            {
+              "line": 4180,
+              "lineText": "  const choiceLabelTR = (c) => ({"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "const colorLabelTR =",
+          "occurrences": [
+            {
+              "line": 4186,
+              "lineText": "  const colorLabelTR = (c) => ({"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "recordParts.push(choiceLabelTR(d.choice))",
+          "occurrences": [
+            {
+              "line": 4028,
+              "lineText": "      if(d && d.choice) recordParts.push(choiceLabelTR(d.choice));"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "window.TodayStatisticsCopy?.summary?.(choiceLabelTR(top[0])",
+          "occurrences": [
+            {
+              "line": 4218,
+              "lineText": "      ? statisticsText(window.TodayStatisticsCopy?.summary?.(choiceLabelTR(top[0]), top[1]),"
+            }
+          ]
+        }
+      ],
+      "decision": "Next small implementation: readonly UI label adapter for known IDs; leave CSV helper and stored IDs unchanged; unknown IDs must not invent records."
+    },
+    {
+      "surface": "Statistics templates and chart",
+      "status": "bound-tr-with-label-gap",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "window.TodayStatisticsCopy?.chartSummary",
+          "occurrences": [
+            {
+              "line": 4413,
+              "lineText": "      window.TodayStatisticsCopy?.chartSummary?.($(\"#chartLabel\").textContent, total),"
+            }
+          ]
+        },
+        {
+          "file": "modules/core-static-copy-ui.mjs",
+          "literal": "'statistics.summary.most'",
+          "occurrences": [
+            {
+              "line": 55,
+              "lineText": "        return fill(CORE_TR['statistics.summary.most'] || 'Son 7 günde en çok: “{choice}” ({count} kez)', { choice, count });"
+            }
+          ]
+        }
+      ],
+      "decision": "Templates are wired; the choice parameter still comes from shared TR helper."
+    },
+    {
+      "surface": "Initial accessible chart placeholder",
+      "status": "unbound-transient-fallback",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "id=\"chartSummary\">Grafik verisi hazırlanıyor.",
+          "occurrences": [
+            {
+              "line": 2805,
+              "lineText": "              <div class=\"visuallyHidden\" id=\"chartSummary\">Grafik verisi hazırlanıyor.</div>"
+            }
+          ]
+        }
+      ],
+      "decision": "Track fallback separately from renderer output. Do not claim a current runtime fault; active render replaces it."
+    },
+    {
+      "surface": "Build metadata label",
+      "status": "unbound-metadata-label",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "`build: ${versionInfo.appVersion}`",
+          "occurrences": [
+            {
+              "line": 4471,
+              "lineText": "  `build: ${versionInfo.appVersion}`;"
+            }
+          ]
+        }
+      ],
+      "decision": "If localized, change only label/template. Version value is metadata and remains exact."
+    },
+    {
+      "surface": "Core bottom module names",
+      "status": "unbound-brand-labels",
+      "owner": "I18N02-shared-navigation",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "data-open-module=\"health\"",
+          "occurrences": [
+            {
+              "line": 2030,
+              "lineText": "    data-open-module=\"health\""
+            },
+            {
+              "line": 2611,
+              "lineText": "      data-open-module=\"health\""
+            },
+            {
+              "line": 2680,
+              "lineText": "      data-open-module=\"health\""
+            }
+          ]
+        }
+      ],
+      "decision": "Eight Core nav fields use product names. Reuse agreed canonical brand names; not eight missing Turkish translations and not proof of language coverage."
+    },
+    {
+      "surface": "Module Health description",
+      "status": "delegated-runtime-owner",
+      "owner": "I18N03",
+      "evidence": [
+        {
+          "file": "modules/core-static-copy.mjs",
+          "literal": "if (name !== 'health')",
+          "occurrences": [
+            {
+              "line": 40,
+              "lineText": "    if (name !== 'health') entries.push([`#module${id}Desc`, `modules.${name}.description`, 'text']);"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "id=\"moduleHealthDesc\"",
+          "occurrences": [
+            {
+              "line": 1870,
+              "lineText": "        <small id=\"moduleHealthDesc\">Beslenme, su ve yaşam</small>"
+            }
+          ]
+        },
+        {
+          "file": "modules/health-hub.js",
+          "literal": "moduleDescription.textContent = \"Beslenme, spor ve yaşam\";",
+          "occurrences": [
+            {
+              "line": 5536,
+              "lineText": "      moduleDescription.textContent = \"Beslenme, spor ve yaşam\";"
+            }
+          ]
+        }
+      ],
+      "decision": "HTML/catalog source says Beslenme, su ve yaşam; HealthHub writes Beslenme, spor ve yaşam. Static literal evidence is not runtime translation coverage."
+    },
+    {
+      "surface": "Nested AI panel in settings",
+      "status": "delegated",
+      "owner": "I18N06",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "id=\"aiContextPanel\"",
+          "occurrences": [
+            {
+              "line": 2872,
+              "lineText": "              id=\"aiContextPanel\""
+            }
+          ]
+        }
+      ],
+      "decision": "The 52 candidate fields inside this panel belong to AI scope. Do not call the entire settings screen translated from shared Core bindings."
+    },
+    {
+      "surface": "Startup, central error and update surfaces",
+      "status": "bound-tr-with-early-fallback",
+      "owner": "I18N02",
+      "evidence": [
+        {
+          "file": "modules/core-static-copy-ui.mjs",
+          "literal": "'TodayStartupCopy'",
+          "occurrences": [
+            {
+              "line": 66,
+              "lineText": "if (!Object.hasOwn(window, 'TodayStartupCopy')) {"
+            },
+            {
+              "line": 67,
+              "lineText": "  Object.defineProperty(window, 'TodayStartupCopy', {"
+            }
+          ]
+        },
+        {
+          "file": "modules/core-static-copy-ui.mjs",
+          "literal": "'TodayErrorCopy'",
+          "occurrences": [
+            {
+              "line": 76,
+              "lineText": "if (!Object.hasOwn(window, 'TodayErrorCopy')) {"
+            },
+            {
+              "line": 131,
+              "lineText": "  Object.defineProperty(window, 'TodayErrorCopy', {"
+            }
+          ]
+        },
+        {
+          "file": "modules/core-static-copy-ui.mjs",
+          "literal": "'TodayUpdateCopy'",
+          "occurrences": [
+            {
+              "line": 141,
+              "lineText": "if (!Object.hasOwn(window, 'TodayUpdateCopy')) {"
+            },
+            {
+              "line": 142,
+              "lineText": "  Object.defineProperty(window, 'TodayUpdateCopy', {"
+            }
+          ]
+        }
+      ],
+      "decision": "TR is wired. Early errors can precede ESM; preserve independent safe fallback. Records, diagnostics and recovery actions are not translated."
+    },
+    {
+      "surface": "CSV export data contract",
+      "status": "protected-data-contract",
+      "owner": "existing-export",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "rows.push([\"Tarih\",\"Seçim\",\"Renk\",\"Not\"].join(\";\"))",
+          "occurrences": [
+            {
+              "line": 4242,
+              "lineText": "    rows.push([\"Tarih\",\"Seçim\",\"Renk\",\"Not\"].join(\";\"));"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "const sel = choiceLabelTR(d.choice)",
+          "occurrences": [
+            {
+              "line": 4247,
+              "lineText": "      const sel = choiceLabelTR(d.choice) || \"\";"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "const col = colorLabelTR(d.color)",
+          "occurrences": [
+            {
+              "line": 4248,
+              "lineText": "      const col = colorLabelTR(d.color) || \"\";"
+            }
+          ]
+        }
+      ],
+      "decision": "Do not change current header, filename, labels, filtering or escaping in UI language work. No new localized export feature is authorized."
+    },
+    {
+      "surface": "Stored change log and user notes",
+      "status": "protected-user-data",
+      "owner": "existing-Core-storage",
+      "evidence": [
+        {
+          "file": "index.html",
+          "literal": "logChange(k, `Seçim: ${d.choice}`)",
+          "occurrences": [
+            {
+              "line": 3805,
+              "lineText": "      logChange(k, `Seçim: ${d.choice}`);"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "logChange(k, `Renk: ${d.color}`)",
+          "occurrences": [
+            {
+              "line": 3864,
+              "lineText": "      logChange(k, `Renk: ${d.color}`);"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "logChange(k, \"Not güncellendi\")",
+          "occurrences": [
+            {
+              "line": 3888,
+              "lineText": "      logChange(k, \"Not güncellendi\");"
+            }
+          ]
+        },
+        {
+          "file": "index.html",
+          "literal": "$(\"#note\").value = pendingNotes.get(k)?.text",
+          "occurrences": [
+            {
+              "line": 3736,
+              "lineText": "    $(\"#note\").value = pendingNotes.get(k)?.text ?? (d.note || \"\");"
+            }
+          ]
+        }
+      ],
+      "decision": "Stored what strings, note contents, record IDs and dates remain intact. No migration, reinterpretation or automatic translation."
+    }
+  ],
+  "english": {
+    "availableLanguages": [
+      "tr"
+    ],
+    "releaseReady": false,
+    "catalogEntries": 133,
+    "unreviewedDraftKeys": [
+      "home.title",
+      "home.start",
+      "home.privacy",
+      "modules.label",
+      "modules.core.title",
+      "modules.core.description",
+      "modules.health.title",
+      "modules.health.description",
+      "modules.sky.title",
+      "modules.sky.description",
+      "modules.radio.title",
+      "modules.radio.description",
+      "core.openCalendar",
+      "core.question",
+      "core.choice.a.title",
+      "core.choice.a.description",
+      "core.choice.b.title",
+      "core.choice.b.description",
+      "core.choice.c.title",
+      "core.choice.c.description",
+      "core.colors.label",
+      "core.colors.optional",
+      "color.navy",
+      "color.orange",
+      "color.red",
+      "color.blue",
+      "color.yellow",
+      "color.green",
+      "color.deep",
+      "core.note.label",
+      "core.note.placeholder",
+      "core.resetToday",
+      "navigation.label",
+      "calendar.title",
+      "calendar.backCore",
+      "calendar.openStatistics",
+      "calendar.currentMonth",
+      "statistics.title",
+      "settings.title",
+      "settings.theme",
+      "theme.system",
+      "theme.light",
+      "theme.dark",
+      "theme.contrast",
+      "settings.storage",
+      "statistics.hour",
+      "statistics.day",
+      "statistics.week",
+      "statistics.month",
+      "statistics.chartHint",
+      "statistics.loading",
+      "statistics.range",
+      "statistics.hour.aria",
+      "statistics.day.aria",
+      "statistics.week.aria",
+      "statistics.month.aria",
+      "statistics.summary",
+      "statistics.export",
+      "statistics.clearTodayLogs",
+      "core.readOnly",
+      "core.saved",
+      "core.colorSaved",
+      "core.noteSaved",
+      "core.todayCleared",
+      "startup.failed",
+      "common.retry"
+    ],
+    "untranslatedKeys": [
+      "modules.returnCore",
+      "core.openModules",
+      "core.modulesHint",
+      "color.pink",
+      "color.purple",
+      "color.teal",
+      "color.mint",
+      "color.gray",
+      "core.noteFailed",
+      "statistics.mode.hour.title",
+      "statistics.mode.day.title",
+      "statistics.mode.week.title",
+      "statistics.mode.month.title",
+      "statistics.logsNotice",
+      "core.changeFailed",
+      "calendar.weekday.mon.short",
+      "calendar.weekday.mon.full",
+      "calendar.weekday.tue.short",
+      "calendar.weekday.tue.full",
+      "calendar.weekday.wed.short",
+      "calendar.weekday.wed.full",
+      "calendar.weekday.thu.short",
+      "calendar.weekday.thu.full",
+      "calendar.weekday.fri.short",
+      "calendar.weekday.fri.full",
+      "calendar.weekday.sat.short",
+      "calendar.weekday.sat.full",
+      "calendar.weekday.sun.short",
+      "calendar.weekday.sun.full",
+      "calendar.day.past",
+      "calendar.day.future",
+      "calendar.day.today",
+      "calendar.day.noRecord",
+      "calendar.day.hasNote",
+      "calendar.day.color",
+      "calendar.day.editHint",
+      "calendar.day.aria",
+      "statistics.summary.empty",
+      "statistics.summary.most",
+      "statistics.chart.accessible",
+      "startup.managerFailed",
+      "startup.moduleFailed",
+      "startup.migrationFailed",
+      "startup.code",
+      "error.message.startup",
+      "error.message.route",
+      "error.message.history",
+      "error.message.module",
+      "error.message.state",
+      "error.message.migration",
+      "error.message.offline",
+      "error.message.update",
+      "error.message.ai",
+      "error.message.connect",
+      "error.message.resource",
+      "error.message.unexpected",
+      "error.message.promise",
+      "error.home",
+      "error.ok",
+      "error.close",
+      "error.code",
+      "update.title",
+      "update.ready",
+      "update.apply",
+      "update.later",
+      "update.applying",
+      "update.applyingButton"
+    ],
+    "reviewedTranslations": 0,
+    "parameterizedEntries": [
+      {
+        "key": "calendar.day.color",
+        "parameters": [
+          "color"
+        ]
+      },
+      {
+        "key": "calendar.day.aria",
+        "parameters": [
+          "date",
+          "relation",
+          "record",
+          "hint"
+        ]
+      },
+      {
+        "key": "statistics.summary.most",
+        "parameters": [
+          "choice",
+          "count"
+        ]
+      },
+      {
+        "key": "statistics.chart.accessible",
+        "parameters": [
+          "title",
+          "total"
+        ]
+      },
+      {
+        "key": "startup.code",
+        "parameters": [
+          "code"
+        ]
+      },
+      {
+        "key": "error.code",
+        "parameters": [
+          "code"
+        ]
+      }
+    ]
+  },
+  "nextImplementation": "Presentation-only choice/color label adapter in calendar aria and statistics summary; preserve existing Turkish CSV and all storage/IDs.",
+  "notAuthorizedByThisInventory": [
+    "Enable English or persist language preference",
+    "Change storage keys, schema, migration, CSV or notes",
+    "Commit, push, PR writes, merge, deploy or CI rerun"
+  ]
+}

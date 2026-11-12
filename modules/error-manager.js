@@ -554,6 +554,17 @@
   }
 
   function showNotice(record) {
+    // Copy lookup must never interfere with synchronous error handling.
+    const copyValue = (group, key, fallback) => {
+      try {
+        const values = targetWindow.TodayErrorCopy?.[group];
+        const value = values && Object.hasOwn(values, key) ? values[key] : null;
+        return typeof value === "string" && value.trim() ? value : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    };
+
     if (!record.userVisible) {
       return false;
     }
@@ -592,21 +603,22 @@
     }
 
     currentNoticeId = record.id;
-    text.textContent = record.userMessage;
-    code.textContent =
-      `Hata kodu: ${record.code}`;
+    text.textContent = copyValue("messages", record.userMessage, record.userMessage);
+    const codeTemplate = copyValue("labels", "error.code", "Hata kodu: {code}");
+    code.textContent = (codeTemplate.includes("{code}") ? codeTemplate : "Hata kodu: {code}")
+      .replace(/\{code\}/g, () => record.code);
     recoverButton.textContent =
       record.recovery === "home"
-        ? "Ana ekrana dön"
+        ? copyValue("labels", "error.home", "Ana ekrana dön")
         : record.recovery === "reload"
-          ? "Yeniden dene"
-          : "Tamam";
+          ? copyValue("labels", "common.retry", "Yeniden dene")
+          : copyValue("labels", "error.ok", "Tamam");
     recoverButton.hidden =
       record.recovery === "dismiss";
     dismissButton.textContent =
       record.recovery === "dismiss"
-        ? "Tamam"
-        : "Kapat";
+        ? copyValue("labels", "error.ok", "Tamam")
+        : copyValue("labels", "error.close", "Kapat");
     surface.setAttribute(
       "role",
       record.severity === "warning"

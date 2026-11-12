@@ -1,0 +1,11 @@
+# Canlı aday — geri yükleme önizleme doğrulayıcısı
+
+12 Kasım 2026, TSİ. Yerel dal `task/t90-261101-live-restore-preview`, HEAD `b57dbceb53eb6a9aacc3bde709b4de096b77e38f`; önceki103 kirli dosya ayrı worktree'de korunmuştur. Önceki SP02 salt okunur önizleme doğrulayıcısı ve Health/Sky/Core/Nutrition/legacy alt doğrulayıcıları güncel Radio tabanına taşındı. Kabul edilen uygulama sürümü eski2.20.2'den mevcut2.23.3'e dar biçimde güncellendi. Bu yeni eski sürüm desteği veya migration değildir.
+
+Güncel Health içindeki52 egzersiz kimliği ve10 alias, eski saf sport kataloğuyla birebir eşleşti. Bu saf katalog doğrulayıcının bağımlılığıdır; Health UI üreticisi değiştirilmedi. `tests/support/sky-restore-fixtures.mjs` yalnız sentetik test girdisidir.
+
+Önizleyici açık onaydan sonra şifreli dosyayı bellekte açar; kaynak/target yapısı, 23 anahtar, Nutrition3 store, Health/Sky/Core gün/ayar/kayıt semantiği, legacy arşivleri ve bildirim izinlerinin sıfırlanma adayını doğrular. Yalnız sayılar, fingerprint ve blokörler döndürür; `applyAvailable=false`, `restoreValidated=false`. Mevcut depoya yazma, silme, kullanıcı hesabı veya otomatik dış aktarım yoktur. Süreli önizleme hedef değişince geçersizleşir. Bu kod uygulama UI ve SW kabuğuna henüz bağlanmadı.
+
+Hedefli test **41/41 PASS**; iki gerçek tarayıcı motorunda Ayarlar→sentetik şifreli dosya→preview-only→yeniden hedef kontrolü **2/2 PASS**. İlk iki hedef denemesi eksik test fixture/katalog bağımlılıkları yüzünden test başlamadan durdu; bağımlılıklar eklendikten sonra geçiş doğrulandı. Kullanıcının gerçek verisi okunmadı. Tam `npm test` **1410/1410 PASS** (40 grup, exit0); kapsam audit kaynak103 dosya, yalnız17 amaçlanan dosya, index/SW/depolama değişmez ve temiz diff/staging. Kanıt `/workspace/.cache/today-evidence/restore-preview-20261112/platform.log`. Bu dilimde ayrı AI/Radio paketi tekrarlanmadı; önceki335/335 sonucu yeni sonuç sayılmaz.
+
+Bu çalışma **geri yükleme uygulaması değildir**. Kısmi işlem, eski/BFCache yazıcı, gerçek cihaz kota/kesinti, dosyanın kalıcı kaydı ve tam ürün restore kapıları açık. GitHub Pages2.23.3/082 canlı değişmedi; commit/push/PR/merge/deploy yok. Sıradaki küçük iş, güncel aday için apply/rollback sözleşmesini somutlaştırmak ve yalnız ayrı sentetik hedefte transactional restore denemek. Gerçek origin'e yazma için ayrıca kabul ve uygun kullanıcı onayı gerekir.

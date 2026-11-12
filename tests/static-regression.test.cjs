@@ -13,15 +13,15 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "77e2283d83790441bc2b2b62fe08e08dc78abd4aaa781e931ad85fc19c6f6450",
+    "ea3188cd8d7acb26c3b47709588a6811b5859344a49bed88ad4d1322148dab24",
   "sw.js":
-    "3e84639f37e5f6019d082534b66f1154a9221b7adb8316a7322540ecca8def6c",
+    "3259eced1ab8764815d5dc9dc461d0d5361774f26f4e47c1696632e03df90cc0",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
-    "705a8d5302c92810ca22de9b3ee5235e70348cee37780a77d46cf5a7a1a7b23f",
+    "a58bddcc987af902ce05718f68b1c2e03e2ed8d7ebd1a6474c4806e6bcd59fd2",
   "modules/startup-manager.js":
-    "4d11603fe9b8d71537e7788385cae5356b768b2462937f433e428840d7a4d8fd",
+    "054fc93946c437620cd3a5011b343f72541e7669491e9156c1282018fb06c96f",
   "modules/nutrition-contracts.js":
     "41fbd1b7dd61181b5c1ed997e109700562fdc55b03789709bbb06f5fce89f1a6",
   "modules/nutrition-calculations.js":
@@ -55,11 +55,11 @@ const expectedProductionHashes = {
   "state-manager.js":
     "e513c919ad4088f09a06d5890ce05578e955488254d6bf45af7ca54d5507d2d1",
   "router.js":
-    "1878a494c9885ed33650766bb98bbd62b1c1837d89ef639cbffac90aa67b1294",
+    "1e1e5983ba8292bf3a88f38b1ca034cceee6d8db9018d483c2853115b98790d4",
   "module-registry.js":
     "393d6cbfd275f94ffa8f0177291a0217f83d8ae3154dae7346e3d59668191fb4",
   "service-worker-manager.js":
-    "c42c5f1e13ccb58e062f1b05a736025a8fc1c5121759635847efbce768c6a75d"
+    "5444e7af03101053ed4a1357384ac8f20c947deb0caf4c7b5d9fdbebb76a4989"
 };
 
 const expectedHtmlIds = [
@@ -129,8 +129,10 @@ const expectedHtmlIds = [
   "btnAiPattern",
   "btnAiReject",
   "btnBackToPick",
+  "btnBackupLaunch",
   "btnCalendar",
   "btnClearTodayLogs",
+  "btnCoreFromModules",
   "btnExport",
   "btnHealthLibraryCancel",
   "btnHealthLibrarySave",
@@ -169,6 +171,7 @@ const expectedHtmlIds = [
   "choiceCDesc",
   "choiceCTitle",
   "choices",
+  "coreModulesHint",
   "fillGrad",
   "healthArchivedCount",
   "healthArchivedList",
@@ -351,14 +354,14 @@ test(
 );
 
 test(
-  "NUT-018 taban çizgisindeki 186 HTML kimliği benzersiz",
+  "NUT-018 taban çizgisindeki 189 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 186);
+    assert.equal(updatedIds.length, 189);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -449,6 +452,8 @@ test(
       "./modules/core-sky-link-ui.js",
       "./modules/sky-hub.js",
       "./modules/ai-context-source-adapters.js",
+      "./modules/core-static-copy-ui.mjs",
+      "./modules/backup-export-ui.mjs",
       "./modules/ai-context-ui.mjs",
       "./modules/health-wearable-ui.mjs",
       "./modules/notification-ui.mjs",
@@ -1234,7 +1239,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-082 ve 125 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-100 ve 141 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1246,7 +1251,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-082"'
+        'const VERSION = "today-v2-foundation-100"'
       )
     );
     assert.ok(shellMatch);
@@ -1256,7 +1261,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 125);
+    assert.equal(shellEntries.length, 141);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);

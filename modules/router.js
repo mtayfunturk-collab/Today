@@ -28,7 +28,7 @@
     modules: Object.freeze({
       name: "modules",
       view: "modules",
-      parent: "home",
+      parent: "pick",
       panel: null,
       focusSelector: null
     }),
@@ -36,7 +36,7 @@
     pick: Object.freeze({
       name: "pick",
       view: "pick",
-      parent: "modules",
+      parent: "home",
       panel: null,
       focusSelector: null
     }),

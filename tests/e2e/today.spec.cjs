@@ -23,6 +23,7 @@ async function open(page) {
 
 async function openModule(page, name) {
   await page.locator("#btnStart").click();
+  await page.locator("#btnHomeFromPick").click();
   await page.locator(`#btnModule${name}`).click();
 }
 
@@ -529,6 +530,17 @@ test('Radio playback starts only with publisher consent, survives module changes
   await page.locator('#radioStreamConsent').check();await page.locator('[data-radio-play]').click();
   await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');expect(streams.length).toBeGreaterThan(0);const loads=streams.length;
   expect(streams.every(h=>!h.referer&&!h.cookie)).toBe(true);
+  const copyContinuity = await page.evaluate(async () => {
+    const audio = window.__radioAudios[0];
+    const player = (await import('./modules/radio-player.mjs')).getRadioPlayer();
+    const before = player.getState();
+    const { applyCoreStaticCopy } = await import('./modules/core-static-copy.mjs');
+    applyCoreStaticCopy(document); applyCoreStaticCopy(document);
+    return { sameAudio: audio === window.__radioAudios[0], count: window.__radioAudios.length,
+      sameState: before === player.getState(), paused: audio.paused };
+  });
+  expect(copyContinuity).toEqual({ sameAudio: true, count: 1, sameState: true, paused: false });
+  expect(streams).toHaveLength(loads);
   await page.evaluate(()=>TodayRouter.navigate('health',{moveFocus:false}));await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');
   await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
   await expect(page.locator('.radioMiniStatus')).toContainText('Canlı · Çalıyor');await expect(page.locator('.radioMiniName')).toHaveText('Synthetic Test Radio');expect(streams).toHaveLength(loads);

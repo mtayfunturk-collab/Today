@@ -1,0 +1,11 @@
+# Canlı aday — ayrı sentetik hedefte geri yükleme ve kurtarma
+
+12 Kasım 2026, TSİ. Yerel dal `task/t90-261101-live-synthetic-recovery`, başlangıç SHA `b57dbceb53eb6a9aacc3bde709b4de096b77e38f`. Önceki çalışma ağacı ve kirli dosyaları korunarak ayrı bir aday oluşturuldu.
+
+Önceki sentetik kurtarma prototipi güncel Radio 2.23.3 adayına alındı. Prototip şifreli yedeği, salt okunur önizlemeyi, hedef parmak izini ve ayrı son onayı gerektiriyor. Sentetik hedefte 23 bilinen localStorage anahtarı ile Nutrition'ın üç store'unu değiştiriyor; ilgisiz anahtarları koruyor. İşlemden önce geri alma görüntüsünü ayrı günlüğe yazıyor. Hata, iptal veya kesinti sonrası önceki veriyi geri almayı ya da güvenli başlangıcı engelleyerek kurtarma gereksinimini göstermeyi test ediyor. Bildirim ve AI izinleri ithal edilince kapalı kalıyor.
+
+`createSyntheticRecovery` çağrısındaki `syntheticProfile` doğrulaması çağıranın beyanıdır; gerçek kullanıcı verisi için güvenlik sınırı değildir. Modül `index.html` veya Service Worker'a bağlanmadı. `today_recovery_v1` günlüğü yalnız testin ayrı fake IndexedDB hedefinde oluşturuldu; mevcut kullanıcı verisi, depolama şeması ve migration değiştirilmedi.
+
+İlk hedefli denemede eski test fixture'ının kaynak sürümü 2.20.2 olduğu için `unsupported-source-runtime` ile FAIL oluştu. Yalnız fixture sürümü mevcut adayın 2.23.3 değerine güncellendi; doğrulama kuralı gevşetilmedi. Sonra `node tests/backup-recovery.test.mjs` **36/36 PASS** ve `node tests/automation-contract.test.cjs` **8/8 PASS**. İlk `npm test` denemesinde sandbox alt süreç açmayı `EPERM` ile engelledi; bu koşu geçerli test sonucu sayılmadı. Gerekli çalışma izniyle tam `npm test` **1446/1446 PASS** (41 grup, exit 0); kanıt `/workspace/.cache/today-evidence/synthetic-recovery-20261112/platform-permitted.log`. `git diff --check` temiz. Kaynak worktree'deki 114 kirli dosyanın hash'i değişmedi; adayda bunlara göre yalnız dokuz amaçlanan dosya farklı/yenidir.
+
+Üretimde açık kalan kapılar: gerçek tarayıcı IndexedDB ve çok sekmeli/BFCache yazıcı davranışı; kota, cihaz kesintisi ve kurtarma; bütün kalıcı türlerin tam geri yüklenmesi; gerçek iPhone Safari ve kurulu PWA kabulü. Canlı Pages sürümü değişmedi. Commit, push, PR, merge ve deploy yapılmadı.

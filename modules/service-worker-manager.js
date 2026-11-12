@@ -131,6 +131,16 @@
       : null;
   }
 
+  // Optional copy cannot become a dependency of update approval or recovery.
+  function updateText(key, fallback) {
+    try {
+      const value = targetWindow.TodayUpdateCopy?.[key];
+      return typeof value === "string" && value.trim() ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
   function ensureNoticeSurface() {
     const existing = getNoticeSurface();
 
@@ -207,7 +217,7 @@
       targetDocument.createElement("h2");
     title.id = "todayUpdateTitle";
     title.textContent =
-      "Today Yenilik";
+      updateText("update.title", "Today Yenilik");
     title.style.cssText = [
       "margin:0",
       "font-size:18px",
@@ -218,8 +228,7 @@
       targetDocument.createElement("p");
     text.id = "todayUpdateText";
     text.textContent =
-      "Today’in yeni sürümü indirildi. " +
-      "Güncelleme, sen onayladığında uygulanacak.";
+      updateText("update.ready", "Today’in yeni sürümü indirildi. Güncelleme, sen onayladığında uygulanacak.");
     text.style.cssText = [
       "margin:8px 0 0",
       "color:#cbd3df",
@@ -241,7 +250,7 @@
     applyButton.id = "todayUpdateApply";
     applyButton.type = "button";
     applyButton.textContent =
-      "Şimdi güncelle";
+      updateText("update.apply", "Şimdi güncelle");
     applyButton.style.cssText = [
       "min-height:44px",
       "border:0",
@@ -263,7 +272,7 @@
     laterButton.id = "todayUpdateLater";
     laterButton.type = "button";
     laterButton.textContent =
-      "Daha sonra";
+      updateText("update.later", "Daha sonra");
     laterButton.style.cssText = [
       "min-height:44px",
       "border:1px solid rgba(255,255,255,.22)",
@@ -336,12 +345,12 @@
     }
 
     title.textContent =
-      "Today Yenilik";
+      updateText("update.title", "Today Yenilik");
     text.textContent =
-      "Today’in yeni sürümü indirildi. " +
-      "Güncelleme, sen onayladığında uygulanacak.";
+      updateText("update.ready", "Today’in yeni sürümü indirildi. Güncelleme, sen onayladığında uygulanacak.");
     applyButton.textContent =
-      "Şimdi güncelle";
+      updateText("update.apply", "Şimdi güncelle");
+    laterButton.textContent = updateText("update.later", "Daha sonra");
     applyButton.disabled = false;
     laterButton.disabled = false;
     surface.hidden = false;
@@ -383,9 +392,9 @@
     }
 
     text.textContent =
-      "Today güncelleniyor…";
+      updateText("update.applying", "Today güncelleniyor…");
     applyButton.textContent =
-      "Güncelleniyor…";
+      updateText("update.applyingButton", "Güncelleniyor…");
     applyButton.disabled = true;
     laterButton.disabled = true;
 

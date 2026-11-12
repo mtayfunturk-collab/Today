@@ -1,0 +1,9 @@
+# Canlı aday için yedek dışa aktarım çekirdeği
+
+12 Kasım 2026, TSİ. Yerel dal `task/t90-261101-live-export-port`, HEAD `b57dbceb53eb6a9aacc3bde709b4de096b77e38f`. Önceki93 dosya ayrı worktree'ye taşındı. NUT tabanındaki `modules/backup-export.mjs` güncel Radio tabanına byte eşit kopyalandı; iki zorunlu bağımlılık `notification-store.mjs` ve `nutrition-contracts.js` eski adayla byte eşittir. Modül index/SW/arayüz tarafından henüz yüklenmez; üretimde yedek düğmesi veya restore açılmaz.
+
+Güncel sentetik fixture ile23 LS anahtarı/3 Nutrition store kaydı, absent DB'nin oluşturulmaması, ham Core notunun korunması,600000 PBKDF2 + AES-GCM dosya şifrelemesi ve kendi dosyasını doğrulama, preview'nin restore yapmaması, bilinmeyen Today anahtarında fail-closed ret ve sıfır persistent yazı sınanır. Test koşucusunda yeni grup sayıldı. Hedefli **5/5 PASS**, automation envanteri **8/8 PASS**, tam `npm test` **1327/1327 PASS** (38 grup, exit0). Kanıt `/workspace/.cache/today-evidence/backup-export-port-20261112/platform.log`. İlk tam kapı denemesi test başlamadan kanıt dizini yokluğu nedeniyle durdu; dizin oluşturulup tek gerçek koşuda bütün testler geçti. Kaynak93 dosya/hashes korundu; amaçlanan8 dosya delta ve `git diff --check` temiz. Gerçek kullanıcı verisi okunmadı. Canlı yayın veya tam ürün geri yükleme kabulü değildir.
+
+Açık: browserBarrier'ın SW navigation lock protokolü güncel SW'de yok; uygulama UI'sına bağlanmadan protokol/yazıcı sınırı doğrulanmalı. İndirilmiş dosyanın iPhone'da kaydedilmesi, gerçek origin'deki bütün veri türleri, geri yükleme, BFCache/eski istemci, kota/kesinti ve fiziksel cihaz kabulü açık. Github Pages canlı App2.23.3/082 kalır; Netlify kullanılmaz.
+
+Sonraki dar adım: mevcut SW ve yedek sayfasını veri yazmadan izolasyon/izin protokolü için uyarlamak ve iki motor tarayıcı testleriyle doğrulamak. Ardından geri yükleme ayrı veri güvenliği kapısıdır. Commit/push/PR/merge/deploy yapılmadı.

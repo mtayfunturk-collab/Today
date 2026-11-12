@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-082";
+const VERSION = "today-v2-foundation-100";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -25,9 +25,25 @@ const ACTIVATE_MESSAGE =
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./backup.html",
+  "./modules/backup-export.mjs",
+  "./modules/backup-export-ui.mjs",
+  "./modules/backup-restore-ui.mjs",
+  "./modules/backup-restore-preview.mjs",
+  "./modules/backup-health-validation.mjs",
+  "./modules/backup-sky-validation.mjs",
+  "./modules/backup-core-history.mjs",
+  "./modules/backup-core-preferences.mjs",
+  "./modules/backup-nutrition-metadata.mjs",
+  "./modules/backup-legacy-validation.mjs",
+  "./modules/sport-catalog.js",
   "./manifest.json",
 
   "./modules/error-manager.js",
+  "./modules/core-static-copy-ui.mjs",
+  "./modules/core-static-copy.mjs",
+  "./modules/date-presentation.mjs",
+  "./modules/locales/core-tr.mjs",
   "./modules/service-worker-manager.js",
   "./modules/storage.js",
   "./modules/version.js",
@@ -186,7 +202,22 @@ self.addEventListener("install", (event) => {
  * Bekleyen yeni sürümü yalnız uygulamadaki açık kullanıcı
  * onayı sonrasında etkinleştirir.
  */
+function backupScope() { return self.registration?.scope; }
+async function backupClients(event) {
+  const scope = backupScope();
+  const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+  const onlyClient = clients.length === 1 && clients[0].id === event.source?.id &&
+    clients[0].url === new URL("backup.html", scope).href;
+  event.ports?.[0]?.postMessage({ protocol: 1, scope,
+    navigationLock: typeof self.navigator?.locks?.request === "function", onlyClient });
+}
+
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "TODAY_BACKUP_CHECK") {
+    event.waitUntil(backupClients(event).catch(() => event.ports?.[0]?.postMessage({ protocol: 0 })));
+    return;
+  }
+
   if (
     !event.data ||
     event.data.type !== ACTIVATE_MESSAGE
@@ -230,21 +261,23 @@ self.addEventListener("activate", (event) => {
  * İnternet yoksa güncel önbelleğe düşer.
  */
 async function handleNavigationRequest(request) {
+  const backupPage = new URL(request.url).pathname.endsWith("/backup.html");
   try {
     const response = await fetch(request);
 
     if (response && response.ok) {
       const cache = await caches.open(CACHE_NAME);
 
-      await Promise.all([
-        cache.put(request, response.clone()),
-        cache.put("./index.html", response.clone())
-      ]);
+      await cache.put(request, response.clone());
+      if (!backupPage) await cache.put("./index.html", response.clone());
     }
 
     return response;
   } catch (error) {
     const cache = await caches.open(CACHE_NAME);
+
+    if (backupPage) return (await cache.match(request)) ||
+      (await cache.match("./backup.html")) || new Response("Yedek sayfası çevrimdışı hazır değil.", { status: 503 });
 
     return (
       (await cache.match(request)) ||
@@ -296,9 +329,10 @@ self.addEventListener("fetch", (event) => {
     request.mode === "navigate" ||
     (request.headers.get("accept") || "").includes("text/html");
 
-  event.respondWith(
-    isNavigation
-      ? handleNavigationRequest(request)
-      : handleStaticRequest(request)
-  );
+  const locks = self.navigator?.locks;
+  const scope = backupScope();
+  event.respondWith(isNavigation && scope && locks?.request
+    ? locks.request("today:backup:v1:" + new URL(scope).pathname,
+      { mode: "shared" }, () => handleNavigationRequest(request))
+    : isNavigation ? handleNavigationRequest(request) : handleStaticRequest(request));
 });

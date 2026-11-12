@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><title>Today — Tam yedek</title>
+<style>
+:root{color-scheme:light dark;font-family:system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;padding:20px;line-height:1.6;background:#101827;color:#eef2ff}main{max-width:560px;margin:auto;overflow-wrap:anywhere}h1{font-size:24px}label{display:block;margin:16px 0}input[type=password]{display:block;width:100%;min-width:0;font:inherit;font-size:16px;padding:12px;margin-top:6px}input[type=checkbox]{width:22px;height:22px;vertical-align:middle}button,a{min-height:44px;padding:12px;display:inline-block;font:inherit}button{cursor:pointer}a{color:#b9d1ff}fieldset{border:1px solid #627084;min-width:0}fieldset[disabled]{opacity:.7}[hidden]{display:none!important}.actions{display:flex;gap:12px;flex-wrap:wrap}input[type=file]{max-width:100%;font:inherit}small{display:block}
+</style></head><body><main>
+<a href="./index.html">Today’e dön</a><h1>Tam yedek</h1>
+<p>Core, Health, Sky, eski kayıtlar ve varsa gözlem arşivi şifreli bir dosyaya alınır. Bu sayfa kayıt oluşturmaz veya değiştirmez. Yedek hazırlanırken diğer açık Today pencerelerini kapat.</p>
+<p>Dosyada özel notların, sağlık ve doğum/konum bilgilerin bulunabilir. Dosyayı seçtiğin yerde sen saklarsın; Today buluta göndermez. Dosya uygulamadaki süreli arşiv gibi kendiliğinden silinmez. <strong>Parolanı unutursan dosya açılamaz; Today parolanı saklamaz.</strong></p>
+<p>Bu sürüm dosya oluşturur ve bütünlüğünü kontrol eder. Geri yükleme henüz etkin değildir; dosyanın geri yüklenebilirliği ayrıca doğrulanacaktır.</p>
+<form id="backupForm"><fieldset id="backupFields"><legend>Dosyanı hazırla</legend>
+<label><input id="backupConsent" type="checkbox"> Bu verilerin şifreli dosyaya alınmasını ve dosyayı kendim saklamayı kabul ediyorum.</label>
+<label for="backupPassword">Dosya parolası (en az 12 karakter)<input id="backupPassword" type="password" minlength="12" maxlength="1024" autocomplete="new-password" spellcheck="false"></label>
+<label for="backupConfirmation">Parolayı tekrar gir<input id="backupConfirmation" type="password" maxlength="1024" autocomplete="new-password" spellcheck="false"></label>
+<button type="submit">Yedek dosyasını hazırla</button>
+</fieldset></form>
+<div class="actions"><button id="backupCancel" type="button" hidden>İptal</button><a id="backupDownload" hidden>Şifreli dosyayı kaydet</a></div>
+<p id="backupStatus" role="status" aria-live="polite">Hazır olduğunda onayını ve dosya parolanı gir. İşlem verilerini okumadan önce tarayıcı desteğini kontrol eder.</p>
+<details><summary>Kaydettiğin dosyayı doğrula</summary><p>Dosyayı yeniden seçerek açılabildiğini ve bütünlüğünü kontrol edebilirsin. Bu işlem geri yükleme yapmaz.</p>
+<form id="backupVerifyForm"><label>Kaydettiğin Today dosyası<input id="backupVerifyFile" type="file" accept=".json,.today-backup.json"></label><label>Dosyanın parolası<input id="backupVerifyPassword" type="password" maxlength="1024" autocomplete="off"></label><button type="submit">Dosyayı kontrol et</button></form>
+</details>
+<details><summary>Geri yükleme kapsamını önizle</summary><p>Şifreli dosya ve bu cihazdaki mevcut kayıtlar yalnız okunur. Bu sürüm geri yükleme yapmaz.</p>
+<form id="restorePreviewForm"><label>Today yedek dosyası<input id="restorePreviewFile" type="file" accept=".json,.today-backup.json"></label><label>Dosyanın parolası<input id="restorePreviewPassword" type="password" maxlength="1024" autocomplete="off"></label><label><input id="restorePreviewConsent" type="checkbox"> Dosyanın ve bu cihazdaki kayıtların yalnız önizleme için okunmasını onaylıyorum.</label><button type="submit">Kapsamı önizle</button></form><p id="restorePreviewStatus" role="status" aria-live="polite"></p>
+</details>
+</main><script src="./modules/version.js"></script><script src="./modules/nutrition-contracts.js"></script><script type="module" src="./modules/backup-export-ui.mjs"></script><script type="module" src="./modules/backup-restore-ui.mjs"></script></body></html>

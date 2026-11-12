@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "task": "PO1-I18N02 module English source matrix",
+  "currentHead": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+  "rows": [
+    {
+      "owner": "I18N03",
+      "catalogPath": "/workspace/Today-po1-sp02-transition-package/docs/T90-261101-PO1-I18N03-HEALTH-CATALOG.json",
+      "catalogSha256": "3b44660332d5f488f82f9f3f7b28ff2dc13aa19d585e864e7072866265b9b898",
+      "sourceRef": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+      "draftCount": 71,
+      "missingEnglishCount": 0,
+      "literalAbsentKeys": [],
+      "staleLineKeys": [
+        "health.title",
+        "health.intro",
+        "health.nutrition.day.aria",
+        "health.nutrition.previous",
+        "health.nutrition.next",
+        "health.nutrition.today",
+        "health.nutrition.refresh",
+        "health.nutrition.water",
+        "health.nutrition.quickAdd",
+        "health.nutrition.meal",
+        "health.nutrition.type",
+        "health.nutrition.breakfast",
+        "health.nutrition.lunch",
+        "health.nutrition.dinner",
+        "health.nutrition.snack",
+        "health.nutrition.other",
+        "health.nutrition.name",
+        "health.nutrition.example",
+        "health.nutrition.library",
+        "health.nutrition.plan",
+        "health.nutrition.entries",
+        "health.nutrition.archived"
+      ],
+      "parameterMismatchKeys": [],
+      "sourceFiles": {
+        "index.html": 22,
+        "modules/health-hub.js": 49
+      },
+      "currentSourceSha256": {
+        "index.html": "827191855954237c206a9b36805288353812a9625094d28e746fe2494021241d",
+        "modules/health-hub.js": "44c85b72e60780d6e51b0b757ab5eb80621472dd008ef37a48067057bfad0434"
+      },
+      "completeEnglishRelease": false
+    },
+    {
+      "owner": "I18N04",
+      "catalogPath": "/workspace/Today-po1-sp02-transition-package/docs/T90-261101-PO1-I18N04-SKY-CATALOG.json",
+      "catalogSha256": "a231743944a85ab40a7a75605aec492237acdb8eb88db476720905819f985953",
+      "sourceRef": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+      "draftCount": 66,
+      "missingEnglishCount": 0,
+      "literalAbsentKeys": [],
+      "staleLineKeys": [],
+      "parameterMismatchKeys": [],
+      "sourceFiles": {
+        "modules/core-sky-link-ui.js": 10,
+        "modules/sky-hub.js": 24,
+        "modules/sky-natal-ui.js": 12,
+        "modules/sky-periods-ui.js": 6,
+        "modules/sky-today-ui.js": 14
+      },
+      "currentSourceSha256": {
+        "modules/core-sky-link-ui.js": "5d47f055d6fbf48dd1eca2fc939507491bf95e0b69e20ea97e52f7ecd3be35c5",
+        "modules/sky-hub.js": "a80274275adffbffbbfcbc6caa39dcf2e0b85a5db7d273554feed272c864934a",
+        "modules/sky-natal-ui.js": "881cf32aaeb9845035c5df77f36379f256af42bd973d85fcfa4a3ede846b5768",
+        "modules/sky-periods-ui.js": "90f70a83b416a8b8d1effbbee9d8edf37272092ac00a863c3b0aef504dad9fb6",
+        "modules/sky-today-ui.js": "95cfeb917e7157fc17868eb0baec92301fc4ec77068f248709127e18ca76b413"
+      },
+      "completeEnglishRelease": false
+    },
+    {
+      "owner": "I18N05",
+      "catalogPath": "/workspace/Today-po1-sp02-transition-package/docs/T90-261101-PO1-I18N05-RADIO-CATALOG.json",
+      "catalogSha256": "e668a66a70e030556fc36c72ed4e9006fecc451f10c79521c3b2de35159ca62c",
+      "sourceRef": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+      "draftCount": 73,
+      "missingEnglishCount": 0,
+      "literalAbsentKeys": [],
+      "staleLineKeys": [
+        "radio.module.description",
+        "radio.module.back",
+        "radio.module.permission.notice"
+      ],
+      "parameterMismatchKeys": [],
+      "sourceFiles": {
+        "index.html": 3,
+        "modules/radio-ui.mjs": 70
+      },
+      "currentSourceSha256": {
+        "index.html": "827191855954237c206a9b36805288353812a9625094d28e746fe2494021241d",
+        "modules/radio-ui.mjs": "5e54f5d3225244385fda026ab5dd43fa6b92b96e21734abe078cd3ceb3a3b6f1"
+      },
+      "completeEnglishRelease": false
+    },
+    {
+      "owner": "I18N06",
+      "catalogPath": "/workspace/Today-po1-sp02-transition-package/docs/T90-261101-PO1-I18N06-AI-CATALOG.json",
+      "catalogSha256": "869341107f342c34ada2db8c6fcc3f249fa284882eb7641ea7ec8231c050a906",
+      "sourceRef": "b57dbceb53eb6a9aacc3bde709b4de096b77e38f",
+      "draftCount": 73,
+      "missingEnglishCount": 0,
+      "literalAbsentKeys": [],
+      "staleLineKeys": [
+        "ai.preview.title",
+        "ai.analysis.today",
+        "ai.pattern.review",
+        "ai.analysis.noMatch",
+        "ai.analysis.title",
+        "ai.analysis.evidence",
+        "ai.analysis.confidence",
+        "ai.analysis.caveats",
+        "ai.analysis.alternatives",
+        "ai.analysis.reminderTime",
+        "ai.pattern.title"
+      ],
+      "parameterMismatchKeys": [],
+      "sourceFiles": {
+        "Today-AI-Engine/src/daily-support-analyzer.mjs": 11,
+        "Today-AI-Engine/src/multi-window-observer.mjs": 3,
+        "Today-AI-Engine/src/pattern-observer.mjs": 5,
+        "index.html": 11,
+        "modules/ai-context-ui.mjs": 43
+      },
+      "currentSourceSha256": {
+        "Today-AI-Engine/src/daily-support-analyzer.mjs": "caf33ee7ff961bdbf20f3dad0990fc78219fbe2b781db45a950d1ebd733366f4",
+        "Today-AI-Engine/src/multi-window-observer.mjs": "22db5a89e11e334a282868425b2790bd4564217b803ec1ffcc44641c9cefc3ef",
+        "Today-AI-Engine/src/pattern-observer.mjs": "f6aaa6037207b0cb419d25f00bedbca2c845f9c1fc940af019bf929bab864b81",
+        "index.html": "827191855954237c206a9b36805288353812a9625094d28e746fe2494021241d",
+        "modules/ai-context-ui.mjs": "4a9d1287abd15a7854a78832e12bfbac232b042cd7a32c18d46196fbc16727c8"
+      },
+      "completeEnglishRelease": false
+    }
+  ],
+  "totals": {
+    "draftCount": 283,
+    "staleLineCount": 36,
+    "literalAbsentCount": 0,
+    "parameterMismatchCount": 0
+  }
+}

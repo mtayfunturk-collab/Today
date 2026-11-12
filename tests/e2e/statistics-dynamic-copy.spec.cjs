@@ -1,0 +1,14 @@
+const{test,expect}=require('@playwright/test');const{randomBytes}=require('node:crypto');const fs=require('node:fs');
+test('Dynamic statistics copy keeps real mode counts storage and Turkish CSV unchanged',async({page,context})=>{
+ await context.addInitScript(()=>Object.defineProperty(navigator,'serviceWorker',{value:undefined}));
+ await context.route('**/modules/locales/core-tr.mjs',async route=>{const response=await route.fetch();const body=(await response.text()).replace('Son 7 günde seçim yok.','Sentetik boş özet').replace('Son 7 günde en çok: “{choice}” ({count} kez)','Sentetik özet: {choice}/{count}').replace('{title}. Dönem sonundaki birikimli giriş sayısı: {total}.','Sentetik grafik: {title} | {total}').replace('"statistics.day": "Son 7 gün ivmesi"','"statistics.day": "Sentetik gün"');await route.fulfill({response,body});});
+ await page.goto(`/runs/${randomBytes(12).toString('hex')}/index.html`);await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
+ await page.locator('#btnStart').click();await page.locator('#btnCalendar').click();await page.locator('#btnStats').click();await expect(page.locator('#summaryText')).toHaveText('Sentetik boş özet');
+ await page.locator('#btnBackToPick').click();await page.locator('[data-choice="B"]').click();await page.locator('[data-color="mint"]').click();await page.locator('#note').fill('SYNTHETIC-STATS-NOTE-123');
+ const record=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('today_store_v2')).days[TodayDay.todayKey()]);await expect.poll(record).toMatchObject({note:'SYNTHETIC-STATS-NOTE-123'});const before=await record();
+ await page.locator('#btnCalendar').click();await page.locator('#btnStats').click();await expect(page.locator('#summaryText')).toHaveText('Sentetik özet: Her şey çok net/1');
+ for(const mode of ['hour','day','week','month']){await page.locator(`#accStatsBody [data-mode="${mode}"]`).click();await expect(page.locator('#chartSummary')).toHaveText(/^Sentetik grafik: .+ \| \d+$/);await expect(page.locator(`#accStatsBody [data-mode="${mode}"]`)).toHaveAttribute('aria-pressed','true');}
+ await page.locator('[data-mode="day"]').click();await expect(page.locator('#chartLabel')).toHaveText('Sentetik gün');expect(await record()).toEqual(before);
+ expect(await page.evaluate(()=>Object.isFrozen(TodayStatisticsCopy)&&Object.isFrozen(TodayStatisticsCopy.titles))).toBe(true);
+ const event=page.waitForEvent('download');await page.evaluate(()=>document.querySelector('#btnExport').click());const download=await event;const csv=fs.readFileSync(await download.path(),'utf8');expect(csv).toContain('Her şey çok net');expect(csv).toContain('Nane');expect(csv).toContain('SYNTHETIC-STATS-NOTE-123');expect(csv).not.toContain('Sentetik');expect(await record()).toEqual(before);
+});
