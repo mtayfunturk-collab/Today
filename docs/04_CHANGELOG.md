@@ -2,6 +2,8 @@
 
 Windows geri bildirimindeki Today’e dön bağlantısı ayrı yerel görev dalında modüller rotasına bağlandı. Normal açılış home kalır. Tek pencerede de görülen yedek uyarısı için SW aynı origin/sayfa yolunu doğrular, ikinci pencere yasağı korunur, ret nedenleri ayrılır ve cache etiketi foundation-101 olur. Chromium 9/9, hedefli 40/40 + 38/38 ve platform 1446/1446 PASS; fiziksel Windows tekrar testi bekliyor. Rapor: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
 
+İlk uzak CI tarayıcı işi 176 PASS/2 FAIL: ikinci sekme engellendi, iki beklenti eski genel hata kodunda kaldı. Beklentiler yeni `other-client` koduna güncellendi; ilgili yerel Chromium kurtarma testleri 5/5 PASS. Güncel uzak CI sonucu ve fiziksel Windows kabulü açık.
+
 ### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
 
 İlk uzak CI Android paket hazırlığında `backup.html` izin listesi yüzünden durdu. Yalnız bu uygulama dosyası eklendi; native test ve web paket yerelde geçti. Rapor: `docs/TODAY-LIVE-CANDIDATE-2026-11-12.md`.

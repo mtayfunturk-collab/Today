@@ -99,7 +99,7 @@ test('Existing backup barrier rejects a second Today tab before synthetic recove
     try {await browserBarrier(window)(()=>{entered=true;});return {code:null,entered};}
     catch(error){return {code:error.code,entered};}
   });
-  expect(blocked).toEqual({code:'other-context-or-version',entered:false});
+  expect(blocked).toEqual({code:'other-client',entered:false});
   await other.close();
   const solo=await page.evaluate(async()=>{
     const {browserBarrier}=await import('./modules/backup-export.mjs');
@@ -132,6 +132,6 @@ test('Exclusive backup barrier holds a new Today navigation until work releases 
   await page.evaluate(()=>window.__release());
   await navigation;
   const result=await page.evaluate(()=>window.__barrierResult);
-  expect(['released','other-context-or-version']).toContain(result.value??result.error);
+  expect(['released','other-client']).toContain(result.value??result.error);
   await other.close();
 });
