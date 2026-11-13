@@ -158,6 +158,14 @@ test('Backup page previews a synthetic file only after separate read consent',as
   await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı',{timeout:20000});
   expect(await page.evaluate(()=>localStorage.getItem('today_store_v2'))).toBe(before);
   expect(await page.evaluate(async()=>!(await indexedDB.databases()).some(db=>db.name==='today_recovery_v1'))).toBe(true);
+  const damaged=JSON.parse(file);
+  damaged.ciphertext=(damaged.ciphertext[0]==='A'?'B':'A')+damaged.ciphertext.slice(1);
+  await page.locator('#restorePreviewFile').setInputFiles({name:'damaged.today-backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(damaged))});
+  await page.locator('#restorePreviewPassword').fill('synthetic preview password');
+  await page.locator('#restorePreviewConsent').check();
+  await page.getByRole('button',{name:'Kapsamı önizle'}).click();
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Tanı kodu: file-verification-failed');
+  expect(await page.evaluate(()=>localStorage.getItem('today_store_v2'))).toBe(before);
   await page.context().setOffline(true);
   await page.reload();
   await page.getByText('Geri yükleme kapsamını önizle').click();

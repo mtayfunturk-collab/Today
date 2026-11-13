@@ -6,10 +6,19 @@ import {webcrypto as crypto} from 'node:crypto';
 import {IDBFactory} from 'fake-indexeddb';
 import {LS_KEYS, STORES, captureSnapshot, createBackup} from '../modules/backup-export.mjs';
 import {prepareRestorePreview, revalidateRestorePreview, discardRestorePreview} from '../modules/backup-restore-preview.mjs';
+import {previewFailureMessage} from '../modules/backup-restore-ui.mjs';
 import {defaultState, sanitizeObservation} from '../modules/notification-store.mjs';
 
 let passed = 0;
 async function check(name, test) { await test(); passed++; console.log('PASS '+name); }
+await check('preview errors show only bounded diagnostic codes, never raw data',()=>{
+  const detail={code:'source-validation-failed',message:'PRIVATE_NOTE'};
+  const result=previewFailureMessage(detail);
+  assert.match(result,/Tanı kodu: source-validation-failed/);
+  assert(!result.includes('PRIVATE_NOTE'));
+  assert.match(previewFailureMessage({code:'other-client'}),/başka bir Today penceresi/);
+  assert(!previewFailureMessage({code:'PRIVATE_NOTE'}).includes('PRIVATE_NOTE'));
+});
 const sandbox = {window:{}};
 vm.runInNewContext(fs.readFileSync('modules/nutrition-contracts.js','utf8'),sandbox);
 const contracts = sandbox.window.TodayNutritionContracts;

@@ -17,3 +17,11 @@ Sonraki fiziksel Windows denemesinde kullanıcı Chrome kullandığını, kurulu
 `foundation-102` tanısı ret anında yalnız toplam sayfa istemcisi, kaynağın listede bulunup bulunmadığı ve en çok üç diğer istemcinin `backup`/`app`/`other` sayfa türü, görünürlük ve iç çerçeve bilgisini gösterir. Tam URL, sorgu, not, sağlık verisi veya kayıt içeriği aktarılmaz; veri saklanmaz. Tek client ve aynı kaynak ID şartı aynen korunur. Yeni tanıdan sonra fiziksel Windows sonucuyla yanlış ikinci client'ın türü belirlenecek; güvenlik şartı kanıtsız gevşetilmeyecek.
 
 Yerel tanı doğrulaması: SW 38/38, yedekleme 40/40, statik 30/30, ilgili Chromium 9/9 ve tam platform 1446/1446 PASS. Uzak CI ve fiziksel Windows tekrar sonucu bu yeni commit için bekleniyor.
+
+## 13 Kasım canlı yedek kabulü ve önizleme tanısı
+
+GitHub Pages kaynağı, `main` ve taslak PR'ler birleştirilmeden ayrı `release/today-backup-candidate-2a70ec9` dalına geçirildi. Yayınlanan `backup.html` ve `sw.js`, `2a70ec9` adayıyla birebir eşleşti. Geçici boş Chromium profilinde tek istemci kontrolü, şifreli dosya üretimi, indirme, dosyayı yeniden açıp doğrulama ve kapsam önizlemesi geçti. Bu sentetik sonuç fiziksel cihaz kabulü değildir.
+
+Kullanıcı iPhone'da dosyayı indirdi ve yeniden açarak bütünlük doğrulamasını geçti; kapsam önizlemesi genel hata verdi. Windows'ta yedekleme dosyası oluştu, ancak yeniden açma sonucu henüz bildirilmedi. Doğrudan `backup.html` ilk ziyaretinde Service Worker kaydı bulunmayan boş Chromium profilinde `controller=false` görüldü; ana uygulamadan geçişte kontrol çalıştı. Netlify ücretsiz plandaki zorunlu rozetin aynı origin iç çerçevesi ayrıca yanlış ikinci istemci oluşturuyordu; canlı GitHub Pages yedek sayfasında bu çerçeve yok.
+
+Önizleme hatasında dosya/parola, kaynak veri uyumu ve başka pencere retleri aynı genel metne düşebiliyor. Ayrı `task/today-backup-preview-diagnostic` yerel dalı yalnız sabit izinli tanı kodlarını gösterecek UI düzeltmesi ve `foundation-103` önbellek sürümünü hazırlar. Ham hata metni, not, URL, dosya içeriği ve parola gösterilmez veya aktarılmaz. Geri yükleme hâlâ kapalıdır; gerçek iPhone dosyasının kurtarılabilirliği henüz doğrulanmadı. Bu dilim canlıya aktarılmadan önce test/CI kaydı gerekir.

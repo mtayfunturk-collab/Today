@@ -140,7 +140,7 @@ const { JSDOM } = require('jsdom');
     const sw = fs.readFileSync('sw.js', 'utf8');
     for (const file of ['core-static-copy-ui.mjs', 'core-static-copy.mjs', 'date-presentation.mjs', 'locales/core-tr.mjs']) assert.ok(sw.includes(`"./modules/${file}"`), file);
     assert.equal((html.match(/<script type="module" src="\.\/modules\/core-static-copy-ui\.mjs"><\/script>/g) || []).length, 1);
-    assert.ok(sw.includes('today-v2-foundation-102'));
+    assert.ok(sw.includes('today-v2-foundation-103'));
   });
   await test('All 25 shared targets resolve once and match normalized HTML fallback', () => {
     const doc = make();

@@ -24,7 +24,7 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file: "tests/backup-restore-preview.test.mjs",
-    count: 41
+    count: 42
   },
   {
     file: "tests/backup-recovery.test.mjs",

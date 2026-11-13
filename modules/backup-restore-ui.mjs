@@ -1,6 +1,23 @@
 import {captureSnapshot,browserBarrier} from './backup-export.mjs';
 import {prepareRestorePreview} from './backup-restore-preview.mjs';
 
+const previewCodes=new Set([
+  'other-client','client-mismatch','backup-lock-busy','coordination-unavailable',
+  'file-verification-failed','source-validation-failed','unsupported-origin-transfer',
+  'incomplete-coverage','unsupported-payload','unsupported-core',
+  'unsupported-source-runtime','unsupported-contract','invalid-database',
+  'invalid-record-set','invalid-notification-state'
+]);
+export function previewFailureMessage(error){
+  const code=previewCodes.has(error?.code)?error.code:null;
+  const message=code==='other-client'
+    ?'Tarayıcı başka bir Today penceresi görüyor. Diğer Today sekmelerini kapatıp yeniden dene.'
+    :error?.code==='other-context-or-version'
+      ?'Diğer Today pencerelerini kapatıp yeniden dene.'
+      :'Önizleme tamamlanamadı. Dosya, parola veya veri uyumu doğrulanamadı;';
+  return `${message} Kayıtların değişmedi.${code?` Tanı kodu: ${code}.`:''}`;
+}
+
 // Read-only UI. There is deliberately no apply control or recovery import.
 export function mountRestorePreview({root=document,prepare=prepareRestorePreview,capture=captureSnapshot,barrier}={}){
   const form=root.querySelector('#restorePreviewForm');if(!form)return null;
@@ -26,9 +43,7 @@ export function mountRestorePreview({root=document,prepare=prepareRestorePreview
       if(signal.aborted)return;
       const changes=result.localStorage;
       status.textContent=`Önizleme tamamlandı. ${result.coreDays.count} Core günü; bilinen veri alanlarında ${changes.added} yeni, ${changes.changed} değişecek, ${changes.removed} kaldırılacak. Geri yükleme yapılmadı; mevcut kayıtların değişmedi.`;
-    }catch(error){if(!signal.aborted)status.textContent=error?.code==='other-context-or-version'
-      ?'Diğer Today pencerelerini kapatıp yeniden dene. Kayıtların değişmedi.'
-      :'Önizleme tamamlanamadı. Dosya, parola veya veri uyumu doğrulanamadı; kayıtların değişmedi.';}
+    }catch(error){if(!signal.aborted)status.textContent=previewFailureMessage(error);}
     finally{busy=false;active=null;file.value='';consent.checked=false;}
   });
   return Object.freeze({invalidate});
