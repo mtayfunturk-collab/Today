@@ -57,7 +57,13 @@ export function mountBackupExport({root=document,create=createBackup,capture=cap
    if(active.signal.aborted)return;
    url=view.URL.createObjectURL(new view.Blob([result.file],{type:'application/json'}));download.href=url;download.download=result.filename;download.hidden=false;
    status.textContent='Şifreli dosyan hazır. Seçtiğin konuma kaydet, sonra aşağıdan yeniden açıp doğrula. Dosyanın kalıcı kaydedildiğini Today otomatik doğrulayamaz.';
-  }catch(error){status.textContent=messages[error?.code]||'Tam yedek oluşturulamadı. Mevcut kayıtların değiştirilmedi.';}
+  }catch(error){
+   const info=error?.diagnostic,labels={backup:'yedek',app:'ana ekran',other:'diğer sayfa'};
+   const detail=error?.code==='other-client'&&info
+    ? ` Tanı: ${info.total} sayfa; diğerleri: ${info.others.map(item=>`${labels[item.page]} (${item.visibility==='visible'?'görünür':item.visibility==='hidden'?'arka planda':'durum bilinmiyor'}${item.frame==='nested'?', iç çerçeve':''})`).join(', ')||'bilinmiyor'}.`
+    : '';
+   status.textContent=(messages[error?.code]||'Tam yedek oluşturulamadı. Mevcut kayıtların değiştirilmedi.')+detail;
+  }
   finally{password='';confirmation='';clearPasswords();busy=false;fields.disabled=false;cancel.hidden=true;active=null;}
  });
  cancel.addEventListener('click',()=>{active?.abort();dispose();status.textContent=messages.cancelled;});

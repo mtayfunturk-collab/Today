@@ -1,3 +1,7 @@
+### 2026-11-13 — Windows yedekleme istemci tanısı
+
+Chrome’da tek görünür pencere ve doğrudan backup.html açılışında da ikinci istemci uyarısı bildirildi. Güvenlik reddi korunarak yalnız sayfa sayısı/türü/görünürlüğü gösteren, veri saklamayan tanı eklendi; SW foundation-102. Yerel SW38/38, yedek40/40, Chromium9/9 ve platform1446/1446 PASS. Uzak CI ve fiziksel Windows sonuçları açık. Rapor: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
+
 ### 2026-11-13 — Yedek sayfasından modüllere dönüş
 
 Windows geri bildirimindeki Today’e dön bağlantısı ayrı yerel görev dalında modüller rotasına bağlandı. Normal açılış home kalır. Tek pencerede de görülen yedek uyarısı için SW aynı origin/sayfa yolunu doğrular, ikinci pencere yasağı korunur, ret nedenleri ayrılır ve cache etiketi foundation-101 olur. Chromium 9/9, hedefli 40/40 + 38/38 ve platform 1446/1446 PASS; fiziksel Windows tekrar testi bekliyor. Rapor: `docs/TODAY-LIVE-BACKUP-RETURN.md`.

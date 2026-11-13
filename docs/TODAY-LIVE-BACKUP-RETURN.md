@@ -9,3 +9,11 @@ Aynı denemede **Diğer Today pencerelerini kapat** uyarısı görüldü. Kullan
 Yeni dönüş, tek client/çift sekme, yedek oluşturma ve cache akışlarını kapsayan Chromium 9/9 PASS. Yedekleme modülü 40/40, SW olayları 38/38, kaynak katalogu 12/12, statik sözleşme 30/30 ve tam platform kapısı 1446/1446 PASS, 0 son FAIL. İlk tam koşu eski `index.html` SHA ve satır envanterinde durdu; satır sayısı korunup yalnız güncel SHA pinleri yenilendikten sonra kapı geçti. Fiziksel Windows/iPhone yeniden kabulü ayrıca kaydedilir. Bu dal canlı Netlify veya GitHub Pages yayınına aktarılmadı.
 
 İlk uzak CI `43373790312` platform ve iki native önizleme işini geçirdi. Tarayıcı işi 176 PASS/2 FAIL verdi: Chromium ve WebKit'te ikinci pencere gerçekte engelleniyordu (`entered:false`), ancak iki test eski genel ret kodunu bekliyordu. Yalnız bu beklentiler yeni `other-client` koduna uyarlandı; yerel ilgili Chromium kurtarma dosyası 5/5 PASS. Güncellenen commit için uzak CI tekrar sonucu beklenir.
+
+## Tek pencere uyarısı için salt okunur tanı
+
+Sonraki fiziksel Windows denemesinde kullanıcı Chrome kullandığını, kurulu Today PWA olmadığını ve bütün sekmeleri kapatıp tarayıcıyı yeniden açarak `backup.html` adresini doğrudan ziyaret ettiğinde de `other-client` uyarısının sürdüğünü bildirdi. Bu, geçiş/BFCache açıklamasını tek başına yeterli kılmaz. Eski protokol client sayısı veya türünü vermediğinden özgül neden henüz bilinmiyor.
+
+`foundation-102` tanısı ret anında yalnız toplam sayfa istemcisi, kaynağın listede bulunup bulunmadığı ve en çok üç diğer istemcinin `backup`/`app`/`other` sayfa türü, görünürlük ve iç çerçeve bilgisini gösterir. Tam URL, sorgu, not, sağlık verisi veya kayıt içeriği aktarılmaz; veri saklanmaz. Tek client ve aynı kaynak ID şartı aynen korunur. Yeni tanıdan sonra fiziksel Windows sonucuyla yanlış ikinci client'ın türü belirlenecek; güvenlik şartı kanıtsız gevşetilmeyecek.
+
+Yerel tanı doğrulaması: SW 38/38, yedekleme 40/40, statik 30/30, ilgili Chromium 9/9 ve tam platform 1446/1446 PASS. Uzak CI ve fiziksel Windows tekrar sonucu bu yeni commit için bekleniyor.

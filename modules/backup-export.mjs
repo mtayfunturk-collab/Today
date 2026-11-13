@@ -212,7 +212,17 @@ export function browserBarrier(view){
       channel.port1.onmessage=event=>{clearTimeout(timer);channel.port1.close();const d=event.data;
         if(d?.protocol!==1||d.scope!==scope||d.navigationLock!==true)reject(bad('coordination-unavailable'));
         else if(d.onlyClient===true)resolve();
-        else reject(bad(['other-client','client-mismatch'].includes(d.denyReason)?d.denyReason:'other-context-or-version'));};
+        else {
+          const error=bad(['other-client','client-mismatch'].includes(d.denyReason)?d.denyReason:'other-context-or-version');
+          const info=d.diagnostic;
+          if(Number.isInteger(info?.total)&&info.total>=0&&info.total<=99&&typeof info.sourceFound==='boolean'&&
+            Array.isArray(info.others)&&info.others.length<=3&&info.others.every(item=>
+              ['backup','app','other'].includes(item?.page)&&['visible','hidden','unknown'].includes(item?.visibility)&&
+              ['top-level','nested','unknown'].includes(item?.frame))){
+            error.diagnostic=info;
+          }
+          reject(error);
+        }};
       try{worker.postMessage({type:'TODAY_BACKUP_CHECK'},[channel.port2]);}
       catch{clearTimeout(timer);channel.port1.close();reject(bad('coordination-unavailable'));}
     });

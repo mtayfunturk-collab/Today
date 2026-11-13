@@ -32,6 +32,10 @@ test('Backup worker accepts one queried page and identifies a second live tab',a
   const second=await context.newPage();
   await second.goto(root+'index.html');
   await expect.poll(async()=>(await probe()).denyReason).toBe('other-client');
+  const blocked=await probe();
+  expect(blocked.diagnostic).toMatchObject({total:2,sourceFound:true,others:[{page:'app'}]});
+  expect(blocked.diagnostic.others[0].visibility).toMatch(/^(visible|hidden|unknown)$/);
+  expect(blocked.diagnostic.others[0].frame).toMatch(/^(top-level|nested|unknown)$/);
   await second.close();
   await expect.poll(async()=>(await probe()).onlyClient).toBe(true);
 });
