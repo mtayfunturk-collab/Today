@@ -1,3 +1,7 @@
+### 2026-11-13 — Yedek sayfasından modüllere dönüş
+
+Windows geri bildirimindeki Today’e dön bağlantısı ayrı yerel görev dalında modüller rotasına bağlandı. Normal açılış home kalır; veri ve yedekleme kilidi değişmez. Yeni Chromium dönüşü 1/1, mevcut tek pencere yedeği 1/1, platform 1446/1446 PASS. Windows’taki eşzamanlı pencere uyarısı tekrar doğrulama bekliyor. Rapor: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
+
 ### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
 
 İlk uzak CI Android paket hazırlığında `backup.html` izin listesi yüzünden durdu. Yalnız bu uygulama dosyası eklendi; native test ve web paket yerelde geçti. Rapor: `docs/TODAY-LIVE-CANDIDATE-2026-11-12.md`.

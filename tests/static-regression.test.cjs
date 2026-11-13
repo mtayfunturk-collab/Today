@@ -13,7 +13,7 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "ea3188cd8d7acb26c3b47709588a6811b5859344a49bed88ad4d1322148dab24",
+    "7c4d3c802305e35b192063916ea8bdb254e1a672eea9298e12ef989e51341c0c",
   "sw.js":
     "3259eced1ab8764815d5dc9dc461d0d5361774f26f4e47c1696632e03df90cc0",
   "modules/adapter-interfaces.js":
