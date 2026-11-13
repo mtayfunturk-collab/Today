@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
 const expectedProductionHashes = {
   "index.html":
-    "ea3188cd8d7acb26c3b47709588a6811b5859344a49bed88ad4d1322148dab24",
+    "7c4d3c802305e35b192063916ea8bdb254e1a672eea9298e12ef989e51341c0c",
   "sw.js":
-    "3259eced1ab8764815d5dc9dc461d0d5361774f26f4e47c1696632e03df90cc0",
+    "7dfaa88c99f17dbe179fc35b6194698206ebbcbd7137bd41b9ba0030ae12978c",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -1239,7 +1239,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-100 ve 141 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-102 ve 141 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1251,7 +1251,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-100"'
+        'const VERSION = "today-v2-foundation-102"'
       )
     );
     assert.ok(shellMatch);

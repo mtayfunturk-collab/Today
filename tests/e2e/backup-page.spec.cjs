@@ -1,6 +1,45 @@
 const {test,expect}=require('@playwright/test');
 const {randomBytes}=require('node:crypto');
 
+test('Backup return opens modules without changing the normal home entry',async({page})=>{
+  const path=`/runs/${randomBytes(12).toString('hex')}/backup.html`;
+  await page.goto(path);
+  await page.getByRole('link',{name:'Today’e dön'}).click();
+  await expect(page).toHaveURL(/\/index\.html\?fromBackup=modules$/);
+  await expect(page.locator('body')).toHaveAttribute('data-route','modules');
+  await expect(page.getByRole('heading',{name:'TODAY',exact:true})).toBeVisible();
+
+  await page.goto(path.replace('backup.html','index.html?fromBackup=unknown'));
+  await expect(page.locator('body')).toHaveAttribute('data-route','home');
+});
+
+test('Backup worker accepts one queried page and identifies a second live tab',async({page,context})=>{
+  const root=`/runs/${randomBytes(12).toString('hex')}/`;
+  await page.goto(root+'index.html');
+  await page.evaluate(()=>navigator.serviceWorker.ready);
+  await page.goto(root+'backup.html?from=settings');
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+  const probe=()=>page.evaluate(async()=>{
+    const channel=new MessageChannel();
+    const answer=new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(Error('worker timeout')),3000);
+      channel.port1.onmessage=event=>{clearTimeout(timer);channel.port1.close();resolve(event.data);};
+    });
+    navigator.serviceWorker.controller.postMessage({type:'TODAY_BACKUP_CHECK'},[channel.port2]);
+    return answer;
+  });
+  await expect.poll(async()=>(await probe()).onlyClient).toBe(true);
+  const second=await context.newPage();
+  await second.goto(root+'index.html');
+  await expect.poll(async()=>(await probe()).denyReason).toBe('other-client');
+  const blocked=await probe();
+  expect(blocked.diagnostic).toMatchObject({total:2,sourceFound:true,others:[{page:'app'}]});
+  expect(blocked.diagnostic.others[0].visibility).toMatch(/^(visible|hidden|unknown)$/);
+  expect(blocked.diagnostic.others[0].frame).toMatch(/^(top-level|nested|unknown)$/);
+  await second.close();
+  await expect.poll(async()=>(await probe()).onlyClient).toBe(true);
+});
+
 test('Separate backup page requires explicit consent and does not write on load',async({page,context})=>{
   const writes=[];
   await context.addInitScript(()=>{

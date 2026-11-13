@@ -4504,9 +4504,9 @@ $("#buildTag").textContent =
   nutritionUI.init({ root: document });
   nutritionLibraryUI.init({ root: document });
 
-  // ilk girişte home kalsın
+  // Yalnız yedek sayfasının modüllere dönüş isteğini açılışta kabul et.
   const routingResult = router.init({
-    initialRoute: "home",
+    initialRoute: new URLSearchParams(window.location.search).get("fromBackup") === "modules" ? "modules" : "home",
     moveFocus: false,
     onRouteChange: handleRouteChange
   });

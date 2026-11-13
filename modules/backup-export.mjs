@@ -211,12 +211,23 @@ export function browserBarrier(view){
       const channel=new view.MessageChannel(),timer=setTimeout(()=>{channel.port1.close();reject(bad('coordination-unavailable'));},2000);
       channel.port1.onmessage=event=>{clearTimeout(timer);channel.port1.close();const d=event.data;
         if(d?.protocol!==1||d.scope!==scope||d.navigationLock!==true)reject(bad('coordination-unavailable'));
-        else d.onlyClient===true?resolve():reject(bad('other-context-or-version'));};
+        else if(d.onlyClient===true)resolve();
+        else {
+          const error=bad(['other-client','client-mismatch'].includes(d.denyReason)?d.denyReason:'other-context-or-version');
+          const info=d.diagnostic;
+          if(Number.isInteger(info?.total)&&info.total>=0&&info.total<=99&&typeof info.sourceFound==='boolean'&&
+            Array.isArray(info.others)&&info.others.length<=3&&info.others.every(item=>
+              ['backup','app','other'].includes(item?.page)&&['visible','hidden','unknown'].includes(item?.visibility)&&
+              ['top-level','nested','unknown'].includes(item?.frame))){
+            error.diagnostic=info;
+          }
+          reject(error);
+        }};
       try{worker.postMessage({type:'TODAY_BACKUP_CHECK'},[channel.port2]);}
       catch{clearTimeout(timer);channel.port1.close();reject(bad('coordination-unavailable'));}
     });
     return locks.request('today:backup:v1:'+new URL(scope).pathname,{mode:'exclusive',ifAvailable:true},async lock=>{
-      if(!lock)throw bad('other-context-or-version');await check();
+      if(!lock)throw bad('backup-lock-busy');await check();
       const payload=await capture();await check();if(sw.controller!==worker)throw bad('worker-changed');return payload;
     });
   };
