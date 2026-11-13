@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-100";
+const VERSION = "today-v2-foundation-101";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -206,10 +206,15 @@ function backupScope() { return self.registration?.scope; }
 async function backupClients(event) {
   const scope = backupScope();
   const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-  const onlyClient = clients.length === 1 && clients[0].id === event.source?.id &&
-    clients[0].url === new URL("backup.html", scope).href;
+  const expected = new URL("backup.html", scope);
+  const sourceClient = clients.find(client => client.id === event.source?.id);
+  const actual = sourceClient && new URL(sourceClient.url);
+  const samePage = actual?.origin === expected.origin && actual.pathname === expected.pathname;
+  const onlyClient = clients.length === 1 && sourceClient === clients[0] && samePage;
+  const denyReason = clients.length > 1 ? "other-client" : "client-mismatch";
   event.ports?.[0]?.postMessage({ protocol: 1, scope,
-    navigationLock: typeof self.navigator?.locks?.request === "function", onlyClient });
+    navigationLock: typeof self.navigator?.locks?.request === "function", onlyClient,
+    denyReason: onlyClient ? null : denyReason });
 }
 
 self.addEventListener("message", (event) => {

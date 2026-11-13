@@ -4,7 +4,7 @@ const vm = require("node:vm");
 const SOURCE_PATH = "sw.js";
 const ORIGIN = "https://today.test";
 const ACTIVE_CACHE =
-  "today-cache-today-v2-foundation-100";
+  "today-cache-today-v2-foundation-101";
 const OLD_CACHE =
   "today-cache-today-v2-foundation-019";
 const FOREIGN_CACHE = "unrelated-cache";
@@ -356,13 +356,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Cache sürümü foundation-100",
+    "Cache sürümü foundation-101",
     async () => {
       assert(
         source.includes(
-          'const VERSION = "today-v2-foundation-100"'
+          'const VERSION = "today-v2-foundation-101"'
         ),
-        "foundation-100 sürüm etiketi yok."
+        "foundation-101 sürüm etiketi yok."
       );
     }
   );
@@ -1017,9 +1017,15 @@ function assert(condition, message) {
     let payload;
     await scoped.triggerMessage({type:"TODAY_BACKUP_CHECK"},{source:{id:"backup-client"},ports:[{postMessage:value=>{payload=value;}}]});
     assert(payload?.protocol===1 && payload?.scope===`${ORIGIN}/` && payload.navigationLock===true && payload.onlyClient===true,"valid client reddedildi");
+    const queried = createRuntime(source,{clients:[{id:"backup-client",url:`${ORIGIN}/backup.html?from=settings#top`}],withLocks:true});
+    await queried.triggerMessage({type:"TODAY_BACKUP_CHECK"},{source:{id:"backup-client"},ports:[{postMessage:value=>{payload=value;}}]});
+    assert(payload?.onlyClient===true && payload.denyReason===null,"aynı yedek sayfasının sorgulu adresi reddedildi");
+    const duplicated = createRuntime(source,{clients:[...clients,{id:"second",url:`${ORIGIN}/index.html`}],withLocks:true});
+    await duplicated.triggerMessage({type:"TODAY_BACKUP_CHECK"},{source:{id:"backup-client"},ports:[{postMessage:value=>{payload=value;}}]});
+    assert(payload?.onlyClient===false && payload.denyReason==="other-client","ikinci pencere reddedilmedi");
     const old = createRuntime(source,{clients,withLocks:false});
     await old.triggerMessage({type:"TODAY_BACKUP_CHECK"},{source:{id:"other"},ports:[{postMessage:value=>{payload=value;}}]});
-    assert(payload?.navigationLock===false && payload?.onlyClient===false,"eksik lock veya farklı client kabul edildi");
+    assert(payload?.navigationLock===false && payload?.onlyClient===false && payload.denyReason==="client-mismatch","eksik lock veya farklı client kabul edildi");
   });
 
   const passed =

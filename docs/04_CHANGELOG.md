@@ -1,6 +1,6 @@
 ### 2026-11-13 — Yedek sayfasından modüllere dönüş
 
-Windows geri bildirimindeki Today’e dön bağlantısı ayrı yerel görev dalında modüller rotasına bağlandı. Normal açılış home kalır; veri ve yedekleme kilidi değişmez. Yeni Chromium dönüşü 1/1, mevcut tek pencere yedeği 1/1, platform 1446/1446 PASS. Windows’taki eşzamanlı pencere uyarısı tekrar doğrulama bekliyor. Rapor: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
+Windows geri bildirimindeki Today’e dön bağlantısı ayrı yerel görev dalında modüller rotasına bağlandı. Normal açılış home kalır. Tek pencerede de görülen yedek uyarısı için SW aynı origin/sayfa yolunu doğrular, ikinci pencere yasağı korunur, ret nedenleri ayrılır ve cache etiketi foundation-101 olur. Chromium 9/9, hedefli 40/40 + 38/38 ve platform 1446/1446 PASS; fiziksel Windows tekrar testi bekliyor. Rapor: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
 
 ### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
 
