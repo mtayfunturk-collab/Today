@@ -1,3 +1,7 @@
+### 2026-11-17 — T90-261101-08 gerçek tarayıcı kalıcı hata kabulü
+
+Yalnız ayrı sentetik origin'de Chromium IndexedDB/localStorage ile kalıcı yazma hatası, başlangıç engeli ve hata kalkınca önceki görüntünün geri alınması test edildi. Yeni1/1, ilgili Chromium6/6, platform1447/1447 PASS; üretim restore, şema ve gerçek kayıtlar aynı. WebKit CI/fiziksel iPhone kabulü açık; iPhone güncelleme sorunu iş #6'da bekliyor. Rapor: `docs/T90-261101-08-BROWSER-RECOVERY.md`.
+
 ### 2026-11-13 — Canlı yedek önizlemesi için güvenli hata tanısı
 
 Canlı Pages `2a70ec9` adayı iPhone'da şifreli dosyayı oluşturup bütünlüğünü doğruladı; kapsam önizlemesi genel hata verdi. Windows'ta dosya oluştu; dosyanın yeniden açılması henüz bildirilmedi. Yerel ayrı dal önizleme hatasında yalnız sabit tanı kodunu gösterir, ham hata/veri/URL/parola göstermez; SW foundation-103. Hedefli önizleme42/42, SW38/38, statik30/30, Chromium6/6 ve tam platform1447/1447 PASS. Yerel WebKit ikilisi bulunmadığı için WebKit testi başlamadı; uzak CI ve gerçek iPhone tekrar kabulü açık. Canlı Pages bu yeni tanı düzeltmesini henüz içermiyor. Ayrıntı: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
