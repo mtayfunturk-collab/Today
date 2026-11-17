@@ -129,6 +129,43 @@ test('Second tab changes synthetic target after preview, so apply stops before w
   await other.close();
 });
 
+test('Existing Today tab blocks synthetic recovery preparation before journaling',async({page,context})=>{
+  const scope=randomBytes(12).toString('hex');
+  await page.goto(`/runs/${scope}/index.html`);
+  await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
+  await page.locator('#btnStart').click();
+  await page.locator('#note').fill('SYNTHETIC SOURCE NOTE');
+  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('today_store_v2')?.includes('SYNTHETIC SOURCE NOTE'))).toBe(true);
+  await page.goto(`/runs/${scope}/backup.html`);
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.evaluate(async()=>{
+    const {captureSnapshot,createBackup,browserBarrier}=await import('./modules/backup-export.mjs');
+    const password='isolated synthetic browser passphrase';
+    const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,crypto,
+      source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+    window.__syntheticFile=(await createBackup({userConfirmed:true,password,confirmation:password,
+      crypto,barrier:browserBarrier(window),capture})).file;
+  });
+  const other=await context.newPage();
+  await other.goto(`/runs/${scope}/index.html`);
+  const result=await page.evaluate(async()=>{
+    const {captureSnapshot,browserBarrier}=await import('./modules/backup-export.mjs');
+    const {createSyntheticRecovery,RECOVERY_DB}=await import('./modules/backup-recovery.mjs');
+    const before=localStorage.getItem('today_store_v2');
+    const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,crypto,
+      source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+    const recovery=createSyntheticRecovery({syntheticProfile:true,indexedDB,storage:localStorage,capture,
+      contracts:TodayNutritionContracts,crypto,barrier:browserBarrier(window)});
+    let code=null;
+    try{await recovery.prepare({file:window.__syntheticFile,password:'isolated synthetic browser passphrase',userConfirmed:true});}
+    catch(error){code=error.code;}
+    return {code,unchanged:localStorage.getItem('today_store_v2')===before,
+      journalAbsent:!(await indexedDB.databases()).some(db=>db.name===RECOVERY_DB)};
+  });
+  expect(result).toEqual({code:'other-client',unchanged:true,journalAbsent:true});
+  await other.close();
+});
+
 test('Existing backup barrier rejects a second Today tab before synthetic recovery',async({page,context})=>{
   const scope=randomBytes(12).toString('hex');
   await page.goto(`/runs/${scope}/index.html`);

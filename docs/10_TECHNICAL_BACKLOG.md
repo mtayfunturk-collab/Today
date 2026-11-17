@@ -1,3 +1,7 @@
+### T90-261101-08 — Önceden açık sekme kabulü
+
+Sentetik koordinatör `prepare`, ikinci açık Today sekmesinde gerçek Chromium'da yazmadan ve günlük oluşturmadan durdu. İlgili7/7, platform1447/1447 PASS. BFCache/Worker değişimi ve fiziksel iPhone ayrı açık kapı; `docs/T90-261101-08-BROWSER-RECOVERY.md`.
+
 ### T90-261101-08 — Kalıcı hata altında sentetik tarayıcı kurtarması
 
 Gerçek Chromium'da kalıcı localStorage hatası `RECOVERY_REQUIRED` ve güvenli başlangıç reddi üretiyor; hata kalkınca eski görüntü geri alınıp günlük temizleniyor. Hedefli6/6, platform1447/1447 PASS. Bu yalnız dar sentetik kabul: WebKit, BFCache/eski yazıcı yarışı, fiziksel cihaz ve üretim restore açık. Ayrıntı `docs/T90-261101-08-BROWSER-RECOVERY.md`. iPhone güncelleme/önizleme iş #6'da ertelendi.

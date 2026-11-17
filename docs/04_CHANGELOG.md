@@ -1,3 +1,7 @@
+### 2026-11-17 — T90-261101-08 önceden açık sekme reddi
+
+Sentetik geri yükleme hazırlığında önceden açık ikinci Today sekmesi `other-client` ile reddedildi; kaynak Core kaydı ve kurtarma günlüğü değişmedi. Yeni1/1, ilgili Chromium7/7, platform1447/1447 PASS. BFCache/eski Worker yazıcısı ve gerçek iPhone açık. Rapor: `docs/T90-261101-08-BROWSER-RECOVERY.md`.
+
 ### 2026-11-17 — T90-261101-08 gerçek tarayıcı kalıcı hata kabulü
 
 Yalnız ayrı sentetik origin'de Chromium IndexedDB/localStorage ile kalıcı yazma hatası, başlangıç engeli ve hata kalkınca önceki görüntünün geri alınması test edildi. Yeni1/1, ilgili Chromium6/6, platform1447/1447 PASS; üretim restore, şema ve gerçek kayıtlar aynı. WebKit CI/fiziksel iPhone kabulü açık; iPhone güncelleme sorunu iş #6'da bekliyor. Rapor: `docs/T90-261101-08-BROWSER-RECOVERY.md`.
