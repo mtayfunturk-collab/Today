@@ -1,3 +1,7 @@
+### T90-261101-08 — BFCache ve eski yazıcı kararı
+
+`docs/T90-261101-08-BFCACHE-WRITER-PLAN.md` kabul matrisi hazır. Sıradaki dar iş BFCache uygunluğunu ve eski Worker kimliğini sentetik test aracında gözlemlemek; `persisted!==true` PASS sayılmaz. Normal yazıcılar ortak lock kullanmadığı için üretim restore ve fiziksel iPhone kapısı açık.
+
 ### T90-261101-08 — Önceden açık sekme kabulü
 
 Sentetik koordinatör `prepare`, ikinci açık Today sekmesinde gerçek Chromium'da yazmadan ve günlük oluşturmadan durdu. İlgili7/7, platform1447/1447 PASS. BFCache/Worker değişimi ve fiziksel iPhone ayrı açık kapı; `docs/T90-261101-08-BROWSER-RECOVERY.md`.

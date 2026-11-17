@@ -1,3 +1,7 @@
+### 2026-11-17 — T90-261101-08 BFCache/eski yazıcı kabul planı
+
+Mevcut navigasyon ve tek pencere kilidinin normal yazıcıları kapsamadığı kaynak üzerinden doğrulandı. BFCache `persisted` kanıtı, eski Worker ve işlem ortası yazıcı yarışı için ayrı geçme ölçütleri belgelendi. Yalnız plan; test PASS, yeni veri yapısı veya üretim restore yetkisi yok. `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.
+
 ### 2026-11-17 — T90-261101-08 önceden açık sekme reddi
 
 Sentetik geri yükleme hazırlığında önceden açık ikinci Today sekmesi `other-client` ile reddedildi; kaynak Core kaydı ve kurtarma günlüğü değişmedi. Yeni1/1, ilgili Chromium7/7, platform1447/1447 PASS. BFCache/eski Worker yazıcısı ve gerçek iPhone açık. Rapor: `docs/T90-261101-08-BROWSER-RECOVERY.md`.
