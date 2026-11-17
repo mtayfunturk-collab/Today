@@ -1,3 +1,7 @@
+### 2026-11-17 — T90-261101-08 BFCache gözlem aracı
+
+Rastgele sentetik tarayıcı kapsamındaki yeni test, `pagehide`/`pageshow.persisted`, belge ve Service Worker kimliğini gözler; normal yeniden yüklemeyi BFCache geçişi saymaz. Yerel Chromium: gözlem testi 1/1, ilgili grup 8/8, platform 1447/1447 PASS; gerçek BFCache uygunluğu oluşmadı. Üretim kodu, veri anahtarları, geri yükleme durumu ve canlı yayın değişmedi. Açık kapılar: eski Worker revizyon yarışı, BFCache yazıcısı, WebKit ve fiziksel iPhone kabulü. Ayrıntı `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.
+
 ### 2026-11-17 — T90-261101-08 BFCache/eski yazıcı kabul planı
 
 Mevcut navigasyon ve tek pencere kilidinin normal yazıcıları kapsamadığı kaynak üzerinden doğrulandı. BFCache `persisted` kanıtı, eski Worker ve işlem ortası yazıcı yarışı için ayrı geçme ölçütleri belgelendi. Yalnız plan; test PASS, yeni veri yapısı veya üretim restore yetkisi yok. `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.

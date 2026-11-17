@@ -27,3 +27,9 @@ Her koşu ayrı rastgele `/runs/<id>/` kapsamı ve geçici tarayıcı profili ku
 İlk küçük uygulama adımı BFCache uygunluğunu ve eski Worker kimliğini yalnız test aracında gözlenebilir kılmaktır. Yazıcı gerçekten kilidi aşabiliyorsa üretim restore açılmaz; ortak yazıcı kapısı veya eşdeğer tek-yazıcı protokolü için ayrı mimari karar ve test gerekir. Mevcut şema/anahtar değiştirilmez. İkinci adım sentetik yarış ve geri alma kabulüdür. Son kapı, kullanıcının iPhone Safari ve kurulu PWA'sında ayrı fiziksel doğrulamadır; iş #6 erteliyken bu kapı kapatılamaz.
 
 Bu plan test PASS sonucu veya üretim geri yükleme onayı değildir. Şifreli dosyanın bütünlük kontrolü, dosyanın gerçek verileri geri yükleyebildiğini tek başına kanıtlamaz.
+
+## 17 Kasım 2026 — sentetik BFCache gözlem aracı
+
+`tests/e2e/bfcache-eligibility.spec.cjs` ayrı rastgele `/runs/<id>/` kapsamında belge kimliği, `pagehide`/`pageshow.persisted`, denetleyen Service Worker adresi/durumu, `controllerchange` sayısı ve aynı belgede Worker nesne kimliğini ölçer. Olaylar geçici sekme `sessionStorage` anahtarında tutulur ve test sonunda silinir. Testin PASS olması yalnız ölçümün tutarlılığıdır; BFCache kabulü için **aynı belge** ve her iki olayda `persisted===true` birlikte gerekir. Aynı `sw.js` adresi aynı Worker sürümünü kanıtlamaz; eski revizyon yarışı ayrıca sınanmalıdır.
+
+Yerel Chromium ölçümü: test **1 PASS / 0 FAIL**; bitişik sentetik kurtarma grubuyla **8/8 PASS**, platform regresyonu **1447/1447 PASS**. `pagehide.persisted=false`, `pageshow.persisted=false`, belge değişti, önce/sonra Worker adresi aynı kapsamda `sw.js`, önceki belge bir `controllerchange` gördü. Bu koşuda BFCache uygunluğu **sağlanmadı**; eski sayfanın geri yükleme sırasında yazması ve eski Worker sürümü hakkında geçme kanıtı yok. Üretim restore kapalı kalır. WebKit ve fiziksel iPhone Safari/kurulu PWA ölçümü ayrıca açık.
