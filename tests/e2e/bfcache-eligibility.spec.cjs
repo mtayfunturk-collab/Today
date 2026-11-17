@@ -3,9 +3,10 @@ const {randomBytes}=require('node:crypto');
 
 // Diagnostic only: a green test means the observations are consistent, not that
 // BFCache or a concurrent old writer has passed restore acceptance.
-test('Synthetic navigation identifies BFCache and the controlling worker without treating reload as a hit',async({page})=>{
+for(const destination of ['about:blank','same-origin backup'])test(`Synthetic ${destination} navigation identifies BFCache without treating reload as a hit`,async({page,request},testInfo)=>{
   const scope=randomBytes(12).toString('hex');
   const key=`TODAY_BFCACHE_PROBE_${scope}`;
+  expect((await request.post(`/__test/bfcache/${scope}`)).status()).toBe(204);
   await page.addInitScript(({key})=>{
     const token=crypto.randomUUID();
     let controllerChanges=0;
@@ -36,13 +37,18 @@ test('Synthetic navigation identifies BFCache and the controlling worker without
   await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
   await page.evaluate(()=>window.__todayBfcacheProbe.pinController());
   const before=await page.evaluate(()=>window.__todayBfcacheProbe.snapshot());
-  await page.goto('about:blank');
-  await page.goBack({waitUntil:'domcontentloaded'});
+  await page.goto(destination==='about:blank'?'about:blank':`/runs/${scope}/backup.html`);
+  // A BFCache restore does not fire DOMContentLoaded again.
+  await page.goBack({waitUntil:'commit'});
   await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
   const after=await page.evaluate(()=>window.__todayBfcacheProbe.snapshot());
   await expect.poll(()=>page.evaluate(()=>window.__todayBfcacheProbe.events()
     .some(event=>event.kind==='pageshow'&&event.token===window.__todayBfcacheProbe.token))).toBe(true);
   const events=await page.evaluate(()=>window.__todayBfcacheProbe.events());
+  const notRestoredReasons=await page.evaluate(()=>{
+    const reasons=performance.getEntriesByType('navigation')[0]?.notRestoredReasons?.reasons;
+    return Array.isArray(reasons)?reasons.map(item=>item.reason):null;
+  });
   await page.evaluate(()=>window.__todayBfcacheProbe.clear());
 
   const outgoing=events.findLast(event=>event.kind==='pagehide'&&event.token===before.token);
@@ -53,11 +59,13 @@ test('Synthetic navigation identifies BFCache and the controlling worker without
   expect(after.worker?.scriptURL).toContain(`/runs/${scope}/sw.js`);
   const sameDocument=before.token===after.token;
   const bfcacheHit=sameDocument&&outgoing.persisted===true&&returned.persisted===true;
-  if(returned.persisted)expect(bfcacheHit).toBe(true);
-  if(!sameDocument)expect(bfcacheHit).toBe(false);
-  console.log('BFCache diagnostic '+JSON.stringify({bfcacheHit,sameDocument,
+  console.log('BFCache diagnostic '+JSON.stringify({destination,bfcacheHit,sameDocument,
     pagehidePersisted:outgoing.persisted,pageshowPersisted:returned.persisted,
     beforeWorker:before.worker,afterWorker:after.worker,
+    notRestoredReasons,
     sameControllerObject:after.sameControllerObject,
     beforeControllerChanges:before.controllerChanges,afterControllerChanges:after.controllerChanges}));
+  if(testInfo.project.name==='chromium-bfcache')expect(bfcacheHit).toBe(true);
+  if(returned.persisted)expect(bfcacheHit).toBe(true);
+  if(!sameDocument)expect(bfcacheHit).toBe(false);
 });

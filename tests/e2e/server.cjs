@@ -5,6 +5,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "../..");
 const revisions = new Map();
+const bfcacheScopes = new Set();
 const rootFiles = new Set([
   "index.html", "backup.html", "sw.js", "manifest.json", "storage.js", "version.js",
   "health-hub.js", "nutrition-unit-rules.json", "today-icon-v9-192.png",
@@ -34,6 +35,12 @@ const server = http.createServer(async (request, response) => {
       response.writeHead(204).end();
       return;
     }
+    const bfcache = pathname.match(/^\/__test\/bfcache\/([a-f0-9]{24})$/);
+    if (bfcache && request.method === "POST") {
+      bfcacheScopes.add(bfcache[1]);
+      response.writeHead(204).end();
+      return;
+    }
     const scopedPath = pathname.match(/^\/runs\/([a-f0-9]{24})\/(.*)$/);
     if (!scopedPath || request.method !== "GET") {
       response.writeHead(404).end();
@@ -56,7 +63,7 @@ const server = http.createServer(async (request, response) => {
     }
     response.writeHead(200, {
       "content-type": mime[path.extname(relativePath)] || "application/octet-stream",
-      "cache-control": "no-store"
+      "cache-control": bfcacheScopes.has(scope) ? "no-cache" : "no-store"
     }).end(body);
   } catch (error) {
     response.writeHead(error.code === "ENOENT" ? 404 : 500).end();
