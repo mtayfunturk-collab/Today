@@ -28,7 +28,11 @@ test('Missing startup manager and dictionary preserve Turkish fallback, records 
   await unchanged(page);
   await context.unroute('**/modules/startup-manager.js', fail);
   await context.unroute('**/modules/locales/core-tr.mjs', fail);
-  await surface.getByRole('button', { name: 'Yeniden dene', exact: true }).click();
+  // The retry handler reloads the document; wait for that navigation before evaluating it.
+  await Promise.all([
+    page.waitForEvent('load'),
+    surface.getByRole('button', { name: 'Yeniden dene', exact: true }).click()
+  ]);
   await expect.poll(() => page.evaluate(() => window.TodayStartup?.getStatus().phase)).toBe('ready');
   await expect(surface).toHaveCount(0);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('today_store_v2')).days['2026-07-30'].note)).toBe('Sentetik korunan başlangıç notu');

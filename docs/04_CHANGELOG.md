@@ -1,6 +1,6 @@
 ### 2026-11-17 — T90-261101-08 BFCache gözlem aracı
 
-Rastgele sentetik tarayıcı kapsamındaki yeni test, `pagehide`/`pageshow.persisted`, belge ve Service Worker kimliğini gözler; normal yeniden yüklemeyi BFCache geçişi saymaz. Yerel Chromium: gözlem testi 1/1, ilgili grup 8/8, platform 1447/1447 PASS. CI koşusu 44050769855: 4/4 iş, Chromium/WebKit 184/184 PASS; iki motorda da gerçek BFCache uygunluğu oluşmadı. Üretim kodu, veri anahtarları, geri yükleme durumu ve canlı yayın değişmedi. Açık kapılar: eski Worker revizyon yarışı, BFCache yazıcısı ve fiziksel iPhone kabulü. Ayrıntı `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.
+Rastgele sentetik tarayıcı kapsamındaki yeni test, `pagehide`/`pageshow.persisted`, belge ve Service Worker kimliğini gözler; normal yeniden yüklemeyi BFCache geçişi saymaz. Yerel Chromium: gözlem testi 1/1, ilgili grup 8/8, platform 1447/1447 PASS. CI koşusu 44050769855: 4/4 iş, Chromium/WebKit 184/184 PASS; iki motorda da gerçek BFCache uygunluğu oluşmadı. Sonraki belge commit'inin CI koşusu 44052238139 mevcut WebKit başlangıç testinde 183/184 kaldı; yeniden dene sonrası yükleme yarışı testte giderildi, hedefli Chromium 4/4 PASS, yeni WebKit CI bekleniyor. Üretim kodu, veri anahtarları, geri yükleme durumu ve canlı yayın değişmedi. Açık kapılar: eski Worker revizyon yarışı, BFCache yazıcısı ve fiziksel iPhone kabulü. Ayrıntı `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.
 
 ### 2026-11-17 — T90-261101-08 BFCache/eski yazıcı kabul planı
 
