@@ -1,3 +1,7 @@
+### T90-261101-08 — Kalıcı hata altında sentetik tarayıcı kurtarması
+
+Gerçek Chromium'da kalıcı localStorage hatası `RECOVERY_REQUIRED` ve güvenli başlangıç reddi üretiyor; hata kalkınca eski görüntü geri alınıp günlük temizleniyor. Hedefli6/6, platform1447/1447 PASS. Bu yalnız dar sentetik kabul: WebKit, BFCache/eski yazıcı yarışı, fiziksel cihaz ve üretim restore açık. Ayrıntı `docs/T90-261101-08-BROWSER-RECOVERY.md`. iPhone güncelleme/önizleme iş #6'da ertelendi.
+
 ### Canlı aday — üretim restore ve fiziksel kabul
 
 Yerel salt okunur önizleme ekranı tamamlandı. Yazma/kurtarma UI bağlantısı, BFCache/WebKit ve gerçek iPhone Safari/kurulu PWA kabulü açık; uzak CI yeni adayı henüz görmedi. Rapor: `docs/TODAY-LIVE-RESTORE-UI.md`.

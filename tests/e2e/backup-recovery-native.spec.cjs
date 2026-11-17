@@ -44,6 +44,52 @@ for(const failure of [false,true])test(`Native IndexedDB synthetic restore ${fai
   expect(result.startup.status).toBe('VERIFIED_AND_CLEANED');
 });
 
+test('Persistent write failure blocks synthetic recovery until the before-image is restored',async({page})=>{
+  const scope=randomBytes(12).toString('hex');
+  await page.goto(`/runs/${scope}/index.html`);
+  await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
+  await page.locator('#btnStart').click();
+  await page.locator('#note').fill('SYNTHETIC SOURCE NOTE');
+  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('today_store_v2')?.includes('SYNTHETIC SOURCE NOTE'))).toBe(true);
+  await page.goto(`/runs/${scope}/backup.html`);
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+  const result=await page.evaluate(async()=>{
+    const {captureSnapshot,createBackup,browserBarrier}=await import('./modules/backup-export.mjs');
+    const {createSyntheticRecovery}=await import('./modules/backup-recovery.mjs');
+    const key='today_store_v2',legacy='today_app_v10',password='isolated synthetic browser passphrase';
+    const origin={appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'};
+    localStorage.setItem(legacy,JSON.stringify({v:10,days:{},logs:{}}));
+    let fail=false;
+    const storage={get length(){return localStorage.length;},key:i=>localStorage.key(i),
+      getItem:k=>localStorage.getItem(k),
+      setItem(k,v){if(fail&&k===legacy)throw Error('SYNTHETIC_PERSISTENT_FAILURE');localStorage.setItem(k,v);},
+      removeItem(k){if(fail&&k===legacy)throw Error('SYNTHETIC_PERSISTENT_FAILURE');localStorage.removeItem(k);}};
+    const capture=()=>captureSnapshot({storage,indexedDB,contracts:TodayNutritionContracts,crypto,source:origin});
+    const barrier=browserBarrier(window);
+    const file=(await createBackup({userConfirmed:true,password,confirmation:password,
+      crypto,barrier,capture})).file;
+    const target=localStorage.getItem(key).replace('SYNTHETIC SOURCE NOTE','SYNTHETIC TARGET NOTE');
+    localStorage.setItem(key,target);
+    const before=await capture();
+    const coordinator=()=>createSyntheticRecovery({syntheticProfile:true,indexedDB,storage,capture,
+      contracts:TodayNutritionContracts,crypto,barrier});
+    const active=coordinator();
+    const preview=await active.prepare({file,password,userConfirmed:true});
+    fail=true;
+    const applied=await active.apply(preview,{replaceConfirmed:true});
+    const blocked=await coordinator().guardStartup();
+    fail=false;
+    const recovered=await coordinator().guardStartup();
+    const after=await capture();
+    const clean=await coordinator().guardStartup();
+    return {applied:applied.status,blocked:blocked.canStart,recovered:recovered.status,
+      clean:clean.status,unchanged:JSON.stringify(after.localStorageEntries)===JSON.stringify(before.localStorageEntries)
+        &&JSON.stringify(after.databases)===JSON.stringify(before.databases)};
+  });
+  expect(result).toEqual({applied:'RECOVERY_REQUIRED',blocked:false,
+    recovered:'ROLLED_BACK_AND_CLEANED',clean:'NO_ATTEMPT',unchanged:true});
+});
+
 test('Second tab changes synthetic target after preview, so apply stops before writing',async({page,context})=>{
   const scope=randomBytes(12).toString('hex');
   await page.goto(`/runs/${scope}/index.html`);
