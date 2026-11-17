@@ -20,6 +20,7 @@ module.exports = defineConfig({
   projects: [
     {
       name: "chromium-desktop",
+      testIgnore: /bfcache-writer-probe\.cjs/,
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
@@ -28,7 +29,23 @@ module.exports = defineConfig({
       }
     },
     {
+      // Playwright disables BFCache by default. Keep this exception limited to
+      // the eligibility probe so other browser tests remain deterministic.
+      name: "chromium-bfcache",
+      testMatch: /bfcache-(?:eligibility\.spec|writer-probe)\.cjs/,
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+            ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
+            : {}),
+          ignoreDefaultArgs: ["--disable-back-forward-cache"]
+        }
+      }
+    },
+    {
       name: "webkit-iphone",
+      testIgnore: /bfcache-writer-probe\.cjs/,
       use: { ...devices["iPhone 13"] }
     }
   ],
