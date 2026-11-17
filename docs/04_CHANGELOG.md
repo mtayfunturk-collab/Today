@@ -2,6 +2,8 @@
 
 Test sunucusu ve ayrı Chromium projesinde gerçek BFCache dönüşü oluşturuldu; iki gezinmede aynı belge ve `persisted=true` doğrulandı. Yeni Worker revizyonu sırasında bariyer yakalamayı reddetti. Buna karşılık BFCache'ten canlanan eski sayfa yedek Web Lock tutulurken yalnız sentetik anahtara yazabildi: **yazıcı güvenliği kabulü FAIL**. İlgili yerel Chromium 13/13, platform 1447/1447 PASS; bunlar bu açık güvenlik sınırını kapatmaz. Üretim kodu, kullanıcı verisi, canlı yayın ve gerçek restore değişmedi. Sonraki iş ortak yazıcı kapısı veya eşdeğer protokol tasarımı. `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.
 
+İlk uzak CI 44087589586 tarayıcıda 188 PASS / 3 FAIL verdi; yeni BFCache projesi paketli tarayıcıda dönüş üretmedi. Özel proje tam Chromium kanalına alındı, yerel özel test 3/3 PASS; uzak doğrulama bekleniyor. Yazıcı güvenliği kabulü yine FAIL.
+
 ### 2026-11-17 — T90-261101-08 BFCache gözlem aracı
 
 Rastgele sentetik tarayıcı kapsamındaki yeni test, `pagehide`/`pageshow.persisted`, belge ve Service Worker kimliğini gözler; normal yeniden yüklemeyi BFCache geçişi saymaz. Yerel Chromium: gözlem testi 1/1, ilgili grup 8/8, platform 1447/1447 PASS. CI koşusu 44050769855: 4/4 iş, Chromium/WebKit 184/184 PASS; iki motorda da gerçek BFCache uygunluğu oluşmadı. Sonraki belge commit'inin CI koşusu 44052238139 mevcut WebKit başlangıç testinde 183/184 kaldı; yeniden dene sonrası yükleme yarışı testte giderildi, hedefli Chromium 4/4 PASS, yeni WebKit CI bekleniyor. Üretim kodu, veri anahtarları, geri yükleme durumu ve canlı yayın değişmedi. Açık kapılar: eski Worker revizyon yarışı, BFCache yazıcısı ve fiziksel iPhone kabulü. Ayrıntı `docs/T90-261101-08-BFCACHE-WRITER-PLAN.md`.

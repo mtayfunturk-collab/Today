@@ -29,8 +29,8 @@ module.exports = defineConfig({
       }
     },
     {
-      // Playwright disables BFCache by default. Keep this exception limited to
-      // the eligibility probe so other browser tests remain deterministic.
+      // Playwright disables BFCache by default and its bundled headless shell
+      // may not restore pages. Use full Chromium only for these probes.
       name: "chromium-bfcache",
       testMatch: /bfcache-(?:eligibility\.spec|writer-probe)\.cjs/,
       use: {
@@ -38,7 +38,7 @@ module.exports = defineConfig({
         launchOptions: {
           ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
             ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
-            : {}),
+            : { channel: "chromium" }),
           ignoreDefaultArgs: ["--disable-back-forward-cache"]
         }
       }

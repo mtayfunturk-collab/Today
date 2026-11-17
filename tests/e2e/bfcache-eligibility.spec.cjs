@@ -59,13 +59,13 @@ for(const destination of ['about:blank','same-origin backup'])test(`Synthetic ${
   expect(after.worker?.scriptURL).toContain(`/runs/${scope}/sw.js`);
   const sameDocument=before.token===after.token;
   const bfcacheHit=sameDocument&&outgoing.persisted===true&&returned.persisted===true;
-  if(testInfo.project.name==='chromium-bfcache')expect(bfcacheHit).toBe(true);
-  if(returned.persisted)expect(bfcacheHit).toBe(true);
-  if(!sameDocument)expect(bfcacheHit).toBe(false);
   console.log('BFCache diagnostic '+JSON.stringify({destination,bfcacheHit,sameDocument,
     pagehidePersisted:outgoing.persisted,pageshowPersisted:returned.persisted,
     beforeWorker:before.worker,afterWorker:after.worker,
     notRestoredReasons,
     sameControllerObject:after.sameControllerObject,
     beforeControllerChanges:before.controllerChanges,afterControllerChanges:after.controllerChanges}));
+  if(testInfo.project.name==='chromium-bfcache')expect(bfcacheHit).toBe(true);
+  if(returned.persisted)expect(bfcacheHit).toBe(true);
+  if(!sameDocument)expect(bfcacheHit).toBe(false);
 });
