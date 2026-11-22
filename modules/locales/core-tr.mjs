@@ -3,7 +3,7 @@ export const CORE_TR = Object.freeze({
   "home.title": "TODAY",
   "home.start": "Başla",
   "home.privacy": "verileriniz sadece bu cihazda kaydedilmektedir.",
-  "modules.label": "Today modülleri",
+  "modules.label": "Alanlarım",
   "modules.core.title": "Today Core",
   "modules.core.description": "Günlük, notlar ve ajanda",
   "modules.health.title": "Today Health",
