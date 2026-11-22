@@ -446,26 +446,28 @@
 /* Kart grubunu ekranın görsel merkezine taşır */
 .moduleCards {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
 
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: 12px;
 
   margin: auto;
-  padding: 30px 0 26px;
+  padding: 18px 0 22px;
 }
 
 /* Geniş ve dolgulu modül kartı */
 .moduleCard {
   width: 100%;
-  min-height: 98px;
+  min-height: 148px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 18px;
+  justify-content: center;
+  gap: 10px;
 
-  padding: 20px 22px;
+  padding: 16px 12px;
 
   border: 2px solid rgba(255, 255, 255, 0.22);
   border-radius: 24px;
@@ -482,7 +484,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 
   color: inherit;
-  text-align: left;
+  text-align: center;
+  overflow-wrap: anywhere;
   cursor: pointer;
 
   -webkit-tap-highlight-color: transparent;
@@ -525,7 +528,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 5px;
 }
 
 .moduleText strong {
@@ -1265,12 +1269,12 @@ html[data-theme="light"] .healthSelect {
 /* Dar ekran düzenlemesi */
 @media (max-width: 420px) {
   .moduleCards {
-    gap: 14px;
+    gap: 12px;
   }
 
   .moduleCard {
-    min-height: 92px;
-    padding: 18px 19px;
+    min-height: 148px;
+    padding: 14px 10px;
     border-radius: 22px;
   }
 
@@ -1833,11 +1837,11 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 >
 
   <div class="moduleCenterHead">
-    <h1 class="title" id="modulesTitle" data-view-title tabindex="-1">TODAY</h1>
+    <h1 class="title" id="modulesTitle" data-view-title tabindex="-1">Alanlarım</h1>
     <button class="ghost" id="btnCoreFromModules" type="button">Core’a dön</button>
   </div>
 
-  <div class="moduleCards" role="group" aria-label="Today modülleri">
+  <div class="moduleCards" role="group" aria-label="Alanlarım">
 
     <button
       class="moduleCard"

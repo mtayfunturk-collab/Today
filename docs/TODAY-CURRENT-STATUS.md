@@ -1,5 +1,30 @@
 # Today — Ana talimata göre güncel durum
 
+## 22 Kasım 2026 — kontrollü otonom görev kaydı
+
+Bu bölüm güncel yürütme kaydıdır; aşağıdaki 12 Kasım metni tarihsel anlık görüntü olarak korunur. İşler küçük teslimlerle ilerler. Merge, `main`, deploy/canlı yayın, koruma/secret/izin ayarı, ücretli işlem, mevcut veri/şema değişimi, yeni kişisel veri aktarımı, kimlik doğrulama uygulaması ve üretim restore ayrı onay kapısıdır. Otomatik test, fiziksel iPhone kabulü değildir.
+
+**Doğrulanan taban:** `main` `3dbd265`, NUT `ede686d`, Radio `b57dbce`; ilk Alanlarım dalı temiz PR #3 başı `1358799` üzerinden `task/t90-261101-po1-areas01` olarak açıldı. PR #1 → #2 → #3 ürün bağımlılık zinciridir. PR #4 ve #7–#11 yedek/kurtarma zincirini taşır; Alanlarım arayüzüne taban seçilmedi. PR #11 CI 4/4 ve tarayıcı 191/191 PASS olsa da BFCache eski yazıcısı güvenlik kabulü FAIL; üretim restore kapalı. Yerel `Today-backup-return` çalışma ağacındaki önceki değişiklikler korunur, bu dalda kullanılmaz. Canlı uygulama ve gerçek cihaz kabulü bu adaydan ayrıdır. iPhone güncellemesinin artık çalıştığı ürün sahibi tarafından bildirildi; Windows 10 açılış doğrulaması [iş #6](https://github.com/mtayfunturk-collab/Today/issues/6) kapsamında açık.
+
+| Görev | Durum | Amaç ve bağımlılık | Veri/izin etkisi, kabul ve test | Risk; ilk tahmin |
+|---|---|---|---|---|
+| T90-261101-PO1-AREAS01 | Doğrulanıyor | Mevcut Core, Health, Sky, Radio için Alanlarım ilk görünümü; PR #3 tabanı | Yeni kayıt/izin yok; Core↔Alanlarım notu, rota/geri, taşma, büyük yazı, mini oynatıcı yerelde PASS | Uzak CI/fiziksel cihaz açık; küçük |
+| T90-261101-PO1-AREAS02 | Bekliyor | Core/Alanlarım/Ayarlar ortak gezinmesi; AREAS01 | Yeni kayıt yok; geri hareketi ve ayar alt ekranı kabulü | Rota regresyonu; küçük/orta |
+| T90-261101-PO1-AREAS03 | Bekliyor | Alan sıralama/sabitleme/gizleme; AREAS02 | Yeni yerel tercih ve yedek kapsamı tasarlanmalı; gizleme kayıt silmez | Veri tercihi/yedek; orta |
+| Radio favori/metaveri dilimleri | Bekliyor | Tek oynatıcı korunarak kullanıcı eylemli favori; uygun kaynak varsa güvenilir parça bilgisi | Favori yeni yerel veri/yedek kapsamı; ayrı izin ve boş durum testleri | Yayıncı koşulları; orta |
+| Odak/Koleksiyonlar/Planlar/Yerler | Bekliyor | Alanlarım sonrası her biri ayrı bağımsız modül | Her modüle küçük yerel sözleşme/yedek kapsamı; davranış ve izin testleri | Depolama/UX; her biri orta |
+| Core ses/dil/doğum günü | Bekliyor | Düzenlenebilir ses taslağı, tamamlanmış TR/EN, isteğe bağlı kutlama | Mikrofon/dış aktarım ayrımı; dil ve tercih yedeği; cihaz kabulü | İzin/çeviri; orta/yüksek |
+| Sky 2027, Anılar/Üret/Keşfet | Bekliyor | Ayrı veri ve içerik dilimleri | Kaynak/lisans, yerel veri/yedek, tarih/cihaz testleri | Kaynak ve medya kotası; orta/yüksek |
+| Today Sürüş fizibilitesi | Bekliyor | Harita/araç lisansı ve maliyet kararı sonrası küçük bölge prototipi | Hesap/ücret kapısında durur; gerçek coğrafya ve cihaz performansı kabulü | Lisans/maliyet; yüksek |
+| Native saat/bildirim | Engellendi | Mevcut kod korunur; üyelik ve fiziksel cihaz yolu ayrıca | PWA/native ayrımı, tür bazlı izin ve gerçek cihaz kabulü | Ücretli üyelik/cihaz; yüksek |
+| Üretim geri yükleme | Engellendi | PR #11 eski BFCache yazıcısı ortak kilidi aşabiliyor | Ortak yazıcı protokolü, sentetik bütünlük ve fiziksel kabul olmadan açılmaz | Veri güvenliği; yüksek |
+
+**AREAS01 kapsamı:** `index.html` modül alanı ve Türkçe sunum sözlüğü/bağlaması; ilgili E2E ve statik testler; bu kayıt, changelog ve AGENTS. Hedef mevcut dört kartı mobilde uygun iki sütuna, dar/büyük yazıda tek sütuna yerleştirmek; Başla→Core, küçük modül ikonu, mevcut kimlik/rotalar/geri ve tek Radio mini oynatıcıyı korumaktır. Kalıcı anahtar, store, şema, migration, uygulama ses akışı ve diğer modül içeriği kapsam dışı. Önce hedefli gezinme/yerleşim testi, ardından gerekli platform ve tarayıcı kapıları çalıştırılır. Fiziksel iPhone Safari/PWA kabulü ve canlı yayın ayrıca açık kalır.
+
+**AREAS01 yerel sonuç:** Hedefli Chromium gezinme/yerleşim/Radio 27/27 PASS; `npm test` platform kapısı 1446/1446 PASS. İlk tam koşuda kaynak envanteri eski Alanlarım metni/hash/satırlarını tuttuğu için test başarısızdı; envanter güncellendikten sonra tam kapı geçti. Araç sandbox'ında ilk deneme `spawnSync EPERM` verdi; izinli yerel koşu sonucu kullanıldı. Gerçek iPhone ve uzak CI bu yeni aday için henüz doğrulanmadı; PR ve CI sonucu eklenecek. Sonraki bağımsız görev AREAS02 ortak gezinme, bağımlılığı AREAS01 taslak PR'dır.
+
+### Tarihsel 12 Kasım kaydı
+
 12 Kasım 2026, TSİ. Kaynak: mevcut Radio tabanlı yerel aday ve10 Kasım TODAY-CURRENT-EXECUTION-PLAN.md. Bu belge ürün talimatını veya görev sırasını değiştirmez; otomatik yürütme/yayın yetkisi değildir.10 Kasım planındaki “hizalamalar henüz uygulanmadı” satırları aşağıdaki yerel ilerlemeyle güncellenmiştir; veri güvenliği ve kabul kapıları kapanmamıştır.
 
 Güncel canlı adayda ayrı sentetik hedefe geri yükleme ve kesinti sonrası geri alma prototipi test edildi; yerel gerçek Chromium IndexedDB ve mevcut tek pencere kilidi kabulü ayrıca yürütüldü. Salt okunur önizleme formu yerel backup sayfasında çevrimdışı kabul aldı. Üretim restore bağlantısı, BFCache yarışı, WebKit ve fiziksel kabul açık. Ayrıntı `TODAY-LIVE-SYNTHETIC-RECOVERY.md`, `TODAY-LIVE-NATIVE-RECOVERY-ACCEPTANCE.md`, `TODAY-LIVE-WRITER-ADMISSION.md` ve `TODAY-LIVE-RESTORE-UI.md`.

@@ -10,10 +10,10 @@ const updatedHtml = fs.readFileSync(
   "utf8"
 );
 
-// NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
+// Reviewed Alanlarım layout/copy update on PR #3 base; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "ea3188cd8d7acb26c3b47709588a6811b5859344a49bed88ad4d1322148dab24",
+    "f832eacdccee3460573362057475a318de9c47d7e7ad06fcb0ab8f278115ab1e",
   "sw.js":
     "3259eced1ab8764815d5dc9dc461d0d5361774f26f4e47c1696632e03df90cc0",
   "modules/adapter-interfaces.js":

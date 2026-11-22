@@ -38,8 +38,9 @@ const { JSDOM } = require('jsdom');
     }
   });
 
-  await test('Catalog pins the current accumulated UI source, not the old Radio HTML', () => {
-    assert.equal(catalog.sourceRef, 'b57dbceb53eb6a9aacc3bde709b4de096b77e38f');
+  await test('Catalog pins the reviewed Alanlarım source on the PR #3 base', () => {
+    assert.equal(catalog.sourceRef, '135879926d9902b58f16bd3168f202083c71e19c');
+    assert.equal(catalog.sourceBranch, 'task/t90-261101-po1-areas01');
     assert.equal(catalog.sourceSha256, createHash('sha256').update(html).digest('hex'));
     assert.notEqual(catalog.sourceSha256, '77e2283d83790441bc2b2b62fe08e08dc78abd4aaa781e931ad85fc19c6f6450');
   });

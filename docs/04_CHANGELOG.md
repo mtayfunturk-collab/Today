@@ -1,3 +1,7 @@
+### 2026-11-22 — Alanlarım ilk görünümü (T90-261101-PO1-AREAS01)
+
+Mevcut dört modül kartı Alanlarım başlığında mobilde iki sütun, dar ekran/büyük yazıda tek sütun olacak biçimde düzenlendi. Core ile başlama, modül rotaları, not ve tek Radio mini oynatıcı korundu. Türkçe kaynak envanteri, statik üretim hash'i ve sentetik mobil kabul güncellendi. Yeni kalıcı veri, izin veya şema yok. Yerel platform kapısı 1446/1446, hedefli Chromium gezinme/yerleşim/Radio 27/27 PASS; uzak CI ve fiziksel iPhone kabulü açık. Üretim geri yükleme kapalı kalır.
+
 ### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
 
 İlk uzak CI Android paket hazırlığında `backup.html` izin listesi yüzünden durdu. Yalnız bu uygulama dosyası eklendi; native test ve web paket yerelde geçti. Rapor: `docs/TODAY-LIVE-CANDIDATE-2026-11-12.md`.

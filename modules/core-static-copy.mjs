@@ -30,7 +30,7 @@ export const CORE_STATIC_BINDINGS = Object.freeze(targets.map(([selector, key, f
 
 // Shared static controls only. Dates, charts, live statuses and AI stay with their renderers.
 const sharedTargets = [
-  ['#modulesTitle', 'home.title', 'text'],
+  ['#modulesTitle', 'modules.label', 'text'],
   ['#btnCoreFromModules', 'modules.returnCore', 'text'],
   ['[data-view="modules"] .moduleCards', 'modules.label', 'aria-label'],
   ...['core', 'health', 'sky'].flatMap(name => {
