@@ -8,8 +8,8 @@ Bu bölüm güncel yürütme kaydıdır; aşağıdaki 12 Kasım metni tarihsel a
 
 | Görev | Durum | Amaç ve bağımlılık | Veri/izin etkisi, kabul ve test | Risk; ilk tahmin |
 |---|---|---|---|---|
-| T90-261101-PO1-AREAS01 | Doğrulanıyor | Mevcut Core, Health, Sky, Radio için Alanlarım ilk görünümü; PR #3 tabanı | Yeni kayıt/izin yok; Core↔Alanlarım notu, rota/geri, taşma, büyük yazı, mini oynatıcı yerelde PASS | Uzak CI/fiziksel cihaz açık; küçük |
-| T90-261101-PO1-AREAS02 | Bekliyor | Core/Alanlarım/Ayarlar ortak gezinmesi; AREAS01 | Yeni kayıt yok; geri hareketi ve ayar alt ekranı kabulü | Rota regresyonu; küçük/orta |
+| T90-261101-PO1-AREAS01 | Tamamlandı | Dört modülün Alanlarım görünümü; taslak PR #12 | Yeni kayıt/izin yok; yerel 1446/1446 ve uzak CI 4/4 PASS; fiziksel iPhone kabulü ayrı | Cihaz kabulü açık; küçük |
+| T90-261101-PO1-AREAS02 | Doğrulanıyor | Core/Alanlarım/Ayarlar doğrudan gezinmesi; PR #12 tabanı | Yeni kayıt/izin yok; geri/ileri, not, ayar alt ekranı ve dar görünüm yerelde PASS | Uzak CI/fiziksel cihaz açık; küçük |
 | T90-261101-PO1-AREAS03 | Bekliyor | Alan sıralama/sabitleme/gizleme; AREAS02 | Yeni yerel tercih ve yedek kapsamı tasarlanmalı; gizleme kayıt silmez | Veri tercihi/yedek; orta |
 | Radio favori/metaveri dilimleri | Bekliyor | Tek oynatıcı korunarak kullanıcı eylemli favori; uygun kaynak varsa güvenilir parça bilgisi | Favori yeni yerel veri/yedek kapsamı; ayrı izin ve boş durum testleri | Yayıncı koşulları; orta |
 | Odak/Koleksiyonlar/Planlar/Yerler | Bekliyor | Alanlarım sonrası her biri ayrı bağımsız modül | Her modüle küçük yerel sözleşme/yedek kapsamı; davranış ve izin testleri | Depolama/UX; her biri orta |
@@ -21,7 +21,9 @@ Bu bölüm güncel yürütme kaydıdır; aşağıdaki 12 Kasım metni tarihsel a
 
 **AREAS01 kapsamı:** `index.html` modül alanı ve Türkçe sunum sözlüğü/bağlaması; ilgili E2E ve statik testler; bu kayıt, changelog ve AGENTS. Hedef mevcut dört kartı mobilde uygun iki sütuna, dar/büyük yazıda tek sütuna yerleştirmek; Başla→Core, küçük modül ikonu, mevcut kimlik/rotalar/geri ve tek Radio mini oynatıcıyı korumaktır. Kalıcı anahtar, store, şema, migration, uygulama ses akışı ve diğer modül içeriği kapsam dışı. Önce hedefli gezinme/yerleşim testi, ardından gerekli platform ve tarayıcı kapıları çalıştırılır. Fiziksel iPhone Safari/PWA kabulü ve canlı yayın ayrıca açık kalır.
 
-**AREAS01 yerel sonuç:** Hedefli Chromium gezinme/yerleşim/Radio 27/27 PASS; `npm test` platform kapısı 1446/1446 PASS. İlk tam koşuda kaynak envanteri eski Alanlarım metni/hash/satırlarını tuttuğu için test başarısızdı; envanter güncellendikten sonra tam kapı geçti. Araç sandbox'ında ilk deneme `spawnSync EPERM` verdi; izinli yerel koşu sonucu kullanıldı. Gerçek iPhone ve uzak CI bu yeni aday için henüz doğrulanmadı; PR ve CI sonucu eklenecek. Sonraki bağımsız görev AREAS02 ortak gezinme, bağımlılığı AREAS01 taslak PR'dır.
+**AREAS01 sonucu:** Taslak [PR #12](https://github.com/mtayfunturk-collab/Today/pull/12), commit `90ca77a`; hedefli Chromium gezinme/yerleşim/Radio 27/27, `npm test` 1446/1446 ve [uzak CI run 45067910949](https://github.com/mtayfunturk-collab/Today/actions/runs/45067910949) 4/4 iş PASS. İlk tam koşuda kaynak envanteri eski metin/hash/satırlar tuttuğu için başarısızdı; envanter güncellendikten sonra tam kapı geçti. Araç sandbox'ındaki `spawnSync EPERM` izinli yerel koşuda aşılmıştır. Fiziksel iPhone Safari/PWA kabulü ve canlı yayın yapılmadı.
+
+**AREAS02 kapsamı ve tabanı:** PR #12 başı `90ca77a` üzerinden `task/t90-261101-po1-areas02` dalı. `index.html` içinde mevcut Core ikonuna ve kartlarına dokunmadan Ayarlar kısa yolları, Core/Alanlarım'a Ayarlar içinden dönüş; `modules/core-static-copy.mjs`, ilgili kaynak envanteri/statik pin, E2E ve bu kayıt değişir. Mevcut rota adları, takvim alt ekranı, tarayıcı geri/ileri, Core notu, Radio ses yöneticisi ve yedek açma düğmesi korunur. Yeni kalıcı anahtar, store, şema, migration veya izin yok; yedek kapsamı değişmez. Kabul: Core→Ayarlar→geri, Alanlarım→Ayarlar→geri/ileri, Ayarlar→Core/Alanlarım, not ve dar ekran taşması. Hedefli Chromium 26/26 ve yerel `npm test` 1446/1446 PASS. Uzak CI ve fiziksel iPhone bu yeni commit için açık. Sonraki bağımsız iş AREAS03 alan sıralama/gizleme veri sözleşmesi; yeni yerel tercih ve yedek kapsamı nedeniyle önce tasarım gerekir.
 
 ### Tarihsel 12 Kasım kaydı
 
