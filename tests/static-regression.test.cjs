@@ -10,10 +10,10 @@ const updatedHtml = fs.readFileSync(
   "utf8"
 );
 
-// Reviewed Alanlarım layout/copy update on PR #3 base; other production hashes stay pinned.
+// Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "f832eacdccee3460573362057475a318de9c47d7e7ad06fcb0ab8f278115ab1e",
+    "84fc8738e8454925be28a8ef9fcb455a8572ca99f09d96be97f42d19b02924ce",
   "sw.js":
     "3259eced1ab8764815d5dc9dc461d0d5361774f26f4e47c1696632e03df90cc0",
   "modules/adapter-interfaces.js":
@@ -133,6 +133,7 @@ const expectedHtmlIds = [
   "btnCalendar",
   "btnClearTodayLogs",
   "btnCoreFromModules",
+  "btnCoreFromSettings",
   "btnExport",
   "btnHealthLibraryCancel",
   "btnHealthLibrarySave",
@@ -149,11 +150,14 @@ const expectedHtmlIds = [
   "btnModuleRadio",
   "btnModuleSky",
   "btnModulesFromHealth",
+  "btnModulesFromSettings",
   "btnModulesFromSky",
   "btnOpenSettings",
   "btnOpenStats",
   "btnRadioBack",
   "btnResetToday",
+  "btnSettingsFromModules",
+  "btnSettingsFromPick",
   "btnStart",
   "btnStats",
   "buildTag",
@@ -354,14 +358,14 @@ test(
 );
 
 test(
-  "NUT-018 taban çizgisindeki 189 HTML kimliği benzersiz",
+  "Güncel 193 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 189);
+    assert.equal(updatedIds.length, 193);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length

@@ -442,6 +442,12 @@
   padding-top: 6px;
   text-align: center;
 }
+.moduleCenterActions {display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.moduleCenterActions > button {min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.coreQuickNav {display:flex;justify-content:center;margin:0 0 14px}
+.coreQuickNav > button {min-height:44px}
+.settingsQuickNav {display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.settingsQuickNav > button {min-height:44px;min-width:0;white-space:normal;overflow-wrap:anywhere}
 
 /* Kart grubunu ekranın görsel merkezine taşır */
 .moduleCards {
@@ -1838,7 +1844,10 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 
   <div class="moduleCenterHead">
     <h1 class="title" id="modulesTitle" data-view-title tabindex="-1">Alanlarım</h1>
-    <button class="ghost" id="btnCoreFromModules" type="button">Core’a dön</button>
+    <div class="moduleCenterActions">
+      <button class="ghost" id="btnCoreFromModules" type="button">Core’a dön</button>
+      <button class="ghost" id="btnSettingsFromModules" type="button">Ayarlar</button>
+    </div>
   </div>
 
   <div class="moduleCards" role="group" aria-label="Alanlarım">
@@ -1936,6 +1945,7 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
         </div>
 
         <p class="hint" id="coreModulesHint">Diğer modüller için ızgara simgesine dokun.</p>
+        <div class="coreQuickNav"><button class="ghost" id="btnSettingsFromPick" type="button">Ayarlar</button></div>
 
         <h1 class="q" id="pickTitle" data-view-title tabindex="-1">Bugün sende ne oldu?</h1>
 
@@ -2857,6 +2867,10 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
             <span class="mini" aria-hidden="true">▼</span>
           </div>
           <div class="accBody" id="accSettingsBody" role="region" aria-labelledby="accSettingsHead" hidden>
+            <nav class="settingsQuickNav" aria-label="Core ve Alanlarım'a geçiş">
+              <button class="ghost" id="btnCoreFromSettings" type="button">Today Core</button>
+              <button class="ghost" id="btnModulesFromSettings" type="button">Alanlarım</button>
+            </nav>
             <div class="field">
               <label class="mini" for="themeSelect">Tema</label>
               <select id="themeSelect">
@@ -3684,6 +3698,10 @@ $("#btnHomeFromPick").addEventListener("click", () => {
 $("#btnCoreFromModules").addEventListener("click", () => {
   router.backTo("pick");
 });
+$("#btnSettingsFromPick").addEventListener("click", () => router.navigate("settings"));
+$("#btnSettingsFromModules").addEventListener("click", () => router.navigate("settings"));
+$("#btnCoreFromSettings").addEventListener("click", () => router.navigate("pick"));
+$("#btnModulesFromSettings").addEventListener("click", () => router.navigate("modules"));
 
 /* Modüllerden merkeze dönüş */
 [

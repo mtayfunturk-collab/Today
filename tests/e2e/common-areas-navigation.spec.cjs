@@ -1,0 +1,37 @@
+const {test,expect}=require('@playwright/test');
+const {randomBytes}=require('node:crypto');
+
+test('Core, Alanlarım and Settings links preserve the note, history and narrow layout',async({page})=>{
+  const scope=randomBytes(12).toString('hex');
+  await page.setViewportSize({width:320,height:640});
+  await page.goto(`/runs/${scope}/index.html`);
+  await expect.poll(()=>page.evaluate(()=>TodayStartup.getStatus().phase)).toBe('ready');
+  await page.locator('#btnStart').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('pick');
+  const note='Sentetik ortak gezinme notu';
+  await page.locator('#note').fill(note);
+  await page.locator('#btnSettingsFromPick').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('settings');
+  await expect(page.locator('#btnBackupLaunch')).toBeVisible();
+  await page.goBack();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('pick');
+  await page.locator('#btnHomeFromPick').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('modules');
+  await page.locator('#btnSettingsFromModules').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('settings');
+  await page.goBack();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('modules');
+  await page.goForward();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('settings');
+  await page.locator('#btnCoreFromSettings').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('pick');
+  await expect(page.locator('#note')).toHaveValue(note);
+  await page.locator('#btnCalendar').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('calendar');
+  await page.locator('#btnOpenSettings').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('settings');
+  await page.locator('#btnModulesFromSettings').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('modules');
+  await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});

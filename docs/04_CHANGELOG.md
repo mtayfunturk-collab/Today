@@ -1,3 +1,9 @@
+### 2026-11-22 — Core / Alanlarım / Ayarlar kısa yolları (T90-261101-PO1-AREAS02)
+
+Core ve Alanlarım'dan Ayarlar'a, Ayarlar içinden Core ve Alanlarım'a doğrudan geçiş eklendi. Mevcut rota, takvim, not ve yedek düğmesi korundu. Yeni kalıcı veri/izin yok. Dar ekran ve geri/ileri hedefli Chromium 26/26, platform regresyonu 1446/1446 PASS; uzak CI ve fiziksel iPhone kabulü ayrı.
+
+İlk uzak tarayıcı koşusunda tarih 26 px merkezden kaydı ve Radio katalog testi İstanbul gece yarısında kayıt gününü şaşırdı. Ayarlar düğmesi üst çubuğun altına taşındı; test kaydedilen gün anahtarını karşılaştırır. Düzeltme sonrası hedefli Chromium 2/2 ve platform 1446/1446 PASS; yeni CI beklenir.
+
 ### 2026-11-22 — Alanlarım ilk görünümü (T90-261101-PO1-AREAS01)
 
 Mevcut dört modül kartı Alanlarım başlığında mobilde iki sütun, dar ekran/büyük yazıda tek sütun olacak biçimde düzenlendi. Core ile başlama, modül rotaları, not ve tek Radio mini oynatıcı korundu. Türkçe kaynak envanteri, statik üretim hash'i ve sentetik mobil kabul güncellendi. Yeni kalıcı veri, izin veya şema yok. Yerel platform kapısı 1446/1446, hedefli Chromium gezinme/yerleşim/Radio 27/27 PASS; uzak CI ve fiziksel iPhone kabulü açık. Üretim geri yükleme kapalı kalır.
