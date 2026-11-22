@@ -94,4 +94,23 @@ await check('mini controls live inside the existing Radio card and remain hidden
  mountRadioMiniPlayer({root:dom.window.document,player:f.player});const card=dom.window.document.querySelector('.radioMini');assert(card.hidden);assert.equal(card.parentElement.className,'radioModule');assert.equal(card.querySelectorAll('button').length,1);assert.equal(dom.window.document.querySelectorAll('button button').length,0);
  f.update({status:'playing',station:{name:'Station'}});assert(!card.hidden);
 });
+await check('shared mini host keeps one player outside routed views and opens Radio explicitly',()=>{
+ const f=miniFixture();
+ const dom=new JSDOM('<div class="screen"><div data-view="modules"><div class="radioModule"><button id="btnModuleRadio">Today Radio</button></div></div><div class="radioSharedHost" data-radio-mini-host></div></div>');
+ let route;
+ dom.window.TodayRouter={navigate:next=>{route=next;}};
+ const card=mountRadioMiniPlayer({root:dom.window.document,player:f.player});
+ assert.equal(mountRadioMiniPlayer({root:dom.window.document,player:f.player}),card);
+ const mini=dom.window.document.querySelector('.radioMini');
+ assert.equal(mini.parentElement.className,'radioSharedHost');
+ assert(mini.hidden);
+ assert.equal(dom.window.document.querySelectorAll('.radioMini').length,1);
+ assert.equal(dom.window.document.querySelectorAll('.radioMiniActions button').length,2);
+ f.update({status:'playing',station:{name:'Station'}});
+ assert(!mini.hidden);
+ mini.querySelectorAll('.radioMiniActions button')[1].click();
+ assert.equal(route,'radio');
+ assert.equal(f.plays(),0);
+ assert.equal(f.view.localStorage.length,0);
+});
 console.log(`NUT-RADIO UI: ${passed}/${passed} başarılı`);

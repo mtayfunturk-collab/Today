@@ -1,3 +1,7 @@
+### 2026-11-22 — Tek Radio mini oynatıcı ortak konumda (T90-261101-PO1-RAD07)
+
+Mevcut mini oynatıcı Radio kartının içinden ekranın ortak alt alanına taşındı; seçim öncesi gizli kalır, Core/Health/Alanlarım geçişinde tek ses oturumunu gösterir. Yeni ses yöneticisi, veri deposu veya izin yok. Yerel Radio UI 23/23, hedefli Chromium 2/2, platform 1446/1446 ve AI/Radio entegrasyonu 336/336 PASS. Uzak CI ve gerçek iPhone kabulü açık.
+
 ### 2026-11-22 — Core / Alanlarım / Ayarlar kısa yolları (T90-261101-PO1-AREAS02)
 
 Core ve Alanlarım'dan Ayarlar'a, Ayarlar içinden Core ve Alanlarım'a doğrudan geçiş eklendi. Mevcut rota, takvim, not ve yedek düğmesi korundu. Yeni kalıcı veri/izin yok. Dar ekran ve geri/ileri hedefli Chromium 26/26, platform regresyonu 1446/1446 PASS; uzak CI ve fiziksel iPhone kabulü ayrı.

@@ -38,9 +38,9 @@ const { JSDOM } = require('jsdom');
     }
   });
 
-  await test('Catalog pins the reviewed shared navigation source on the Alanlarım base', () => {
-    assert.equal(catalog.sourceRef, '90ca77a65c259a5fb3028476ff0192d452a2cb04');
-    assert.equal(catalog.sourceBranch, 'task/t90-261101-po1-areas02');
+  await test('Catalog pins the shared Radio mini source on the common navigation base', () => {
+    assert.equal(catalog.sourceRef, '080a18e1c76f7d2057f17764e2b260d7075c430f');
+    assert.equal(catalog.sourceBranch, 'task/t90-261101-po1-radio-mini');
     assert.equal(catalog.sourceSha256, createHash('sha256').update(html).digest('hex'));
     assert.notEqual(catalog.sourceSha256, '77e2283d83790441bc2b2b62fe08e08dc78abd4aaa781e931ad85fc19c6f6450');
   });
