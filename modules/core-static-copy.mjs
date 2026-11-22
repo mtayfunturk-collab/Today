@@ -33,6 +33,7 @@ const sharedTargets = [
   ['#modulesTitle', 'modules.label', 'text'],
   ['#btnCoreFromModules', 'modules.returnCore', 'text'],
   ['#btnSettingsFromModules', 'settings.title', 'text'],
+  ['#btnSettingsFromPick', 'settings.title', 'text'],
   ['#btnCoreFromSettings', 'modules.core.title', 'text'],
   ['#btnModulesFromSettings', 'modules.label', 'text'],
   ['[data-view="modules"] .moduleCards', 'modules.label', 'aria-label'],

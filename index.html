@@ -444,6 +444,8 @@
 }
 .moduleCenterActions {display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 .moduleCenterActions > button {min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.coreQuickNav {display:flex;justify-content:center;margin:0 0 14px}
+.coreQuickNav > button {min-height:44px}
 .settingsQuickNav {display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .settingsQuickNav > button {min-height:44px;min-width:0;white-space:normal;overflow-wrap:anywhere}
 
@@ -1709,7 +1711,7 @@ html[data-theme="light"] .aiPatternFeedbackStatus[data-state="error"] {
 [data-view="pick"] button {min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 [data-view="pick"] .topbar {
   display:grid;
-  grid-template-columns:44px minmax(0,1fr) 44px 44px;
+  grid-template-columns:44px minmax(0,1fr) 44px;
   gap:8px;
   margin-bottom:16px;
 }
@@ -1940,12 +1942,10 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
           >
             <span aria-hidden="true">📅</span>
           </button>
-          <button class="ghost" id="btnSettingsFromPick" type="button" aria-label="Ayarları aç">
-            <span aria-hidden="true">⚙</span>
-          </button>
         </div>
 
         <p class="hint" id="coreModulesHint">Diğer modüller için ızgara simgesine dokun.</p>
+        <div class="coreQuickNav"><button class="ghost" id="btnSettingsFromPick" type="button">Ayarlar</button></div>
 
         <h1 class="q" id="pickTitle" data-view-title tabindex="-1">Bugün sende ne oldu?</h1>
 

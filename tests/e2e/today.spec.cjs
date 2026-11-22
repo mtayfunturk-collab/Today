@@ -27,13 +27,13 @@ async function openModule(page, name) {
   await page.locator(`#btnModule${name}`).click();
 }
 
-async function coreDay(page) {
-  return page.evaluate(() => {
+async function coreDay(page, key) {
+  return page.evaluate(key => {
     const store = JSON.parse(localStorage.getItem("today_store_v2"));
-    const day = store?.days[window.TodayDay.todayKey()];
+    const day = store?.days[key || window.TodayDay.todayKey()];
     // Opening the app updates bookkeeping timestamps; compare retained user data.
     return day ? { choice: day.choice, color: day.color, note: day.note } : null;
-  });
+  }, key);
 }
 
 async function saveCore(page) {
@@ -484,7 +484,7 @@ test('Radio catalog requests require consent and preserve Core without contactin
     await route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(data)});
   });
   context.on('request',r=>{if(new URL(r.url()).hostname!=='127.0.0.1')external.push(r.url());});
-  await open(page);await saveCore(page);const before=await coreDay(page);
+  await open(page);await saveCore(page);const savedDayKey=await page.evaluate(()=>TodayDay.todayKey());const before=await coreDay(page,savedDayKey);
   await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));await page.locator('#btnModuleRadio').click();
   await expect(page.locator('#radioTitle')).toBeVisible();const card=await page.locator('.screen').boundingBox();expect(card.y).toBeLessThan(30);
   await expect(page.locator('#radioStatus')).toContainText('Henüz arama yapılmadı');expect(requests).toHaveLength(0);
@@ -496,7 +496,7 @@ test('Radio catalog requests require consent and preserve Core without contactin
   await page.locator('#radioQuery').fill('olmayan');await page.locator('#btnRadioSearch').click();await expect(page.locator('#radioStatus')).toContainText('bulunamadı');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:testInfo.outputPath('radio-catalog.png'),fullPage:true});
   await page.locator('#btnRadioBack').click();await expect(page.locator('#modulesTitle')).toBeVisible();await page.locator('#btnModuleRadio').click();await expect(page.locator('#radioDirectoryConsent')).not.toBeChecked();
-  expect(await coreDay(page)).toEqual(before);expect(requests.filter(u=>u.pathname.includes('/stations/'))).toHaveLength(3);
+  expect(await coreDay(page,savedDayKey)).toEqual(before);expect(requests.filter(u=>u.pathname.includes('/stations/'))).toHaveLength(3);
   expect(external.every(u=>new URL(u).hostname.endsWith('.api.radio-browser.info'))).toBe(true);expect(requests.every(u=>!u.href.includes('Sentetik'))).toBe(true);
 });
 test('Radio playback starts only with publisher consent, survives module changes and stops its source',async({page,context},testInfo)=>{

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "purpose": "Source-aligned preparation catalog; not loaded by Today. Raw occurrences are evidence, not DOM bindings or complete UI coverage.",
   "sourceRef": "90ca77a65c259a5fb3028476ff0192d452a2cb04",
-  "sourceSha256": "0222da6dc671f621158f41455b0d1fc6f6fded87d302674d29a9baa33fa980a0",
+  "sourceSha256": "84fc8738e8454925be28a8ef9fcb455a8572ca99f09d96be97f42d19b02924ce",
   "sourceBranch": "task/t90-261101-po1-areas02",
   "completeEnglishRelease": false,
   "dictionaryModule": "modules/locales/core-tr.mjs",
@@ -29,11 +29,11 @@
             "lineText": "   TODAY MODULE CENTER V1"
           },
           {
-            "line": 1825,
+            "line": 1827,
             "lineText": "        <h1 class=\"title\" id=\"homeTitle\" data-view-title tabindex=\"-1\">TODAY</h1>"
           },
           {
-            "line": 1917,
+            "line": 1919,
             "lineText": "      <!-- TODAY CORE -->"
           },
           {
@@ -99,7 +99,7 @@
         "literal": "Başla",
         "occurrences": [
           {
-            "line": 1828,
+            "line": 1830,
             "lineText": "        <button class=\"btn\" id=\"btnStart\" type=\"button\">Başla</button>"
           },
           {
@@ -121,7 +121,7 @@
         "literal": "verileriniz sadece bu cihazda kaydedilmektedir.",
         "occurrences": [
           {
-            "line": 1826,
+            "line": 1828,
             "lineText": "        <div class=\"sub\">verileriniz sadece bu cihazda kaydedilmektedir.</div>"
           }
         ]
@@ -139,11 +139,11 @@
         "literal": "Alanlarım",
         "occurrences": [
           {
-            "line": 1844,
+            "line": 1846,
             "lineText": "    <h1 class=\"title\" id=\"modulesTitle\" data-view-title tabindex=\"-1\">Alanlarım</h1>"
           },
           {
-            "line": 1851,
+            "line": 1853,
             "lineText": "  <div class=\"moduleCards\" role=\"group\" aria-label=\"Alanlarım\">"
           },
           {
@@ -169,7 +169,7 @@
         "literal": "Today Core",
         "occurrences": [
           {
-            "line": 1864,
+            "line": 1866,
             "lineText": "        <strong id=\"moduleCoreTitle\">Today Core</strong>"
           },
           {
@@ -207,7 +207,7 @@
         "literal": "Günlük, notlar ve ajanda",
         "occurrences": [
           {
-            "line": 1865,
+            "line": 1867,
             "lineText": "        <small id=\"moduleCoreDesc\">Günlük, notlar ve ajanda</small>"
           }
         ]
@@ -225,7 +225,7 @@
         "literal": "Today Health",
         "occurrences": [
           {
-            "line": 1880,
+            "line": 1882,
             "lineText": "        <strong id=\"moduleHealthTitle\">Today Health</strong>"
           },
           {
@@ -267,7 +267,7 @@
         "literal": "Beslenme, su ve yaşam",
         "occurrences": [
           {
-            "line": 1881,
+            "line": 1883,
             "lineText": "        <small id=\"moduleHealthDesc\">Beslenme, su ve yaşam</small>"
           }
         ]
@@ -285,7 +285,7 @@
         "literal": "Today Sky",
         "occurrences": [
           {
-            "line": 1896,
+            "line": 1898,
             "lineText": "        <strong id=\"moduleSkyTitle\">Today Sky</strong>"
           },
           {
@@ -323,7 +323,7 @@
         "literal": "Haritan ve gökyüzü",
         "occurrences": [
           {
-            "line": 1897,
+            "line": 1899,
             "lineText": "        <small id=\"moduleSkyDesc\">Haritan ve gökyüzü</small>"
           }
         ]
@@ -341,15 +341,15 @@
         "literal": "Today Radio",
         "occurrences": [
           {
-            "line": 1902,
+            "line": 1904,
             "lineText": "  <button class=\"moduleCard\" id=\"btnModuleRadio\" type=\"button\" data-module=\"radio\" aria-label=\"Today Radio\">"
           },
           {
-            "line": 1903,
+            "line": 1905,
             "lineText": "    <span class=\"moduleIcon\" aria-hidden=\"true\">♫</span><span class=\"moduleText\"><strong>Today Radio</strong><small>Türkiye ve dünyadan istasyonlar</small></span>"
           },
           {
-            "line": 1911,
+            "line": 1913,
             "lineText": "        <div class=\"topbar\"><h1 class=\"title\" id=\"radioTitle\" data-view-title tabindex=\"-1\">Today Radio</h1><button class=\"back\" id=\"btnRadioBack\" type=\"button\">Modüller</button></div>"
           },
           {
@@ -379,11 +379,11 @@
         "literal": "Türkiye ve dünyadan istasyonlar",
         "occurrences": [
           {
-            "line": 1903,
+            "line": 1905,
             "lineText": "    <span class=\"moduleIcon\" aria-hidden=\"true\">♫</span><span class=\"moduleText\"><strong>Today Radio</strong><small>Türkiye ve dünyadan istasyonlar</small></span>"
           },
           {
-            "line": 1912,
+            "line": 1914,
             "lineText": "        <p class=\"sub\">Türkiye ve dünyadan istasyonları keşfet ve dinle.</p>"
           }
         ]
@@ -401,7 +401,7 @@
         "literal": "Takvimi aç",
         "occurrences": [
           {
-            "line": 1939,
+            "line": 1941,
             "lineText": "            aria-label=\"Takvimi aç\""
           }
         ]
@@ -839,7 +839,7 @@
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 1939,
+            "line": 1941,
             "lineText": "            aria-label=\"Takvimi aç\""
           },
           {
@@ -949,12 +949,12 @@
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 1847,
+            "line": 1849,
             "lineText": "      <button class=\"ghost\" id=\"btnSettingsFromModules\" type=\"button\">Ayarlar</button>"
           },
           {
-            "line": 1943,
-            "lineText": "          <button class=\"ghost\" id=\"btnSettingsFromPick\" type=\"button\" aria-label=\"Ayarları aç\">"
+            "line": 1948,
+            "lineText": "        <div class=\"coreQuickNav\"><button class=\"ghost\" id=\"btnSettingsFromPick\" type=\"button\">Ayarlar</button></div>"
           },
           {
             "line": 2778,
@@ -1477,7 +1477,7 @@
         "literal": "Core’a dön",
         "occurrences": [
           {
-            "line": 1846,
+            "line": 1848,
             "lineText": "      <button class=\"ghost\" id=\"btnCoreFromModules\" type=\"button\">Core’a dön</button>"
           }
         ]
@@ -1495,7 +1495,7 @@
         "literal": "Modülleri aç",
         "occurrences": [
           {
-            "line": 1930,
+            "line": 1932,
             "lineText": "            aria-label=\"Modülleri aç\" aria-describedby=\"coreModulesHint\""
           }
         ]
@@ -1513,7 +1513,7 @@
         "literal": "Diğer modüller için ızgara simgesine dokun.",
         "occurrences": [
           {
-            "line": 1948,
+            "line": 1947,
             "lineText": "        <p class=\"hint\" id=\"coreModulesHint\">Diğer modüller için ızgara simgesine dokun.</p>"
           }
         ]
@@ -1619,31 +1619,31 @@
         "literal": "Gri",
         "occurrences": [
           {
-            "line": 1057,
+            "line": 1059,
             "lineText": ".healthLibraryEditorGrid {"
           },
           {
-            "line": 1076,
+            "line": 1078,
             "lineText": ".healthLibraryNutritionGrid {"
           },
           {
-            "line": 1083,
+            "line": 1085,
             "lineText": ".healthLibraryMetaGrid {"
           },
           {
-            "line": 1304,
+            "line": 1306,
             "lineText": "  .healthLibraryEditorGrid,"
           },
           {
-            "line": 1305,
+            "line": 1307,
             "lineText": "  .healthLibraryNutritionGrid,"
           },
           {
-            "line": 1306,
+            "line": 1308,
             "lineText": "  .healthLibraryMetaGrid,"
           },
           {
-            "line": 1757,
+            "line": 1759,
             "lineText": " [data-view=\"health\"] :is(.healthLibraryEditorGrid,.healthLibraryNutritionGrid,.healthLibraryMetaGrid,.healthRecipeIngredientControls,.healthConsumptionEditor) {grid-template-columns:minmax(0,1fr)}"
           },
           {
@@ -1725,7 +1725,7 @@
         "literal": "Gün",
         "occurrences": [
           {
-            "line": 1865,
+            "line": 1867,
             "lineText": "        <small id=\"moduleCoreDesc\">Günlük, notlar ve ajanda</small>"
           },
           {
@@ -1801,12 +1801,12 @@
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 1847,
+            "line": 1849,
             "lineText": "      <button class=\"ghost\" id=\"btnSettingsFromModules\" type=\"button\">Ayarlar</button>"
           },
           {
-            "line": 1943,
-            "lineText": "          <button class=\"ghost\" id=\"btnSettingsFromPick\" type=\"button\" aria-label=\"Ayarları aç\">"
+            "line": 1948,
+            "lineText": "        <div class=\"coreQuickNav\"><button class=\"ghost\" id=\"btnSettingsFromPick\" type=\"button\">Ayarlar</button></div>"
           },
           {
             "line": 2778,
