@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {randomBytes}=require('node:crypto');
 
-test('Alanlarım keeps four modules, Core note and a usable grid at mobile and large text sizes',async({page},testInfo)=>{
+test('Alanlarım keeps five modules, Core note and a usable grid at mobile and large text sizes',async({page},testInfo)=>{
   const scope=randomBytes(12).toString('hex');
   await page.setViewportSize({width:393,height:700});
   await page.goto(`/runs/${scope}/index.html`);
@@ -13,7 +13,7 @@ test('Alanlarım keeps four modules, Core note and a usable grid at mobile and l
   await page.locator('#btnHomeFromPick').click();
   await expect(page.locator('#modulesTitle')).toHaveText('Alanlarım');
   await expect(page.locator('.moduleCards')).toHaveAttribute('aria-label','Alanlarım');
-  await expect(page.locator('.moduleCards > .moduleCard, .moduleCards > .radioModule')).toHaveCount(4);
+  await expect(page.locator('.moduleCards > .moduleCard, .moduleCards > .radioModule')).toHaveCount(5);
   await expect(page.locator('.radioSharedHost .radioMini')).toHaveCount(1);
 
   const measure=()=>page.evaluate(()=>{
