@@ -12,6 +12,10 @@ export const LS_KEYS = Object.freeze([
 ]);
 export const STORES = Object.freeze({records:'id',metadata:'key',migration_backups:'id'});
 export const FORMAT = 'today:full-backup:v1';
+// Approved future v2 records. These validators do not create or write either key.
+export const LOCAL_KEYS_V2 = Object.freeze(['today.areas.preferences.v1','today.radio.favorites.v1']);
+const AREA_IDS = Object.freeze(['core','health','sky','radio']);
+const RADIO_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PAYLOAD_MAX = 32*1024*1024, FILE_MAX = 50*1024*1024, ENTRY_MAX = 100000;
 const iterations = 600000, encoder = new TextEncoder();
 const bad = code => { const error = new Error(code); error.code = code; return error; };
@@ -46,6 +50,35 @@ function parse(text){
     }
   }
   safeValue(parsed);return parsed;
+}
+function localRecord(raw,maxBytes){
+  if(typeof raw!=='string'||bytes(raw).length>maxBytes)throw bad('invalid-source');
+  try{return parse(raw);}catch{throw bad('invalid-source');}
+}
+function uniqueAreaList(value){return Array.isArray(value)&&value.every(id=>AREA_IDS.includes(id))&&new Set(value).size===value.length;}
+export function validateAreasPreferenceRaw(raw){
+  const value=localRecord(raw,4096);
+  if(!exact(value,['version','order','pinned','hidden'])||value.version!==1||
+    !uniqueAreaList(value.order)||value.order.length!==AREA_IDS.length||
+    !uniqueAreaList(value.pinned)||!uniqueAreaList(value.hidden)||
+    value.pinned.some(id=>value.hidden.includes(id)))throw bad('invalid-source');
+  return value;
+}
+export function validateRadioFavoritesRaw(raw){
+  const value=localRecord(raw,65536);
+  if(!exact(value,['version','items'])||value.version!==1||!Array.isArray(value.items)||value.items.length>200)throw bad('invalid-source');
+  const ids=new Set();
+  for(const item of value.items){
+    if(!exact(item,['id','name','countryCode','source','addedAt'])||!RADIO_ID.test(item.id)||
+      item.id!==item.id.toLowerCase()||ids.has(item.id)||typeof item.name!=='string'||
+      !item.name.trim()||item.name!==item.name.trim()||item.name.length>160||
+      /[\u0000-\u001f\u007f]/.test(item.name)||typeof item.countryCode!=='string'||
+      !/^[A-Z]{2}$/.test(item.countryCode)||item.source!=='radio-browser'||
+      typeof item.addedAt!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(item.addedAt)||
+      !Number.isFinite(Date.parse(item.addedAt))||new Date(item.addedAt).toISOString()!==item.addedAt)throw bad('invalid-source');
+    ids.add(item.id);
+  }
+  return value;
 }
 function rawEntries(storage){
   if(!Number.isInteger(storage.length)||storage.length>10000)throw bad('data-limit');

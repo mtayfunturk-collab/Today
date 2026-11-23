@@ -4,6 +4,8 @@
 
 Ürün sahibinin kontrollü otonom geliştirme talimatı yürürlüktedir: onaylı kapsamda küçük, bağımsız görevler için ayrıca tetikleme beklenmez. Temiz görev dalı/worktree, test, belge, commit, push ve taslak PR oluşturulabilir. Merge, `main`e yazma, deploy/canlı yayın, GitHub koruma/secret/izin ayarı, ücretli işlem, mevcut veri/şema değişimi, yeni kişisel veri aktarımı, onaysız kimlik doğrulama ve üretim restore etkinleştirmesi ayrı ürün sahibi kararı gerektirir. Bir kapı yalnız bağımlı işi durdurur; güvenli bağımsız işe geçilir. Yeni ana görev kaydı `docs/TODAY-CURRENT-STATUS.md` içinde tutulur. Aşağıdaki önceki teknik kurallar ve tarihsel kayıtlar korunur; görev başına kullanıcı tetiklemesi bekleyen eski kayıtlar artık güncel yetki değildir.
 
+23 Kasım 2026 dar kapsamlı ek onay: ürün sahibi taslak PR #16'daki sürümlü tam yedek v2 tasarımını ve yalnız `today.areas.preferences.v1` ile `today.radio.favorites.v1` yeni yerel anahtarlarını onayladı. Bu onay üretim geri yükleme, mevcut veriyi taşıma/silme, merge veya deploy yetkisi değildir. Yeni anahtarların ürün arayüzünden yazılması, v2 yedek uçtan uca ve fiziksel cihaz kabulünden sonra ele alınır.
+
 Bu depo için ana geliştirme ortamı Codex'tir. Kullanıcının 29 Ekim 2026 tarihli sürekli geliştirme talimatı geçerlidir.
 
 - Önce `docs/00_PROJECT_RULES.md`, güncel `docs/04_CHANGELOG.md` ve `docs/10_TECHNICAL_BACKLOG.md` dosyalarını oku; dalı, son commit'i ve Actions sonucunu kontrol et.
