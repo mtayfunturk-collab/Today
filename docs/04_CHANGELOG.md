@@ -1,3 +1,7 @@
+### 2026-11-23 — Odak zamanlayıcısının bellekte çalışan temeli (T90-261101-PO1-FOC01)
+
+Süre, isteğe bağlı konu ve başlat/duraklat/devam/bitir durumları için kalıcı kayıt oluşturmayan zamanlayıcı eklendi. Monoton saat, arka plan dönüşü ve saat değişimi için 12 hedefli kontrol; birleşik platform 1458/1458 PASS. Odak ekranı ve fiziksel cihaz kabulü ayrı işlerdir; mevcut kullanıcı verisi ve yedek şeması değişmedi.
+
 ### 2026-11-22 — Tek Radio mini oynatıcı ortak konumda (T90-261101-PO1-RAD07)
 
 Mevcut mini oynatıcı Radio kartının içinden ekranın ortak alt alanına taşındı; seçim öncesi gizli kalır, Core/Health/Alanlarım geçişinde tek ses oturumunu gösterir. Yeni ses yöneticisi, veri deposu veya izin yok. Yerel Radio UI 23/23, hedefli Chromium 2/2, platform 1446/1446 ve AI/Radio entegrasyonu 336/336 PASS. Uzak CI ve gerçek iPhone kabulü açık.
