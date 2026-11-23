@@ -1,3 +1,7 @@
+### 2026-11-23 — Koleksiyonlar yedek kapsamı tasarımı (T90-261101-PO1-COL02)
+
+Önerilen yerel anlık görüntü, v3 şifreli tam yedek kapsamı, eski v1/v2 dosyalarının eksik alan gösterimi ve üretim restore güvenlik kapısı görev kaydında netleştirildi. Kod, depolama ve gerçek kullanıcı verisi değişmedi.
+
 ### 2026-11-23 — Koleksiyonlar veri sözleşmesi (T90-261101-PO1-COL01)
 
 Pano ve öğeler için salt hesaplama yapan sürüm 1 doğrulayıcı eklendi. Kalıcı depo, yedek formatı, UI ve kullanıcı verisi değişmedi. Hedefli 12/12 ve yerel birleşik platform 1470/1470 PASS; uzak CI sonucu ayrıca izlenir.
