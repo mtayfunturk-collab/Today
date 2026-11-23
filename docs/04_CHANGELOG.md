@@ -1,3 +1,7 @@
+### 2026-11-23 — Radio çalan parça kaynağı fizibilitesi (T90-261101-PO1-RAD04)
+
+Radio Browser'ın belgelenmiş istasyon yanıtında güncel şarkı/sanatçı alanı olmadığı doğrulandı. Yayıncıya ait izinli ve güncel metaveri kaynağı seçilmeden parça gösterimi açılmayacak. Tasarım ve izin/boş durum kabulü `TODAY-RADIO-IMPLEMENTATION.md` içinde; kod, ağ ve veri değişmedi, test tekrarı yapılmadı.
+
 ### 2026-11-22 — Tek Radio mini oynatıcı ortak konumda (T90-261101-PO1-RAD07)
 
 Mevcut mini oynatıcı Radio kartının içinden ekranın ortak alt alanına taşındı; seçim öncesi gizli kalır, Core/Health/Alanlarım geçişinde tek ses oturumunu gösterir. Yeni ses yöneticisi, veri deposu veya izin yok. Yerel Radio UI 23/23, hedefli Chromium 2/2, platform 1446/1446 ve AI/Radio entegrasyonu 336/336 PASS. Uzak CI ve gerçek iPhone kabulü açık.

@@ -1,5 +1,15 @@
 # NUT-RADIO — Aşama 1: mimari ve uygulanabilirlik
 
+## 23 Kasım 2026 — PO1-RAD04 çalan parça metaverisi fizibilitesi
+
+Bu güncelleme tasarımdır; yeni ağ isteği, sağlayıcı, kullanıcı verisi veya ürün kodu eklemez. Taban, taslak PR #14 başı `fc8074d` (PR #1 → #2 → #3 → #12 → #13 → #14 zinciri); PR #4 ve #7–#11 kurtarma deneyleri kapsam dışıdır. İncelenen dosyalar: `modules/radio-directory.mjs`, `modules/radio-ui.mjs`, `modules/radio-player.mjs` ve [Radio Browser resmi API belgesi](https://docs.radio-browser.info/).
+
+**Bulgu:** Radio Browser'ın belgelenmiş `Station` yanıtı istasyon adı, yayın URL'si, codec, tür, logo ve son kontrol gibi alanlar taşır; güncel şarkı/sanatçı alanı tanımlamaz. Belgedeki “stream metadata” kontrol zamanı, canlı parça adı kanıtı değildir. Today'in `normalizeStation()` sözleşmesi de parça alanı üretmez. Bu nedenle dizin veya istasyon türünden şarkı adı çıkarmak doğru değildir. HTMLAudioElement ile yayını çalabilmek, tarayıcıdan ICY başlığını veya HLS parça verisini okuyabildiğimizi kanıtlamaz; yayın CORS'u ve biçimi istasyona bağlıdır.
+
+**En küçük uygulanabilir yol:** İlk kaynak adayı, yayını yapan kurumun kendi belgelenmiş HTTPS “now playing” uç noktasıdır. Bir istasyon için API kullanım hakkı, CORS, hız sınırı, maliyet, yanıt biçimi ve güncellik doğrulanmadan adaptör eklenmez. Üçüncü taraf metaveri servisi yeni veri aktarımı kararıdır. Dizin izni, yayıncıya akış izni ve metaveri isteği ayrı açıklanır; yeni servis otomatik çağrılmaz. Parça alanı istasyon kimliğiyle eşleşmeli; boş/uyumsuz yanıt, zaman aşımı veya eski zaman damgasında “Parça bilgisi sağlanmıyor” gösterilir. İstasyon değişince eski yanıt iptal edilir. Sunulan veride kaynak ve son güncelleme zamanı görünür; ham metin olarak işlenir, HTML çalıştırılmaz. Yalnız doğrulanmış sanatçı ve parça ayrı alanlarda gelirse “çalıyor” denir; yayıncı sloganı/şarkı dışı metin parça olarak etiketlenmez.
+
+**Gizlilik ve kabul:** Metaveri sorgusu varsayılan kapalı, yalnız ilgili istasyon ve açık kullanıcı eylemiyle; IP ve istasyon tercihi karşı tarafa gidebilir. Sonuç kalıcı geçmişe, favorilere veya AI bağlamına kendiliğinden yazılmaz; yeni yedek alanı yoktur. Kabul testleri istasyon değiştirme/eski yanıt, bozuk veri, izin reddi, CORS/ağ hatası, bayat veri ve doğru boş durumdur. Gerçek iPhone Safari ve kurulu PWA için ayrı fiziksel kabul gerekir. Belirli yayıncı ve kullanım koşulları doğrulanmadığı için bugün ürün adaptörü uygulanmadı. Sıradaki somut karar: denenecek yayıncı/istasyon ve varsa resmi metaveri API'si seçilip şartları gözden geçirilsin; izinli aday yoksa yalnız doğru boş durumla kalınsın.
+
 30 Ekim 2026. **Analiz tamamlandı; ürün kodu/kalıcı depo/ses oynatma eklenmedi.** Model önerisi Sol Medium. Modelin otomatik değiştirildiği iddia edilmez.
 
 ## Mevcut işlerin korunması ve bağımlılık
