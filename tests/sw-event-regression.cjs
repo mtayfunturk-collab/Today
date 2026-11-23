@@ -445,10 +445,10 @@ function assert(condition, message) {
   );
 
   await test(
-    "Install 141 uygulama kabuğu isteği yapıyor",
+    "Install 143 uygulama kabuğu isteği yapıyor",
     async () => {
       assert(
-        runtime.fetchCalls.length === 141,
+        runtime.fetchCalls.length === 143,
         `${runtime.fetchCalls.length} istek yapıldı.`
       );
     }
@@ -467,13 +467,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Install 141 dosyayı aktif cache'e yazıyor",
+    "Install 143 dosyayı aktif cache'e yazıyor",
     async () => {
       const cache =
         await runtime.caches.open(ACTIVE_CACHE);
       const keys = await cache.keys();
       assert(
-        keys.length === 141,
+        keys.length === 143,
         `${keys.length} cache girdisi var.`
       );
     }

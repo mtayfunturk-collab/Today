@@ -1,3 +1,7 @@
+### 2026-11-23 — Odak ekranı (T90-261101-PO1-FOC02)
+
+Alanlarım'a Odak kartı ve kayıt oluşturmayan başlat/duraklat/devam/bitir ekranı eklendi. Mevcut Radio oturumu ve kullanıcı verileri korunur. Hedefli Chromium 1/1 ve platform 1458/1458 PASS. Fiziksel iPhone kabulü ve canlı yayın yapılmadı.
+
 ### 2026-11-23 — Odak zamanlayıcısının bellekte çalışan temeli (T90-261101-PO1-FOC01)
 
 Süre, isteğe bağlı konu ve başlat/duraklat/devam/bitir durumları için kalıcı kayıt oluşturmayan zamanlayıcı eklendi. Monoton saat, arka plan dönüşü ve saat değişimi için 12 hedefli kontrol; birleşik platform 1458/1458 PASS. Odak ekranı ve fiziksel cihaz kabulü ayrı işlerdir; mevcut kullanıcı verisi ve yedek şeması değişmedi.
