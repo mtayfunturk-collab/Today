@@ -1,3 +1,7 @@
+### 2026-11-23 — Yerler saf veri sözleşmesi (T90-261101-PO1-YER01)
+
+Manuel yer/şehir, isteğe bağlı not/adres/HTTP(S) bağlantı ve iki durum için doğrulanan saf sözleşme eklendi. GPS, otomatik harita açma, depolama ve AI bağı yok. Hedefli Yerler 10/10, otomasyon 8/8 ve birleşik platform 1489/1489 PASS.
+
 ### 2026-11-23 — Planlar ilk görünür ekran (T90-261101-PO1-PLN03)
 
 Alanlarım'a altıncı kart olarak Planlar ve dört durumlu, veri girişi olmayan ekran eklendi. Router, modül kaydı ve çevrimdışı kabuk güncellendi; üretim verisi/şema/yedek/restore davranışı değişmedi. Hedefli statik 30/30, Registry 18/18, Router 15/15, tarayıcı 48/48 ve TR katalog 12/12, birleşik platform 1479/1479 ve hedefli Chromium 1/1 PASS.
