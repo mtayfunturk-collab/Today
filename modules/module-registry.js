@@ -35,7 +35,8 @@
     }),
     Object.freeze({id:"radio",route:"radio",view:"radio"}),
     Object.freeze({id:"focus",route:"focus",view:"focus",openTriggerRequired:false}),
-    Object.freeze({id:"plans",route:"plans",view:"plans",openTriggerRequired:false})
+    Object.freeze({id:"plans",route:"plans",view:"plans",openTriggerRequired:false}),
+    Object.freeze({id:"places",route:"places",view:"places",openTriggerRequired:false})
   ]);
 
   const MODULE_IDS = Object.freeze(

@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "307ac13e399346fe5a0e7f860cdd69b7b113978c711fa3eb65fa2a2c8491bca4",
+    "09d753c65ffc2bda36a7bf4c6b4f193c1463f85a86445efd40ff07ba37653b94",
   "sw.js":
-    "d1648284d381427722308baa796f913371e479366f1928bef0f7dfcbdcb68150",
+    "c70ba3a7cfa2af7ac7536e2f0514213b47bd3e9f8e187ade83e1ed0441e607c3",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -55,9 +55,9 @@ const expectedProductionHashes = {
   "state-manager.js":
     "e513c919ad4088f09a06d5890ce05578e955488254d6bf45af7ca54d5507d2d1",
   "router.js":
-    "f15b72b5a3a16364b5b8aa6cdad6be89a8002c364d256337aaf27c5856ce8d82",
+    "1d9d4ff3b060745eacdc9b6f729553af7d5f00ab8bd904667e842636eab8b30e",
   "module-registry.js":
-    "e77fa3031f6c5f4d79b0d7561ca8596194d0d20757c5ecdd12bbac590b1d41b3",
+    "1f435b4aa5de02b055efad7026a5f9394ddfc5810564ea057470a6a6f8c4d416",
   "service-worker-manager.js":
     "5444e7af03101053ed4a1357384ac8f20c947deb0caf4c7b5d9fdbebb76a4989"
 };
@@ -149,6 +149,7 @@ const expectedHtmlIds = [
   "btnModuleCore",
   "btnModuleFocus",
   "btnModuleHealth",
+  "btnModulePlaces",
   "btnModulePlans",
   "btnModuleRadio",
   "btnModuleSky",
@@ -157,6 +158,7 @@ const expectedHtmlIds = [
   "btnModulesFromSky",
   "btnOpenSettings",
   "btnOpenStats",
+  "btnPlacesBack",
   "btnPlansBack",
   "btnRadioBack",
   "btnResetToday",
@@ -255,6 +257,8 @@ const expectedHtmlIds = [
   "moduleFocusTitle",
   "moduleHealthDesc",
   "moduleHealthTitle",
+  "modulePlacesDesc",
+  "modulePlacesTitle",
   "modulePlansDesc",
   "modulePlansTitle",
   "moduleSkyDesc",
@@ -264,6 +268,7 @@ const expectedHtmlIds = [
   "note",
   "pickTitle",
   "pillDate",
+  "placesTitle",
   "plansTitle",
   "radioPanel",
   "radioTitle",
@@ -376,14 +381,14 @@ test(
 );
 
 test(
-  "Güncel 211 HTML kimliği benzersiz",
+  "Güncel 216 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 211);
+    assert.equal(updatedIds.length, 216);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -396,7 +401,7 @@ test(
 );
 
 test(
-  "Yedi görünüm, Radio dahil doğrulanıyor",
+  "On görünüm, Radio dahil doğrulanıyor",
   () => {
     const updatedViews = matches(
       updatedHtml,
@@ -421,6 +426,7 @@ test(
         "home",
         "modules",
         "pick",
+        "places",
         "plans",
         "radio",
         "sky"
@@ -484,6 +490,7 @@ test(
       "./modules/radio-ui.mjs",
       "./modules/focus-ui.mjs",
       "./modules/plans-ui.mjs",
+      "./modules/places-ui.mjs",
       "./modules/router.js",
       "./modules/module-registry.js",
       "./modules/startup-manager.js"
@@ -793,7 +800,7 @@ test(
 );
 
 test(
-  "Altı modül kartı ve on iki alt navigasyon tetikleyicisi korunuyor",
+  "Yedi modül kartı ve on iki alt navigasyon tetikleyicisi korunuyor",
   () => {
     assert.deepEqual(
       matches(
@@ -806,7 +813,8 @@ test(
         "sky",
         "radio",
         "focus",
-        "plans"
+        "plans",
+        "places"
       ]
     );
     assert.deepEqual(
@@ -1267,7 +1275,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-101 ve 144 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-102 ve 145 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1279,7 +1287,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-101"'
+        'const VERSION = "today-v2-foundation-102"'
       )
     );
     assert.ok(shellMatch);
@@ -1289,7 +1297,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 144);
+    assert.equal(shellEntries.length, 145);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);

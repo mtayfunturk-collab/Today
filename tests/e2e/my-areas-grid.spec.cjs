@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {randomBytes}=require('node:crypto');
 
-test('Alanlarım keeps six modules, Core note and a usable grid at mobile and large text sizes',async({page},testInfo)=>{
+test('Alanlarım keeps seven modules, Core note and a usable grid at mobile and large text sizes',async({page},testInfo)=>{
   const scope=randomBytes(12).toString('hex');
   await page.setViewportSize({width:393,height:700});
   await page.goto(`/runs/${scope}/index.html`);
@@ -13,7 +13,7 @@ test('Alanlarım keeps six modules, Core note and a usable grid at mobile and la
   await page.locator('#btnHomeFromPick').click();
   await expect(page.locator('#modulesTitle')).toHaveText('Alanlarım');
   await expect(page.locator('.moduleCards')).toHaveAttribute('aria-label','Alanlarım');
-  await expect(page.locator('.moduleCards > .moduleCard, .moduleCards > .radioModule')).toHaveCount(6);
+  await expect(page.locator('.moduleCards > .moduleCard, .moduleCards > .radioModule')).toHaveCount(7);
   await expect(page.locator('.radioSharedHost .radioMini')).toHaveCount(1);
 
   const measure=()=>page.evaluate(()=>{
@@ -51,6 +51,14 @@ test('Alanlarım keeps six modules, Core note and a usable grid at mobile and la
   await expect(page.locator('[data-view="plans"]')).toContainText('Bu ekran veri kaydetmez.');
   expect(await page.evaluate(()=>localStorage.getItem('today.plans.v1'))).toBeNull();
   await page.locator('#btnPlansBack').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('modules');
+
+  await page.locator('#btnModulePlaces').click();
+  await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('places');
+  await expect(page.locator('[data-view="places"] .placesStages section')).toHaveCount(2);
+  await expect(page.locator('[data-view="places"]')).toContainText('Bu ekran veri kaydetmez');
+  expect(await page.evaluate(()=>localStorage.getItem('today.places.v1'))).toBeNull();
+  await page.locator('#btnPlacesBack').click();
   await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('modules');
 
   await page.locator('#btnCoreFromModules').click();

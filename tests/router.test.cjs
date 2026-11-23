@@ -97,6 +97,7 @@ class MockDocument {
       "radio",
       "focus",
       "plans",
+      "places",
       "calendar"
     ].forEach((viewName) => {
       if (viewName === missingView) {
@@ -341,6 +342,7 @@ test(
         "radio",
         "focus",
       "plans",
+      "places",
         "calendar",
         "statistics",
         "settings"
@@ -358,7 +360,7 @@ test(
 );
 
 test(
-  "Dokuz fiziksel görünüm sözleşmesi doğrulanıyor",
+  "On fiziksel görünüm sözleşmesi doğrulanıyor",
   () => {
     const runtime = createRuntime();
     const validation =
@@ -366,7 +368,7 @@ test(
         .validateViews();
 
     assert.equal(validation.valid, true);
-    assert.equal(validation.views.size, 9);
+    assert.equal(validation.views.size, 10);
     assert.deepEqual(
       [...validation.missingViews],
       []

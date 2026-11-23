@@ -1,3 +1,7 @@
+### 2026-11-23 — Yerler ilk görünür ekran (T90-261101-PO1-YER02)
+
+Alanlarım'a Yerler kartı ve iki durumlu, kayıt yapmayan ekran eklendi. Konum/harita ağı, yeni depolama ve geri yükleme açılmadı. Hedefli statik 30/30, SW 38/38, Registry 18/18, Router 15/15, tarayıcı 48/48 ve TR katalog 12/12, birleşik platform 1489/1489 ve hedefli Chromium 1/1 PASS.
+
 ### 2026-11-23 — Yerler saf veri sözleşmesi (T90-261101-PO1-YER01)
 
 Manuel yer/şehir, isteğe bağlı not/adres/HTTP(S) bağlantı ve iki durum için doğrulanan saf sözleşme eklendi. GPS, otomatik harita açma, depolama ve AI bağı yok. Hedefli Yerler 10/10, otomasyon 8/8 ve birleşik platform 1489/1489 PASS.
