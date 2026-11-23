@@ -1,3 +1,7 @@
+### 2026-11-23 — Planlar veri sözleşmesi (T90-261101-PO1-PLN01)
+
+Bir gün, Sırada, Yapıyorum ve Tamamlandı durumları için yalnız saf, sınırlı ve doğrulanan kayıt sözleşmesi eklendi. Hedefli test 9/9, otomasyon 8/8 ve birleşik platform 1479/1479 PASS. Kalıcı kayıt, dış takvim, bildirim ve UI açılmadı.
+
 ### 2026-11-23 — Koleksiyonlar yedek kapsamı tasarımı (T90-261101-PO1-COL02)
 
 Önerilen yerel anlık görüntü, v3 şifreli tam yedek kapsamı, eski v1/v2 dosyalarının eksik alan gösterimi ve üretim restore güvenlik kapısı görev kaydında netleştirildi. Kod, depolama ve gerçek kullanıcı verisi değişmedi.
