@@ -183,6 +183,10 @@ const TEST_GROUPS = Object.freeze([
     count: 9
   },
   {
+    file: "tests/places-contract.test.mjs",
+    count: 10
+  },
+  {
     file:
       "tests/service-worker-manager.test.cjs",
     count: 31
