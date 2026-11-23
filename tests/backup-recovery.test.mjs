@@ -72,6 +72,13 @@ async function resign(row){const {integrity,...body}=row;row.integrity=Buffer.fr
 async function replaceJournal(f,row){await mutateJournal(f,(_,store)=>store.put(row));}
 async function digest(f){return fingerprintRestoreSnapshot(await f.capture(),crypto);}
 await check('prototype requires an explicit synthetic-profile assertion',()=>assert.throws(()=>createSyntheticRecovery(),e=>e.code==='synthetic-profile-required'));
+await check('v2 archive remains read-only and cannot enter the synthetic v1 apply protocol',async()=>{
+  const f=await fixture(),v2=await createBackup({userConfirmed:true,password,confirmation:password,crypto,barrier:fn=>fn(),
+    capture:()=>captureSnapshot({storage:source.storage,indexedDB:source.indexedDB,contracts,crypto,source:origin,version:2})});
+  const before=await digest(f);
+  await assert.rejects(f.controller().prepare({...args,file:v2.file}),e=>e.code==='unsupported-recovery-version');
+  assert.equal(await digest(f),before);assert.equal(f.writes.length,0);assert.deepEqual(await journal(f),[]);
+});
 await check('construction and no-attempt startup guard do not initialize recovery storage',async()=>{
   const f=await fixture(),c=f.controller(),before=await f.indexedDB.databases();assert.equal((await c.guardStartup()).canStart,true);
   assert.deepEqual(await f.indexedDB.databases(),before);assert.equal(f.writes.length,0);

@@ -1,3 +1,7 @@
+### 2026-11-23 — Sentetik kurtarma prototipinde v2 yazma sınırı (T90-261101-PO1-BKP05)
+
+Ürüne bağlı olmayan eski sentetik kurtarma prototipi v2 dosyasını uygulama planına almadan `unsupported-recovery-version` ile durur. v2 salt okunur dosya doğrulama/önizleme davranışı korunur. Sentetik v2 reddi ve hedef/journal değişmezliği hedefli kurtarma testinde 37/37, birleşik platformda 1458/1458 PASS. Üretim restore hâlâ kapalıdır.
+
 ### 2026-11-23 — Yedek ekranında v2 dosyası (T90-261101-PO1-BKP04)
 
 Yedek ekranı kullanıcı onayıyla 25 yerel anahtarı kapsayan şifreli v2 dosyası hazırlar. Salt okunur önizleme eski v1 dosyasında Alanlarım tercihleri ve Radio favorilerinin bulunmadığını açıklar. Çevrimdışı kaynak güncellemesi için Service Worker foundation-101'e çıkarıldı. Hedefli UI 41/41, statik 30/30, Chromium yedek akışı 5/5 ve platform 1457/1457 PASS. Yerel WebKit sistem kütüphanesi eksikliğiyle çalışmadı; uzak CI ve fiziksel cihaz ayrıca açık. Üretim restore ve yeni tercih yazımı kapalı.
