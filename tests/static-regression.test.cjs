@@ -13,7 +13,7 @@ const updatedHtml = fs.readFileSync(
 // Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "84fc8738e8454925be28a8ef9fcb455a8572ca99f09d96be97f42d19b02924ce",
+    "7e190b41a7cc2d28df2d07f7e0cfe74df8d780fa951ba831dafae1e15f8eec2a",
   "sw.js":
     "3259eced1ab8764815d5dc9dc461d0d5361774f26f4e47c1696632e03df90cc0",
   "modules/adapter-interfaces.js":

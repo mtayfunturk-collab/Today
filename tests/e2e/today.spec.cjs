@@ -520,7 +520,7 @@ test('Radio playback starts only with publisher consent, survives module changes
   await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
   await expect(page.locator('[data-view="home"] .radioMini')).toHaveCount(0);
   await expect(page.locator('.radioMini')).toBeHidden();
-  await expect(page.locator('.radioModule .radioMini')).toHaveCount(1);
+  await expect(page.locator('.radioSharedHost .radioMini')).toHaveCount(1);
   await expect(page.locator('.radioMiniStatus')).toContainText('Bir istasyon seç');expect(streams).toHaveLength(0);
   await page.locator('#btnModuleRadio').click();
   await page.evaluate(()=>TodayRouter.navigate('radio',{moveFocus:false}));
@@ -542,6 +542,9 @@ test('Radio playback starts only with publisher consent, survives module changes
   expect(copyContinuity).toEqual({ sameAudio: true, count: 1, sameState: true, paused: false });
   expect(streams).toHaveLength(loads);
   await page.evaluate(()=>TodayRouter.navigate('health',{moveFocus:false}));await expect(page.locator('#radioPlayerStatus')).toContainText('Çalıyor');
+  await expect(page.locator('.radioSharedHost .radioMini')).toBeVisible();
+  await page.evaluate(()=>TodayRouter.navigate('pick',{moveFocus:false}));
+  await expect(page.locator('.radioSharedHost .radioMini')).toBeVisible();
   await page.evaluate(()=>TodayRouter.navigate('modules',{moveFocus:false}));
   await expect(page.locator('.radioMiniStatus')).toContainText('Canlı · Çalıyor');await expect(page.locator('.radioMiniName')).toHaveText('Synthetic Test Radio');expect(streams).toHaveLength(loads);
   await page.setViewportSize({width:320,height:740});

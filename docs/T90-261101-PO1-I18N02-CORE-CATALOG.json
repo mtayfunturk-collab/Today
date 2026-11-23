@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "purpose": "Source-aligned preparation catalog; not loaded by Today. Raw occurrences are evidence, not DOM bindings or complete UI coverage.",
-  "sourceRef": "90ca77a65c259a5fb3028476ff0192d452a2cb04",
-  "sourceSha256": "84fc8738e8454925be28a8ef9fcb455a8572ca99f09d96be97f42d19b02924ce",
-  "sourceBranch": "task/t90-261101-po1-areas02",
+  "sourceRef": "080a18e1c76f7d2057f17764e2b260d7075c430f",
+  "sourceSha256": "7e190b41a7cc2d28df2d07f7e0cfe74df8d780fa951ba831dafae1e15f8eec2a",
+  "sourceBranch": "task/t90-261101-po1-radio-mini",
   "completeEnglishRelease": false,
   "dictionaryModule": "modules/locales/core-tr.mjs",
   "priorCatalogSha256": "b90099e9af397c873afb865d7fe57b32d7a635e1f345021aaa0d0b76b491c82b",
@@ -25,63 +25,63 @@
         "literal": "TODAY",
         "occurrences": [
           {
-            "line": 427,
+            "line": 428,
             "lineText": "   TODAY MODULE CENTER V1"
           },
           {
-            "line": 1827,
+            "line": 1828,
             "lineText": "        <h1 class=\"title\" id=\"homeTitle\" data-view-title tabindex=\"-1\">TODAY</h1>"
           },
           {
-            "line": 1919,
+            "line": 1920,
             "lineText": "      <!-- TODAY CORE -->"
           },
           {
-            "line": 2063,
+            "line": 2064,
             "lineText": "<!-- TODAY HEALTH -->"
           },
           {
-            "line": 2645,
+            "line": 2646,
             "lineText": "<!-- TODAY SKY -->"
           },
           {
-            "line": 3425,
+            "line": 3427,
             "lineText": "        errorCode: \"TODAY-STARTUP-004\""
           },
           {
-            "line": 3429,
+            "line": 3431,
             "lineText": "        \"[TODAY-ERRORS-LOAD] Merkezi hata yöneticisi yüklenemedi.\""
           },
           {
-            "line": 3475,
+            "line": 3477,
             "lineText": "        \"TODAY-MIGRATION-UNKNOWN\""
           },
           {
-            "line": 3521,
+            "line": 3523,
             "lineText": "        errorCode: \"TODAY-STATE-001\","
           },
           {
-            "line": 3688,
+            "line": 3690,
             "lineText": "   8) TODAY MODULE PLATFORM"
           },
           {
-            "line": 3801,
+            "line": 3803,
             "lineText": "        errorCode: \"TODAY-STATE-001\","
           },
           {
-            "line": 3926,
+            "line": 3928,
             "lineText": "          errorCode: \"TODAY-STATE-001\","
           },
           {
-            "line": 4539,
+            "line": 4541,
             "lineText": "      \"TODAY-ROUTER-INIT\""
           },
           {
-            "line": 4552,
+            "line": 4554,
             "lineText": "      \"TODAY-MODULES-INIT\""
           },
           {
-            "line": 4561,
+            "line": 4563,
             "lineText": "        errorCode: \"TODAY-STARTUP-005\","
           }
         ]
@@ -99,11 +99,11 @@
         "literal": "Başla",
         "occurrences": [
           {
-            "line": 1830,
+            "line": 1831,
             "lineText": "        <button class=\"btn\" id=\"btnStart\" type=\"button\">Başla</button>"
           },
           {
-            "line": 3381,
+            "line": 3383,
             "lineText": "    text.textContent = copyText(\"startup.managerFailed\", \"Başlangıç yöneticisi yüklenemedi. Kayıtların silinmedi. İnternet bağlantını kontrol edip yeniden dene.\");"
           }
         ]
@@ -121,7 +121,7 @@
         "literal": "verileriniz sadece bu cihazda kaydedilmektedir.",
         "occurrences": [
           {
-            "line": 1828,
+            "line": 1829,
             "lineText": "        <div class=\"sub\">verileriniz sadece bu cihazda kaydedilmektedir.</div>"
           }
         ]
@@ -139,19 +139,19 @@
         "literal": "Alanlarım",
         "occurrences": [
           {
-            "line": 1846,
+            "line": 1847,
             "lineText": "    <h1 class=\"title\" id=\"modulesTitle\" data-view-title tabindex=\"-1\">Alanlarım</h1>"
           },
           {
-            "line": 1853,
+            "line": 1854,
             "lineText": "  <div class=\"moduleCards\" role=\"group\" aria-label=\"Alanlarım\">"
           },
           {
-            "line": 2870,
+            "line": 2871,
             "lineText": "            <nav class=\"settingsQuickNav\" aria-label=\"Core ve Alanlarım'a geçiş\">"
           },
           {
-            "line": 2872,
+            "line": 2873,
             "lineText": "              <button class=\"ghost\" id=\"btnModulesFromSettings\" type=\"button\">Alanlarım</button>"
           }
         ]
@@ -169,27 +169,27 @@
         "literal": "Today Core",
         "occurrences": [
           {
-            "line": 1866,
+            "line": 1867,
             "lineText": "        <strong id=\"moduleCoreTitle\">Today Core</strong>"
           },
           {
-            "line": 2034,
+            "line": 2035,
             "lineText": "    aria-label=\"Today Core\""
           },
           {
-            "line": 2616,
+            "line": 2617,
             "lineText": "      aria-label=\"Today Core\""
           },
           {
-            "line": 2685,
+            "line": 2686,
             "lineText": "      aria-label=\"Today Core\""
           },
           {
-            "line": 2723,
+            "line": 2724,
             "lineText": "          <button class=\"back\" id=\"btnBackToPick\" type=\"button\" aria-label=\"Today Core'a dön\">"
           },
           {
-            "line": 2871,
+            "line": 2872,
             "lineText": "              <button class=\"ghost\" id=\"btnCoreFromSettings\" type=\"button\">Today Core</button>"
           }
         ]
@@ -207,7 +207,7 @@
         "literal": "Günlük, notlar ve ajanda",
         "occurrences": [
           {
-            "line": 1867,
+            "line": 1868,
             "lineText": "        <small id=\"moduleCoreDesc\">Günlük, notlar ve ajanda</small>"
           }
         ]
@@ -225,31 +225,31 @@
         "literal": "Today Health",
         "occurrences": [
           {
-            "line": 1882,
+            "line": 1883,
             "lineText": "        <strong id=\"moduleHealthTitle\">Today Health</strong>"
           },
           {
-            "line": 2045,
+            "line": 2046,
             "lineText": "    aria-label=\"Today Health\""
           },
           {
-            "line": 2081,
+            "line": 2082,
             "lineText": "    <span class=\"pill\">Today Health</span>"
           },
           {
-            "line": 2626,
+            "line": 2627,
             "lineText": "      aria-label=\"Today Health\""
           },
           {
-            "line": 2695,
+            "line": 2696,
             "lineText": "      aria-label=\"Today Health\""
           },
           {
-            "line": 3603,
+            "line": 3605,
             "lineText": "      \"Today Health beslenme arayüzü yüklenemedi.\""
           },
           {
-            "line": 3614,
+            "line": 3616,
             "lineText": "      \"Today Health kütüphane yönetim arayüzü yüklenemedi.\""
           }
         ]
@@ -267,7 +267,7 @@
         "literal": "Beslenme, su ve yaşam",
         "occurrences": [
           {
-            "line": 1883,
+            "line": 1884,
             "lineText": "        <small id=\"moduleHealthDesc\">Beslenme, su ve yaşam</small>"
           }
         ]
@@ -285,27 +285,27 @@
         "literal": "Today Sky",
         "occurrences": [
           {
-            "line": 1898,
+            "line": 1899,
             "lineText": "        <strong id=\"moduleSkyTitle\">Today Sky</strong>"
           },
           {
-            "line": 2055,
+            "line": 2056,
             "lineText": "    aria-label=\"Today Sky\""
           },
           {
-            "line": 2637,
+            "line": 2638,
             "lineText": "      aria-label=\"Today Sky\""
           },
           {
-            "line": 2663,
+            "line": 2664,
             "lineText": "    <span class=\"pill\">Today Sky</span>"
           },
           {
-            "line": 2670,
+            "line": 2671,
             "lineText": "    <h1 class=\"q\" id=\"skyTitle\" data-view-title tabindex=\"-1\">Today Sky</h1>"
           },
           {
-            "line": 2705,
+            "line": 2706,
             "lineText": "      aria-label=\"Today Sky\""
           }
         ]
@@ -323,7 +323,7 @@
         "literal": "Haritan ve gökyüzü",
         "occurrences": [
           {
-            "line": 1899,
+            "line": 1900,
             "lineText": "        <small id=\"moduleSkyDesc\">Haritan ve gökyüzü</small>"
           }
         ]
@@ -341,27 +341,27 @@
         "literal": "Today Radio",
         "occurrences": [
           {
-            "line": 1904,
+            "line": 1905,
             "lineText": "  <button class=\"moduleCard\" id=\"btnModuleRadio\" type=\"button\" data-module=\"radio\" aria-label=\"Today Radio\">"
           },
           {
-            "line": 1905,
+            "line": 1906,
             "lineText": "    <span class=\"moduleIcon\" aria-hidden=\"true\">♫</span><span class=\"moduleText\"><strong>Today Radio</strong><small>Türkiye ve dünyadan istasyonlar</small></span>"
           },
           {
-            "line": 1913,
+            "line": 1914,
             "lineText": "        <div class=\"topbar\"><h1 class=\"title\" id=\"radioTitle\" data-view-title tabindex=\"-1\">Today Radio</h1><button class=\"back\" id=\"btnRadioBack\" type=\"button\">Modüller</button></div>"
           },
           {
-            "line": 2060,
+            "line": 2061,
             "lineText": "<button class=\"navItem\" type=\"button\" data-open-module=\"radio\" aria-label=\"Today Radio\"><span class=\"navIcon\" aria-hidden=\"true\">♫</span><span>Radio</span></button></nav>"
           },
           {
-            "line": 2642,
+            "line": 2643,
             "lineText": "  <button class=\"navItem\" type=\"button\" data-open-module=\"radio\" aria-label=\"Today Radio\"><span class=\"navIcon\" aria-hidden=\"true\">♫</span><span>Radio</span></button></nav>"
           },
           {
-            "line": 2711,
+            "line": 2712,
             "lineText": "  <button class=\"navItem\" type=\"button\" data-open-module=\"radio\" aria-label=\"Today Radio\"><span class=\"navIcon\" aria-hidden=\"true\">♫</span><span>Radio</span></button></nav>"
           }
         ]
@@ -379,11 +379,11 @@
         "literal": "Türkiye ve dünyadan istasyonlar",
         "occurrences": [
           {
-            "line": 1905,
+            "line": 1906,
             "lineText": "    <span class=\"moduleIcon\" aria-hidden=\"true\">♫</span><span class=\"moduleText\"><strong>Today Radio</strong><small>Türkiye ve dünyadan istasyonlar</small></span>"
           },
           {
-            "line": 1914,
+            "line": 1915,
             "lineText": "        <p class=\"sub\">Türkiye ve dünyadan istasyonları keşfet ve dinle.</p>"
           }
         ]
@@ -401,7 +401,7 @@
         "literal": "Takvimi aç",
         "occurrences": [
           {
-            "line": 1941,
+            "line": 1942,
             "lineText": "            aria-label=\"Takvimi aç\""
           }
         ]
@@ -419,7 +419,7 @@
         "literal": "Bugün sende ne oldu?",
         "occurrences": [
           {
-            "line": 1950,
+            "line": 1951,
             "lineText": "        <h1 class=\"q\" id=\"pickTitle\" data-view-title tabindex=\"-1\">Bugün sende ne oldu?</h1>"
           }
         ]
@@ -437,11 +437,11 @@
         "literal": "Bir şey oldu ama adı yok",
         "occurrences": [
           {
-            "line": 1964,
+            "line": 1965,
             "lineText": "              <div class=\"ctitle\" id=\"choiceATitle\">Bir şey oldu ama adı yok</div>"
           },
           {
-            "line": 4213,
+            "line": 4215,
             "lineText": "    A:\"Bir şey oldu ama adı yok\","
           }
         ]
@@ -459,7 +459,7 @@
         "literal": "Adını koyma. Sadece fark et.",
         "occurrences": [
           {
-            "line": 1965,
+            "line": 1966,
             "lineText": "              <div class=\"cdesc\" id=\"choiceADesc\">Adını koyma. Sadece fark et.</div>"
           }
         ]
@@ -477,11 +477,11 @@
         "literal": "Her şey çok net",
         "occurrences": [
           {
-            "line": 1980,
+            "line": 1981,
             "lineText": "              <div class=\"ctitle\" id=\"choiceBTitle\">Her şey çok net</div>"
           },
           {
-            "line": 4214,
+            "line": 4216,
             "lineText": "    B:\"Her şey çok net\","
           }
         ]
@@ -499,7 +499,7 @@
         "literal": "Bir cümleyle söyleyebiliyorsan tamam.",
         "occurrences": [
           {
-            "line": 1981,
+            "line": 1982,
             "lineText": "              <div class=\"cdesc\" id=\"choiceBDesc\">Bir cümleyle söyleyebiliyorsan tamam.</div>"
           }
         ]
@@ -517,15 +517,15 @@
         "literal": "Zordu bugün",
         "occurrences": [
           {
-            "line": 1996,
+            "line": 1997,
             "lineText": "              <div class=\"ctitle\" id=\"choiceCTitle\">Zordu bugün</div>"
           },
           {
-            "line": 3062,
+            "line": 3063,
             "lineText": "                  değerlendirir. “Zordu bugün” ile kısa uyku ya da düşük enerji"
           },
           {
-            "line": 4215,
+            "line": 4217,
             "lineText": "    C:\"Zordu bugün\""
           }
         ]
@@ -543,7 +543,7 @@
         "literal": "zorluklar olgunlaşma için gereklidir",
         "occurrences": [
           {
-            "line": 1997,
+            "line": 1998,
             "lineText": "              <div class=\"cdesc\" id=\"choiceCDesc\">zorluklar olgunlaşma için gereklidir</div>"
           }
         ]
@@ -561,7 +561,7 @@
         "literal": "Renk seçimi, opsiyonel",
         "occurrences": [
           {
-            "line": 2003,
+            "line": 2004,
             "lineText": "        <div class=\"colors\" role=\"group\" aria-label=\"Renk seçimi, opsiyonel\">"
           }
         ]
@@ -579,7 +579,7 @@
         "literal": "Renk seçmek zorunlu değil.",
         "occurrences": [
           {
-            "line": 2017,
+            "line": 2018,
             "lineText": "        <div class=\"mini\" style=\"text-align:center; margin-top:2px;\">Renk seçmek zorunlu değil.</div>"
           }
         ]
@@ -597,11 +597,11 @@
         "literal": "Lacivert",
         "occurrences": [
           {
-            "line": 2004,
+            "line": 2005,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"navy\" title=\"Lacivert\" aria-label=\"Lacivert\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4219,
+            "line": 4221,
             "lineText": "    navy:\"Lacivert\","
           }
         ]
@@ -619,11 +619,11 @@
         "literal": "Turuncu",
         "occurrences": [
           {
-            "line": 2005,
+            "line": 2006,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"orange\" title=\"Turuncu\" aria-label=\"Turuncu\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4220,
+            "line": 4222,
             "lineText": "    orange:\"Turuncu\","
           }
         ]
@@ -641,11 +641,11 @@
         "literal": "Kırmızı",
         "occurrences": [
           {
-            "line": 2006,
+            "line": 2007,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"red\" title=\"Kırmızı\" aria-label=\"Kırmızı\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4221,
+            "line": 4223,
             "lineText": "    red:\"Kırmızı\","
           }
         ]
@@ -663,11 +663,11 @@
         "literal": "Mavi",
         "occurrences": [
           {
-            "line": 2007,
+            "line": 2008,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"blue\" title=\"Mavi\" aria-label=\"Mavi\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4222,
+            "line": 4224,
             "lineText": "    blue:\"Mavi\","
           }
         ]
@@ -685,11 +685,11 @@
         "literal": "Sarı",
         "occurrences": [
           {
-            "line": 2008,
+            "line": 2009,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"yellow\" title=\"Sarı\" aria-label=\"Sarı\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4223,
+            "line": 4225,
             "lineText": "    yellow:\"Sarı\","
           }
         ]
@@ -707,11 +707,11 @@
         "literal": "Yeşil",
         "occurrences": [
           {
-            "line": 2009,
+            "line": 2010,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"green\" title=\"Yeşil\" aria-label=\"Yeşil\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4224,
+            "line": 4226,
             "lineText": "    green:\"Yeşil\","
           }
         ]
@@ -729,11 +729,11 @@
         "literal": "Derin",
         "occurrences": [
           {
-            "line": 2010,
+            "line": 2011,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"deep\" title=\"Derin\" aria-label=\"Derin\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4225,
+            "line": 4227,
             "lineText": "    deep:\"Derin\","
           }
         ]
@@ -751,7 +751,7 @@
         "literal": "Not (opsiyonel)",
         "occurrences": [
           {
-            "line": 2021,
+            "line": 2022,
             "lineText": "          <label class=\"mini\" for=\"note\" style=\"margin:0 0 8px; display:block;\">Not (opsiyonel)</label>"
           }
         ]
@@ -769,7 +769,7 @@
         "literal": "Bugünden küçük bir not…",
         "occurrences": [
           {
-            "line": 2022,
+            "line": 2023,
             "lineText": "          <textarea id=\"note\" placeholder=\"Bugünden küçük bir not…\"></textarea>"
           }
         ]
@@ -787,7 +787,7 @@
         "literal": "Bugünü sıfırla",
         "occurrences": [
           {
-            "line": 2026,
+            "line": 2027,
             "lineText": "          <button class=\"ghost\" id=\"btnResetToday\" type=\"button\">Bugünü sıfırla</button>"
           }
         ]
@@ -805,15 +805,15 @@
         "literal": "Today ana modülleri",
         "occurrences": [
           {
-            "line": 2029,
+            "line": 2030,
             "lineText": "        <nav class=\"bottomNav\" aria-label=\"Today ana modülleri\">"
           },
           {
-            "line": 2611,
+            "line": 2612,
             "lineText": "  <nav class=\"bottomNav\" aria-label=\"Today ana modülleri\">"
           },
           {
-            "line": 2680,
+            "line": 2681,
             "lineText": "  <nav class=\"bottomNav\" aria-label=\"Today ana modülleri\">"
           }
         ]
@@ -831,23 +831,23 @@
         "literal": "Takvim",
         "occurrences": [
           {
-            "line": 303,
+            "line": 304,
             "lineText": "    /* Takvim */"
           },
           {
-            "line": 344,
+            "line": 345,
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 1941,
+            "line": 1942,
             "lineText": "            aria-label=\"Takvimi aç\""
           },
           {
-            "line": 2734,
+            "line": 2735,
             "lineText": "            Takvim"
           },
           {
-            "line": 3997,
+            "line": 3999,
             "lineText": "    $(\"#calPill\").textContent = window.TodayCalendarCopy?.title || \"Takvim\";"
           }
         ]
@@ -865,7 +865,7 @@
         "literal": "Today Core'a dön",
         "occurrences": [
           {
-            "line": 2723,
+            "line": 2724,
             "lineText": "          <button class=\"back\" id=\"btnBackToPick\" type=\"button\" aria-label=\"Today Core'a dön\">"
           }
         ]
@@ -883,7 +883,7 @@
         "literal": "İstatistiği aç",
         "occurrences": [
           {
-            "line": 2740,
+            "line": 2741,
             "lineText": "            aria-label=\"İstatistiği aç\""
           }
         ]
@@ -901,7 +901,7 @@
         "literal": "Sadece bu ay görünür.",
         "occurrences": [
           {
-            "line": 2750,
+            "line": 2751,
             "lineText": "          <div class=\"mini\" id=\"calHint\">Sadece bu ay görünür.</div>"
           }
         ]
@@ -919,15 +919,15 @@
         "literal": "İstatistik",
         "occurrences": [
           {
-            "line": 344,
+            "line": 345,
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 2769,
+            "line": 2770,
             "lineText": "            İstatistik"
           },
           {
-            "line": 2792,
+            "line": 2793,
             "lineText": "            <span>İstatistik</span>"
           }
         ]
@@ -945,23 +945,23 @@
         "literal": "Ayarlar",
         "occurrences": [
           {
-            "line": 344,
+            "line": 345,
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 1849,
+            "line": 1850,
             "lineText": "      <button class=\"ghost\" id=\"btnSettingsFromModules\" type=\"button\">Ayarlar</button>"
           },
           {
-            "line": 1948,
+            "line": 1949,
             "lineText": "        <div class=\"coreQuickNav\"><button class=\"ghost\" id=\"btnSettingsFromPick\" type=\"button\">Ayarlar</button></div>"
           },
           {
-            "line": 2778,
+            "line": 2779,
             "lineText": "            Ayarlar"
           },
           {
-            "line": 2866,
+            "line": 2867,
             "lineText": "            <span>Ayarlar</span>"
           }
         ]
@@ -979,7 +979,7 @@
         "literal": "Tema",
         "occurrences": [
           {
-            "line": 2875,
+            "line": 2876,
             "lineText": "              <label class=\"mini\" for=\"themeSelect\">Tema</label>"
           }
         ]
@@ -997,15 +997,15 @@
         "literal": "Varsayılan",
         "occurrences": [
           {
-            "line": 2330,
+            "line": 2331,
             "lineText": "            <span class=\"healthFieldLabel\">Varsayılan miktar</span>"
           },
           {
-            "line": 2877,
+            "line": 2878,
             "lineText": "                <option value=\"system\">Varsayılan</option>"
           },
           {
-            "line": 3013,
+            "line": 3014,
             "lineText": "                    Varsayılan olarak kapalıdır. Yalnız kullanıcının bağladığı,"
           }
         ]
@@ -1023,7 +1023,7 @@
         "literal": "Açık",
         "occurrences": [
           {
-            "line": 2878,
+            "line": 2879,
             "lineText": "                <option value=\"light\">Açık</option>"
           }
         ]
@@ -1041,7 +1041,7 @@
         "literal": "Koyu",
         "occurrences": [
           {
-            "line": 2879,
+            "line": 2880,
             "lineText": "                <option value=\"dark\">Koyu</option>"
           }
         ]
@@ -1059,7 +1059,7 @@
         "literal": "Kontrastlı",
         "occurrences": [
           {
-            "line": 2880,
+            "line": 2881,
             "lineText": "                <option value=\"contrast\">Kontrastlı</option>"
           }
         ]
@@ -1077,7 +1077,7 @@
         "literal": "Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur.",
         "occurrences": [
           {
-            "line": 2885,
+            "line": 2886,
             "lineText": "              Bu uygulama şu an backend kullanmıyor. Veriler cihazda tutulur."
           }
         ]
@@ -1095,11 +1095,11 @@
         "literal": "Gün içi giriş ritmi (00:00 → 23:59)",
         "occurrences": [
           {
-            "line": 2797,
+            "line": 2798,
             "lineText": "              <div class=\"chartTitle\" id=\"chartLabel\">Gün içi giriş ritmi (00:00 → 23:59)</div>"
           },
           {
-            "line": 4444,
+            "line": 4446,
             "lineText": "    if(mode===\"hour\"){ arr = seriesHour(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.hour, \"Gün içi giriş ritmi (00:00 → 23:59)\"); }"
           }
         ]
@@ -1117,7 +1117,7 @@
         "literal": "Son 7 gün ivmesi",
         "occurrences": [
           {
-            "line": 4445,
+            "line": 4447,
             "lineText": "    if(mode===\"day\"){ arr = seriesDay(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.day, \"Son 7 gün ivmesi\"); }"
           }
         ]
@@ -1135,7 +1135,7 @@
         "literal": "Son 4 hafta ivmesi",
         "occurrences": [
           {
-            "line": 4446,
+            "line": 4448,
             "lineText": "    if(mode===\"week\"){ arr = seriesWeek(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.week, \"Son 4 hafta ivmesi\"); }"
           }
         ]
@@ -1153,7 +1153,7 @@
         "literal": "Son 12 ay ivmesi",
         "occurrences": [
           {
-            "line": 4447,
+            "line": 4449,
             "lineText": "    if(mode===\"month\"){ arr = seriesMonth(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.month, \"Son 12 ay ivmesi\"); }"
           }
         ]
@@ -1171,7 +1171,7 @@
         "literal": "Soldan sağa: gün akışı. Aşağıdan yukarı: biriken ivme.",
         "occurrences": [
           {
-            "line": 2817,
+            "line": 2818,
             "lineText": "                Soldan sağa: gün akışı. Aşağıdan yukarı: biriken ivme."
           }
         ]
@@ -1189,7 +1189,7 @@
         "literal": "Grafik verisi hazırlanıyor.",
         "occurrences": [
           {
-            "line": 2819,
+            "line": 2820,
             "lineText": "              <div class=\"visuallyHidden\" id=\"chartSummary\">Grafik verisi hazırlanıyor.</div>"
           }
         ]
@@ -1207,7 +1207,7 @@
         "literal": "Grafik zaman aralığı",
         "occurrences": [
           {
-            "line": 2821,
+            "line": 2822,
             "lineText": "              <div class=\"modeRow\" role=\"group\" aria-label=\"Grafik zaman aralığı\">"
           }
         ]
@@ -1225,7 +1225,7 @@
         "literal": "Saatlik grafik",
         "occurrences": [
           {
-            "line": 2822,
+            "line": 2823,
             "lineText": "                <button class=\"mode active\" type=\"button\" data-mode=\"hour\" title=\"Saat\" aria-label=\"Saatlik grafik\" aria-pressed=\"true\">🕒</button>"
           }
         ]
@@ -1243,7 +1243,7 @@
         "literal": "Son 7 gün grafiği",
         "occurrences": [
           {
-            "line": 2823,
+            "line": 2824,
             "lineText": "                <button class=\"mode\" type=\"button\" data-mode=\"day\" title=\"Gün\" aria-label=\"Son 7 gün grafiği\" aria-pressed=\"false\">📅</button>"
           }
         ]
@@ -1261,7 +1261,7 @@
         "literal": "Son 4 hafta grafiği",
         "occurrences": [
           {
-            "line": 2824,
+            "line": 2825,
             "lineText": "                <button class=\"mode\" type=\"button\" data-mode=\"week\" title=\"Hafta\" aria-label=\"Son 4 hafta grafiği\" aria-pressed=\"false\">📆</button>"
           }
         ]
@@ -1279,7 +1279,7 @@
         "literal": "Son 12 ay grafiği",
         "occurrences": [
           {
-            "line": 2825,
+            "line": 2826,
             "lineText": "                <button class=\"mode\" type=\"button\" data-mode=\"month\" title=\"Ay\" aria-label=\"Son 12 ay grafiği\" aria-pressed=\"false\">🗓️</button>"
           }
         ]
@@ -1297,7 +1297,7 @@
         "literal": "Özet",
         "occurrences": [
           {
-            "line": 2838,
+            "line": 2839,
             "lineText": "                <span>Özet</span><span class=\"mini\" aria-hidden=\"true\">▼</span>"
           }
         ]
@@ -1315,7 +1315,7 @@
         "literal": "CSV indir",
         "occurrences": [
           {
-            "line": 2846,
+            "line": 2847,
             "lineText": "              <button class=\"ghost\" id=\"btnExport\" type=\"button\">CSV indir</button>"
           }
         ]
@@ -1333,7 +1333,7 @@
         "literal": "Bugün loglarını temizle",
         "occurrences": [
           {
-            "line": 2847,
+            "line": 2848,
             "lineText": "              <button class=\"ghost\" id=\"btnClearTodayLogs\" type=\"button\">Bugün loglarını temizle</button>"
           }
         ]
@@ -1351,7 +1351,7 @@
         "literal": "Geçmiş günler düzenlenemez.",
         "occurrences": [
           {
-            "line": 3769,
+            "line": 3771,
             "lineText": "    $(\"#statusPick\").textContent = editable ? \"\" : coreMessage(\"core.readOnly\", \"Geçmiş günler düzenlenemez.\");"
           }
         ]
@@ -1369,7 +1369,7 @@
         "literal": "Kaydedildi.",
         "occurrences": [
           {
-            "line": 3842,
+            "line": 3844,
             "lineText": "        ? coreMessage(\"core.saved\", \"Kaydedildi.\")"
           }
         ]
@@ -1387,7 +1387,7 @@
         "literal": "Renk kaydedildi.",
         "occurrences": [
           {
-            "line": 3902,
+            "line": 3904,
             "lineText": "        ? coreMessage(\"core.colorSaved\", \"Renk kaydedildi.\")"
           }
         ]
@@ -1405,7 +1405,7 @@
         "literal": "Not kaydedildi.",
         "occurrences": [
           {
-            "line": 3933,
+            "line": 3935,
             "lineText": "          ? coreMessage(\"core.noteSaved\", \"Not kaydedildi.\")"
           }
         ]
@@ -1423,7 +1423,7 @@
         "literal": "Bugün temizlendi.",
         "occurrences": [
           {
-            "line": 3960,
+            "line": 3962,
             "lineText": "      ? coreMessage(\"core.todayCleared\", \"Bugün temizlendi.\")"
           }
         ]
@@ -1441,7 +1441,7 @@
         "literal": "Today başlatılamadı",
         "occurrences": [
           {
-            "line": 3376,
+            "line": 3378,
             "lineText": "    title.textContent = copyText(\"startup.failed\", \"Today başlatılamadı\");"
           }
         ]
@@ -1459,7 +1459,7 @@
         "literal": "Yeniden dene",
         "occurrences": [
           {
-            "line": 3388,
+            "line": 3390,
             "lineText": "    retryButton.textContent = copyText(\"common.retry\", \"Yeniden dene\");"
           }
         ]
@@ -1477,7 +1477,7 @@
         "literal": "Core’a dön",
         "occurrences": [
           {
-            "line": 1848,
+            "line": 1849,
             "lineText": "      <button class=\"ghost\" id=\"btnCoreFromModules\" type=\"button\">Core’a dön</button>"
           }
         ]
@@ -1495,7 +1495,7 @@
         "literal": "Modülleri aç",
         "occurrences": [
           {
-            "line": 1932,
+            "line": 1933,
             "lineText": "            aria-label=\"Modülleri aç\" aria-describedby=\"coreModulesHint\""
           }
         ]
@@ -1513,7 +1513,7 @@
         "literal": "Diğer modüller için ızgara simgesine dokun.",
         "occurrences": [
           {
-            "line": 1947,
+            "line": 1948,
             "lineText": "        <p class=\"hint\" id=\"coreModulesHint\">Diğer modüller için ızgara simgesine dokun.</p>"
           }
         ]
@@ -1531,11 +1531,11 @@
         "literal": "Pembe",
         "occurrences": [
           {
-            "line": 2011,
+            "line": 2012,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"pink\" title=\"Pembe\" aria-label=\"Pembe\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4226,
+            "line": 4228,
             "lineText": "    pink:\"Pembe\","
           }
         ]
@@ -1553,11 +1553,11 @@
         "literal": "Mor",
         "occurrences": [
           {
-            "line": 2012,
+            "line": 2013,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"purple\" title=\"Mor\" aria-label=\"Mor\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4227,
+            "line": 4229,
             "lineText": "    purple:\"Mor\","
           }
         ]
@@ -1575,11 +1575,11 @@
         "literal": "Turkuaz",
         "occurrences": [
           {
-            "line": 2013,
+            "line": 2014,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"teal\" title=\"Turkuaz\" aria-label=\"Turkuaz\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4228,
+            "line": 4230,
             "lineText": "    teal:\"Turkuaz\","
           }
         ]
@@ -1597,11 +1597,11 @@
         "literal": "Nane",
         "occurrences": [
           {
-            "line": 2014,
+            "line": 2015,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"mint\" title=\"Nane\" aria-label=\"Nane\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4229,
+            "line": 4231,
             "lineText": "    mint:\"Nane\","
           }
         ]
@@ -1619,59 +1619,59 @@
         "literal": "Gri",
         "occurrences": [
           {
-            "line": 1059,
+            "line": 1060,
             "lineText": ".healthLibraryEditorGrid {"
           },
           {
-            "line": 1078,
+            "line": 1079,
             "lineText": ".healthLibraryNutritionGrid {"
           },
           {
-            "line": 1085,
+            "line": 1086,
             "lineText": ".healthLibraryMetaGrid {"
           },
           {
-            "line": 1306,
+            "line": 1307,
             "lineText": "  .healthLibraryEditorGrid,"
           },
           {
-            "line": 1307,
+            "line": 1308,
             "lineText": "  .healthLibraryNutritionGrid,"
           },
           {
-            "line": 1308,
+            "line": 1309,
             "lineText": "  .healthLibraryMetaGrid,"
           },
           {
-            "line": 1759,
+            "line": 1760,
             "lineText": " [data-view=\"health\"] :is(.healthLibraryEditorGrid,.healthLibraryNutritionGrid,.healthLibraryMetaGrid,.healthRecipeIngredientControls,.healthConsumptionEditor) {grid-template-columns:minmax(0,1fr)}"
           },
           {
-            "line": 2015,
+            "line": 2016,
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"gray\" title=\"Gri\" aria-label=\"Gri\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 2315,
+            "line": 2316,
             "lineText": "        <div class=\"healthLibraryEditorGrid\">"
           },
           {
-            "line": 2367,
+            "line": 2368,
             "lineText": "          <div class=\"healthLibraryNutritionGrid\">"
           },
           {
-            "line": 2475,
+            "line": 2476,
             "lineText": "        <div class=\"healthLibraryMetaGrid\">"
           },
           {
-            "line": 2755,
+            "line": 2756,
             "lineText": "          id=\"calGrid\""
           },
           {
-            "line": 3999,
+            "line": 4001,
             "lineText": "    const grid = $(\"#calGrid\");"
           },
           {
-            "line": 4230,
+            "line": 4232,
             "lineText": "    gray:\"Gri\""
           }
         ]
@@ -1689,7 +1689,7 @@
         "literal": "Not kaydedilemedi. Taslak bu oturumda korunuyor.",
         "occurrences": [
           {
-            "line": 3934,
+            "line": 3936,
             "lineText": "          : coreMessage(\"core.noteFailed\", \"Not kaydedilemedi. Taslak bu oturumda korunuyor.\"));"
           }
         ]
@@ -1707,7 +1707,7 @@
         "literal": "Saat",
         "occurrences": [
           {
-            "line": 2822,
+            "line": 2823,
             "lineText": "                <button class=\"mode active\" type=\"button\" data-mode=\"hour\" title=\"Saat\" aria-label=\"Saatlik grafik\" aria-pressed=\"true\">🕒</button>"
           }
         ]
@@ -1725,43 +1725,43 @@
         "literal": "Gün",
         "occurrences": [
           {
-            "line": 1867,
+            "line": 1868,
             "lineText": "        <small id=\"moduleCoreDesc\">Günlük, notlar ve ajanda</small>"
           },
           {
-            "line": 2569,
+            "line": 2570,
             "lineText": "        <h2 class=\"healthSectionTitle\" id=\"healthPlanTitle\">Günün planı</h2>"
           },
           {
-            "line": 2579,
+            "line": 2580,
             "lineText": "        <h2 class=\"healthSectionTitle\" id=\"healthEntriesTitle\">Günün kayıtları</h2>"
           },
           {
-            "line": 2797,
+            "line": 2798,
             "lineText": "              <div class=\"chartTitle\" id=\"chartLabel\">Gün içi giriş ritmi (00:00 → 23:59)</div>"
           },
           {
-            "line": 2823,
+            "line": 2824,
             "lineText": "                <button class=\"mode\" type=\"button\" data-mode=\"day\" title=\"Gün\" aria-label=\"Son 7 gün grafiği\" aria-pressed=\"false\">📅</button>"
           },
           {
-            "line": 2905,
+            "line": 2906,
             "lineText": "                  <legend>Günlük kayıtlar</legend>"
           },
           {
-            "line": 2913,
+            "line": 2914,
             "lineText": "                    Günlük seçim"
           },
           {
-            "line": 2922,
+            "line": 2923,
             "lineText": "                    Günlük renk"
           },
           {
-            "line": 2930,
+            "line": 2931,
             "lineText": "                    Günlük not metni"
           },
           {
-            "line": 4444,
+            "line": 4446,
             "lineText": "    if(mode===\"hour\"){ arr = seriesHour(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.hour, \"Gün içi giriş ritmi (00:00 → 23:59)\"); }"
           }
         ]
@@ -1779,7 +1779,7 @@
         "literal": "Hafta",
         "occurrences": [
           {
-            "line": 2824,
+            "line": 2825,
             "lineText": "                <button class=\"mode\" type=\"button\" data-mode=\"week\" title=\"Hafta\" aria-label=\"Son 4 hafta grafiği\" aria-pressed=\"false\">📆</button>"
           }
         ]
@@ -1797,27 +1797,27 @@
         "literal": "Ay",
         "occurrences": [
           {
-            "line": 344,
+            "line": 345,
             "lineText": "    /* Alt toolbar (Takvim / İstatistik / Ayarlar) */"
           },
           {
-            "line": 1849,
+            "line": 1850,
             "lineText": "      <button class=\"ghost\" id=\"btnSettingsFromModules\" type=\"button\">Ayarlar</button>"
           },
           {
-            "line": 1948,
+            "line": 1949,
             "lineText": "        <div class=\"coreQuickNav\"><button class=\"ghost\" id=\"btnSettingsFromPick\" type=\"button\">Ayarlar</button></div>"
           },
           {
-            "line": 2778,
+            "line": 2779,
             "lineText": "            Ayarlar"
           },
           {
-            "line": 2825,
+            "line": 2826,
             "lineText": "                <button class=\"mode\" type=\"button\" data-mode=\"month\" title=\"Ay\" aria-label=\"Son 12 ay grafiği\" aria-pressed=\"false\">🗓️</button>"
           },
           {
-            "line": 2866,
+            "line": 2867,
             "lineText": "            <span>Ayarlar</span>"
           }
         ]
@@ -1835,7 +1835,7 @@
         "literal": "Not: “değişim logları” sadece bugün görünür, yarına kalmaz (ama veri saklanır).",
         "occurrences": [
           {
-            "line": 2851,
+            "line": 2852,
             "lineText": "              Not: “değişim logları” sadece bugün görünür, yarına kalmaz (ama veri saklanır)."
           }
         ]
@@ -1853,15 +1853,15 @@
         "literal": "Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin.",
         "occurrences": [
           {
-            "line": 3843,
+            "line": 3845,
             "lineText": "        : coreMessage(\"core.changeFailed\", \"Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin.\"));"
           },
           {
-            "line": 3903,
+            "line": 3905,
             "lineText": "        : coreMessage(\"core.changeFailed\", \"Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin.\"));"
           },
           {
-            "line": 3961,
+            "line": 3963,
             "lineText": "      : coreMessage(\"core.changeFailed\", \"Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin.\"));"
           }
         ]
@@ -1879,7 +1879,7 @@
         "literal": "Pzt",
         "occurrences": [
           {
-            "line": 4008,
+            "line": 4010,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           }
         ]
@@ -1897,11 +1897,11 @@
         "literal": "Pazartesi",
         "occurrences": [
           {
-            "line": 3982,
+            "line": 3984,
             "lineText": "    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)"
           },
           {
-            "line": 4008,
+            "line": 4010,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           }
         ]
@@ -1919,7 +1919,7 @@
         "literal": "Sal",
         "occurrences": [
           {
-            "line": 4009,
+            "line": 4011,
             "lineText": "      [\"Sal\",\"Salı\"],"
           }
         ]
@@ -1937,7 +1937,7 @@
         "literal": "Salı",
         "occurrences": [
           {
-            "line": 4009,
+            "line": 4011,
             "lineText": "      [\"Sal\",\"Salı\"],"
           }
         ]
@@ -1955,7 +1955,7 @@
         "literal": "Çar",
         "occurrences": [
           {
-            "line": 4010,
+            "line": 4012,
             "lineText": "      [\"Çar\",\"Çarşamba\"],"
           }
         ]
@@ -1973,7 +1973,7 @@
         "literal": "Çarşamba",
         "occurrences": [
           {
-            "line": 4010,
+            "line": 4012,
             "lineText": "      [\"Çar\",\"Çarşamba\"],"
           }
         ]
@@ -1991,7 +1991,7 @@
         "literal": "Per",
         "occurrences": [
           {
-            "line": 4011,
+            "line": 4013,
             "lineText": "      [\"Per\",\"Perşembe\"],"
           }
         ]
@@ -2009,7 +2009,7 @@
         "literal": "Perşembe",
         "occurrences": [
           {
-            "line": 4011,
+            "line": 4013,
             "lineText": "      [\"Per\",\"Perşembe\"],"
           }
         ]
@@ -2027,11 +2027,11 @@
         "literal": "Cum",
         "occurrences": [
           {
-            "line": 4012,
+            "line": 4014,
             "lineText": "      [\"Cum\",\"Cuma\"],"
           },
           {
-            "line": 4013,
+            "line": 4015,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2049,11 +2049,11 @@
         "literal": "Cuma",
         "occurrences": [
           {
-            "line": 4012,
+            "line": 4014,
             "lineText": "      [\"Cum\",\"Cuma\"],"
           },
           {
-            "line": 4013,
+            "line": 4015,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2071,7 +2071,7 @@
         "literal": "Cmt",
         "occurrences": [
           {
-            "line": 4013,
+            "line": 4015,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2089,7 +2089,7 @@
         "literal": "Cumartesi",
         "occurrences": [
           {
-            "line": 4013,
+            "line": 4015,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2107,15 +2107,15 @@
         "literal": "Paz",
         "occurrences": [
           {
-            "line": 3982,
+            "line": 3984,
             "lineText": "    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)"
           },
           {
-            "line": 4008,
+            "line": 4010,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           },
           {
-            "line": 4014,
+            "line": 4016,
             "lineText": "      [\"Paz\",\"Pazar\"]"
           }
         ]
@@ -2133,15 +2133,15 @@
         "literal": "Pazar",
         "occurrences": [
           {
-            "line": 3982,
+            "line": 3984,
             "lineText": "    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)"
           },
           {
-            "line": 4008,
+            "line": 4010,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           },
           {
-            "line": 4014,
+            "line": 4016,
             "lineText": "      [\"Paz\",\"Pazar\"]"
           }
         ]
@@ -2159,11 +2159,11 @@
         "literal": "geçmiş gün",
         "occurrences": [
           {
-            "line": 3637,
+            "line": 3639,
             "lineText": "     - geçmiş günler: görüntülenir ama değiştirilemez"
           },
           {
-            "line": 4066,
+            "line": 4068,
             "lineText": "          ? calendarText(\"past\", \"geçmiş gün\")"
           }
         ]
@@ -2181,11 +2181,11 @@
         "literal": "gelecek gün",
         "occurrences": [
           {
-            "line": 3638,
+            "line": 3640,
             "lineText": "     - gelecek günler: seçilemez"
           },
           {
-            "line": 4068,
+            "line": 4070,
             "lineText": "            ? calendarText(\"future\", \"gelecek gün\")"
           }
         ]
@@ -2203,59 +2203,59 @@
         "literal": "bugün",
         "occurrences": [
           {
-            "line": 1996,
+            "line": 1997,
             "lineText": "              <div class=\"ctitle\" id=\"choiceCTitle\">Zordu bugün</div>"
           },
           {
-            "line": 2851,
+            "line": 2852,
             "lineText": "              Not: “değişim logları” sadece bugün görünür, yarına kalmaz (ama veri saklanır)."
           },
           {
-            "line": 3062,
+            "line": 3063,
             "lineText": "                  değerlendirir. “Zordu bugün” ile kısa uyku ya da düşük enerji"
           },
           {
-            "line": 3636,
+            "line": 3638,
             "lineText": "     - sadece bugün düzenlenebilir"
           },
           {
-            "line": 3765,
+            "line": 3767,
             "lineText": "    // bugün değilse: tüm seçim alanlarını disable gibi yap"
           },
           {
-            "line": 3775,
+            "line": 3777,
             "lineText": "    // sadece bugün gösterilecek ama saklanacak → yine de çok büyümesin"
           },
           {
-            "line": 3939,
+            "line": 3941,
             "lineText": "  // bugünü sıfırla (sadece bugün)"
           },
           {
-            "line": 4069,
+            "line": 4071,
             "lineText": "            : calendarText(\"today\", \"bugün\");"
           },
           {
-            "line": 4103,
+            "line": 4105,
             "lineText": "      // sadece bugün tıklanabilir (düzenleme kuralı)"
           },
           {
-            "line": 4107,
+            "line": 4109,
             "lineText": "          // bugüne geri dön ve düzenle"
           },
           {
-            "line": 4215,
+            "line": 4217,
             "lineText": "    C:\"Zordu bugün\""
           },
           {
-            "line": 4303,
+            "line": 4305,
             "lineText": "  /* “değişim logları” sadece bugün ekranda görünsün, istenirse temizle */"
           },
           {
-            "line": 4319,
+            "line": 4321,
             "lineText": "    // bugün: saatlik giriş sayıları (00-23)"
           },
           {
-            "line": 4522,
+            "line": 4524,
             "lineText": "  // home açılışında bugünün accent'ini hazırla"
           }
         ]
@@ -2273,11 +2273,11 @@
         "literal": "kayıt yok",
         "occurrences": [
           {
-            "line": 2598,
+            "line": 2599,
             "lineText": "        <li class=\"healthEmptyItem\">Bu gün için arşivlenen kayıt yok.</li>"
           },
           {
-            "line": 4073,
+            "line": 4075,
             "lineText": "          : calendarText(\"noRecord\", \"kayıt yok\");"
           }
         ]
@@ -2295,7 +2295,7 @@
         "literal": "not var",
         "occurrences": [
           {
-            "line": 4062,
+            "line": 4064,
             "lineText": "      if(d && d.note) recordParts.push(calendarText(\"hasNote\", \"not var\"));"
           }
         ]
@@ -2315,7 +2315,7 @@
         "literal": "renk {color}",
         "occurrences": [
           {
-            "line": 4061,
+            "line": 4063,
             "lineText": "      if(d && d.color) recordParts.push(calendarText(\"color\", \"renk {color}\").replace(\"{color}\", () => coreDisplayLabel(\"colors\", d.color, colorLabelTR(d.color))));"
           }
         ]
@@ -2333,7 +2333,7 @@
         "literal": ". Düzenlemek için Enter veya Boşluk tuşuna basın",
         "occurrences": [
           {
-            "line": 4080,
+            "line": 4082,
             "lineText": "            ? calendarText(\"editHint\", \". Düzenlemek için Enter veya Boşluk tuşuna basın\")"
           }
         ]
@@ -2434,7 +2434,7 @@
         "literal": "Başlangıç yöneticisi yüklenemedi. Kayıtların silinmedi. İnternet bağlantını kontrol edip yeniden dene.",
         "occurrences": [
           {
-            "line": 3381,
+            "line": 3383,
             "lineText": "    text.textContent = copyText(\"startup.managerFailed\", \"Başlangıç yöneticisi yüklenemedi. Kayıtların silinmedi. İnternet bağlantını kontrol edip yeniden dene.\");"
           }
         ]
@@ -2956,7 +2956,7 @@
         "literal": "Grafik verisi hazırlanıyor.",
         "occurrences": [
           {
-            "line": 2819,
+            "line": 2820,
             "lineText": "              <div class=\"visuallyHidden\" id=\"chartSummary\">Grafik verisi hazırlanıyor.</div>"
           }
         ]
@@ -2994,7 +2994,7 @@
         "literal": "Tam yedek",
         "occurrences": [
           {
-            "line": 2889,
+            "line": 2890,
             "lineText": "              <button class=\"btn\" id=\"btnBackupLaunch\" type=\"button\" data-backup-launch>Tam yedek</button>"
           }
         ]

@@ -7,7 +7,8 @@ const replayActions=new WeakMap();
 export function mountRadioMiniPlayer({root=document,player=getRadioPlayer()}={}){
  const home=root.querySelector('[data-view="modules"]');if(!home)return null;
  if(miniMounts.has(home))return miniMounts.get(home);
- const doc=home.ownerDocument,view=doc.defaultView,host=home.querySelector('.radioModule');
+ const doc=home.ownerDocument,view=doc.defaultView,host=root.querySelector('[data-radio-mini-host]')||home.querySelector('.radioModule');
+ const shared=Boolean(host?.hasAttribute('data-radio-mini-host'));
  const card=doc.createElement('section');card.className='radioMini';card.setAttribute('aria-label','Today Radio mini oynatıcı');
  const icon=doc.createElement('span');icon.className='radioMiniIcon';icon.textContent='♫';icon.setAttribute('aria-hidden','true');
  const info=doc.createElement('div');info.className='radioMiniInfo';
@@ -18,7 +19,7 @@ export function mountRadioMiniPlayer({root=document,player=getRadioPlayer()}={})
  const open=doc.createElement('button');open.type='button';open.className='back';open.textContent='Radio’yu aç';
  const stop=doc.createElement('button');stop.type='button';stop.className='back';stop.textContent='Durdur';
  open.addEventListener('click',()=>view.TodayRouter?.navigate('radio'));
- stop.addEventListener('click',()=>{if(['loading','playing','buffering'].includes(player.getState().status))(player.pause?.()??player.stop());else replayActions.get(player)?.replay();});actions.append(stop);if(!host)actions.append(open);card.append(icon,info,actions);
+ stop.addEventListener('click',()=>{if(['loading','playing','buffering'].includes(player.getState().status))(player.pause?.()??player.stop());else replayActions.get(player)?.replay();});actions.append(stop);if(!host||shared)actions.append(open);card.append(icon,info,actions);
  function reflect(state=player.getState()){
   card.hidden=Boolean(host&&!state.station);
   const active=['loading','playing','buffering'].includes(state.status);
