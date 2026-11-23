@@ -1,5 +1,9 @@
 # Today — Ana talimata göre güncel durum
 
+## 23 Kasım 2026 — Koleksiyonlar v3 ön doğrulaması (T90-261101-PO1-COL03)
+
+Durum: **Doğrulanıyor.** Ürün sahibi `today.collections.v1` ve yeni tam yedek sürümünün uygulanmasını onayladı; üretim restore onayı verilmedi. Temiz taban, v2 yedek PR #20 başı `f1a038e`. Koleksiyonlar PR #23'teki aynı saf sözleşme dosyası/testi bu bağımlılık dalına taşındı; iki ayrı uygulama yapılmadı. Bu dal PR #20 ve PR #23'ün birlikte ele alınmasını gerektirir, Core/Odak UI zincirini içermez. `modules/backup-export.mjs` yalnız yeni anahtarı **rezerve eder** ve 512 KiB sınırıyla salt okunur kaynak doğrulayıcı sunar. v1/v2 kayıt envanterleri değişmediği için bu anahtarla eksik yedek oluşturulması `unregistered-data` ile engellenir. Hedef dosyalar: saf sözleşme, yedek doğrulayıcısı, ilgili test/koşucu ve durum belgeleri. Veri etkisi: sıfır yazma; localStorage, IndexedDB, yedek dosyası, migration, restore ve kullanıcı kayıtları değişmedi. Sonraki dilimler v3 şifreli yakalama/okuma, salt okunur önizleme ve sentetik kurtarma kabulüdür; canlı restore kapalı kalır. Risk: PR zincirlerinin kontrollü bütünleşmesi ve eski/BFCache sekme yazıcısı; tahmini boyut küçük. Kabul: Koleksiyonlar 12/12, yedek portu 15/15, otomasyon 8/8 PASS; yerel birleşik platform 1472/1472 PASS; uzak CI ayrıca kaydedilir. PR #23 uzak CI'si tarayıcı kurulumunda iptal edildiği için PASS sayılmaz.
+
 ## 22 Kasım 2026 — kontrollü otonom görev kaydı
 
 Bu bölüm güncel yürütme kaydıdır; aşağıdaki 12 Kasım metni tarihsel anlık görüntü olarak korunur. İşler küçük teslimlerle ilerler. Merge, `main`, deploy/canlı yayın, koruma/secret/izin ayarı, ücretli işlem, mevcut veri/şema değişimi, yeni kişisel veri aktarımı, kimlik doğrulama uygulaması ve üretim restore ayrı onay kapısıdır. Otomatik test, fiziksel iPhone kabulü değildir.

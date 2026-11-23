@@ -1,3 +1,7 @@
+### 2026-11-23 — Koleksiyonlar v3 salt okunur kaynak doğrulaması (T90-261101-PO1-COL03)
+
+Onaylanan yeni anahtar yalnız gelecekteki sürüm için rezerve edildi; 512 KiB sınırlı saf doğrulama ve v1/v2'nin eksik yedek üretmeyi reddettiği testler eklendi. Yerel platform 1472/1472 PASS. Kalıcı yazma ve üretim restore açılmadı.
+
 ### 2026-11-23 — Sentetik kurtarma prototipinde v2 yazma sınırı (T90-261101-PO1-BKP05)
 
 Ürüne bağlı olmayan eski sentetik kurtarma prototipi v2 dosyasını uygulama planına almadan `unsupported-recovery-version` ile durur. v2 salt okunur dosya doğrulama/önizleme davranışı korunur. Sentetik v2 reddi ve hedef/journal değişmezliği hedefli kurtarma testinde 37/37, birleşik platformda 1458/1458 PASS. Üretim restore hâlâ kapalıdır.
