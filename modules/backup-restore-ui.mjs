@@ -22,10 +22,11 @@ export function mountRestorePreview({root=document,prepare=prepareRestorePreview
       const result=await prepare({userConfirmed:true,file:await file.files[0].text(),password:secret,signal,
         barrier:barrier||browserBarrier(view),contracts:view.TodayNutritionContracts,crypto:view.crypto,
         capture:()=>capture({storage:view.localStorage,indexedDB:view.indexedDB,contracts:view.TodayNutritionContracts,
-          crypto:view.crypto,signal,source:{appVersion:view.TodayVersion.getCurrentVersion().appVersion,origin:view.location.origin,runtime:'web'}})});
+          crypto:view.crypto,signal,version:2,source:{appVersion:view.TodayVersion.getCurrentVersion().appVersion,origin:view.location.origin,runtime:'web'}})});
       if(signal.aborted)return;
       const changes=result.localStorage;
-      status.textContent=`Önizleme tamamlandı. ${result.coreDays.count} Core günü; bilinen veri alanlarında ${changes.added} yeni, ${changes.changed} değişecek, ${changes.removed} kaldırılacak. Geri yükleme yapılmadı; mevcut kayıtların değişmedi.`;
+      const legacy=result.missingFromBackup?.length?' Bu eski dosyada Alanlarım tercihleri ve Radio favorileri bulunmuyor.':'';
+      status.textContent=`Önizleme tamamlandı. ${result.coreDays.count} Core günü; bilinen veri alanlarında ${changes.added} yeni, ${changes.changed} değişecek, ${changes.removed} kaldırılacak.${legacy} Geri yükleme yapılmadı; mevcut kayıtların değişmedi.`;
     }catch(error){if(!signal.aborted)status.textContent=error?.code==='other-context-or-version'
       ?'Diğer Today pencerelerini kapatıp yeniden dene. Kayıtların değişmedi.'
       :'Önizleme tamamlanamadı. Dosya, parola veya veri uyumu doğrulanamadı; kayıtların değişmedi.';}

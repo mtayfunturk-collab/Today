@@ -1,3 +1,7 @@
+### 2026-11-23 — Yedek ekranında v2 dosyası (T90-261101-PO1-BKP04)
+
+Yedek ekranı kullanıcı onayıyla 25 yerel anahtarı kapsayan şifreli v2 dosyası hazırlar. Salt okunur önizleme eski v1 dosyasında Alanlarım tercihleri ve Radio favorilerinin bulunmadığını açıklar. Çevrimdışı kaynak güncellemesi için Service Worker foundation-101'e çıkarıldı. Hedefli UI 41/41, statik 30/30, Chromium yedek akışı 5/5 ve platform 1457/1457 PASS. Yerel WebKit sistem kütüphanesi eksikliğiyle çalışmadı; uzak CI ve fiziksel cihaz ayrıca açık. Üretim restore ve yeni tercih yazımı kapalı.
+
 ### 2026-11-23 — Sürümlü şifreli yedek dosyası ve eski dosya önizlemesi (T90-261101-PO1-BKP03)
 
 Onaylanan v2 tam yedek için 25 kayıtlı yerel anahtar, ayrı zarf/payload/coverage sürümü, AES-GCM AAD ve tam manifest yolu eklendi. Eski v1 dosyası 23 anahtarıyla okunur ve önizlenir; iki yeni alanın bulunmadığı bildirilir. Hedefli dışa aktarım 13/13, önizleme 43/43 ve birleşik platform 1456/1456 PASS. Yedek arayüzünün v2'ye geçişi ile fiziksel cihaz kabulü sonraki dilimdir; restore kapalıdır.
