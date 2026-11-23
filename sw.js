@@ -74,6 +74,8 @@ const APP_SHELL = [
   "./modules/notification-ui.mjs",
   "./modules/radio-directory.mjs",
   "./modules/radio-ui.mjs",
+  "./modules/focus-timer.mjs",
+  "./modules/focus-ui.mjs",
   "./modules/radio-player.mjs",
   "./vendor/moment/moment.min.js",
   "./vendor/moment-timezone/moment-timezone-with-data.min.js",
