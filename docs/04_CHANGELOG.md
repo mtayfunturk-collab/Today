@@ -1,3 +1,7 @@
+### 2026-11-23 — v3 sentetik kurtarma tasarımı (T90-261101-PO1-COL08)
+
+Yeni v3 dosyasının yalnız ayrı sentetik profilde hazırlanması, sürümlü günlük, tam önceki görüntü, doğrulanan geri alma ve eski/BFCache yazıcı engelleri ana görev kaydına işlendi. Kod, veri, şema veya üretim restore değişmedi; kod testleri tekrarlanmadı.
+
 ### 2026-11-23 — v3 kurtarma sınırı (T90-261101-PO1-COL07)
 
 Geçerli Koleksiyonlar içeren şifreli v3 dosyanın eski sentetik v1 kurtarma prototipine alınmadığı doğrulandı. Reddedilen işlem hedef veriyi ve veritabanı envanterini değiştirmiyor; üretim restore hâlâ kapalı. Hedefli kurtarma 38/38, otomasyon 8/8 ve birleşik platform 1490/1490 PASS.
