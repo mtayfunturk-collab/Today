@@ -1,3 +1,7 @@
+### 2026-11-23 — Koleksiyonlar veri sözleşmesi (T90-261101-PO1-COL01)
+
+Pano ve öğeler için salt hesaplama yapan sürüm 1 doğrulayıcı eklendi. Kalıcı depo, yedek formatı, UI ve kullanıcı verisi değişmedi. Hedefli 12/12 ve yerel birleşik platform 1470/1470 PASS; uzak CI sonucu ayrıca izlenir.
+
 ### 2026-11-23 — Odak ekranı (T90-261101-PO1-FOC02)
 
 Alanlarım'a Odak kartı ve kayıt oluşturmayan başlat/duraklat/devam/bitir ekranı eklendi. Mevcut Radio oturumu ve kullanıcı verileri korunur. Hedefli Chromium 1/1 ve platform 1458/1458 PASS. Fiziksel iPhone kabulü ve canlı yayın yapılmadı.
