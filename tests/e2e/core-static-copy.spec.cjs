@@ -73,7 +73,7 @@ test('Offline reload runs the cached binding dependency chain and preserves save
   await page.evaluate(() => navigator.serviceWorker.ready);
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
   const cached = await page.evaluate(async () => {
-    const cache = await caches.open('today-cache-today-v2-foundation-101');
+    const cache = await caches.open('today-cache-today-v2-foundation-102');
     return Promise.all(['core-static-copy-ui.mjs', 'core-static-copy.mjs', 'date-presentation.mjs', 'locales/core-tr.mjs']
       .map(async name => Boolean(await cache.match(new URL('./modules/' + name, location.href)))));
   });
