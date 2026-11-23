@@ -16,11 +16,15 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file: "tests/backup-export-port.test.mjs",
-    count: 13
+    count: 15
   },
   {
     file: "tests/backup-export-ui.test.mjs",
     count: 41
+  },
+  {
+    file: "tests/collections-contract.test.mjs",
+    count: 12
   },
   {
     file: "tests/backup-restore-preview.test.mjs",

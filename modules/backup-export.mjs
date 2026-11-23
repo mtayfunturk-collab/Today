@@ -1,5 +1,6 @@
 // T90-261101-06: read-only, local export. No restore or persistent writes.
 import {cleanState} from './notification-store.mjs';
+import {validateCollectionsSnapshot} from './collections-contract.mjs';
 // Pure bounded parser shared by restore-only validators. Export behavior is unchanged.
 export {parse as parseBackupJSON};
 export const LS_KEYS = Object.freeze([
@@ -16,6 +17,8 @@ export const FORMAT_V2 = 'today:full-backup:v2';
 // Approved future v2 records. These validators do not create or write either key.
 export const LOCAL_KEYS_V2 = Object.freeze(['today.areas.preferences.v1','today.radio.favorites.v1']);
 export const LS_KEYS_V2 = Object.freeze([...LS_KEYS,...LOCAL_KEYS_V2]);
+// Reserved for a future complete v3 archive; v1/v2 still reject this key.
+export const LOCAL_KEY_V3 = 'today.collections.v1';
 const AREA_IDS = Object.freeze(['core','health','sky','radio']);
 const RADIO_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PAYLOAD_MAX = 32*1024*1024, FILE_MAX = 50*1024*1024, ENTRY_MAX = 100000;
@@ -81,6 +84,10 @@ export function validateRadioFavoritesRaw(raw){
     ids.add(item.id);
   }
   return value;
+}
+export function validateCollectionsRaw(raw){
+  const value=localRecord(raw,512*1024);
+  try{return validateCollectionsSnapshot(value);}catch{throw bad('invalid-source');}
 }
 function rawEntries(storage,keys=LS_KEYS){
   if(!Number.isInteger(storage.length)||storage.length>10000)throw bad('data-limit');
