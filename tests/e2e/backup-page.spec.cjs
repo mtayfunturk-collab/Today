@@ -74,14 +74,14 @@ test('Settings launch enters isolated backup page and creates a verified synthet
     return {raw:text.includes('SENTETIK-YEDEK-NOTU'),verified:await verifyBackupFile(text,'synthetic passphrase 123'),core:localStorage.getItem('today_store_v2')};
   });
   expect(result.raw).toBe(false);
-  expect(result.verified).toMatchObject({ok:true,sections:24,restoreValidated:false});
+  expect(result.verified).toMatchObject({ok:true,sections:26,restoreValidated:false});
   expect(result.core).toContain('SENTETIK-YEDEK-NOTU');
   const preview=await page.evaluate(async()=>{
     const text=await (await fetch(document.querySelector('#backupDownload').href)).text();
     const {prepareRestorePreview,revalidateRestorePreview}=await import('./modules/backup-restore-preview.mjs');
     const {captureSnapshot}=await import('./modules/backup-export.mjs');
     const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,
-      crypto,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+      crypto,version:2,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
     const value=await prepareRestorePreview({userConfirmed:true,file:text,password:'synthetic passphrase 123',
       barrier:fn=>fn(),capture,contracts:TodayNutritionContracts,crypto});
     const unchanged=await revalidateRestorePreview(value);
@@ -128,4 +128,27 @@ test('Backup page previews a synthetic file only after separate read consent',as
   await page.getByRole('button',{name:'Kapsamı önizle'}).click();
   await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı',{timeout:20000});
   expect(await page.evaluate(()=>localStorage.getItem('today_store_v2'))).toBe(before);
+});
+
+test('Legacy v1 file preview names preferences and favorites absent from the archive',async({page})=>{
+  const path=`/runs/${randomBytes(12).toString('hex')}/index.html`;
+  await page.goto(path);
+  await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
+  await page.evaluate(()=>navigator.serviceWorker.ready);
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.goto(path.replace('index.html','backup.html'));
+  const file=await page.evaluate(async()=>{
+    const {captureSnapshot,createBackup}=await import('./modules/backup-export.mjs');
+    const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,crypto,version:1,
+      source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+    return(await createBackup({userConfirmed:true,password:'synthetic legacy password',confirmation:'synthetic legacy password',
+      barrier:fn=>fn(),capture,crypto})).file;
+  });
+  await page.getByText('Geri yükleme kapsamını önizle').click();
+  await page.locator('#restorePreviewFile').setInputFiles({name:'legacy.today-backup.json',mimeType:'application/json',buffer:Buffer.from(file)});
+  await page.locator('#restorePreviewPassword').fill('synthetic legacy password');
+  await page.locator('#restorePreviewConsent').check();
+  await page.getByRole('button',{name:'Kapsamı önizle'}).click();
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Bu eski dosyada Alanlarım tercihleri ve Radio favorileri bulunmuyor.',{timeout:20000});
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı');
 });
