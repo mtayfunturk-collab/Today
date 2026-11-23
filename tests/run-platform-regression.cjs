@@ -32,7 +32,7 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file: "tests/backup-recovery.test.mjs",
-    count: 37
+    count: 38
   },
   {
     file: "tests/language-resolver.test.cjs",

@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import {webcrypto as crypto} from 'node:crypto';
 import {IDBFactory, IDBDatabase, IDBObjectStore} from 'fake-indexeddb';
 import {createSyntheticRecovery, RECOVERY_DB} from '../modules/backup-recovery.mjs';
-import {LS_KEYS,STORES,captureSnapshot,createBackup,readBackupForPreview,verifyBackupFile} from '../modules/backup-export.mjs';
+import {LS_KEYS,LOCAL_KEY_V3,STORES,captureSnapshot,createBackup,readBackupForPreview,verifyBackupFile} from '../modules/backup-export.mjs';
 import {defaultState} from '../modules/notification-store.mjs';
 import {fingerprintRestoreSnapshot} from '../modules/backup-restore-preview.mjs';
 import {healthSeed} from './support/health-restore-fixtures.mjs';
@@ -78,6 +78,19 @@ await check('v2 archive remains read-only and cannot enter the synthetic v1 appl
   const before=await digest(f);
   await assert.rejects(f.controller().prepare({...args,file:v2.file}),e=>e.code==='unsupported-recovery-version');
   assert.equal(await digest(f),before);assert.equal(f.writes.length,0);assert.deepEqual(await journal(f),[]);
+});
+await check('v3 archive with Collections remains read-only and cannot enter the synthetic v1 apply protocol',async()=>{
+  const v3Source=await fixture('v3-source',{all:true});
+  v3Source.map.set(LOCAL_KEY_V3,JSON.stringify({version:1,boards:[{
+    id:'board-1',title:'Synthetic board',createdAt:'2026-11-23T10:00:00.000Z',updatedAt:'2026-11-23T10:00:00.000Z'
+  }],items:[]}));
+  const v3=await createBackup({userConfirmed:true,password,confirmation:password,crypto,barrier:fn=>fn(),
+    capture:()=>captureSnapshot({storage:v3Source.storage,indexedDB:v3Source.indexedDB,contracts,crypto,source:origin,version:3})});
+  const f=await fixture(),before=await digest(f),databases=await f.indexedDB.databases();
+  await assert.rejects(f.controller().prepare({...args,file:v3.file}),e=>e.code==='unsupported-recovery-version');
+  assert.equal(await digest(f),before);
+  assert.equal(f.writes.length,0);
+  assert.deepEqual(await f.indexedDB.databases(),databases);
 });
 await check('construction and no-attempt startup guard do not initialize recovery storage',async()=>{
   const f=await fixture(),c=f.controller(),before=await f.indexedDB.databases();assert.equal((await c.guardStartup()).canStart,true);
