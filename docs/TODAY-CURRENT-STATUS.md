@@ -1,5 +1,9 @@
 # Today — Ana talimata göre güncel durum
 
+## 23 Kasım 2026 — Planlar saf veri sözleşmesi (T90-261101-PO1-PLN01)
+
+Durum: **Doğrulanıyor.** Taban ürün dalı PR #24 (`4169e72`); v3 kurtarma PR #25–31 zinciri taşınmaz. Hedef `modules/plans-contract.mjs`, ilgili test/koşucu ve görev belgeleridir. Dört durumun sabit kimliği `day` (Bir gün), `next` (Sırada), `doing` (Yapıyorum), `done` (Tamamlandı). “Bir gün” gerçek takvim tarihi ister; diğer durumlarda eski gün anahtarı reddedilir. Kimlik, başlık, isteğe bağlı not, kanonik UTC zaman ve en fazla 500 tekil kayıt doğrulanır. Dış takvim, otomatik bildirim, AI veya ekip alanları kabul edilmez. Veri etkisi yok: yeni localStorage/IndexedDB anahtarı, yazıcı, şema, migration, UI veya izin yok. Kabul: geçerli/bozuk durum, tarih, tekrar ve sınır testleri; hedefli 9/9, otomasyon 8/8 ve birleşik platform 1479/1479 PASS; uzak CI ayrıca doğrulanır. Risk gelecek kalıcı yazıcının tam yedek/restore kapsamıdır; ilk tahmin küçük. Sonraki küçük dilim Planlar arayüz akışını depolama açmadan tasarlamak; gerçek kayıt ancak sürümlü tam yedek ve fiziksel kabulden sonra.
+
 ## 23 Kasım 2026 — Koleksiyonlar yedek kapsamı tasarımı (T90-261101-PO1-COL02)
 
 Durum: **Doğrulanıyor; tasarım, uygulama değil.** Taban PR #23 (`a9299d3`); taslak PR #17–20 yedek zinciri bu dala taşınmadı. Bu iş yalnız mevcut görev kaydı ve changelog'u değiştirir; kullanıcı verisi, anahtar, store, şema, migration, yedek kodu ve restore davranışı değişmez. İlk tahmin küçük. Ön koşul COL01 saf sözleşmesidir. Gerçek yazıcı ve sürüm geçişi ayrı kodlama/karar dilimleridir.
