@@ -1,3 +1,7 @@
+### 2026-11-23 — Yeni alanlar için sürümlü tam yedek tasarımı (T90-261101-PO1-BKP01)
+
+Alan sıralama/gizleme ve Radio favorileri için önerilen iki bağımsız yerel sözleşme ile v1 dosyaları salt okunur koruyan v2 yedek geçişi ana görev kaydına eklendi. Mevcut yedek formatı, uygulama kodu ve kullanıcı verisi değişmedi; uygulama şema/kurtarma onayı ve ayrı kabul gerektirir.
+
 ### 2026-11-23 — Radio çalan parça kaynağı fizibilitesi (T90-261101-PO1-RAD04)
 
 Radio Browser'ın belgelenmiş istasyon yanıtında güncel şarkı/sanatçı alanı olmadığı doğrulandı. Yayıncıya ait izinli ve güncel metaveri kaynağı seçilmeden parça gösterimi açılmayacak. Tasarım ve izin/boş durum kabulü `TODAY-RADIO-IMPLEMENTATION.md` içinde; kod, ağ ve veri değişmedi, test tekrarı yapılmadı.
