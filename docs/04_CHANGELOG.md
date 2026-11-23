@@ -1,3 +1,7 @@
+### 2026-11-23 — v3 tam yedek ekranı (T90-261101-PO1-COL06)
+
+Yedek ekranı v3 şifreli kapsamı kullanır; varsa Koleksiyonlar da dosyaya alınır. Salt okunur önizleme v3 hedef kapsamıyla çalışır ve Service Worker foundation-102'ye çıkar. Yerel platform 1477/1477, AI/Radio 336/336 ve hedefli Chromium 8/8 PASS. Kalıcı Koleksiyonlar yazımı ve üretim restore kapalıdır.
+
 ### 2026-11-23 — Koleksiyonlar v3 salt okunur kapsam önizlemesi (T90-261101-PO1-COL05)
 
 v1/v2 dosyalarında Koleksiyonlar yokluğu ve v3 dosyasının tam kapsamı önizleme sonucuna eklendi. Geri yükleme eylemi hâlâ kapalı; eksik alan metni dosyanın gerçek kapsamından üretilir; hedefli önizleme 45/45 ve Chromium yedek ekranı 5/5 ve yerel platform 1477/1477 PASS.

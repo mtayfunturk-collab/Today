@@ -15,7 +15,7 @@ const expectedProductionHashes = {
   "index.html":
     "7e190b41a7cc2d28df2d07f7e0cfe74df8d780fa951ba831dafae1e15f8eec2a",
   "sw.js":
-    "9d78ec103eb885032f5b1f68cede7b2fa8829c054e234a87dca93a2f5767ec50",
+    "b9e3d6834d045f0d3e7893b5036e214c174073aa4220e1368c852261870ceef5",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -1243,7 +1243,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-101 ve 141 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-102 ve 141 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1255,7 +1255,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-101"'
+        'const VERSION = "today-v2-foundation-102"'
       )
     );
     assert.ok(shellMatch);
