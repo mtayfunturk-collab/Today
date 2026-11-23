@@ -1,5 +1,9 @@
 # Today — Ana talimata göre güncel durum
 
+## 23 Kasım 2026 — Odak zamanlayıcı temeli (T90-261101-PO1-FOC01)
+
+Durum: **Doğrulanıyor.** Bu küçük, bağımsız dilim PR #14'ün (`fc8074d`) üzerine kuruludur; yedek/kurtarma PR #16–20 zincirini taşımaz. Hedef `modules/focus-timer.mjs`, ilgili test ve test kaydıdır. İsteğe bağlı konu ve 1–180 dakikalık süre ile başlat/duraklat/devam/bitir durumları yalnız bellekte çalışır. Monoton saat kullanılır; arka plan dönüşü ve saat geri gitmesi sentetik olarak doğrulanır. Veri/izin etkisi yoktur: kalıcı anahtar, geçmiş, Core/AI bağı, bildirim ve yedek formatı eklenmez. Odak ekranı henüz yoktur. Yerel hedefli test 12/12, otomasyon sözleşmesi 8/8, tarayıcı 48/48 ve birleşik platform kapısı 1458/1458 PASS. Uzak CI ve fiziksel iPhone arka plan davranışı açık; Radio ile birlikte kullanım sonraki UI diliminde ayrıca doğrulanır. Risk: tarayıcının askıya alınması, bellek oturumunun sayfa yenilemede kaybolması; boyut küçük. Bağımlılık: PR #14 ve sonraki Odak arayüzü. Ayrı Netlify test önizlemesi HTTP 401 nedeniyle dışarıdan doğrulanamıyor; bu dal onun yerine geçmez.
+
 ## 22 Kasım 2026 — kontrollü otonom görev kaydı
 
 Bu bölüm güncel yürütme kaydıdır; aşağıdaki 12 Kasım metni tarihsel anlık görüntü olarak korunur. İşler küçük teslimlerle ilerler. Merge, `main`, deploy/canlı yayın, koruma/secret/izin ayarı, ücretli işlem, mevcut veri/şema değişimi, yeni kişisel veri aktarımı, kimlik doğrulama uygulaması ve üretim restore ayrı onay kapısıdır. Otomatik test, fiziksel iPhone kabulü değildir.
