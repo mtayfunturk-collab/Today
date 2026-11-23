@@ -104,6 +104,13 @@
     .radioModule>.moduleCard{border:0;box-shadow:none;background:transparent;border-radius:22px}
     .radioModule .radioMini{margin:0;border:0;border-top:1px solid var(--stroke);border-radius:0;background:transparent}
     .radioModule .radioMiniIcon{display:none}
+    .focusPanel{width:min(100%,420px);margin:0 auto;display:grid;gap:12px;min-width:0}
+    .focusPanel label{text-align:left;font-weight:600}
+    .focusPanel input{width:100%;min-width:0;box-sizing:border-box;min-height:44px;font:inherit}
+    #focusRemaining{display:block;text-align:center;font-variant-numeric:tabular-nums;font-size:clamp(2.5rem,12vw,4rem);font-weight:700}
+    .focusActions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+    .focusActions button{min-height:44px;min-width:110px}
+    [data-view="focus"] .topbar{align-items:center}
     .radioSharedHost .radioMini{margin:0 20px 20px}
     .radioMini[hidden]{display:none}
     .radioMiniIcon{font-size:24px;color:var(--accent);flex:0 0 auto}
@@ -1906,6 +1913,9 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
     <span class="moduleIcon" aria-hidden="true">♫</span><span class="moduleText"><strong>Today Radio</strong><small>Türkiye ve dünyadan istasyonlar</small></span>
   </button>
   </div>
+  <button class="moduleCard" id="btnModuleFocus" type="button" data-module="focus" aria-labelledby="moduleFocusTitle" aria-describedby="moduleFocusDesc">
+    <span class="moduleIcon" aria-hidden="true">◉</span><span class="moduleText"><strong id="moduleFocusTitle">Today Odak</strong><small id="moduleFocusDesc">Sakin bir süre ayır</small></span>
+  </button>
   </div>
   <div class="status" id="statusModules" role="status" aria-live="polite" aria-atomic="true"></div>
 </div>
@@ -1915,6 +1925,26 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
         <p class="sub">Türkiye ve dünyadan istasyonları keşfet ve dinle.</p>
         <p class="mini">Arama için Radio Browser’a bağlantı izni gerekir. Sayfayı açmak bağlantı başlatmaz; dinleme geçmişi tutulmaz.</p>
         <div id="radioPanel"></div>
+      </section>
+
+      <section class="inner" data-view="focus" role="main" aria-labelledby="focusTitle" aria-hidden="true">
+        <div class="topbar"><h1 class="title" id="focusTitle" data-view-title tabindex="-1">Today Odak</h1><button class="back" id="btnFocusBack" type="button">Alanlarım</button></div>
+        <p class="sub">Kendine sakin bir süre ayır.</p>
+        <div class="focusPanel">
+          <label for="focusMinutes">Süre (dakika)</label>
+          <input id="focusMinutes" type="number" inputmode="numeric" min="1" max="180" step="1" value="25">
+          <label for="focusTopic">Konu (isteğe bağlı)</label>
+          <input id="focusTopic" type="text" maxlength="80" autocomplete="off" placeholder="Örneğin okuma">
+          <output id="focusRemaining" aria-label="Kalan süre">25:00</output>
+          <p id="focusStatus" role="status" aria-live="polite">Hazır</p>
+          <div class="focusActions">
+            <button id="focusStart" type="button">Başlat</button>
+            <button id="focusPause" type="button" hidden>Duraklat</button>
+            <button id="focusResume" type="button" hidden>Devam et</button>
+            <button id="focusFinish" type="button" hidden>Bitir</button>
+          </div>
+          <p class="mini">Bu oturum kaydedilmez. Sayfayı yenilersen süre sıfırlanır.</p>
+        </div>
       </section>
 
       <!-- TODAY CORE -->
@@ -3311,6 +3341,7 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 <script type="module" src="./modules/health-wearable-ui.mjs"></script>
 <script type="module" src="./modules/notification-ui.mjs"></script>
 <script type="module" src="./modules/radio-ui.mjs"></script>
+<script type="module" src="./modules/focus-ui.mjs"></script>
 <script src="./modules/router.js"></script>
 <script src="./modules/module-registry.js"></script>
 <script src="./modules/startup-manager.js"></script>

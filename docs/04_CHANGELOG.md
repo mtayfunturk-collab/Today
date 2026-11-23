@@ -1,3 +1,7 @@
+### 2026-11-23 — Ürün/v3 yedek entegrasyonu (T90-261101-PO1-INT01)
+
+PR #24 ürün görünümü ve PR #28 şifreli v3 yedek zinciri ayrı görev dalında birleştirildi. Koşucudaki yinelenen Koleksiyonlar testi kaldırıldı; çevrimdışı kabuk Service Worker foundation-103 ile iki ürün modülünü ve Koleksiyonlar doğrulayıcısını kapsar. Kalıcı veri yazımı, üretim restore ve canlı sürüm değişmez. Yerel platform 1489/1489, AI/Radio 336/336 ve Chromium 10/10 PASS; uzak CI ve fiziksel kabul ayrıca izlenir.
+
 ### 2026-11-23 — v3 tam yedek ekranı (T90-261101-PO1-COL06)
 
 Yedek ekranı v3 şifreli kapsamı kullanır; varsa Koleksiyonlar da dosyaya alınır. Salt okunur önizleme v3 hedef kapsamıyla çalışır ve Service Worker foundation-102'ye çıkar. Yerel platform 1477/1477, AI/Radio 336/336 ve hedefli Chromium 8/8 PASS. Kalıcı Koleksiyonlar yazımı ve üretim restore kapalıdır.
@@ -37,6 +41,21 @@ Alan sıralama/gizleme ve Radio favorileri için önerilen iki bağımsız yerel
 ### 2026-11-23 — Radio çalan parça kaynağı fizibilitesi (T90-261101-PO1-RAD04)
 
 Radio Browser'ın belgelenmiş istasyon yanıtında güncel şarkı/sanatçı alanı olmadığı doğrulandı. Yayıncıya ait izinli ve güncel metaveri kaynağı seçilmeden parça gösterimi açılmayacak. Tasarım ve izin/boş durum kabulü `TODAY-RADIO-IMPLEMENTATION.md` içinde; kod, ağ ve veri değişmedi, test tekrarı yapılmadı.
+### 2026-11-23 — Koleksiyonlar yedek kapsamı tasarımı (T90-261101-PO1-COL02)
+
+Önerilen yerel anlık görüntü, v3 şifreli tam yedek kapsamı, eski v1/v2 dosyalarının eksik alan gösterimi ve üretim restore güvenlik kapısı görev kaydında netleştirildi. Kod, depolama ve gerçek kullanıcı verisi değişmedi.
+
+### 2026-11-23 — Koleksiyonlar veri sözleşmesi (T90-261101-PO1-COL01)
+
+Pano ve öğeler için salt hesaplama yapan sürüm 1 doğrulayıcı eklendi. Kalıcı depo, yedek formatı, UI ve kullanıcı verisi değişmedi. Hedefli 12/12 ve yerel birleşik platform 1470/1470 PASS; uzak CI sonucu ayrıca izlenir.
+
+### 2026-11-23 — Odak ekranı (T90-261101-PO1-FOC02)
+
+Alanlarım'a Odak kartı ve kayıt oluşturmayan başlat/duraklat/devam/bitir ekranı eklendi. Mevcut Radio oturumu ve kullanıcı verileri korunur. Hedefli Chromium 1/1 ve platform 1458/1458 PASS. Fiziksel iPhone kabulü ve canlı yayın yapılmadı.
+
+### 2026-11-23 — Odak zamanlayıcısının bellekte çalışan temeli (T90-261101-PO1-FOC01)
+
+Süre, isteğe bağlı konu ve başlat/duraklat/devam/bitir durumları için kalıcı kayıt oluşturmayan zamanlayıcı eklendi. Monoton saat, arka plan dönüşü ve saat değişimi için 12 hedefli kontrol; birleşik platform 1458/1458 PASS. Odak ekranı ve fiziksel cihaz kabulü ayrı işlerdir; mevcut kullanıcı verisi ve yedek şeması değişmedi.
 
 ### 2026-11-22 — Tek Radio mini oynatıcı ortak konumda (T90-261101-PO1-RAD07)
 

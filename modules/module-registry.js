@@ -33,7 +33,8 @@
       route: "sky",
       view: "sky"
     }),
-    Object.freeze({id:"radio",route:"radio",view:"radio"})
+    Object.freeze({id:"radio",route:"radio",view:"radio"}),
+    Object.freeze({id:"focus",route:"focus",view:"focus",openTriggerRequired:false})
   ]);
 
   const MODULE_IDS = Object.freeze(
@@ -416,10 +417,7 @@
           (cardCounts.get(moduleId) || 0) > 1
       );
     const missingOpenTriggers =
-      MODULE_IDS.filter(
-        moduleId =>
-          !openCounts.has(moduleId)
-      );
+      MODULES.filter(module => module.openTriggerRequired !== false && !openCounts.has(module.id)).map(module => module.id);
 
     return {
       valid:
