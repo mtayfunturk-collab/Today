@@ -1,3 +1,7 @@
+### 2026-11-23 — Koleksiyonlar şifreli v3 yedek dosyası (T90-261101-PO1-COL04)
+
+Programatik v3 yakalama, şifreli zarf ve doğrulanmış okuma eklendi. 26. yerel anahtar yoksa açık yokluk kaydı tutulur; v1/v2 dosyaları ve üretim restore davranışı korunur. Hedefli yedek portu 18/18 ve yerel platform 1475/1475 PASS; ürün arayüzü ve kalıcı Koleksiyonlar yazıcısı henüz v3 kullanmaz.
+
 ### 2026-11-23 — Koleksiyonlar v3 salt okunur kaynak doğrulaması (T90-261101-PO1-COL03)
 
 Onaylanan yeni anahtar yalnız gelecekteki sürüm için rezerve edildi; 512 KiB sınırlı saf doğrulama ve v1/v2'nin eksik yedek üretmeyi reddettiği testler eklendi. Yerel platform 1472/1472 PASS. Kalıcı yazma ve üretim restore açılmadı.
