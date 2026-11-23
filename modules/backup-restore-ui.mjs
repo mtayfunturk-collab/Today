@@ -33,7 +33,7 @@ export function mountRestorePreview({root=document,prepare=prepareRestorePreview
       const result=await prepare({userConfirmed:true,file:await file.files[0].text(),password:secret,signal,
         barrier:barrier||browserBarrier(view),contracts:view.TodayNutritionContracts,crypto:view.crypto,
         capture:()=>capture({storage:view.localStorage,indexedDB:view.indexedDB,contracts:view.TodayNutritionContracts,
-          crypto:view.crypto,signal,version:2,source:{appVersion:view.TodayVersion.getCurrentVersion().appVersion,origin:view.location.origin,runtime:'web'}})});
+          crypto:view.crypto,signal,version:3,source:{appVersion:view.TodayVersion.getCurrentVersion().appVersion,origin:view.location.origin,runtime:'web'}})});
       if(signal.aborted)return;
       const changes=result.localStorage;
       const legacy=describeMissingBackupFields(result.missingFromBackup);

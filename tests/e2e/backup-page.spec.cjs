@@ -74,14 +74,14 @@ test('Settings launch enters isolated backup page and creates a verified synthet
     return {raw:text.includes('SENTETIK-YEDEK-NOTU'),verified:await verifyBackupFile(text,'synthetic passphrase 123'),core:localStorage.getItem('today_store_v2')};
   });
   expect(result.raw).toBe(false);
-  expect(result.verified).toMatchObject({ok:true,sections:26,restoreValidated:false});
+  expect(result.verified).toMatchObject({ok:true,sections:27,restoreValidated:false});
   expect(result.core).toContain('SENTETIK-YEDEK-NOTU');
   const preview=await page.evaluate(async()=>{
     const text=await (await fetch(document.querySelector('#backupDownload').href)).text();
     const {prepareRestorePreview,revalidateRestorePreview}=await import('./modules/backup-restore-preview.mjs');
     const {captureSnapshot}=await import('./modules/backup-export.mjs');
     const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,
-      crypto,version:2,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+      crypto,version:3,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
     const value=await prepareRestorePreview({userConfirmed:true,file:text,password:'synthetic passphrase 123',
       barrier:fn=>fn(),capture,contracts:TodayNutritionContracts,crypto});
     const unchanged=await revalidateRestorePreview(value);
