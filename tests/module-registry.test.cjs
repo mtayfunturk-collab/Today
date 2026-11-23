@@ -71,7 +71,8 @@ class MockDocument {
       "health",
       "sky",
       "radio",
-      "focus"
+      "focus",
+      "plans"
     ].forEach(moduleId => {
       if (
         moduleId !== options.missingCard
@@ -84,7 +85,7 @@ class MockDocument {
       }
 
       if (
-        moduleId !== "focus" &&
+        moduleId !== "focus" && moduleId !== "plans" &&
         moduleId !==
           options.missingOpenTrigger
       ) {
@@ -196,6 +197,7 @@ function createRouter(options = {}) {
     },
     radio: {name:"radio",view:"radio"},
     focus: {name:"focus",view:"focus"},
+    plans: {name:"plans",view:"plans"},
     sky: {
       name: "sky",
       view: "sky"
@@ -320,7 +322,7 @@ function test(name, callback) {
 }
 
 test(
-  "Genel API ve beş görünür modül değişmez olarak yayımlanıyor",
+  "Genel API ve altı görünür modül değişmez olarak yayımlanıyor",
   () => {
     const { registry } =
       createRuntime();
@@ -341,7 +343,8 @@ test(
         "health",
         "sky",
         "radio",
-        "focus"
+        "focus",
+        "plans"
       ]
     );
     assert.deepEqual(
@@ -359,7 +362,7 @@ test(
           "health",
           "health"
         ],
-        ["sky", "sky", "sky"], ["radio", "radio", "radio"], ["focus", "focus", "focus"]
+        ["sky", "sky", "sky"], ["radio", "radio", "radio"], ["focus", "focus", "focus"], ["plans", "plans", "plans"]
       ]
     );
   }
@@ -497,7 +500,7 @@ test(
 );
 
 test(
-  "Beş kart ve on iki alt navigasyon tetikleyicisi doğrulanıyor",
+  "Altı kart ve on iki alt navigasyon tetikleyicisi doğrulanıyor",
   () => {
     const runtime = createRuntime();
     const validation =
@@ -508,7 +511,7 @@ test(
     assert.equal(validation.valid, true);
     assert.equal(
       validation.cards.length,
-      5
+      6
     );
     assert.equal(
       validation.openTriggers.length,
@@ -631,8 +634,8 @@ test(
 
     assert.equal(result.success, true);
     assert.equal(result.changed, true);
-    assert.equal(result.moduleCount, 5);
-    assert.equal(result.triggerCount, 17);
+    assert.equal(result.moduleCount, 6);
+    assert.equal(result.triggerCount, 18);
     assert.equal(
       runtime.document.listeners.click
         .length,
@@ -768,7 +771,8 @@ test(
       "health",
       "sky",
       "radio",
-      "focus"
+      "focus",
+      "plans"
     ].forEach(moduleId => {
       const result =
         runtime.registry.open(
@@ -794,7 +798,8 @@ test(
         "health",
         "sky",
         "radio",
-        "focus"
+        "focus",
+        "plans"
       ]
     );
     assert.ok(
