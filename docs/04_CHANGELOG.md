@@ -1,3 +1,7 @@
+### 2026-11-23 — Sürümlü şifreli yedek dosyası ve eski dosya önizlemesi (T90-261101-PO1-BKP03)
+
+Onaylanan v2 tam yedek için 25 kayıtlı yerel anahtar, ayrı zarf/payload/coverage sürümü, AES-GCM AAD ve tam manifest yolu eklendi. Eski v1 dosyası 23 anahtarıyla okunur ve önizlenir; iki yeni alanın bulunmadığı bildirilir. Hedefli dışa aktarım 13/13, önizleme 43/43 ve birleşik platform 1456/1456 PASS. Yedek arayüzünün v2'ye geçişi ile fiziksel cihaz kabulü sonraki dilimdir; restore kapalıdır.
+
 ### 2026-11-23 — Onaylı yeni yerel kayıtların doğrulama sözleşmesi (T90-261101-PO1-BKP02)
 
 Ürün sahibi PR #16'daki sürümlü v2 yedek ve Alanlarım/Radio favori anahtarlarını onayladı. İlk küçük dilimde iki anahtarın yalnız okuma/doğrulama sözleşmesi eklendi: tekil dört modül, sınırlandırılmış Radio Browser favori metaverisi, geçerli zaman damgası, bozuk/tekrar alan ve fazladan URL/AI verisi reddi. Mevcut v1 yedek biçimi ve veri yazma davranışı değişmedi; üretim restore kapalı. Hedefli test 9/9 ve birleşik platform 1450/1450 PASS. Uzak CI ve fiziksel cihaz kabulü ayrıca açık.

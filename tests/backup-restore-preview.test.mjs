@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {webcrypto as crypto} from 'node:crypto';
 import {IDBFactory} from 'fake-indexeddb';
-import {LS_KEYS, STORES, captureSnapshot, createBackup} from '../modules/backup-export.mjs';
+import {LS_KEYS, LOCAL_KEYS_V2, STORES, captureSnapshot, createBackup} from '../modules/backup-export.mjs';
 import {prepareRestorePreview, revalidateRestorePreview, discardRestorePreview} from '../modules/backup-restore-preview.mjs';
 import {defaultState, sanitizeObservation} from '../modules/notification-store.mjs';
 
@@ -85,6 +85,20 @@ await check('no unlocked target snapshot fallback',async()=>{
 });
 await check('wrong password reveals neither source detail nor target records',async()=>{
   const f=fixture();await assert.rejects(prepareRestorePreview(args(f,{password:'wrong'})),e=>e.code==='file-verification-failed'&&!e.message.includes('SOURCE_PRIVATE'));assert.equal(f.reads(),0);
+});
+await check('legacy v1 preview explicitly identifies the two fields absent from its archive',async()=>{
+  const f=fixture();const preview=await prepareRestorePreview(args(f));assert.deepEqual(preview.missingFromBackup,[...LOCAL_KEYS_V2]);assert.equal(preview.sections,24);assert.equal(preview.applyAvailable,false);discardRestorePreview(preview);
+});
+await check('v2 preview counts both new records without writing target data',async()=>{
+  const areas=JSON.stringify({version:1,order:['core','health','sky','radio'],pinned:['radio'],hidden:[]});
+  const favorites=JSON.stringify({version:1,items:[]});
+  const from=fixture({[LOCAL_KEYS_V2[0]]:areas,[LOCAL_KEYS_V2[1]]:favorites});
+  const captureFrom=()=>captureSnapshot({storage:from.storage,indexedDB:from.indexedDB,crypto,contracts,source,version:2});
+  const archive=await createBackup({userConfirmed:true,password:pass,confirmation:pass,crypto,barrier:fn=>fn(),capture:captureFrom});
+  const target=fixture(),captureTarget=()=>captureSnapshot({storage:target.storage,indexedDB:target.indexedDB,crypto,contracts,source,version:2});
+  const preview=await prepareRestorePreview(args(target,{file:archive.file,capture:captureTarget}));
+  assert.deepEqual(preview.missingFromBackup,[]);assert.equal(preview.sections,26);assert.equal(preview.localStorage.added,2);
+  assert.equal(preview.applyAvailable,false);assert.equal(target.map.size,0);discardRestorePreview(preview);
 });
 await check('damaged authenticated file is rejected before target access',async()=>{
   const file=JSON.parse(saved.file);file.ciphertext='AAAA'+file.ciphertext.slice(4);const f=fixture();

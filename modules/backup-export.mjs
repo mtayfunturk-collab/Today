@@ -12,8 +12,10 @@ export const LS_KEYS = Object.freeze([
 ]);
 export const STORES = Object.freeze({records:'id',metadata:'key',migration_backups:'id'});
 export const FORMAT = 'today:full-backup:v1';
+export const FORMAT_V2 = 'today:full-backup:v2';
 // Approved future v2 records. These validators do not create or write either key.
 export const LOCAL_KEYS_V2 = Object.freeze(['today.areas.preferences.v1','today.radio.favorites.v1']);
+export const LS_KEYS_V2 = Object.freeze([...LS_KEYS,...LOCAL_KEYS_V2]);
 const AREA_IDS = Object.freeze(['core','health','sky','radio']);
 const RADIO_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PAYLOAD_MAX = 32*1024*1024, FILE_MAX = 50*1024*1024, ENTRY_MAX = 100000;
@@ -80,10 +82,10 @@ export function validateRadioFavoritesRaw(raw){
   }
   return value;
 }
-function rawEntries(storage){
+function rawEntries(storage,keys=LS_KEYS){
   if(!Number.isInteger(storage.length)||storage.length>10000)throw bad('data-limit');
-  for(let i=0;i<storage.length;i++){const name=storage.key(i);if(typeof name!=='string')throw bad('storage-read-failed');if(/^today[._A-Z]/.test(name)&&!LS_KEYS.includes(name))throw bad('unregistered-data');}
-  return LS_KEYS.map(key=>{const rawValue=storage.getItem(key);if(rawValue!==null&&typeof rawValue!=='string')throw bad('storage-read-failed');return{key,present:rawValue!==null,rawValue};});
+  for(let i=0;i<storage.length;i++){const name=storage.key(i);if(typeof name!=='string')throw bad('storage-read-failed');if(/^today[._A-Z]/.test(name)&&!keys.includes(name))throw bad('unregistered-data');}
+  return keys.map(key=>{const rawValue=storage.getItem(key);if(rawValue!==null&&typeof rawValue!=='string')throw bad('storage-read-failed');return{key,present:rawValue!==null,rawValue};});
 }
 function request(req){return new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(bad('database-read-failed'));});}
 export function readNutrition(indexedDB,{signal,timeoutMs=5000}={}){
@@ -147,6 +149,8 @@ function validateSource(entries, databases, contracts){
       // Validate without committing cleanState's TTL cleanup; keep the raw archive.
       if(!cleanState(v).ok)throw bad('invalid-source');
     }
+    if(e.key===LOCAL_KEYS_V2[0])validateAreasPreferenceRaw(e.rawValue);
+    if(e.key===LOCAL_KEYS_V2[1])validateRadioFavoritesRaw(e.rawValue);
   }
   const db=databases[0];if(!db.present)return;
   const stores=Object.fromEntries(db.stores.map(s=>[s.name,s.entries.map(e=>e.value)]));
@@ -165,13 +169,15 @@ async function manifestFor(payload,crypto){
   return Promise.all(sections.map(async([name,value])=>({name,byteLength:bytes(json(value)).length,count:Array.isArray(value.stores)?value.stores.reduce((n,s)=>n+s.entries.length,0):(value.present?1:0),sha256:await digest(value,crypto)})));
 }
 function supported(crypto){if(!crypto?.subtle||typeof crypto.getRandomValues!=='function')throw bad('crypto-unavailable');}
-export async function captureSnapshot({storage,indexedDB,contracts,crypto=globalThis.crypto,source,signal}={}){
+export async function captureSnapshot({storage,indexedDB,contracts,crypto=globalThis.crypto,source,signal,version=1}={}){
   abort(signal);supported(crypto);
-  const before=rawEntries(storage),database=await readNutrition(indexedDB,{signal});abort(signal);
-  if(!same(before,rawEntries(storage)))throw bad('source-changed');
+  if(version!==1&&version!==2)throw bad('unsupported-backup-version');
+  const keys=version===2?LS_KEYS_V2:LS_KEYS;
+  const before=rawEntries(storage,keys),database=await readNutrition(indexedDB,{signal});abort(signal);
+  if(!same(before,rawEntries(storage,keys)))throw bad('source-changed');
   validateSource(before,[database],contracts);
-  const payload={format:FORMAT,payloadVersion:1,backupId:crypto.randomUUID(),createdAt:new Date().toISOString(),source,
-    coverageRegistryVersion:1,localStorageEntries:before,databases:[database],
+  const payload={format:version===2?FORMAT_V2:FORMAT,payloadVersion:version,backupId:crypto.randomUUID(),createdAt:new Date().toISOString(),source,
+    coverageRegistryVersion:version,localStorageEntries:before,databases:[database],
     exclusions:['cache','OS-permissions-and-queue','transient-audio-health-AI'],sourceValidation:{restoreValidated:false},manifest:[]};
   safeValue(payload);if(bytes(json(payload)).length>PAYLOAD_MAX)throw bad('data-limit');
   payload.manifest=await manifestFor(payload,crypto);abort(signal);return payload;
@@ -188,19 +194,20 @@ async function keyFor(password,header,crypto){
   return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:un64(header.salt,16),iterations},raw,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
 }
 function headerFor(c){return{kdf:'PBKDF2-SHA256',iterations,salt:c.salt,cipher:'AES-GCM-256',iv:c.iv,tagLength:128};}
-function aad(c){return bytes(json({format:FORMAT,envelopeVersion:1,crypto:headerFor(c)}));}
+function aad(c,format=FORMAT,version=1){return bytes(json({format,envelopeVersion:version,crypto:headerFor(c)}));}
 async function openFile(text,password,crypto){
   if(typeof text!=='string'||bytes(text).length>FILE_MAX)throw bad('data-limit');
   const file=parse(text),c=file?.crypto;
-  if(!exact(file,['format','envelopeVersion','crypto','ciphertext'])||file.format!==FORMAT||file.envelopeVersion!==1||!exact(c,['kdf','iterations','salt','cipher','iv','tagLength'])||!same(c,headerFor(c)))throw bad('invalid-file');
+  const version=file?.format===FORMAT?1:file?.format===FORMAT_V2?2:null;
+  if(!exact(file,['format','envelopeVersion','crypto','ciphertext'])||version===null||file.envelopeVersion!==version||!exact(c,['kdf','iterations','salt','cipher','iv','tagLength'])||!same(c,headerFor(c)))throw bad('invalid-file');
   const iv=un64(c.iv,12);un64(c.salt,16);const ciphertext=un64(file.ciphertext);
   if(ciphertext.length>PAYLOAD_MAX+16)throw bad('data-limit');
   const key=await keyFor(password,c,crypto);
-  const raw=await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:aad(c),tagLength:128},key,ciphertext);
+  const raw=await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:aad(c,file.format,version),tagLength:128},key,ciphertext);
   if(raw.byteLength>PAYLOAD_MAX)throw bad('data-limit');
   const payload=parse(new TextDecoder('utf-8',{fatal:true}).decode(raw));
-  if(payload.format!==FORMAT||payload.payloadVersion!==1||payload.coverageRegistryVersion!==1||!Array.isArray(payload.localStorageEntries)||!Array.isArray(payload.databases))throw bad('invalid-file');
-  if(!same(payload.localStorageEntries.map(e=>e.key),LS_KEYS)||payload.databases.length!==1||payload.databases[0].name!=='today_nutrition')throw bad('incomplete-file');
+  if(payload.format!==file.format||payload.payloadVersion!==version||payload.coverageRegistryVersion!==version||!Array.isArray(payload.localStorageEntries)||!Array.isArray(payload.databases))throw bad('invalid-file');
+  if(!same(payload.localStorageEntries.map(e=>e.key),version===2?LS_KEYS_V2:LS_KEYS)||payload.databases.length!==1||payload.databases[0].name!=='today_nutrition')throw bad('incomplete-file');
   for(const e of payload.localStorageEntries)if(!exact(e,['key','present','rawValue'])||typeof e.present!=='boolean'||(e.present?typeof e.rawValue!=='string':e.rawValue!==null))throw bad('invalid-file');
   const db=payload.databases[0];
   if(typeof db.present!=='boolean'||(db.present&&(db.version!==1||!same(db.stores?.map(s=>s.name),Object.keys(STORES)))))throw bad('invalid-file');
@@ -225,11 +232,13 @@ export async function createBackup({userConfirmed=false,password,confirmation,ba
   if(typeof password!=='string'||password.length<12||password.length>1024||password!==confirmation)throw bad('password-invalid');
   if(typeof barrier!=='function'||typeof capture!=='function')throw bad('coordination-unavailable');abort(signal);
   const payload=await barrier(()=>capture());abort(signal);
+  const version=payload?.format===FORMAT?1:payload?.format===FORMAT_V2?2:null;
+  if(version===null||payload.payloadVersion!==version||payload.coverageRegistryVersion!==version)throw bad('unsupported-backup-version');
   const salt=b64(crypto.getRandomValues(new Uint8Array(16))),iv=b64(crypto.getRandomValues(new Uint8Array(12))),c=headerFor({salt,iv});
   const text=json(payload);if(bytes(text).length>PAYLOAD_MAX)throw bad('data-limit');
   const key=await keyFor(password,c,crypto);abort(signal);
-  const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:un64(iv,12),additionalData:aad(c),tagLength:128},key,bytes(text));abort(signal);
-  const file=json({format:FORMAT,envelopeVersion:1,crypto:c,ciphertext:b64(encrypted)});
+  const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:un64(iv,12),additionalData:aad(c,payload.format,version),tagLength:128},key,bytes(text));abort(signal);
+  const file=json({format:payload.format,envelopeVersion:version,crypto:c,ciphertext:b64(encrypted)});
   if(bytes(file).length>FILE_MAX)throw bad('data-limit');
   const readback=await openFile(file,password,crypto);abort(signal);
   if(!same(payload,readback))throw bad('self-check-failed');
