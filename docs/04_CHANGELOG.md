@@ -1,3 +1,7 @@
+### 2026-11-23 — Onaylı yeni yerel kayıtların doğrulama sözleşmesi (T90-261101-PO1-BKP02)
+
+Ürün sahibi PR #16'daki sürümlü v2 yedek ve Alanlarım/Radio favori anahtarlarını onayladı. İlk küçük dilimde iki anahtarın yalnız okuma/doğrulama sözleşmesi eklendi: tekil dört modül, sınırlandırılmış Radio Browser favori metaverisi, geçerli zaman damgası, bozuk/tekrar alan ve fazladan URL/AI verisi reddi. Mevcut v1 yedek biçimi ve veri yazma davranışı değişmedi; üretim restore kapalı. Hedefli test 9/9 ve birleşik platform 1450/1450 PASS. Uzak CI ve fiziksel cihaz kabulü ayrıca açık.
+
 ### 2026-11-23 — Yeni alanlar için sürümlü tam yedek tasarımı (T90-261101-PO1-BKP01)
 
 Alan sıralama/gizleme ve Radio favorileri için önerilen iki bağımsız yerel sözleşme ile v1 dosyaları salt okunur koruyan v2 yedek geçişi ana görev kaydına eklendi. Mevcut yedek formatı, uygulama kodu ve kullanıcı verisi değişmedi; uygulama şema/kurtarma onayı ve ayrı kabul gerektirir.
