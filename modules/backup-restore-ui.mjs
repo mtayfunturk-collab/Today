@@ -1,6 +1,17 @@
 import {captureSnapshot,browserBarrier} from './backup-export.mjs';
 import {prepareRestorePreview} from './backup-restore-preview.mjs';
 
+const MISSING_LABELS=Object.freeze({
+  'today.areas.preferences.v1':'Alanlarım tercihleri',
+  'today.radio.favorites.v1':'Radio favorileri',
+  'today.collections.v1':'Koleksiyonlar'
+});
+export function describeMissingBackupFields(keys=[]){
+  if(!keys.length)return '';
+  const names=keys.map(key=>MISSING_LABELS[key]).filter(Boolean);
+  return names.length?` Bu dosyada bulunmayan alanlar: ${names.join(', ')}.`:'';
+}
+
 // Read-only UI. There is deliberately no apply control or recovery import.
 export function mountRestorePreview({root=document,prepare=prepareRestorePreview,capture=captureSnapshot,barrier}={}){
   const form=root.querySelector('#restorePreviewForm');if(!form)return null;
@@ -25,7 +36,7 @@ export function mountRestorePreview({root=document,prepare=prepareRestorePreview
           crypto:view.crypto,signal,version:2,source:{appVersion:view.TodayVersion.getCurrentVersion().appVersion,origin:view.location.origin,runtime:'web'}})});
       if(signal.aborted)return;
       const changes=result.localStorage;
-      const legacy=result.missingFromBackup?.length?' Bu eski dosyada Alanlarım tercihleri ve Radio favorileri bulunmuyor.':'';
+      const legacy=describeMissingBackupFields(result.missingFromBackup);
       status.textContent=`Önizleme tamamlandı. ${result.coreDays.count} Core günü; bilinen veri alanlarında ${changes.added} yeni, ${changes.changed} değişecek, ${changes.removed} kaldırılacak.${legacy} Geri yükleme yapılmadı; mevcut kayıtların değişmedi.`;
     }catch(error){if(!signal.aborted)status.textContent=error?.code==='other-context-or-version'
       ?'Diğer Today pencerelerini kapatıp yeniden dene. Kayıtların değişmedi.'

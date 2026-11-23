@@ -6,6 +6,7 @@ import {webcrypto as crypto} from 'node:crypto';
 import {IDBFactory} from 'fake-indexeddb';
 import {LS_KEYS, LOCAL_KEYS_V2, LOCAL_KEY_V3, STORES, captureSnapshot, createBackup} from '../modules/backup-export.mjs';
 import {prepareRestorePreview, revalidateRestorePreview, discardRestorePreview} from '../modules/backup-restore-preview.mjs';
+import {describeMissingBackupFields} from '../modules/backup-restore-ui.mjs';
 import {defaultState, sanitizeObservation} from '../modules/notification-store.mjs';
 
 let passed = 0;
@@ -113,6 +114,11 @@ await check('v3 preview includes Collections and makes its full coverage explici
   assert.equal(preview.applyAvailable,false);
   assert.equal(target.map.has(LOCAL_KEY_V3),false);
   discardRestorePreview(preview);
+});
+await check('missing-field copy names the exact v1 and v2 gaps without inventing v3 gaps',()=>{
+  assert.equal(describeMissingBackupFields([...LOCAL_KEYS_V2,LOCAL_KEY_V3]),' Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar.');
+  assert.equal(describeMissingBackupFields([LOCAL_KEY_V3]),' Bu dosyada bulunmayan alanlar: Koleksiyonlar.');
+  assert.equal(describeMissingBackupFields([]),'');
 });
 await check('damaged authenticated file is rejected before target access',async()=>{
   const file=JSON.parse(saved.file);file.ciphertext='AAAA'+file.ciphertext.slice(4);const f=fixture();

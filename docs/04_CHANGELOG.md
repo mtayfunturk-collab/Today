@@ -1,6 +1,6 @@
 ### 2026-11-23 — Koleksiyonlar v3 salt okunur kapsam önizlemesi (T90-261101-PO1-COL05)
 
-v1/v2 dosyalarında Koleksiyonlar yokluğu ve v3 dosyasının tam kapsamı önizleme sonucuna eklendi. Geri yükleme eylemi hâlâ kapalı; hedefli önizleme 44/44 ve yerel platform 1476/1476 PASS.
+v1/v2 dosyalarında Koleksiyonlar yokluğu ve v3 dosyasının tam kapsamı önizleme sonucuna eklendi. Geri yükleme eylemi hâlâ kapalı; eksik alan metni dosyanın gerçek kapsamından üretilir; hedefli önizleme 45/45 ve Chromium yedek ekranı 5/5 ve yerel platform 1477/1477 PASS.
 
 ### 2026-11-23 — Koleksiyonlar şifreli v3 yedek dosyası (T90-261101-PO1-COL04)
 
