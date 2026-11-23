@@ -1,6 +1,10 @@
+### 2026-11-23 — v3 kurtarma sınırı (T90-261101-PO1-COL07)
+
+Geçerli Koleksiyonlar içeren şifreli v3 dosyanın eski sentetik v1 kurtarma prototipine alınmadığı doğrulandı. Reddedilen işlem hedef veriyi ve veritabanı envanterini değiştirmiyor; üretim restore hâlâ kapalı. Hedefli kurtarma 38/38, otomasyon 8/8 ve birleşik platform 1490/1490 PASS.
+
 ### 2026-11-23 — Ürün/v3 yedek entegrasyonu (T90-261101-PO1-INT01)
 
-PR #24 ürün görünümü ve PR #28 şifreli v3 yedek zinciri ayrı görev dalında birleştirildi. Koşucudaki yinelenen Koleksiyonlar testi kaldırıldı; çevrimdışı kabuk Service Worker foundation-103 ile iki ürün modülünü ve Koleksiyonlar doğrulayıcısını kapsar. Kalıcı veri yazımı, üretim restore ve canlı sürüm değişmez. Yerel platform 1489/1489, AI/Radio 336/336 ve Chromium 10/10 PASS; uzak CI ve fiziksel kabul ayrıca izlenir.
+PR #24 ürün görünümü ve PR #28 şifreli v3 yedek zinciri ayrı görev dalında birleştirildi. Koşucudaki yinelenen Koleksiyonlar testi kaldırıldı; çevrimdışı kabuk Service Worker foundation-103 ile iki ürün modülünü ve Koleksiyonlar doğrulayıcısını kapsar. Kalıcı veri yazımı, üretim restore ve canlı sürüm değişmez. Yerel platform 1489/1489, AI/Radio 336/336 ve Chromium 10/10 PASS; uzak CI 4/4 PASS, fiziksel kabul açık.
 
 ### 2026-11-23 — v3 tam yedek ekranı (T90-261101-PO1-COL06)
 
