@@ -1,3 +1,7 @@
+### 2026-11-23 — Koleksiyonlar v3 salt okunur kapsam önizlemesi (T90-261101-PO1-COL05)
+
+v1/v2 dosyalarında Koleksiyonlar yokluğu ve v3 dosyasının tam kapsamı önizleme sonucuna eklendi. Geri yükleme eylemi hâlâ kapalı; eksik alan metni dosyanın gerçek kapsamından üretilir; hedefli önizleme 45/45 ve Chromium yedek ekranı 5/5 ve yerel platform 1477/1477 PASS.
+
 ### 2026-11-23 — Koleksiyonlar şifreli v3 yedek dosyası (T90-261101-PO1-COL04)
 
 Programatik v3 yakalama, şifreli zarf ve doğrulanmış okuma eklendi. 26. yerel anahtar yoksa açık yokluk kaydı tutulur; v1/v2 dosyaları ve üretim restore davranışı korunur. Hedefli yedek portu 18/18 ve yerel platform 1475/1475 PASS; ürün arayüzü ve kalıcı Koleksiyonlar yazıcısı henüz v3 kullanmaz.
