@@ -1,3 +1,7 @@
+### 2026-11-23 — Planlar ilk görünür ekran (T90-261101-PO1-PLN03)
+
+Alanlarım'a altıncı kart olarak Planlar ve dört durumlu, veri girişi olmayan ekran eklendi. Router, modül kaydı ve çevrimdışı kabuk güncellendi; üretim verisi/şema/yedek/restore davranışı değişmedi. Hedefli statik 30/30, Registry 18/18, Router 15/15, tarayıcı 48/48 ve TR katalog 12/12, birleşik platform 1479/1479 ve hedefli Chromium 1/1 PASS.
+
 ### 2026-11-23 — Planlar ekran ve veri güveni tasarımı (T90-261101-PO1-PLN02)
 
 Dört durumlu erişilebilir Planlar akışı, veri girişi ve kayıt başarısı mesajının güven sınırı ile yeni yerel verinin sürümlü tam yedek koşulları görev kaydına eklendi. Kod, şema ve veri değişmedi; kod testleri tekrarlanmadı.

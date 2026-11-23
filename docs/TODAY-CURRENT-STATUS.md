@@ -1,5 +1,9 @@
 # Today — Ana talimata göre güncel durum
 
+## 23 Kasım 2026 — Planlar ilk görünür ekran (T90-261101-PO1-PLN03)
+
+Durum: **Doğrulanıyor.** Taban tasarım PR #33 (`f19a917`), sözleşme PR #32 ve ürün dalı PR #24'e bağımlı; kurtarma zinciri taşınmaz. Alanlarım'a Planlar kartı ve dört durumun boş görünümü eklendi. Core başlangıcı, geri hareketi ve ortak Radio alanı korunur. Ekran açıkça veri kaydetmediğini söyler; form, yerel anahtar, şema/migration, AI, bildirim ve dış takvim eklenmez. Hedef dosyalar index, Router/Registry, yalnız geri düğmesini bağlayan Planlar UI, Service Worker, ilgili sabit envanter/tarayıcı testleri ve belgeler. Kabul: altı kart, doğru rota/geri, mobil/büyük yazıda taşma olmaması, çevrimdışı kabuk, kayıt yapılmış izlenimi olmaması. Hedefli statik 30/30, Registry 18/18, Router 15/15, tarayıcı 48/48, TR katalog 12/12, birleşik platform 1479/1479 ve hedefli Chromium 1/1 PASS; uzak CI ayrıca doğrulanır. Risk fiziksel iPhone Safari/PWA kabulü ve gelecek kalıcı kaydın sürümlü tam yedeğidir; ilk tahmin küçük/orta. Sonraki iş görünür tasarımı cihazda kabul etmek, ardından veri/yedek karar kapısını ayrı ele almaktır.
+
 ## 23 Kasım 2026 — Planlar ekran ve veri güveni tasarımı (T90-261101-PO1-PLN02)
 
 Durum: **Tamamlandı (tasarım).** Taban PR #32 (`791bb6d`), bağımlılık PLN01 saf sözleşmesi; Odak/Koleksiyonlar ürün dalı korunur, deneysel v3 kurtarma zinciri taşınmaz. Tahmini boyut küçük tasarım; hedef yalnız ana görev kaydı ve changelog. Uygulama, kullanıcı kaydı, anahtar, şema, izin ve yedek kodu değişmez. Kod testi tekrarlanmaz; belge/diff kontrolü kabulüdür.

@@ -104,6 +104,10 @@
     .radioModule>.moduleCard{border:0;box-shadow:none;background:transparent;border-radius:22px}
     .radioModule .radioMini{margin:0;border:0;border-top:1px solid var(--stroke);border-radius:0;background:transparent}
     .radioModule .radioMiniIcon{display:none}
+    .plansStages{width:min(100%,560px);margin:16px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:12px;min-width:0}
+    .plansStages section{min-width:0;padding:14px;border:1px solid rgba(255,255,255,.25);border-radius:18px;text-align:left;overflow-wrap:anywhere}
+    .plansStages h2{margin:0 0 8px;font-size:1.1rem}
+    .plansStages p{margin:0}
     .focusPanel{width:min(100%,420px);margin:0 auto;display:grid;gap:12px;min-width:0}
     .focusPanel label{text-align:left;font-weight:600}
     .focusPanel input{width:100%;min-width:0;box-sizing:border-box;min-height:44px;font:inherit}
@@ -1916,6 +1920,9 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
   <button class="moduleCard" id="btnModuleFocus" type="button" data-module="focus" aria-labelledby="moduleFocusTitle" aria-describedby="moduleFocusDesc">
     <span class="moduleIcon" aria-hidden="true">◉</span><span class="moduleText"><strong id="moduleFocusTitle">Today Odak</strong><small id="moduleFocusDesc">Sakin bir süre ayır</small></span>
   </button>
+  <button class="moduleCard" id="btnModulePlans" type="button" data-module="plans" aria-labelledby="modulePlansTitle" aria-describedby="modulePlansDesc">
+    <span class="moduleIcon" aria-hidden="true">▦</span><span class="moduleText"><strong id="modulePlansTitle">Today Planlar</strong><small id="modulePlansDesc">Dört adımda planlarını gör</small></span>
+  </button>
   </div>
   <div class="status" id="statusModules" role="status" aria-live="polite" aria-atomic="true"></div>
 </div>
@@ -1945,6 +1952,18 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
           </div>
           <p class="mini">Bu oturum kaydedilmez. Sayfayı yenilersen süre sıfırlanır.</p>
         </div>
+      </section>
+
+      <section class="inner" data-view="plans" role="main" aria-labelledby="plansTitle" aria-hidden="true">
+        <div class="topbar"><h1 class="title" id="plansTitle" data-view-title tabindex="-1">Today Planlar</h1><button class="back" id="btnPlansBack" type="button">Alanlarım</button></div>
+        <p class="sub">Bir gün, Sırada, Yapıyorum, Tamamlandı.</p>
+        <div class="plansStages" aria-label="Plan durumları">
+          <section><h2>Bir gün</h2><p>Seçtiğin günün planları burada görünecek.</p></section>
+          <section><h2>Sırada</h2><p>Sonra ele alacakların burada görünecek.</p></section>
+          <section><h2>Yapıyorum</h2><p>Üzerinde çalıştıkların burada görünecek.</p></section>
+          <section><h2>Tamamlandı</h2><p>Bitirdiklerin burada görünecek.</p></section>
+        </div>
+        <p class="mini">Plan kaydı henüz açık değil. Bu ekran veri kaydetmez.</p>
       </section>
 
       <!-- TODAY CORE -->
@@ -3342,6 +3361,7 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 <script type="module" src="./modules/notification-ui.mjs"></script>
 <script type="module" src="./modules/radio-ui.mjs"></script>
 <script type="module" src="./modules/focus-ui.mjs"></script>
+<script type="module" src="./modules/plans-ui.mjs"></script>
 <script src="./modules/router.js"></script>
 <script src="./modules/module-registry.js"></script>
 <script src="./modules/startup-manager.js"></script>
