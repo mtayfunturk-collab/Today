@@ -84,6 +84,7 @@ class MockDocument {
       }
 
       if (
+        moduleId !== "focus" &&
         moduleId !==
           options.missingOpenTrigger
       ) {
@@ -496,7 +497,7 @@ test(
 );
 
 test(
-  "Beş kart ve on beş alt navigasyon tetikleyicisi doğrulanıyor",
+  "Beş kart ve on iki alt navigasyon tetikleyicisi doğrulanıyor",
   () => {
     const runtime = createRuntime();
     const validation =
@@ -511,7 +512,7 @@ test(
     );
     assert.equal(
       validation.openTriggers.length,
-      15
+      12
     );
   }
 );
@@ -631,7 +632,7 @@ test(
     assert.equal(result.success, true);
     assert.equal(result.changed, true);
     assert.equal(result.moduleCount, 5);
-    assert.equal(result.triggerCount, 20);
+    assert.equal(result.triggerCount, 17);
     assert.equal(
       runtime.document.listeners.click
         .length,
