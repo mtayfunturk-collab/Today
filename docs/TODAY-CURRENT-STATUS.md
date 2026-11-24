@@ -1,5 +1,9 @@
 # Today — Ana talimata göre güncel durum
 
+## 24 Kasım 2026 — Kaydedilemeyen Core notuyla eksik yedeği önleme
+
+Durum: **Doğrulanıyor.** Taban PR #39 `c098680`; hızlı Core notu kaydı çalışsa bile kota/yazma hatasında bellekte kalan taslak tam yedek dosyasına girmez. Uygulama içindeki yedek açılışı, yalnız bu bekleyen taslağın varlığını kontrol ederek durur ve eksik dosya riskini açıkça bildirir. Önceki kalıcı not ile taslak korunur. Hedef `index.html`, `modules/backup-export-ui.mjs`, Service Worker `foundation-107`, hedefli test ve envanterdir. Yeni kalıcı anahtar, şema, migration, veri silme, dış izin veya üretim restore yok. Kabul: sentetik kota reddi, normal yedek akışı, Core'a dönüş ve önceki kayıt korunumu; yedek birim 42/42, Chromium yedek 6/6, platform 1510/1510, SW 38/38, statik 30/30 PASS. Uzak CI ve fiziksel iPhone/Windows kabulü açık; tahmini boyut küçük. Doğrudan URL ile sayfadan ayrılma ve tarayıcı kapanışındaki kaydedilmemiş taslak ayrı sınırdır; bu koruma yalnız uygulama içindeki Tam yedek düğmesinindir. Merge/deploy için ayrı ürün sahibi onayı gerekir.
+
 ## 24 Kasım 2026 — Core hızlı not kaydının ürün/v3 adayına uyarlanması
 
 Durum: **Doğrulanıyor.** Taban PR #37 `3adc253`; canlı Pages kaynak düzeltmesi PR #38 `40c7237` yalnız ilgili Core davranışı ve testiyle taşındı. Core'dan ayrılırken bekleyen not mevcut kayıt yoluyla yazılır; hızlı Ayarlar → yedek geçişi notun 450 ms bekleme penceresinde dosya dışında kalmasını önler. Yeni depolama anahtarı, şema, migration, üretim restore veya dış izin yok. Service Worker `foundation-106`; PR #37 `104`, canlı kaynak PR #38 `105` kullanır. Hedefli Chromium Core/yedek/Alanlarım 31/31, platform 1509/1509, Core katalog 12/12, statik 30/30, SW 38/38 PASS. Uzak CI ve fiziksel cihaz kabulü açık; tahmini boyut küçük. Kayıt hatası/kota durumundaki oturumluk taslağın tam yedek güvencesi ayrıca açık risk; canlı yayın için ayrı ürün sahibi onayı gerekir.

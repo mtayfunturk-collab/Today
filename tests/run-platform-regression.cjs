@@ -20,7 +20,7 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file: "tests/backup-export-ui.test.mjs",
-    count: 41
+    count: 42
   },
   {
     file: "tests/collections-contract.test.mjs",
