@@ -3978,6 +3978,31 @@ $("#btnModulesFromSettings").addEventListener("click", () => router.navigate("mo
   });
 
   // Capture the input text and date before navigation can reload the editor.
+  const savePendingNote = (k) => {
+    const draft = pendingNotes.get(k);
+    if (!draft) return true;
+    clearTimeout(draft.timer);
+    const d = dayObj(k);
+    d.note = draft.text;
+    logChange(k, "Not güncellendi");
+    let saved = false;
+    try {
+      saved = save().success;
+    } catch(error) {
+      reportError("today:stateerror", {
+        errorCode: "TODAY-STATE-001",
+        errorName: error?.name
+      });
+    }
+    if (saved) pendingNotes.delete(k);
+    if (router.getState().route === "pick" && todayKey() === k) {
+      flash($("#statusPick"), saved
+        ? coreMessage("core.noteSaved", "Not kaydedildi.")
+        : coreMessage("core.noteFailed", "Not kaydedilemedi. Taslak bu oturumda korunuyor."));
+    }
+    return saved;
+  };
+
   $("#note").addEventListener("input", () => {
     const k = todayKey();
     if(!canEditDate(k)) return;
@@ -3985,26 +4010,7 @@ $("#btnModulesFromSettings").addEventListener("click", () => router.navigate("mo
     clearTimeout(pendingNotes.get(k)?.timer);
     const draft = { text: $("#note").value || "", timer: null };
     pendingNotes.set(k, draft);
-    draft.timer = setTimeout(() => {
-      const d = dayObj(k);
-      d.note = draft.text;
-      logChange(k, "Not güncellendi");
-      let saved = false;
-      try {
-        saved = save().success;
-      } catch(error) {
-        reportError("today:stateerror", {
-          errorCode: "TODAY-STATE-001",
-          errorName: error?.name
-        });
-      }
-      if(saved) pendingNotes.delete(k);
-      if(router.getState().route === "pick" && todayKey() === k){
-        flash($("#statusPick"), saved
-          ? coreMessage("core.noteSaved", "Not kaydedildi.")
-          : coreMessage("core.noteFailed", "Not kaydedilemedi. Taslak bu oturumda korunuyor."));
-      }
-    }, 450);
+    draft.timer = setTimeout(() => savePendingNote(k), 450);
   });
 
   // bugünü sıfırla (sadece bugün)
@@ -4540,7 +4546,10 @@ $("#btnModulesFromSettings").addEventListener("click", () => router.navigate("mo
     b.addEventListener("click", () => renderChart(b.dataset.mode));
   });
 
-  const handleRouteChange = ({ to }) => {
+  const handleRouteChange = ({ from, to }) => {
+    if (from === "pick" && to !== "pick") {
+      for (const k of pendingNotes.keys()) savePendingNote(k);
+    }
     if (to === "health") {
       void Promise.all([
         nutritionUI.open(),

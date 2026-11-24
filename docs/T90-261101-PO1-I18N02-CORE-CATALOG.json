@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "purpose": "Source-aligned preparation catalog; not loaded by Today. Raw occurrences are evidence, not DOM bindings or complete UI coverage.",
   "sourceRef": "080a18e1c76f7d2057f17764e2b260d7075c430f",
-  "sourceSha256": "09d753c65ffc2bda36a7bf4c6b4f193c1463f85a86445efd40ff07ba37653b94",
+  "sourceSha256": "c75220810ab0c8b53693d6d1907e7dfa2ef926899578d7f117d5b38520cb1a3c",
   "sourceBranch": "task/t90-261101-po1-radio-mini",
   "completeEnglishRelease": false,
   "dictionaryModule": "modules/locales/core-tr.mjs",
@@ -69,19 +69,19 @@
             "lineText": "        errorCode: \"TODAY-STATE-001\","
           },
           {
-            "line": 3997,
-            "lineText": "          errorCode: \"TODAY-STATE-001\","
+            "line": 3993,
+            "lineText": "        errorCode: \"TODAY-STATE-001\","
           },
           {
-            "line": 4610,
+            "line": 4619,
             "lineText": "      \"TODAY-ROUTER-INIT\""
           },
           {
-            "line": 4623,
+            "line": 4632,
             "lineText": "      \"TODAY-MODULES-INIT\""
           },
           {
-            "line": 4632,
+            "line": 4641,
             "lineText": "        errorCode: \"TODAY-STARTUP-005\","
           }
         ]
@@ -457,7 +457,7 @@
             "lineText": "              <div class=\"ctitle\" id=\"choiceATitle\">Bir şey oldu ama adı yok</div>"
           },
           {
-            "line": 4284,
+            "line": 4290,
             "lineText": "    A:\"Bir şey oldu ama adı yok\","
           }
         ]
@@ -497,7 +497,7 @@
             "lineText": "              <div class=\"ctitle\" id=\"choiceBTitle\">Her şey çok net</div>"
           },
           {
-            "line": 4285,
+            "line": 4291,
             "lineText": "    B:\"Her şey çok net\","
           }
         ]
@@ -541,7 +541,7 @@
             "lineText": "                  değerlendirir. “Zordu bugün” ile kısa uyku ya da düşük enerji"
           },
           {
-            "line": 4286,
+            "line": 4292,
             "lineText": "    C:\"Zordu bugün\""
           }
         ]
@@ -617,7 +617,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"navy\" title=\"Lacivert\" aria-label=\"Lacivert\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4290,
+            "line": 4296,
             "lineText": "    navy:\"Lacivert\","
           }
         ]
@@ -639,7 +639,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"orange\" title=\"Turuncu\" aria-label=\"Turuncu\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4291,
+            "line": 4297,
             "lineText": "    orange:\"Turuncu\","
           }
         ]
@@ -661,7 +661,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"red\" title=\"Kırmızı\" aria-label=\"Kırmızı\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4292,
+            "line": 4298,
             "lineText": "    red:\"Kırmızı\","
           }
         ]
@@ -683,7 +683,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"blue\" title=\"Mavi\" aria-label=\"Mavi\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4293,
+            "line": 4299,
             "lineText": "    blue:\"Mavi\","
           }
         ]
@@ -705,7 +705,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"yellow\" title=\"Sarı\" aria-label=\"Sarı\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4294,
+            "line": 4300,
             "lineText": "    yellow:\"Sarı\","
           }
         ]
@@ -727,7 +727,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"green\" title=\"Yeşil\" aria-label=\"Yeşil\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4295,
+            "line": 4301,
             "lineText": "    green:\"Yeşil\","
           }
         ]
@@ -749,7 +749,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"deep\" title=\"Derin\" aria-label=\"Derin\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4296,
+            "line": 4302,
             "lineText": "    deep:\"Derin\","
           }
         ]
@@ -863,7 +863,7 @@
             "lineText": "            Takvim"
           },
           {
-            "line": 4068,
+            "line": 4074,
             "lineText": "    $(\"#calPill\").textContent = window.TodayCalendarCopy?.title || \"Takvim\";"
           }
         ]
@@ -1115,7 +1115,7 @@
             "lineText": "              <div class=\"chartTitle\" id=\"chartLabel\">Gün içi giriş ritmi (00:00 → 23:59)</div>"
           },
           {
-            "line": 4515,
+            "line": 4521,
             "lineText": "    if(mode===\"hour\"){ arr = seriesHour(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.hour, \"Gün içi giriş ritmi (00:00 → 23:59)\"); }"
           }
         ]
@@ -1133,7 +1133,7 @@
         "literal": "Son 7 gün ivmesi",
         "occurrences": [
           {
-            "line": 4516,
+            "line": 4522,
             "lineText": "    if(mode===\"day\"){ arr = seriesDay(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.day, \"Son 7 gün ivmesi\"); }"
           }
         ]
@@ -1151,7 +1151,7 @@
         "literal": "Son 4 hafta ivmesi",
         "occurrences": [
           {
-            "line": 4517,
+            "line": 4523,
             "lineText": "    if(mode===\"week\"){ arr = seriesWeek(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.week, \"Son 4 hafta ivmesi\"); }"
           }
         ]
@@ -1169,7 +1169,7 @@
         "literal": "Son 12 ay ivmesi",
         "occurrences": [
           {
-            "line": 4518,
+            "line": 4524,
             "lineText": "    if(mode===\"month\"){ arr = seriesMonth(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.month, \"Son 12 ay ivmesi\"); }"
           }
         ]
@@ -1421,8 +1421,8 @@
         "literal": "Not kaydedildi.",
         "occurrences": [
           {
-            "line": 4004,
-            "lineText": "          ? coreMessage(\"core.noteSaved\", \"Not kaydedildi.\")"
+            "line": 4000,
+            "lineText": "        ? coreMessage(\"core.noteSaved\", \"Not kaydedildi.\")"
           }
         ]
       },
@@ -1439,7 +1439,7 @@
         "literal": "Bugün temizlendi.",
         "occurrences": [
           {
-            "line": 4031,
+            "line": 4037,
             "lineText": "      ? coreMessage(\"core.todayCleared\", \"Bugün temizlendi.\")"
           }
         ]
@@ -1551,7 +1551,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"pink\" title=\"Pembe\" aria-label=\"Pembe\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4297,
+            "line": 4303,
             "lineText": "    pink:\"Pembe\","
           }
         ]
@@ -1573,7 +1573,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"purple\" title=\"Mor\" aria-label=\"Mor\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4298,
+            "line": 4304,
             "lineText": "    purple:\"Mor\","
           }
         ]
@@ -1595,7 +1595,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"teal\" title=\"Turkuaz\" aria-label=\"Turkuaz\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4299,
+            "line": 4305,
             "lineText": "    teal:\"Turkuaz\","
           }
         ]
@@ -1617,7 +1617,7 @@
             "lineText": "          <button class=\"cbtn\" type=\"button\" data-color=\"mint\" title=\"Nane\" aria-label=\"Nane\" aria-pressed=\"false\"></button>"
           },
           {
-            "line": 4300,
+            "line": 4306,
             "lineText": "    mint:\"Nane\","
           }
         ]
@@ -1683,11 +1683,11 @@
             "lineText": "          id=\"calGrid\""
           },
           {
-            "line": 4070,
+            "line": 4076,
             "lineText": "    const grid = $(\"#calGrid\");"
           },
           {
-            "line": 4301,
+            "line": 4307,
             "lineText": "    gray:\"Gri\""
           }
         ]
@@ -1705,8 +1705,8 @@
         "literal": "Not kaydedilemedi. Taslak bu oturumda korunuyor.",
         "occurrences": [
           {
-            "line": 4005,
-            "lineText": "          : coreMessage(\"core.noteFailed\", \"Not kaydedilemedi. Taslak bu oturumda korunuyor.\"));"
+            "line": 4001,
+            "lineText": "        : coreMessage(\"core.noteFailed\", \"Not kaydedilemedi. Taslak bu oturumda korunuyor.\"));"
           }
         ]
       },
@@ -1777,7 +1777,7 @@
             "lineText": "                    Günlük not metni"
           },
           {
-            "line": 4515,
+            "line": 4521,
             "lineText": "    if(mode===\"hour\"){ arr = seriesHour(); $(\"#chartLabel\").textContent = statisticsText(window.TodayStatisticsCopy?.titles?.hour, \"Gün içi giriş ritmi (00:00 → 23:59)\"); }"
           }
         ]
@@ -1877,7 +1877,7 @@
             "lineText": "        : coreMessage(\"core.changeFailed\", \"Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin.\"));"
           },
           {
-            "line": 4032,
+            "line": 4038,
             "lineText": "      : coreMessage(\"core.changeFailed\", \"Değişiklik tam kaydedilemedi. Tekrar deneyebilirsin.\"));"
           }
         ]
@@ -1895,7 +1895,7 @@
         "literal": "Pzt",
         "occurrences": [
           {
-            "line": 4079,
+            "line": 4085,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           }
         ]
@@ -1913,11 +1913,11 @@
         "literal": "Pazartesi",
         "occurrences": [
           {
-            "line": 4053,
+            "line": 4059,
             "lineText": "    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)"
           },
           {
-            "line": 4079,
+            "line": 4085,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           }
         ]
@@ -1935,7 +1935,7 @@
         "literal": "Sal",
         "occurrences": [
           {
-            "line": 4080,
+            "line": 4086,
             "lineText": "      [\"Sal\",\"Salı\"],"
           }
         ]
@@ -1953,7 +1953,7 @@
         "literal": "Salı",
         "occurrences": [
           {
-            "line": 4080,
+            "line": 4086,
             "lineText": "      [\"Sal\",\"Salı\"],"
           }
         ]
@@ -1971,7 +1971,7 @@
         "literal": "Çar",
         "occurrences": [
           {
-            "line": 4081,
+            "line": 4087,
             "lineText": "      [\"Çar\",\"Çarşamba\"],"
           }
         ]
@@ -1989,7 +1989,7 @@
         "literal": "Çarşamba",
         "occurrences": [
           {
-            "line": 4081,
+            "line": 4087,
             "lineText": "      [\"Çar\",\"Çarşamba\"],"
           }
         ]
@@ -2007,7 +2007,7 @@
         "literal": "Per",
         "occurrences": [
           {
-            "line": 4082,
+            "line": 4088,
             "lineText": "      [\"Per\",\"Perşembe\"],"
           }
         ]
@@ -2025,7 +2025,7 @@
         "literal": "Perşembe",
         "occurrences": [
           {
-            "line": 4082,
+            "line": 4088,
             "lineText": "      [\"Per\",\"Perşembe\"],"
           }
         ]
@@ -2043,11 +2043,11 @@
         "literal": "Cum",
         "occurrences": [
           {
-            "line": 4083,
+            "line": 4089,
             "lineText": "      [\"Cum\",\"Cuma\"],"
           },
           {
-            "line": 4084,
+            "line": 4090,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2065,11 +2065,11 @@
         "literal": "Cuma",
         "occurrences": [
           {
-            "line": 4083,
+            "line": 4089,
             "lineText": "      [\"Cum\",\"Cuma\"],"
           },
           {
-            "line": 4084,
+            "line": 4090,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2087,7 +2087,7 @@
         "literal": "Cmt",
         "occurrences": [
           {
-            "line": 4084,
+            "line": 4090,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2105,7 +2105,7 @@
         "literal": "Cumartesi",
         "occurrences": [
           {
-            "line": 4084,
+            "line": 4090,
             "lineText": "      [\"Cmt\",\"Cumartesi\"],"
           }
         ]
@@ -2123,15 +2123,15 @@
         "literal": "Paz",
         "occurrences": [
           {
-            "line": 4053,
+            "line": 4059,
             "lineText": "    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)"
           },
           {
-            "line": 4079,
+            "line": 4085,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           },
           {
-            "line": 4085,
+            "line": 4091,
             "lineText": "      [\"Paz\",\"Pazar\"]"
           }
         ]
@@ -2149,15 +2149,15 @@
         "literal": "Pazar",
         "occurrences": [
           {
-            "line": 4053,
+            "line": 4059,
             "lineText": "    // TR haftası: Pazartesi başlangıç gibi düşünelim (1)"
           },
           {
-            "line": 4079,
+            "line": 4085,
             "lineText": "      [\"Pzt\",\"Pazartesi\"],"
           },
           {
-            "line": 4085,
+            "line": 4091,
             "lineText": "      [\"Paz\",\"Pazar\"]"
           }
         ]
@@ -2179,7 +2179,7 @@
             "lineText": "     - geçmiş günler: görüntülenir ama değiştirilemez"
           },
           {
-            "line": 4137,
+            "line": 4143,
             "lineText": "          ? calendarText(\"past\", \"geçmiş gün\")"
           }
         ]
@@ -2201,7 +2201,7 @@
             "lineText": "     - gelecek günler: seçilemez"
           },
           {
-            "line": 4139,
+            "line": 4145,
             "lineText": "            ? calendarText(\"future\", \"gelecek gün\")"
           }
         ]
@@ -2243,35 +2243,35 @@
             "lineText": "    // sadece bugün gösterilecek ama saklanacak → yine de çok büyümesin"
           },
           {
-            "line": 4010,
+            "line": 4016,
             "lineText": "  // bugünü sıfırla (sadece bugün)"
           },
           {
-            "line": 4140,
+            "line": 4146,
             "lineText": "            : calendarText(\"today\", \"bugün\");"
           },
           {
-            "line": 4174,
+            "line": 4180,
             "lineText": "      // sadece bugün tıklanabilir (düzenleme kuralı)"
           },
           {
-            "line": 4178,
+            "line": 4184,
             "lineText": "          // bugüne geri dön ve düzenle"
           },
           {
-            "line": 4286,
+            "line": 4292,
             "lineText": "    C:\"Zordu bugün\""
           },
           {
-            "line": 4374,
+            "line": 4380,
             "lineText": "  /* “değişim logları” sadece bugün ekranda görünsün, istenirse temizle */"
           },
           {
-            "line": 4390,
+            "line": 4396,
             "lineText": "    // bugün: saatlik giriş sayıları (00-23)"
           },
           {
-            "line": 4593,
+            "line": 4602,
             "lineText": "  // home açılışında bugünün accent'ini hazırla"
           }
         ]
@@ -2293,7 +2293,7 @@
             "lineText": "        <li class=\"healthEmptyItem\">Bu gün için arşivlenen kayıt yok.</li>"
           },
           {
-            "line": 4144,
+            "line": 4150,
             "lineText": "          : calendarText(\"noRecord\", \"kayıt yok\");"
           }
         ]
@@ -2311,7 +2311,7 @@
         "literal": "not var",
         "occurrences": [
           {
-            "line": 4133,
+            "line": 4139,
             "lineText": "      if(d && d.note) recordParts.push(calendarText(\"hasNote\", \"not var\"));"
           }
         ]
@@ -2331,7 +2331,7 @@
         "literal": "renk {color}",
         "occurrences": [
           {
-            "line": 4132,
+            "line": 4138,
             "lineText": "      if(d && d.color) recordParts.push(calendarText(\"color\", \"renk {color}\").replace(\"{color}\", () => coreDisplayLabel(\"colors\", d.color, colorLabelTR(d.color))));"
           }
         ]
@@ -2349,7 +2349,7 @@
         "literal": ". Düzenlemek için Enter veya Boşluk tuşuna basın",
         "occurrences": [
           {
-            "line": 4151,
+            "line": 4157,
             "lineText": "            ? calendarText(\"editHint\", \". Düzenlemek için Enter veya Boşluk tuşuna basın\")"
           }
         ]

@@ -1,3 +1,7 @@
+### 2026-11-24 — Core hızlı not kaydı ürün/v3 adayına taşındı
+
+Canlı Pages kaynağındaki PR #38 (`40c7237`) düzeltmesi, v3 yedek ve yedi modüllü ürün adayı `3adc253` üzerine ayrı dalda uyarlandı. Core ekranından ayrılırken 450 ms otomatik kaydı bekleyen not mevcut kayıt yoluyla hemen kaydedilir; yeni veri anahtarı veya şema eklenmez. Service Worker `foundation-106` olur; canlı kaynak düzeltmesindeki `105` ile adayın eski `104` kabuğu ayrılır. Hedefli Chromium Core/yedek/Alanlarım 31/31, platform 1509/1509, SW 38/38, statik 30/30 PASS. Uzak CI ve fiziksel iPhone/Windows kabulü açık; merge/deploy yapılmadı.
+
 ### 2026-11-24 — Ürün/v3 yedek entegrasyonu (T90-261101-PO1-INT02)
 
 Planlar ve Yerler ekranları v3 yedek/güvenlik dalıyla ayrı görev dalında birleştirildi. Service Worker foundation-104 ve test envanteri uzlaştırıldı. Yeni kalıcı kayıt, üretim restore ve canlı sürüm değişmedi. Yerel platform 1509/1509, AI/Radio 336/336 ve Chromium 6/6 PASS; uzak CI/fiziksel cihaz kabulü ayrıca açık.
