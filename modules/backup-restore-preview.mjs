@@ -1,5 +1,5 @@
 /** T90-07 preparation only. No persistence, apply API, startup hook or UI activation. */
-import {LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LS_KEYS_V4, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, STORES, FORMAT, FORMAT_V2, FORMAT_V3, FORMAT_V4, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw, validatePlansRaw} from './backup-export.mjs';
+import {LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LS_KEYS_V4, LS_KEYS_V5, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, LOCAL_KEY_V5, STORES, FORMAT, FORMAT_V2, FORMAT_V3, FORMAT_V4, FORMAT_V5, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw, validatePlansRaw, validatePlacesRaw} from './backup-export.mjs';
 import {cleanState, defaultState} from './notification-store.mjs';
 import {validateHealthEntries} from './backup-health-validation.mjs';
 import {validateSkyEntries} from './backup-sky-validation.mjs';
@@ -18,8 +18,8 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const exact = (value, keys) => object(value) &&
   Object.keys(value).sort().join('|') === [...keys].sort().join('|');
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const versionFor = format => format===FORMAT?1:format===FORMAT_V2?2:format===FORMAT_V3?3:format===FORMAT_V4?4:null;
-const keysFor = version => version===4?LS_KEYS_V4:version===3?LS_KEYS_V3:version===2?LS_KEYS_V2:LS_KEYS;
+const versionFor = format => format===FORMAT?1:format===FORMAT_V2?2:format===FORMAT_V3?3:format===FORMAT_V4?4:format===FORMAT_V5?5:null;
+const keysFor = version => version===5?LS_KEYS_V5:version===4?LS_KEYS_V4:version===3?LS_KEYS_V3:version===2?LS_KEYS_V2:LS_KEYS;
 const copy = value => JSON.parse(JSON.stringify(value));
 function frozen(value) {
   if (value && typeof value === 'object') { Object.values(value).forEach(frozen); Object.freeze(value); }
@@ -70,6 +70,7 @@ function validateShape(payload, contracts) {
     if(e.key===LOCAL_KEYS_V2[1]){try{validateRadioFavoritesRaw(e.rawValue);}catch{reject('invalid-entry');}}
     if(e.key===LOCAL_KEY_V3){try{validateCollectionsRaw(e.rawValue);}catch{reject('invalid-entry');}}
     if(e.key===LOCAL_KEY_V4){try{validatePlansRaw(e.rawValue);}catch{reject('invalid-entry');}}
+    if(e.key===LOCAL_KEY_V5){try{validatePlacesRaw(e.rawValue);}catch{reject('invalid-entry');}}
     if (e.key === 'today_store_v2') {
       if (!object(value) || value.schemaVersion !== 2) reject('unsupported-core');
       daysOf(value.days);
@@ -188,7 +189,7 @@ export async function prepareRestorePreview({userConfirmed=false, file, password
   const preview = frozen({status:'preview-only', applyAvailable:false, restoreValidated:false,
     createdAt:at.toISOString(), expiresAt:new Date(at.getTime()+PREVIEW_LIFETIME).toISOString(),
     sourceCreatedAt:source.createdAt, sections:source.manifest.length,
-    missingFromBackup:source.payloadVersion===1?[...LOCAL_KEYS_V2,LOCAL_KEY_V3,LOCAL_KEY_V4]:source.payloadVersion===2?[LOCAL_KEY_V3,LOCAL_KEY_V4]:source.payloadVersion===3?[LOCAL_KEY_V4]:[], localStorage, stores,
+    missingFromBackup:source.payloadVersion===1?[...LOCAL_KEYS_V2,LOCAL_KEY_V3,LOCAL_KEY_V4,LOCAL_KEY_V5]:source.payloadVersion===2?[LOCAL_KEY_V3,LOCAL_KEY_V4,LOCAL_KEY_V5]:source.payloadVersion===3?[LOCAL_KEY_V4,LOCAL_KEY_V5]:source.payloadVersion===4?[LOCAL_KEY_V5]:[], localStorage, stores,
     coreDays:{count:days.size, earliest:orderedDays[0]??null, latest:orderedDays.at(-1)??null},
     notificationEffects:effects, databaseTransition:a.present===b.present?'none':b.present?'create':'remove',
     targetFingerprint:await fingerprint(target,crypto), candidateFingerprint:await fingerprint(candidate,crypto),
