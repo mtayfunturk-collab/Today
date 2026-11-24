@@ -26,6 +26,8 @@ const TEST_GROUPS = Object.freeze([
     file: "tests/collections-contract.test.mjs",
     count: 12
   },
+  { file: "tests/plans-contract.test.mjs", count: 9 },
+  { file: "tests/places-contract.test.mjs", count: 10 },
   {
     file: "tests/backup-restore-preview.test.mjs",
     count: 45
