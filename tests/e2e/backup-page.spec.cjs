@@ -29,9 +29,9 @@ test('Backup launch refuses an unsaved Core note after a synthetic storage failu
   });
   await page.locator('#note').fill('Sentetik kaydedilemeyen not');
   await page.locator('#btnCalendar').click();
-  await page.locator('#btnOpenSettings').click();
   const notice=page.locator('#todayErrorNotice');
   if(await notice.isVisible())await page.locator('#todayErrorDismiss').click();
+  await page.locator('#btnOpenSettings').click();
   await page.locator('#btnBackupLaunch').click();
   await expect(page.locator('#btnBackupLaunch + [role="status"]')).toContainText('Yedek bu notu içermez');
   expect(new URL(page.url()).pathname).toBe(path);
