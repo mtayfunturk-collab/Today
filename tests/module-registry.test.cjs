@@ -70,7 +70,10 @@ class MockDocument {
       "core",
       "health",
       "sky",
-      "radio"
+      "radio",
+      "focus",
+      "plans",
+      "places"
     ].forEach(moduleId => {
       if (
         moduleId !== options.missingCard
@@ -83,6 +86,7 @@ class MockDocument {
       }
 
       if (
+        moduleId !== "focus" && moduleId !== "plans" && moduleId !== "places" &&
         moduleId !==
           options.missingOpenTrigger
       ) {
@@ -193,6 +197,9 @@ function createRouter(options = {}) {
         "health"
     },
     radio: {name:"radio",view:"radio"},
+    focus: {name:"focus",view:"focus"},
+    plans: {name:"plans",view:"plans"},
+    places: {name:"places",view:"places"},
     sky: {
       name: "sky",
       view: "sky"
@@ -317,7 +324,7 @@ function test(name, callback) {
 }
 
 test(
-  "Genel API ve dört görünür modül değişmez olarak yayımlanıyor",
+  "Genel API ve yedi görünür modül değişmez olarak yayımlanıyor",
   () => {
     const { registry } =
       createRuntime();
@@ -337,7 +344,10 @@ test(
         "core",
         "health",
         "sky",
-        "radio"
+        "radio",
+        "focus",
+        "plans",
+        "places"
       ]
     );
     assert.deepEqual(
@@ -355,7 +365,7 @@ test(
           "health",
           "health"
         ],
-        ["sky", "sky", "sky"], ["radio", "radio", "radio"]
+        ["sky", "sky", "sky"], ["radio", "radio", "radio"], ["focus", "focus", "focus"], ["plans", "plans", "plans"], ["places", "places", "places"]
       ]
     );
   }
@@ -493,7 +503,7 @@ test(
 );
 
 test(
-  "Dört kart ve on iki alt navigasyon tetikleyicisi doğrulanıyor",
+  "Yedi kart ve on iki alt navigasyon tetikleyicisi doğrulanıyor",
   () => {
     const runtime = createRuntime();
     const validation =
@@ -504,7 +514,7 @@ test(
     assert.equal(validation.valid, true);
     assert.equal(
       validation.cards.length,
-      4
+      7
     );
     assert.equal(
       validation.openTriggers.length,
@@ -627,8 +637,8 @@ test(
 
     assert.equal(result.success, true);
     assert.equal(result.changed, true);
-    assert.equal(result.moduleCount, 4);
-    assert.equal(result.triggerCount, 16);
+    assert.equal(result.moduleCount, 7);
+    assert.equal(result.triggerCount, 19);
     assert.equal(
       runtime.document.listeners.click
         .length,
@@ -763,7 +773,10 @@ test(
       "core",
       "health",
       "sky",
-      "radio"
+      "radio",
+      "focus",
+      "plans",
+      "places"
     ].forEach(moduleId => {
       const result =
         runtime.registry.open(
@@ -788,7 +801,10 @@ test(
         "pick",
         "health",
         "sky",
-        "radio"
+        "radio",
+        "focus",
+        "plans",
+        "places"
       ]
     );
     assert.ok(

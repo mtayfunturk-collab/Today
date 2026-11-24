@@ -20,6 +20,121 @@ Windows geri bildirimindeki Today’e dön bağlantısı ayrı yerel görev dal�
 
 İlk uzak CI tarayıcı işi 176 PASS/2 FAIL: ikinci sekme engellendi, iki beklenti eski genel hata kodunda kaldı. Beklentiler yeni `other-client` koduna güncellendi; ilgili yerel Chromium kurtarma testleri 5/5 PASS. Güncel uzak CI sonucu ve fiziksel Windows kabulü açık.
 
+### 2026-11-24 — Kaydedilemeyen Core notuyla yedeğe geçiş koruması
+
+PR #39 ürün adayı üzerine ayrı dalda, Core notu kayıt hatası/kota nedeniyle hâlâ bellekteyse uygulama içindeki Tam yedek açılışı durdurulur. Kullanıcıya dosyanın bu notu içermeyeceği açıkça söylenir; önceki kalıcı not korunur. Yalnız bekleyen taslağın varlığı okunur; not metni aktarılmaz, yeni anahtar/şema/restore eklenmez. Service Worker `foundation-107`. Sentetik kota tarayıcı testi 1/1, tam yedek Chromium 6/6, yedek birim 42/42, platform 1510/1510, SW 38/38 ve statik 30/30 PASS. Uzak CI ve fiziksel cihaz kabulü açık; canlı sürüm değişmedi.
+
+### 2026-11-24 — Core hızlı not kaydı ürün/v3 adayına taşındı
+
+Canlı Pages kaynağındaki PR #38 (`40c7237`) düzeltmesi, v3 yedek ve yedi modüllü ürün adayı `3adc253` üzerine ayrı dalda uyarlandı. Core ekranından ayrılırken 450 ms otomatik kaydı bekleyen not mevcut kayıt yoluyla hemen kaydedilir; yeni veri anahtarı veya şema eklenmez. Service Worker `foundation-106` olur; canlı kaynak düzeltmesindeki `105` ile adayın eski `104` kabuğu ayrılır. Hedefli Chromium Core/yedek/Alanlarım 31/31, platform 1509/1509, SW 38/38, statik 30/30 PASS. Uzak CI ve fiziksel iPhone/Windows kabulü açık; merge/deploy yapılmadı.
+
+### 2026-11-24 — Ürün/v3 yedek entegrasyonu (T90-261101-PO1-INT02)
+
+Planlar ve Yerler ekranları v3 yedek/güvenlik dalıyla ayrı görev dalında birleştirildi. Service Worker foundation-104 ve test envanteri uzlaştırıldı. Yeni kalıcı kayıt, üretim restore ve canlı sürüm değişmedi. Yerel platform 1509/1509, AI/Radio 336/336 ve Chromium 6/6 PASS; uzak CI/fiziksel cihaz kabulü ayrıca açık.
+
+### 2026-11-23 — Yerler ilk görünür ekran (T90-261101-PO1-YER02)
+
+Alanlarım'a Yerler kartı ve iki durumlu, kayıt yapmayan ekran eklendi. Konum/harita ağı, yeni depolama ve geri yükleme açılmadı. Hedefli statik 30/30, SW 38/38, Registry 18/18, Router 15/15, tarayıcı 48/48 ve TR katalog 12/12, birleşik platform 1489/1489 ve hedefli Chromium 1/1 PASS.
+
+### 2026-11-23 — Yerler saf veri sözleşmesi (T90-261101-PO1-YER01)
+
+Manuel yer/şehir, isteğe bağlı not/adres/HTTP(S) bağlantı ve iki durum için doğrulanan saf sözleşme eklendi. GPS, otomatik harita açma, depolama ve AI bağı yok. Hedefli Yerler 10/10, otomasyon 8/8 ve birleşik platform 1489/1489 PASS.
+
+### 2026-11-23 — Planlar ilk görünür ekran (T90-261101-PO1-PLN03)
+
+Alanlarım'a altıncı kart olarak Planlar ve dört durumlu, veri girişi olmayan ekran eklendi. Router, modül kaydı ve çevrimdışı kabuk güncellendi; üretim verisi/şema/yedek/restore davranışı değişmedi. Hedefli statik 30/30, Registry 18/18, Router 15/15, tarayıcı 48/48 ve TR katalog 12/12, birleşik platform 1479/1479 ve hedefli Chromium 1/1 PASS.
+
+### 2026-11-23 — Planlar ekran ve veri güveni tasarımı (T90-261101-PO1-PLN02)
+
+Dört durumlu erişilebilir Planlar akışı, veri girişi ve kayıt başarısı mesajının güven sınırı ile yeni yerel verinin sürümlü tam yedek koşulları görev kaydına eklendi. Kod, şema ve veri değişmedi; kod testleri tekrarlanmadı.
+
+### 2026-11-23 — Planlar veri sözleşmesi (T90-261101-PO1-PLN01)
+
+Bir gün, Sırada, Yapıyorum ve Tamamlandı durumları için yalnız saf, sınırlı ve doğrulanan kayıt sözleşmesi eklendi. Hedefli test 9/9, otomasyon 8/8 ve birleşik platform 1479/1479 PASS. Kalıcı kayıt, dış takvim, bildirim ve UI açılmadı.
+
+### 2026-11-23 — v3 sentetik kurtarma tasarımı (T90-261101-PO1-COL08)
+
+Yeni v3 dosyasının yalnız ayrı sentetik profilde hazırlanması, sürümlü günlük, tam önceki görüntü, doğrulanan geri alma ve eski/BFCache yazıcı engelleri ana görev kaydına işlendi. Kod, veri, şema veya üretim restore değişmedi; kod testleri tekrarlanmadı.
+
+### 2026-11-23 — v3 kurtarma sınırı (T90-261101-PO1-COL07)
+
+Geçerli Koleksiyonlar içeren şifreli v3 dosyanın eski sentetik v1 kurtarma prototipine alınmadığı doğrulandı. Reddedilen işlem hedef veriyi ve veritabanı envanterini değiştirmiyor; üretim restore hâlâ kapalı. Hedefli kurtarma 38/38, otomasyon 8/8 ve birleşik platform 1490/1490 PASS.
+
+### 2026-11-23 — Ürün/v3 yedek entegrasyonu (T90-261101-PO1-INT01)
+
+PR #24 ürün görünümü ve PR #28 şifreli v3 yedek zinciri ayrı görev dalında birleştirildi. Koşucudaki yinelenen Koleksiyonlar testi kaldırıldı; çevrimdışı kabuk Service Worker foundation-103 ile iki ürün modülünü ve Koleksiyonlar doğrulayıcısını kapsar. Kalıcı veri yazımı, üretim restore ve canlı sürüm değişmez. Yerel platform 1489/1489, AI/Radio 336/336 ve Chromium 10/10 PASS; uzak CI 4/4 PASS, fiziksel kabul açık.
+
+### 2026-11-23 — v3 tam yedek ekranı (T90-261101-PO1-COL06)
+
+Yedek ekranı v3 şifreli kapsamı kullanır; varsa Koleksiyonlar da dosyaya alınır. Salt okunur önizleme v3 hedef kapsamıyla çalışır ve Service Worker foundation-102'ye çıkar. Yerel platform 1477/1477, AI/Radio 336/336 ve hedefli Chromium 8/8 PASS. Kalıcı Koleksiyonlar yazımı ve üretim restore kapalıdır.
+
+### 2026-11-23 — Koleksiyonlar v3 salt okunur kapsam önizlemesi (T90-261101-PO1-COL05)
+
+v1/v2 dosyalarında Koleksiyonlar yokluğu ve v3 dosyasının tam kapsamı önizleme sonucuna eklendi. Geri yükleme eylemi hâlâ kapalı; eksik alan metni dosyanın gerçek kapsamından üretilir; hedefli önizleme 45/45 ve Chromium yedek ekranı 5/5 ve yerel platform 1477/1477 PASS.
+
+### 2026-11-23 — Koleksiyonlar şifreli v3 yedek dosyası (T90-261101-PO1-COL04)
+
+Programatik v3 yakalama, şifreli zarf ve doğrulanmış okuma eklendi. 26. yerel anahtar yoksa açık yokluk kaydı tutulur; v1/v2 dosyaları ve üretim restore davranışı korunur. Hedefli yedek portu 18/18 ve yerel platform 1475/1475 PASS; ürün arayüzü ve kalıcı Koleksiyonlar yazıcısı henüz v3 kullanmaz.
+
+### 2026-11-23 — Koleksiyonlar v3 salt okunur kaynak doğrulaması (T90-261101-PO1-COL03)
+
+Onaylanan yeni anahtar yalnız gelecekteki sürüm için rezerve edildi; 512 KiB sınırlı saf doğrulama ve v1/v2'nin eksik yedek üretmeyi reddettiği testler eklendi. Yerel platform 1472/1472 PASS. Kalıcı yazma ve üretim restore açılmadı.
+
+### 2026-11-23 — Sentetik kurtarma prototipinde v2 yazma sınırı (T90-261101-PO1-BKP05)
+
+Ürüne bağlı olmayan eski sentetik kurtarma prototipi v2 dosyasını uygulama planına almadan `unsupported-recovery-version` ile durur. v2 salt okunur dosya doğrulama/önizleme davranışı korunur. Sentetik v2 reddi ve hedef/journal değişmezliği hedefli kurtarma testinde 37/37, birleşik platformda 1458/1458 PASS. Üretim restore hâlâ kapalıdır.
+
+### 2026-11-23 — Yedek ekranında v2 dosyası (T90-261101-PO1-BKP04)
+
+Yedek ekranı kullanıcı onayıyla 25 yerel anahtarı kapsayan şifreli v2 dosyası hazırlar. Salt okunur önizleme eski v1 dosyasında Alanlarım tercihleri ve Radio favorilerinin bulunmadığını açıklar. Çevrimdışı kaynak güncellemesi için Service Worker foundation-101'e çıkarıldı. Hedefli UI 41/41, statik 30/30, Chromium yedek akışı 5/5 ve platform 1457/1457 PASS. Yerel WebKit sistem kütüphanesi eksikliğiyle çalışmadı; uzak CI ve fiziksel cihaz ayrıca açık. Üretim restore ve yeni tercih yazımı kapalı.
+
+### 2026-11-23 — Sürümlü şifreli yedek dosyası ve eski dosya önizlemesi (T90-261101-PO1-BKP03)
+
+Onaylanan v2 tam yedek için 25 kayıtlı yerel anahtar, ayrı zarf/payload/coverage sürümü, AES-GCM AAD ve tam manifest yolu eklendi. Eski v1 dosyası 23 anahtarıyla okunur ve önizlenir; iki yeni alanın bulunmadığı bildirilir. Hedefli dışa aktarım 13/13, önizleme 43/43 ve birleşik platform 1456/1456 PASS. Yedek arayüzünün v2'ye geçişi ile fiziksel cihaz kabulü sonraki dilimdir; restore kapalıdır.
+
+### 2026-11-23 — Onaylı yeni yerel kayıtların doğrulama sözleşmesi (T90-261101-PO1-BKP02)
+
+Ürün sahibi PR #16'daki sürümlü v2 yedek ve Alanlarım/Radio favori anahtarlarını onayladı. İlk küçük dilimde iki anahtarın yalnız okuma/doğrulama sözleşmesi eklendi: tekil dört modül, sınırlandırılmış Radio Browser favori metaverisi, geçerli zaman damgası, bozuk/tekrar alan ve fazladan URL/AI verisi reddi. Mevcut v1 yedek biçimi ve veri yazma davranışı değişmedi; üretim restore kapalı. Hedefli test 9/9 ve birleşik platform 1450/1450 PASS. Uzak CI ve fiziksel cihaz kabulü ayrıca açık.
+
+### 2026-11-23 — Yeni alanlar için sürümlü tam yedek tasarımı (T90-261101-PO1-BKP01)
+
+Alan sıralama/gizleme ve Radio favorileri için önerilen iki bağımsız yerel sözleşme ile v1 dosyaları salt okunur koruyan v2 yedek geçişi ana görev kaydına eklendi. Mevcut yedek formatı, uygulama kodu ve kullanıcı verisi değişmedi; uygulama şema/kurtarma onayı ve ayrı kabul gerektirir.
+
+### 2026-11-23 — Radio çalan parça kaynağı fizibilitesi (T90-261101-PO1-RAD04)
+
+Radio Browser'ın belgelenmiş istasyon yanıtında güncel şarkı/sanatçı alanı olmadığı doğrulandı. Yayıncıya ait izinli ve güncel metaveri kaynağı seçilmeden parça gösterimi açılmayacak. Tasarım ve izin/boş durum kabulü `TODAY-RADIO-IMPLEMENTATION.md` içinde; kod, ağ ve veri değişmedi, test tekrarı yapılmadı.
+### 2026-11-23 — Koleksiyonlar yedek kapsamı tasarımı (T90-261101-PO1-COL02)
+
+Önerilen yerel anlık görüntü, v3 şifreli tam yedek kapsamı, eski v1/v2 dosyalarının eksik alan gösterimi ve üretim restore güvenlik kapısı görev kaydında netleştirildi. Kod, depolama ve gerçek kullanıcı verisi değişmedi.
+
+### 2026-11-23 — Koleksiyonlar veri sözleşmesi (T90-261101-PO1-COL01)
+
+Pano ve öğeler için salt hesaplama yapan sürüm 1 doğrulayıcı eklendi. Kalıcı depo, yedek formatı, UI ve kullanıcı verisi değişmedi. Hedefli 12/12 ve yerel birleşik platform 1470/1470 PASS; uzak CI sonucu ayrıca izlenir.
+
+### 2026-11-23 — Odak ekranı (T90-261101-PO1-FOC02)
+
+Alanlarım'a Odak kartı ve kayıt oluşturmayan başlat/duraklat/devam/bitir ekranı eklendi. Mevcut Radio oturumu ve kullanıcı verileri korunur. Hedefli Chromium 1/1 ve platform 1458/1458 PASS. Fiziksel iPhone kabulü ve canlı yayın yapılmadı.
+
+### 2026-11-23 — Odak zamanlayıcısının bellekte çalışan temeli (T90-261101-PO1-FOC01)
+
+Süre, isteğe bağlı konu ve başlat/duraklat/devam/bitir durumları için kalıcı kayıt oluşturmayan zamanlayıcı eklendi. Monoton saat, arka plan dönüşü ve saat değişimi için 12 hedefli kontrol; birleşik platform 1458/1458 PASS. Odak ekranı ve fiziksel cihaz kabulü ayrı işlerdir; mevcut kullanıcı verisi ve yedek şeması değişmedi.
+
+### 2026-11-22 — Tek Radio mini oynatıcı ortak konumda (T90-261101-PO1-RAD07)
+
+Mevcut mini oynatıcı Radio kartının içinden ekranın ortak alt alanına taşındı; seçim öncesi gizli kalır, Core/Health/Alanlarım geçişinde tek ses oturumunu gösterir. Yeni ses yöneticisi, veri deposu veya izin yok. Yerel Radio UI 23/23, hedefli Chromium 2/2, platform 1446/1446 ve AI/Radio entegrasyonu 336/336 PASS. Uzak CI ve gerçek iPhone kabulü açık.
+
+İlk uzak tarayıcı koşusunda eski tek düğme seçicisi iki doğru mini denetimi ayıramadı. Test durdur/tekrar dinle etiketini açıkça seçiyor; hedefli Chromium 1/1 PASS, yeni CI beklenir.
+
+### 2026-11-22 — Core / Alanlarım / Ayarlar kısa yolları (T90-261101-PO1-AREAS02)
+
+Core ve Alanlarım'dan Ayarlar'a, Ayarlar içinden Core ve Alanlarım'a doğrudan geçiş eklendi. Mevcut rota, takvim, not ve yedek düğmesi korundu. Yeni kalıcı veri/izin yok. Dar ekran ve geri/ileri hedefli Chromium 26/26, platform regresyonu 1446/1446 PASS; uzak CI ve fiziksel iPhone kabulü ayrı.
+
+İlk uzak tarayıcı koşusunda tarih 26 px merkezden kaydı ve Radio katalog testi İstanbul gece yarısında kayıt gününü şaşırdı. Ayarlar düğmesi üst çubuğun altına taşındı; test kaydedilen gün anahtarını karşılaştırır. Düzeltme sonrası hedefli Chromium 2/2 ve platform 1446/1446 PASS; yeni CI beklenir.
+
+### 2026-11-22 — Alanlarım ilk görünümü (T90-261101-PO1-AREAS01)
+
+Mevcut dört modül kartı Alanlarım başlığında mobilde iki sütun, dar ekran/büyük yazıda tek sütun olacak biçimde düzenlendi. Core ile başlama, modül rotaları, not ve tek Radio mini oynatıcı korundu. Türkçe kaynak envanteri, statik üretim hash'i ve sentetik mobil kabul güncellendi. Yeni kalıcı veri, izin veya şema yok. Yerel platform kapısı 1446/1446, hedefli Chromium gezinme/yerleşim/Radio 27/27 PASS; uzak CI ve fiziksel iPhone kabulü açık. Üretim geri yükleme kapalı kalır.
+
 ### 2026-11-12 — Taslak PR #3 native varlık izin listesi düzeltmesi
 
 İlk uzak CI Android paket hazırlığında `backup.html` izin listesi yüzünden durdu. Yalnız bu uygulama dosyası eklendi; native test ve web paket yerelde geçti. Rapor: `docs/TODAY-LIVE-CANDIDATE-2026-11-12.md`.
@@ -1228,3 +1343,6 @@ Successful
 Commit
 
 refactor: remove duplicated core html structure
+### 2026-11-24 — Canlı kaynak ve yedi alanlı v3 adayın yayın öncesi birleşimi
+
+Canlı Pages kaynak SHA `1fa2a962` ile taslak ürün/v3 zinciri `4f2e6e3`, ayrı `task/today-live-v3-integration` dalında birleştirildi. 15 dosya çakışmasında canlı yedek tanısı ve modüllere dönüş, adayın v3 şifreli kapsamı ve yedi alanlı arayüzü birlikte korundu. Tekrarlanan eski rota tarayıcı testi kaldırıldı; SW `foundation-109`, 146 dosya. Hedefli yedek 42/42, önizleme 46/46, katalog 12/12, statik 30/30, SW 38/38, AI UI 40/40, AI kapısı 11/11, tam platform 1511/1511 ve sentetik Chromium ürün/yedek akışı 11/11 PASS. Sandbox alt süreç EPERM ve eksik Playwright ikilisi ilk yerel koşuları engelledi; izinli süreç ve sistem Chromium ile doğrulama geçti. Uzak CI ve fiziksel iPhone/Windows kabulü açık. Yeni kalıcı veri yazımı, şema/migration, üretim restore, canlı yayın veya main değişikliği yok.

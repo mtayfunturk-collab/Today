@@ -602,7 +602,7 @@ test(
         .querySelectorAll(
           "[data-module]"
         ).length,
-      4
+      7
     );
   }
 );
@@ -628,12 +628,12 @@ test(
 );
 
 test(
-  "Dört modül kartı Registry üzerinden doğru rotaları açıyor",
+  "Yedi modül kartı Registry üzerinden doğru rotaları açıyor",
   () => {
     const cases = [
       ["core", "pick"],
       ["health", "health"],
-      ["sky", "sky"], ["radio", "radio"]
+      ["sky", "sky"], ["radio", "radio"], ["focus", "focus"], ["plans", "plans"], ["places", "places"]
     ];
 
     cases.forEach(

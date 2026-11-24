@@ -7,37 +7,10 @@ test('Backup return opens modules without changing the normal home entry',async(
   await page.getByRole('link',{name:'Today’e dön'}).click();
   await expect(page).toHaveURL(/\/index\.html\?fromBackup=modules$/);
   await expect(page.locator('body')).toHaveAttribute('data-route','modules');
-  await expect(page.getByRole('heading',{name:'TODAY',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Alanlarım',exact:true})).toBeVisible();
 
   await page.goto(path.replace('backup.html','index.html?fromBackup=unknown'));
   await expect(page.locator('body')).toHaveAttribute('data-route','home');
-});
-
-test('Backup launch refuses an unsaved Core note after a synthetic storage failure',async({page})=>{
-  const path=`/runs/${randomBytes(12).toString('hex')}/index.html`;
-  await page.goto(path);
-  await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
-  await page.locator('#btnStart').click();
-  await page.locator('#note').fill('Sentetik önceki not');
-  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('today_store_v2')).days[TodayDay.todayKey()]?.note)).toBe('Sentetik önceki not');
-  await page.evaluate(()=>{
-    const original=Storage.prototype.setItem;
-    Storage.prototype.setItem=function(key,value){
-      if(key==='today_store_v2'||key==='today_app_v10')throw new DOMException('Synthetic quota','QuotaExceededError');
-      return original.call(this,key,value);
-    };
-  });
-  await page.locator('#note').fill('Sentetik kaydedilemeyen not');
-  await page.locator('#btnCalendar').click();
-  const notice=page.locator('#todayErrorNotice');
-  if(await notice.isVisible())await page.locator('#todayErrorDismiss').click();
-  await page.locator('#btnOpenSettings').click();
-  await page.locator('#btnBackupLaunch').click();
-  await expect(page.locator('#btnBackupLaunch + [role="status"]')).toContainText('Yedek bu notu içermez');
-  expect(new URL(page.url()).pathname).toBe(path);
-  await page.locator('#btnBackToPick').click();
-  await expect(page.locator('#note')).toHaveValue('Sentetik kaydedilemeyen not');
-  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('today_store_v2')).days[TodayDay.todayKey()]?.note)).toBe('Sentetik önceki not');
 });
 
 test('Backup worker accepts one queried page and identifies a second live tab',async({page,context})=>{
@@ -92,6 +65,32 @@ test('Separate backup page requires explicit consent and does not write on load'
   expect(writes).toEqual([]);
 });
 
+test('Backup launch refuses an unsaved Core note after a synthetic storage failure',async({page})=>{
+  const path=`/runs/${randomBytes(12).toString('hex')}/index.html`;
+  await page.goto(path);
+  await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
+  await page.locator('#btnStart').click();
+  await page.locator('#note').fill('Sentetik önceki not');
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('today_store_v2')).days[TodayDay.todayKey()]?.note)).toBe('Sentetik önceki not');
+  await page.evaluate(()=>{
+    const original=Storage.prototype.setItem;
+    Storage.prototype.setItem=function(key,value){
+      if(key==='today_store_v2'||key==='today_app_v10')throw new DOMException('Synthetic quota','QuotaExceededError');
+      return original.call(this,key,value);
+    };
+  });
+  await page.locator('#note').fill('Sentetik kaydedilemeyen not');
+  await page.locator('#btnSettingsFromPick').click();
+  const notice=page.locator('#todayErrorNotice');
+  if(await notice.isVisible())await page.locator('#todayErrorDismiss').click();
+  await page.locator('#btnBackupLaunch').click();
+  await expect(page.locator('#btnBackupLaunch + [role="status"]')).toContainText('Yedek bu notu içermez');
+  expect(new URL(page.url()).pathname).toBe(path);
+  await page.locator('#btnCoreFromSettings').click();
+  await expect(page.locator('#note')).toHaveValue('Sentetik kaydedilemeyen not');
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('today_store_v2')).days[TodayDay.todayKey()]?.note)).toBe('Sentetik önceki not');
+});
+
 test('Real worker reports backup navigation lock capability before launch',async({page})=>{
   const path=`/runs/${randomBytes(12).toString('hex')}/index.html`;
   await page.goto(path);
@@ -140,14 +139,14 @@ test('Settings launch enters isolated backup page and creates a verified synthet
     return {raw:text.includes('SENTETIK-YEDEK-NOTU'),verified:await verifyBackupFile(text,'synthetic passphrase 123'),core:localStorage.getItem('today_store_v2')};
   });
   expect(result.raw).toBe(false);
-  expect(result.verified).toMatchObject({ok:true,sections:24,restoreValidated:false});
+  expect(result.verified).toMatchObject({ok:true,sections:27,restoreValidated:false});
   expect(result.core).toContain('SENTETIK-YEDEK-NOTU');
   const preview=await page.evaluate(async()=>{
     const text=await (await fetch(document.querySelector('#backupDownload').href)).text();
     const {prepareRestorePreview,revalidateRestorePreview}=await import('./modules/backup-restore-preview.mjs');
     const {captureSnapshot}=await import('./modules/backup-export.mjs');
     const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,
-      crypto,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+      crypto,version:3,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
     const value=await prepareRestorePreview({userConfirmed:true,file:text,password:'synthetic passphrase 123',
       barrier:fn=>fn(),capture,contracts:TodayNutritionContracts,crypto});
     const unchanged=await revalidateRestorePreview(value);
@@ -202,4 +201,27 @@ test('Backup page previews a synthetic file only after separate read consent',as
   await page.getByRole('button',{name:'Kapsamı önizle'}).click();
   await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı',{timeout:20000});
   expect(await page.evaluate(()=>localStorage.getItem('today_store_v2'))).toBe(before);
+});
+
+test('Legacy v1 file preview names preferences and favorites absent from the archive',async({page})=>{
+  const path=`/runs/${randomBytes(12).toString('hex')}/index.html`;
+  await page.goto(path);
+  await expect.poll(()=>page.evaluate(()=>window.TodayStartup?.getStatus().phase)).toBe('ready');
+  await page.evaluate(()=>navigator.serviceWorker.ready);
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.goto(path.replace('index.html','backup.html'));
+  const file=await page.evaluate(async()=>{
+    const {captureSnapshot,createBackup}=await import('./modules/backup-export.mjs');
+    const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,crypto,version:1,
+      source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+    return(await createBackup({userConfirmed:true,password:'synthetic legacy password',confirmation:'synthetic legacy password',
+      barrier:fn=>fn(),capture,crypto})).file;
+  });
+  await page.getByText('Geri yükleme kapsamını önizle').click();
+  await page.locator('#restorePreviewFile').setInputFiles({name:'legacy.today-backup.json',mimeType:'application/json',buffer:Buffer.from(file)});
+  await page.locator('#restorePreviewPassword').fill('synthetic legacy password');
+  await page.locator('#restorePreviewConsent').check();
+  await page.getByRole('button',{name:'Kapsamı önizle'}).click();
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar.',{timeout:20000});
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı');
 });
