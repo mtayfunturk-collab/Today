@@ -3726,6 +3726,7 @@ $("#btnCoreFromModules").addEventListener("click", () => {
 
   // Unsaved note drafts stay in memory, isolated by their input date.
   const pendingNotes = new Map();
+  window.TodayCoreHasPendingNote = () => pendingNotes.size > 0;
 
   const loadPickUI = (k) => {
     const d = dayObj(k);
