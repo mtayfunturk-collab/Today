@@ -1,3 +1,7 @@
+### 2026-11-24 — Kaydedilemeyen Core notuyla yedeğe geçiş koruması
+
+PR #39 ürün adayı üzerine ayrı dalda, Core notu kayıt hatası/kota nedeniyle hâlâ bellekteyse uygulama içindeki Tam yedek açılışı durdurulur. Kullanıcıya dosyanın bu notu içermeyeceği açıkça söylenir; önceki kalıcı not korunur. Yalnız bekleyen taslağın varlığı okunur; not metni aktarılmaz, yeni anahtar/şema/restore eklenmez. Service Worker `foundation-107`. Sentetik kota tarayıcı testi 1/1, tam yedek Chromium 6/6, yedek birim 42/42, platform 1510/1510, SW 38/38 ve statik 30/30 PASS. Uzak CI ve fiziksel cihaz kabulü açık; canlı sürüm değişmedi.
+
 ### 2026-11-24 — Core hızlı not kaydı ürün/v3 adayına taşındı
 
 Canlı Pages kaynağındaki PR #38 (`40c7237`) düzeltmesi, v3 yedek ve yedi modüllü ürün adayı `3adc253` üzerine ayrı dalda uyarlandı. Core ekranından ayrılırken 450 ms otomatik kaydı bekleyen not mevcut kayıt yoluyla hemen kaydedilir; yeni veri anahtarı veya şema eklenmez. Service Worker `foundation-106` olur; canlı kaynak düzeltmesindeki `105` ile adayın eski `104` kabuğu ayrılır. Hedefli Chromium Core/yedek/Alanlarım 31/31, platform 1509/1509, SW 38/38, statik 30/30 PASS. Uzak CI ve fiziksel iPhone/Windows kabulü açık; merge/deploy yapılmadı.
