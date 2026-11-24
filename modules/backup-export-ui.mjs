@@ -57,7 +57,7 @@ export function mountBackupExport({root=document,create=createBackup,capture=cap
   try{
    const result=await create({userConfirmed:$('#backupConsent').checked,password,confirmation,signal:active.signal,
     barrier:barrier||browserBarrier(view),capture:()=>capture({storage:view.localStorage,indexedDB:view.indexedDB,
-     crypto:view.crypto,contracts:view.TodayNutritionContracts,signal:active.signal,
+     crypto:view.crypto,contracts:view.TodayNutritionContracts,signal:active.signal,version:3,
      source:{appVersion:view.TodayVersion.getCurrentVersion().appVersion,origin:view.location.origin,runtime:'web'}})});
    if(active.signal.aborted)return;
    url=view.URL.createObjectURL(new view.Blob([result.file],{type:'application/json'}));download.href=url;download.download=result.filename;download.hidden=false;

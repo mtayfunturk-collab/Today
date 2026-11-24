@@ -25,6 +25,9 @@ export function createSyntheticRecovery({syntheticProfile=false, indexedDB, stor
   function clock() { const at=now(); if (!(at instanceof Date) || !Number.isFinite(at.getTime())) fail('invalid-clock'); return at; }
   function validate(snapshot) {
     if (bytes(snapshot).length>MAX_SNAPSHOT) fail('snapshot-limit');
+    // The unwired write prototype was built for v1 only. Reading v2 in the
+    // backup preview must not silently authorize applying its new keys here.
+    if (snapshot?.payloadVersion!==1) fail('unsupported-recovery-version');
     validateRestoreSnapshot(snapshot,contracts);
   }
   const fingerprint = snapshot => fingerprintRestoreSnapshot(snapshot,crypto);

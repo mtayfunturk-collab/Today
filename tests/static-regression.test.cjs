@@ -10,12 +10,12 @@ const updatedHtml = fs.readFileSync(
   "utf8"
 );
 
-// NUT-018 baseline: 3dbd265 plus the startup-gate shell fix; review production changes before updating.
+// Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "552326672196e3f6cd1685956f486ce69068889f8500077557639d197802e6fd",
+    "b490f7096179dc960fe86727176b74f7608265297734b6ca2f4ba99bdbe3754c",
   "sw.js":
-    "316dd10264d3d2fab3341c99f404a09687696249924e6e7ee556bc5c80c6bcd9",
+    "f5cf479e07eebd39b280ca9ea988cd3c39f9dda717fb866da07a9e9217dbe96c",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -55,9 +55,9 @@ const expectedProductionHashes = {
   "state-manager.js":
     "e513c919ad4088f09a06d5890ce05578e955488254d6bf45af7ca54d5507d2d1",
   "router.js":
-    "1e1e5983ba8292bf3a88f38b1ca034cceee6d8db9018d483c2853115b98790d4",
+    "1d9d4ff3b060745eacdc9b6f729553af7d5f00ab8bd904667e842636eab8b30e",
   "module-registry.js":
-    "393d6cbfd275f94ffa8f0177291a0217f83d8ae3154dae7346e3d59668191fb4",
+    "1f435b4aa5de02b055efad7026a5f9394ddfc5810564ea057470a6a6f8c4d416",
   "service-worker-manager.js":
     "5444e7af03101053ed4a1357384ac8f20c947deb0caf4c7b5d9fdbebb76a4989"
 };
@@ -133,7 +133,9 @@ const expectedHtmlIds = [
   "btnCalendar",
   "btnClearTodayLogs",
   "btnCoreFromModules",
+  "btnCoreFromSettings",
   "btnExport",
+  "btnFocusBack",
   "btnHealthLibraryCancel",
   "btnHealthLibrarySave",
   "btnHealthMealSubmit",
@@ -145,15 +147,23 @@ const expectedHtmlIds = [
   "btnHealthToday",
   "btnHomeFromPick",
   "btnModuleCore",
+  "btnModuleFocus",
   "btnModuleHealth",
+  "btnModulePlaces",
+  "btnModulePlans",
   "btnModuleRadio",
   "btnModuleSky",
   "btnModulesFromHealth",
+  "btnModulesFromSettings",
   "btnModulesFromSky",
   "btnOpenSettings",
   "btnOpenStats",
+  "btnPlacesBack",
+  "btnPlansBack",
   "btnRadioBack",
   "btnResetToday",
+  "btnSettingsFromModules",
+  "btnSettingsFromPick",
   "btnStart",
   "btnStats",
   "buildTag",
@@ -173,6 +183,15 @@ const expectedHtmlIds = [
   "choices",
   "coreModulesHint",
   "fillGrad",
+  "focusFinish",
+  "focusMinutes",
+  "focusPause",
+  "focusRemaining",
+  "focusResume",
+  "focusStart",
+  "focusStatus",
+  "focusTitle",
+  "focusTopic",
   "healthArchivedCount",
   "healthArchivedList",
   "healthArchivedSection",
@@ -234,8 +253,14 @@ const expectedHtmlIds = [
   "line",
   "moduleCoreDesc",
   "moduleCoreTitle",
+  "moduleFocusDesc",
+  "moduleFocusTitle",
   "moduleHealthDesc",
   "moduleHealthTitle",
+  "modulePlacesDesc",
+  "modulePlacesTitle",
+  "modulePlansDesc",
+  "modulePlansTitle",
   "moduleSkyDesc",
   "moduleSkyTitle",
   "modulesTitle",
@@ -243,6 +268,8 @@ const expectedHtmlIds = [
   "note",
   "pickTitle",
   "pillDate",
+  "placesTitle",
+  "plansTitle",
   "radioPanel",
   "radioTitle",
   "skipToContent",
@@ -354,14 +381,14 @@ test(
 );
 
 test(
-  "NUT-018 taban çizgisindeki 189 HTML kimliği benzersiz",
+  "Güncel 216 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 189);
+    assert.equal(updatedIds.length, 216);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -394,10 +421,13 @@ test(
       ),
       [
         "calendar",
+        "focus",
         "health",
         "home",
         "modules",
         "pick",
+        "places",
+        "plans",
         "radio",
         "sky"
       ]
@@ -458,6 +488,9 @@ test(
       "./modules/health-wearable-ui.mjs",
       "./modules/notification-ui.mjs",
       "./modules/radio-ui.mjs",
+      "./modules/focus-ui.mjs",
+      "./modules/plans-ui.mjs",
+      "./modules/places-ui.mjs",
       "./modules/router.js",
       "./modules/module-registry.js",
       "./modules/startup-manager.js"
@@ -767,7 +800,7 @@ test(
 );
 
 test(
-  "Dört modül kartı ve on iki alt navigasyon tetikleyicisi korunuyor",
+  "Yedi modül kartı ve on iki alt navigasyon tetikleyicisi korunuyor",
   () => {
     assert.deepEqual(
       matches(
@@ -778,7 +811,10 @@ test(
         "core",
         "health",
         "sky",
-        "radio"
+        "radio",
+        "focus",
+        "plans",
+        "places"
       ]
     );
     assert.deepEqual(
@@ -1239,7 +1275,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-108 ve 141 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-109 ve 146 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1251,7 +1287,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-108"'
+        'const VERSION = "today-v2-foundation-109"'
       )
     );
     assert.ok(shellMatch);
@@ -1261,7 +1297,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 141);
+    assert.equal(shellEntries.length, 146);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);

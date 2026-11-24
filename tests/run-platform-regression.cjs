@@ -16,19 +16,25 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file: "tests/backup-export-port.test.mjs",
-    count: 5
+    count: 18
   },
   {
     file: "tests/backup-export-ui.test.mjs",
-    count: 41
-  },
-  {
-    file: "tests/backup-restore-preview.test.mjs",
     count: 42
   },
   {
+    file: "tests/collections-contract.test.mjs",
+    count: 12
+  },
+  { file: "tests/plans-contract.test.mjs", count: 9 },
+  { file: "tests/places-contract.test.mjs", count: 10 },
+  {
+    file: "tests/backup-restore-preview.test.mjs",
+    count: 46
+  },
+  {
     file: "tests/backup-recovery.test.mjs",
-    count: 36
+    count: 38
   },
   {
     file: "tests/language-resolver.test.cjs",
@@ -167,6 +173,11 @@ const TEST_GROUPS = Object.freeze([
     file:
       "tests/router.test.cjs",
     count: 15
+  },
+  {
+    file:
+      "tests/focus-timer.test.mjs",
+    count: 12
   },
   {
     file:

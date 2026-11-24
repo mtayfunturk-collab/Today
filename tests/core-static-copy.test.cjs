@@ -140,12 +140,12 @@ const { JSDOM } = require('jsdom');
     const sw = fs.readFileSync('sw.js', 'utf8');
     for (const file of ['core-static-copy-ui.mjs', 'core-static-copy.mjs', 'date-presentation.mjs', 'locales/core-tr.mjs']) assert.ok(sw.includes(`"./modules/${file}"`), file);
     assert.equal((html.match(/<script type="module" src="\.\/modules\/core-static-copy-ui\.mjs"><\/script>/g) || []).length, 1);
-    assert.ok(sw.includes('today-v2-foundation-108'));
+    assert.ok(sw.includes('today-v2-foundation-109'));
   });
-  await test('All 25 shared targets resolve once and match normalized HTML fallback', () => {
+  await test('All 29 shared targets resolve once and match normalized HTML fallback', () => {
     const doc = make();
-    assert.equal(shared.length, 25);
-    assert.equal(new Set([...bindings, ...shared].map(b => b.selector + '/' + b.field)).size, 68);
+    assert.equal(shared.length, 29);
+    assert.equal(new Set([...bindings, ...shared].map(b => b.selector + '/' + b.field)).size, 72);
     assert.ok(Object.isFrozen(shared) && shared.every(Object.isFrozen));
     for (const b of shared) {
       assert.equal(doc.querySelectorAll(b.selector).length, 1, b.selector);
@@ -224,7 +224,7 @@ const { JSDOM } = require('jsdom');
   await test('All 14 statistics targets uniquely match the current HTML and Turkish dictionary', () => {
     const doc = make();
     assert.equal(statistics.length, 14);
-    assert.equal(new Set([...bindings, ...shared, ...statistics].map(b => b.selector + '/' + b.field)).size, 82);
+    assert.equal(new Set([...bindings, ...shared, ...statistics].map(b => b.selector + '/' + b.field)).size, 86);
     assert.ok(Object.isFrozen(statistics) && statistics.every(Object.isFrozen));
     for (const b of statistics) {
       assert.equal(doc.querySelectorAll(b.selector).length, 1, b.selector);
