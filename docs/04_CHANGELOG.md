@@ -1356,3 +1356,5 @@ PR #43 ilk uzak tarayıcı işi 188/190 PASS verdi: v1 arşivinin eksik alan aç
 ### 2026-11-24 — Planlar yerel kayıt ve v4 yedek arayüzü
 
 PLN04/PR #43 üzerine Planlar başlık/not ve dört durumla yerel olarak kaydedilebilir oldu. Ekleme, düzenleme, taşıma ve onaylı silme; bozuk veri ve kota hatasında eski kaydı koruma; yeni `today.plans.v1` anahtarı v4 şifreli dosyaya alma eklendi. Başka modül verisi, AI, dış takvim, bildirim, şema/migration ve üretim restore değişmedi. Service Worker `foundation-110`, 148 çevrimdışı dosya. Store 7/7, platform 1522/1522, AI/Radio 336/336, sentetik benchmark 16/16, sentetik Chromium Planlar 2/2 ve yedek 6/8 + düzeltme sonrası 2/2 PASS. Yerel WebKit sistem kütüphaneleri eksik olduğundan başlamadı; uzak CI/fiziksel iPhone/Windows kabulü açık. Merge/deploy yapılmadı.
+
+PR #44 ilk uzak tarayıcı işi 192/194 PASS: Alanlarım tarayıcı testi Planlar'ın eski “veri kaydetmez” metnini beklediği için iki motorda FAIL. Test gerçek yerel kayıt metnine uyarlandı; hedefli tekrar ve uzak CI sonucu ayrıca doğrulanır.
