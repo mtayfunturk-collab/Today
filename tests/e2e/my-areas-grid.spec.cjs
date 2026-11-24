@@ -56,7 +56,7 @@ test('Alanlarım keeps seven modules, Core note and a usable grid at mobile and 
   await page.locator('#btnModulePlaces').click();
   await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('places');
   await expect(page.locator('[data-view="places"] .placesStages section')).toHaveCount(2);
-  await expect(page.locator('[data-view="places"]')).toContainText('Bu ekran veri kaydetmez');
+  await expect(page.locator('[data-view="places"]')).toContainText('Yerler yalnız bu cihazda saklanır.');
   expect(await page.evaluate(()=>localStorage.getItem('today.places.v1'))).toBeNull();
   await page.locator('#btnPlacesBack').click();
   await expect.poll(()=>page.evaluate(()=>TodayRouter.getState().route)).toBe('modules');

@@ -1362,3 +1362,5 @@ PR #44 ilk uzak tarayıcı işi 192/194 PASS: Alanlarım tarayıcı testi Planla
 ### 2026-11-24 — Yerler yerel kayıt ve v5 yedek
 
 Planlar PR #44 üzerine Yerler ad/şehir, isteğe bağlı not/adres/HTTP(S) bağlantı ve iki durumla kaydedilebilir oldu. Yalnız kullanıcı eylemiyle açılan bağlantı gösterilir; konum, harita ve AI isteği yoktur. Yeni `today.places.v1` anahtarı v5 şifreli yedek ve salt okunur önizleme kapsamındadır; v1–v4 dosyalar eksik Yerler alanı olarak görünür. Eski veri ve şema korunur; üretim restore kapalı. Service Worker `foundation-111`, 150 çevrimdışı dosya. Store 6/6, yedek 23/23 + 48/48 + 42/42, platform 1531/1531, AI/Radio 336/336, benchmark 16/16, sentetik Chromium Yerler/yedek 10/10 PASS. Fiziksel iPhone/Windows, uzak CI ve canlı yayın açık; merge/deploy yapılmadı.
+
+Alanlarım tarayıcı testinin eski Planlar/Yerler “veri kaydetmez” metinleri, gerçek yerel kayıt açıklamalarına uyarlandı. Yeni hedefli ve uzak CI sonucu ayrıca kaydedilir.
