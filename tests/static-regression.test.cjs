@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "09d753c65ffc2bda36a7bf4c6b4f193c1463f85a86445efd40ff07ba37653b94",
+    "c75220810ab0c8b53693d6d1907e7dfa2ef926899578d7f117d5b38520cb1a3c",
   "sw.js":
-    "c0990366c0850469861ca81a28eaaff0af223d38166c6ebd054015c2ef4fcbbe",
+    "adf04e369bad14e5a56bf4dcf6cc61fd8147e189667f46b1f908e960d22a5d1d",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -1275,7 +1275,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-104 ve 146 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-106 ve 146 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1287,7 +1287,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-104"'
+        'const VERSION = "today-v2-foundation-106"'
       )
     );
     assert.ok(shellMatch);

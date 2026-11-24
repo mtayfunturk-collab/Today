@@ -1,5 +1,9 @@
 # Today — Ana talimata göre güncel durum
 
+## 24 Kasım 2026 — Core hızlı not kaydının ürün/v3 adayına uyarlanması
+
+Durum: **Doğrulanıyor.** Taban PR #37 `3adc253`; canlı Pages kaynak düzeltmesi PR #38 `40c7237` yalnız ilgili Core davranışı ve testiyle taşındı. Core'dan ayrılırken bekleyen not mevcut kayıt yoluyla yazılır; hızlı Ayarlar → yedek geçişi notun 450 ms bekleme penceresinde dosya dışında kalmasını önler. Yeni depolama anahtarı, şema, migration, üretim restore veya dış izin yok. Service Worker `foundation-106`; PR #37 `104`, canlı kaynak PR #38 `105` kullanır. Hedefli Chromium Core/yedek/Alanlarım 31/31, platform 1509/1509, Core katalog 12/12, statik 30/30, SW 38/38 PASS. Uzak CI ve fiziksel cihaz kabulü açık; tahmini boyut küçük. Kayıt hatası/kota durumundaki oturumluk taslağın tam yedek güvencesi ayrıca açık risk; canlı yayın için ayrı ürün sahibi onayı gerekir.
+
 ## 24 Kasım 2026 — Ürün ekranları ve v3 yedek entegrasyonu (T90-261101-PO1-INT02)
 
 Durum: **Doğrulanıyor.** Taban v3 kurtarma tasarımı PR #31 (`0237cdc`); Planlar/Yerler ürün dalı PR #36 (`b6034c7`) temiz yerel görev dalına birleştirildi. PR #29–31 yedek/güvenlik zinciri ve PR #32–36 görünür ürün zinciri bu dalda buluşur. Yeni kayıt yazımı, şema/migration, üretim restore veya canlı yayın açılmaz. Çatışma yalnız belgeler, Service Worker sürümü ve test envanterindeydi; foundation-104 çevrimdışı kabukta v3 yedek, Odak, Planlar ve Yerler dosyalarını birlikte taşır. Hedef dosyalar iki zincirin ürün/test dosyaları ve görev belgeleri. Kabul: 45 grupta platform 1509/1509, AI/Radio 336/336, hedefli Chromium 6/6, otomasyon 8/8, statik 30/30 ve SW 38/38 PASS; uzak CI ve fiziksel iPhone Safari/PWA ayrıca açık. Risk taslak PR bağımlılık sırası ve BFCache/gerçek cihaz kabulüdür; tahmini boyut orta. Sonraki iş bu birleşik adayın CI ve fiziksel cihaz doğrulamasıdır.

@@ -66,6 +66,16 @@ test('Core note survives immediate module round trip before its save timer fires
   await page.clock.runFor(500);
   await expect.poll(()=>note(page)).toBe('Sentetik hızlı dönüşte korunacak not');
 });
+test('Leaving Core commits a pending note before opening the backup tool', async ({page}) => {
+  await open(page);await page.locator('#btnStart').click();
+  await page.clock.install({time:new Date('2026-11-10T12:00:00Z')});
+  await page.clock.pauseAt(new Date('2026-11-10T12:00:01Z'));
+  await page.locator('#note').fill('Sentetik hızlı yedek notu');
+  await page.locator('#btnCalendar').click();await route(page,'calendar');
+  expect(await note(page)).toBe('Sentetik hızlı yedek notu');
+  await page.locator('#btnOpenSettings').click();await route(page,'settings');
+  expect(await note(page)).toBe('Sentetik hızlı yedek notu');
+});
 test('Core module hint and return control fit narrow large text layouts', async ({page},info) => {
   await page.setViewportSize({width:320,height:640});await open(page);await page.locator('#btnStart').click();
   await page.evaluate(()=>document.documentElement.style.fontSize='200%');
