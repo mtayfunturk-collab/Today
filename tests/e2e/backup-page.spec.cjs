@@ -222,6 +222,6 @@ test('Legacy v1 file preview names preferences and favorites absent from the arc
   await page.locator('#restorePreviewPassword').fill('synthetic legacy password');
   await page.locator('#restorePreviewConsent').check();
   await page.getByRole('button',{name:'Kapsamı önizle'}).click();
-  await expect(page.locator('#restorePreviewStatus')).toContainText('Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar.',{timeout:20000});
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar, Planlar.',{timeout:20000});
   await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı');
 });

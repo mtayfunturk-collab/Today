@@ -1350,3 +1350,5 @@ Canlı Pages kaynak SHA `1fa2a962` ile taslak ürün/v3 zinciri `4f2e6e3`, ayrı
 ### 2026-11-24 — Planlar için v4 şifreli yedek sözleşmesi
 
 Canlı Pages kaynak SHA `360deae` tabanında Planlar `today.plans.v1` kaydı için sürümlü v4 dışa aktarım ve salt okunur geri yükleme önizlemesi hazırlandı. Eski v1–v3 arşivler aynen okunur ve Planlar eksikliği açıkça belirtilir. Planlar doğrulayıcısındaki gün anahtarı olmayan durumların yeniden doğrulanamaması düzeltildi. Ürün ekranı hâlâ veri yazmaz; yedek UI v3 üretir. Hedefli 9/9 + 21/21 + 47/47 + 42/42, otomasyon 8/8 ve platform 1515/1515 PASS. Uzak CI, fiziksel cihaz ve PLN05 yazıcı kabulü açık; üretim restore kapalı.
+
+PR #43 ilk uzak tarayıcı işi 188/190 PASS verdi: v1 arşivinin eksik alan açıklamasına Planlar eklendiği halde tek tarayıcı testi eski metni bekliyordu (Chromium ve WebKit'te aynı test). Beklenti gerçek v4 davranışına uyarlandı; hedefli yerel Chromium 1/1 PASS. Yeni uzak CI sonucu açık.

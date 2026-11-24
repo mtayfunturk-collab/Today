@@ -2,6 +2,8 @@
 
 ## 24 Kasım 2026 — Planlar v4 tam yedek hazırlığı (T90-261101-PO1-PLN04)
 
+CI notu: İlk uzak tarayıcı işi 188/190 PASS; v1 dosya eksik alan metninde Planlar beklemeyen tek test Chromium ve WebKit’te FAIL oldu. Beklenti düzeltildi; yerel hedefli Chromium 1/1 PASS, yeni uzak CI açık.
+
 Durum: **Yerelde doğrulandı; uzak CI ve fiziksel kabul açık.** Taban canlı Pages kaynak dalı `release/today-backup-candidate-2a70ec9` / `360deaefd6c08af061b1a9d5f98f1518b698b2fb` (PR #42 birleşimi); yerel dal `task/t90-261101-po1-pln04-backup`. Amaç Planlar kalıcı kaydından önce `today.plans.v1` alanının eksiksiz şifreli yedek ve salt okunur önizleme sözleşmesini hazırlamak. Hedef yedek dışa aktarma/önizleme, Planlar doğrulayıcısı, ilgili testler ve görev kaydıdır. v1–v3 dosyaları okunur; eski sürümler Planlar anahtarını eksik alan olarak gösterir. v4, 27 yerel anahtar ve bir Nutrition veritabanını kapsar. Mevcut Planlar ekranı ve yedek UI hâlâ kayıt açmaz/v3 üretir; yeni anahtara yazı, mevcut şema/migration değişimi, üretim geri yükleme, AI/harici aktarım ve canlı yayın yoktur. Kabul: bozuk/eksik Planlar kaydı ve sürüm başlığı reddi; kaynak/önizleme hedefe yazmaz. Planlar sözleşmesi 9/9, yedek portu 21/21, önizleme 47/47, eski yedek UI 42/42, otomasyon 8/8 ve tam platform 1515/1515 PASS. Risk: v4 henüz UI'da etkin değildir; Planlar yazıcısı ve gerçek iPhone kabulü ayrı. Tahmini büyüklük küçük. Sonraki dilim PLN05 Planlar yazıcısı ve görünür ekran; v4 ancak bu dilimde etkinleşecek. Üretim restore BFCache yazıcı engeli nedeniyle kapalı kalır. Merge/deploy ayrı onay ister.
 
 ## 24 Kasım 2026 — Canlı kaynak ile yedi alanlı v3 adayın birleşimi
