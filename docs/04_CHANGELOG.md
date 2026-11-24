@@ -1346,3 +1346,7 @@ refactor: remove duplicated core html structure
 ### 2026-11-24 — Canlı kaynak ve yedi alanlı v3 adayın yayın öncesi birleşimi
 
 Canlı Pages kaynak SHA `1fa2a962` ile taslak ürün/v3 zinciri `4f2e6e3`, ayrı `task/today-live-v3-integration` dalında birleştirildi. 15 dosya çakışmasında canlı yedek tanısı ve modüllere dönüş, adayın v3 şifreli kapsamı ve yedi alanlı arayüzü birlikte korundu. Tekrarlanan eski rota tarayıcı testi kaldırıldı; SW `foundation-109`, 146 dosya. Hedefli yedek 42/42, önizleme 46/46, katalog 12/12, statik 30/30, SW 38/38, AI UI 40/40, AI kapısı 11/11, tam platform 1511/1511 ve sentetik Chromium ürün/yedek akışı 11/11 PASS. Sandbox alt süreç EPERM ve eksik Playwright ikilisi ilk yerel koşuları engelledi; izinli süreç ve sistem Chromium ile doğrulama geçti. Uzak CI ve fiziksel iPhone/Windows kabulü açık. Yeni kalıcı veri yazımı, şema/migration, üretim restore, canlı yayın veya main değişikliği yok.
+
+### 2026-11-24 — Planlar için v4 şifreli yedek sözleşmesi
+
+Canlı Pages kaynak SHA `360deae` tabanında Planlar `today.plans.v1` kaydı için sürümlü v4 dışa aktarım ve salt okunur geri yükleme önizlemesi hazırlandı. Eski v1–v3 arşivler aynen okunur ve Planlar eksikliği açıkça belirtilir. Planlar doğrulayıcısındaki gün anahtarı olmayan durumların yeniden doğrulanamaması düzeltildi. Ürün ekranı hâlâ veri yazmaz; yedek UI v3 üretir. Hedefli 9/9 + 21/21 + 47/47 + 42/42, otomasyon 8/8 ve platform 1515/1515 PASS. Uzak CI, fiziksel cihaz ve PLN05 yazıcı kabulü açık; üretim restore kapalı.

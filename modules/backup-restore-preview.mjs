@@ -1,5 +1,5 @@
 /** T90-07 preparation only. No persistence, apply API, startup hook or UI activation. */
-import {LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LOCAL_KEYS_V2, LOCAL_KEY_V3, STORES, FORMAT, FORMAT_V2, FORMAT_V3, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw} from './backup-export.mjs';
+import {LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LS_KEYS_V4, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, STORES, FORMAT, FORMAT_V2, FORMAT_V3, FORMAT_V4, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw, validatePlansRaw} from './backup-export.mjs';
 import {cleanState, defaultState} from './notification-store.mjs';
 import {validateHealthEntries} from './backup-health-validation.mjs';
 import {validateSkyEntries} from './backup-sky-validation.mjs';
@@ -18,6 +18,8 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const exact = (value, keys) => object(value) &&
   Object.keys(value).sort().join('|') === [...keys].sort().join('|');
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const versionFor = format => format===FORMAT?1:format===FORMAT_V2?2:format===FORMAT_V3?3:format===FORMAT_V4?4:null;
+const keysFor = version => version===4?LS_KEYS_V4:version===3?LS_KEYS_V3:version===2?LS_KEYS_V2:LS_KEYS;
 const copy = value => JSON.parse(JSON.stringify(value));
 function frozen(value) {
   if (value && typeof value === 'object') { Object.values(value).forEach(frozen); Object.freeze(value); }
@@ -43,7 +45,7 @@ function daysOf(value) {
   }
 }
 function validateShape(payload, contracts) {
-  const version=payload?.format===FORMAT?1:payload?.format===FORMAT_V2?2:payload?.format===FORMAT_V3?3:null;
+  const version=versionFor(payload?.format);
   if (!exact(payload, ['format','payloadVersion','backupId','createdAt','source',
     'coverageRegistryVersion','localStorageEntries','databases','exclusions','sourceValidation','manifest']) ||
     version===null || payload.payloadVersion !== version || payload.coverageRegistryVersion !== version ||
@@ -57,7 +59,7 @@ function validateShape(payload, contracts) {
     source.appVersion !== SUPPORTED_APP || source.runtime !== 'web') reject('unsupported-source-runtime');
   try { if (new URL(source.origin).origin !== source.origin || !/^https?:$/.test(new URL(source.origin).protocol)) reject('unsupported-origin'); }
   catch { reject('unsupported-origin'); }
-  if (!Array.isArray(payload.localStorageEntries) || !same(payload.localStorageEntries.map(e => e?.key), version===3?LS_KEYS_V3:version===2?LS_KEYS_V2:LS_KEYS) ||
+  if (!Array.isArray(payload.localStorageEntries) || !same(payload.localStorageEntries.map(e => e?.key), keysFor(version)) ||
     !Array.isArray(payload.databases) || payload.databases.length !== 1) reject('incomplete-coverage');
   for (const e of payload.localStorageEntries) {
     if (!exact(e, ['key','present','rawValue']) || typeof e.present !== 'boolean' ||
@@ -67,6 +69,7 @@ function validateShape(payload, contracts) {
     if(e.key===LOCAL_KEYS_V2[0]){try{validateAreasPreferenceRaw(e.rawValue);}catch{reject('invalid-entry');}}
     if(e.key===LOCAL_KEYS_V2[1]){try{validateRadioFavoritesRaw(e.rawValue);}catch{reject('invalid-entry');}}
     if(e.key===LOCAL_KEY_V3){try{validateCollectionsRaw(e.rawValue);}catch{reject('invalid-entry');}}
+    if(e.key===LOCAL_KEY_V4){try{validatePlansRaw(e.rawValue);}catch{reject('invalid-entry');}}
     if (e.key === 'today_store_v2') {
       if (!object(value) || value.schemaVersion !== 2) reject('unsupported-core');
       daysOf(value.days);
@@ -185,7 +188,7 @@ export async function prepareRestorePreview({userConfirmed=false, file, password
   const preview = frozen({status:'preview-only', applyAvailable:false, restoreValidated:false,
     createdAt:at.toISOString(), expiresAt:new Date(at.getTime()+PREVIEW_LIFETIME).toISOString(),
     sourceCreatedAt:source.createdAt, sections:source.manifest.length,
-    missingFromBackup:source.payloadVersion===1?[...LOCAL_KEYS_V2,LOCAL_KEY_V3]:source.payloadVersion===2?[LOCAL_KEY_V3]:[], localStorage, stores,
+    missingFromBackup:source.payloadVersion===1?[...LOCAL_KEYS_V2,LOCAL_KEY_V3,LOCAL_KEY_V4]:source.payloadVersion===2?[LOCAL_KEY_V3,LOCAL_KEY_V4]:source.payloadVersion===3?[LOCAL_KEY_V4]:[], localStorage, stores,
     coreDays:{count:days.size, earliest:orderedDays[0]??null, latest:orderedDays.at(-1)??null},
     notificationEffects:effects, databaseTransition:a.present===b.present?'none':b.present?'create':'remove',
     targetFingerprint:await fingerprint(target,crypto), candidateFingerprint:await fingerprint(candidate,crypto),

@@ -34,7 +34,7 @@ export function validatePlanItem(value) {
   return Object.freeze({
     id: text(value.id, 64, 'id'), title: text(value.title, 120, 'title'),
     note: value.note === undefined ? '' : text(value.note, 1000, 'note', true),
-    state: value.state, dayKey: value.state === 'day' ? day(value.dayKey) : null,
+    state: value.state, ...(value.state === 'day' ? { dayKey: day(value.dayKey) } : {}),
     createdAt, updatedAt
   });
 }

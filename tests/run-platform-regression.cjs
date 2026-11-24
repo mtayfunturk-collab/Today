@@ -16,7 +16,7 @@ const TEST_GROUPS = Object.freeze([
   },
   {
     file: "tests/backup-export-port.test.mjs",
-    count: 18
+    count: 21
   },
   {
     file: "tests/backup-export-ui.test.mjs",
@@ -30,7 +30,7 @@ const TEST_GROUPS = Object.freeze([
   { file: "tests/places-contract.test.mjs", count: 10 },
   {
     file: "tests/backup-restore-preview.test.mjs",
-    count: 46
+    count: 47
   },
   {
     file: "tests/backup-recovery.test.mjs",
