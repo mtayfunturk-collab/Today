@@ -259,7 +259,7 @@ test(
 );
 
 test(
-  "Koşucu Türkiye saat dilimi ve 1447 kontrollük güncel platform kapısını kilitliyor",
+  "Koşucu Türkiye saat dilimi ve 1448 kontrollük güncel platform kapısını kilitliyor",
   () => {
     assert.ok(
       runner.includes(
@@ -281,7 +281,7 @@ test(
           sum + value,
         0
       ),
-      1447
+      1448
     );
   }
 );

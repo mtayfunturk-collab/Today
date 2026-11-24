@@ -112,4 +112,13 @@ for(const protocol of [0,1])await check('launcher '+(protocol?'opens only a capa
  view.document.querySelector('button').click();for(let i=0;i<20&&view.document.querySelector('button').disabled;i++)await tick();
  assert.equal(navigations,protocol);assert.equal(view.document.querySelectorAll('[role=status]').length,1);if(!protocol)assert.match(view.document.querySelector('[role=status]').textContent,/güncellemesini/);assert.equal(view.localStorage.length,0);
 });
+await check('launcher refuses a backup that would omit a pending Core note',async()=>{
+ const dom=new JSDOM('<button type="button" data-backup-launch>Yedek</button>',{url:'https://today.test/Today/index.html'}),view=dom.window;
+ let navigations=0;view.TodayCoreHasPendingNote=()=>true;
+ mountBackupLaunch({root:view.document,navigate:()=>{navigations++;}});
+ const button=view.document.querySelector('button');button.click();
+ assert.equal(navigations,0);assert.equal(button.disabled,false);
+ assert.match(view.document.querySelector('[role=status]').textContent,/Yedek bu notu içermez/);
+ assert.equal(view.localStorage.length,0);
+});
 console.log(`Backup Export: ${passed}/${passed} successful`);

@@ -4,7 +4,7 @@ const vm = require("node:vm");
 const SOURCE_PATH = "sw.js";
 const ORIGIN = "https://today.test";
 const ACTIVE_CACHE =
-  "today-cache-today-v2-foundation-105";
+  "today-cache-today-v2-foundation-108";
 const OLD_CACHE =
   "today-cache-today-v2-foundation-019";
 const FOREIGN_CACHE = "unrelated-cache";
@@ -356,13 +356,13 @@ function assert(condition, message) {
   );
 
   await test(
-    "Cache sürümü foundation-105",
+    "Cache sürümü foundation-108",
     async () => {
       assert(
         source.includes(
-          'const VERSION = "today-v2-foundation-105"'
+          'const VERSION = "today-v2-foundation-108"'
         ),
-        "foundation-105 sürüm etiketi yok."
+        "foundation-108 sürüm etiketi yok."
       );
     }
   );

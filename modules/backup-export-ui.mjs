@@ -10,6 +10,11 @@ export function mountBackupLaunch({root=document,navigate}={}){
  button.addEventListener('click',async()=>{
   if(button.disabled)return;button.disabled=true;
   try{
+   if(view.TodayCoreHasPendingNote?.()){
+    status.textContent='Core notun henüz kaydedilemedi. Yedek bu notu içermez; önce Core’a dönüp kaydın tamamlandığını doğrula.';
+    return;
+   }
+   status.textContent='';
    const worker=view.navigator.serviceWorker?.controller;
    if(!view.isSecureContext||!worker||!view.navigator.locks?.request)throw Error();
    const ready=await new Promise(resolve=>{
