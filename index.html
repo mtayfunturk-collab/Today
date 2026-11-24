@@ -112,6 +112,17 @@
     .plansStages section{min-width:0;padding:14px;border:1px solid rgba(255,255,255,.25);border-radius:18px;text-align:left;overflow-wrap:anywhere}
     .plansStages h2{margin:0 0 8px;font-size:1.1rem}
     .plansStages p{margin:0}
+    .plansForm{width:min(100%,560px);margin:16px auto;display:grid;gap:10px;text-align:left;min-width:0}
+    .plansForm label{display:grid;gap:5px;font-weight:600}
+    .plansForm input,.plansForm textarea,.plansForm select{width:100%;min-width:0;box-sizing:border-box;font:inherit;min-height:44px}
+    .plansForm textarea{min-height:76px;resize:vertical}
+    .plansFormActions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .plansFormActions button,.planItem button,.planItem select{min-height:44px}
+    .planList{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+    .planItem{border-top:1px solid var(--stroke);padding-top:10px;min-width:0}
+    .planItem strong,.planItem p{overflow-wrap:anywhere}
+    .planItemActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .planItemActions select{width:auto;max-width:100%;font:inherit}
     .focusPanel{width:min(100%,420px);margin:0 auto;display:grid;gap:12px;min-width:0}
     .focusPanel label{text-align:left;font-weight:600}
     .focusPanel input{width:100%;min-width:0;box-sizing:border-box;min-height:44px;font:inherit}
@@ -1963,14 +1974,22 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 
       <section class="inner" data-view="plans" role="main" aria-labelledby="plansTitle" aria-hidden="true">
         <div class="topbar"><h1 class="title" id="plansTitle" data-view-title tabindex="-1">Today Planlar</h1><button class="back" id="btnPlansBack" type="button">Alanlarım</button></div>
-        <p class="sub">Bir gün, Sırada, Yapıyorum, Tamamlandı.</p>
+        <p class="sub">Kısa bir plan ekle, sonra durumunu değiştir.</p>
+        <form class="plansForm" id="plansForm">
+          <label>Başlık <input id="planTitle" maxlength="120" required autocomplete="off" placeholder="Ne yapmak istiyorsun?"></label>
+          <label>Not (isteğe bağlı) <textarea id="planNote" maxlength="1000" placeholder="Kısa bir ayrıntı"></textarea></label>
+          <label>Durum <select id="planState"><option value="next">Sırada</option><option value="day">Bir gün</option><option value="doing">Yapıyorum</option><option value="done">Tamamlandı</option></select></label>
+          <label id="planDayRow" hidden>Gün <input id="planDay" type="date"></label>
+          <div class="plansFormActions"><button id="planSave" type="submit">Plan ekle</button><button id="planCancel" type="button" hidden>Vazgeç</button></div>
+        </form>
+        <div class="status" id="plansStatus" role="status" aria-live="polite"></div>
         <div class="plansStages" aria-label="Plan durumları">
-          <section><h2>Bir gün</h2><p>Seçtiğin günün planları burada görünecek.</p></section>
-          <section><h2>Sırada</h2><p>Sonra ele alacakların burada görünecek.</p></section>
-          <section><h2>Yapıyorum</h2><p>Üzerinde çalıştıkların burada görünecek.</p></section>
-          <section><h2>Tamamlandı</h2><p>Bitirdiklerin burada görünecek.</p></section>
+          <section><h2>Bir gün</h2><ul class="planList" id="plansDay"></ul></section>
+          <section><h2>Sırada</h2><ul class="planList" id="plansNext"></ul></section>
+          <section><h2>Yapıyorum</h2><ul class="planList" id="plansDoing"></ul></section>
+          <section><h2>Tamamlandı</h2><ul class="planList" id="plansDone"></ul></section>
         </div>
-        <p class="mini">Plan kaydı henüz açık değil. Bu ekran veri kaydetmez.</p>
+        <p class="mini">Planlar yalnız bu cihazda saklanır. Takvime, AI'a veya başka bir servise aktarılmaz.</p>
       </section>
 
       <section class="inner" data-view="places" role="main" aria-labelledby="placesTitle" aria-hidden="true">
