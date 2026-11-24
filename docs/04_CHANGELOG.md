@@ -1,3 +1,7 @@
+### 2026-11-24 — Core notunu hızlı yedekten önce kaydetme adayı
+
+Canlı Pages kaynağı `1613c1e` üzerinde sentetik Chrome profilinde Core notu yazılıp otomatik kayıt için 450 ms beklenmeden yedeğe gidildiğinde, dosyanın salt okunur önizlemesi 0 Core günü gösterdi. Aynı notun kayıtlı olduğu doğrulanınca önizleme 1 Core günü gösterdi. Ayrı `task/today-core-note-backup-flush` dalı, Core rotasından ayrılırken bekleyen notu mevcut kayıt yolundan hemen geçirir; yeni anahtar, şema veya restore eklemez. Service Worker kabuğu `foundation-105` olur (`104` ayrı ürün adayında kullanılıyor). Hedefli Core Chromium 25/25, yedek Chromium 6/6, SW 38/38, statik 30/30 PASS; birleşik platform 1447/1447 PASS; uzak CI sonucu ayrıca kaydedilir. Canlı uygulama değişmedi; fiziksel iPhone/Windows kabulü açıktır.
+
 ### 2026-11-13 — Canlı yedek önizlemesi için güvenli hata tanısı
 
 Canlı Pages `2a70ec9` adayı iPhone'da şifreli dosyayı oluşturup bütünlüğünü doğruladı; kapsam önizlemesi genel hata verdi. Windows'ta dosya oluştu; dosyanın yeniden açılması henüz bildirilmedi. Yerel ayrı dal önizleme hatasında yalnız sabit tanı kodunu gösterir, ham hata/veri/URL/parola göstermez; SW foundation-103. Hedefli önizleme42/42, SW38/38, statik30/30, Chromium6/6 ve tam platform1447/1447 PASS. Yerel WebKit ikilisi bulunmadığı için WebKit testi başlamadı; uzak CI ve gerçek iPhone tekrar kabulü açık. Canlı Pages bu yeni tanı düzeltmesini henüz içermiyor. Ayrıntı: `docs/TODAY-LIVE-BACKUP-RETURN.md`.
