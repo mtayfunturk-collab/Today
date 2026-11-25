@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — Ana görev ve yayın uzlaştırması
+
+GOV-01: 4061839 üzerinden tek görev envanteri, onay/kabul sınırları ve yayın eşlemesi [merkezi kayda](TODAY-CURRENT-STATUS.md) alındı. Yayın geçmişindeki 32 taslak yeniden geliştirme kuyruğundan çıkarıldı. T90-08 altında iki tarihsel geri yükleme zinciri ilişkilendirildi. Uygulama ve veri dosyası yok; doğrulama belge farkı ve mevcut yayın kanıtı üzerinden.
+
 Ürün sahibinin onayıyla PR #38 `28d7763` olarak mevcut GitHub Pages kaynak dalında yayımlandı; canlı `foundation-105` dosyaları ve ayrı sentetik tarayıcı kabulü doğrulandı. Kullanıcı notun iPhone'da kaldığını bildirdi; Safari/kurulu PWA ayrımı henüz açıklanmadı. Bu yeni ayrı görev dalı, canlı dört modüllü kaynağa PR #40'ta doğrulanan dar korumayı uyarlar: Core notu kota/yazma hatasıyla bellekte kaldıysa uygulama içindeki Tam yedek açılışı durur ve dosyanın notu içermeyeceği söylenir. Önceki kayıt ve taslak korunur; anahtar/şema/restore değişmez. Kabuk `foundation-108`; yedek birim 41/41, Chromium yedek 7/7, platform 1448/1448, SW 38/38 ve statik 30/30 PASS. Uzak CI ve fiziksel kabul açık; bu koruma henüz canlıya alınmadı.
 
 ### 2026-11-24 — Core notunu hızlı yedekten önce kaydetme adayı
