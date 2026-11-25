@@ -13,7 +13,7 @@ const updatedHtml = fs.readFileSync(
 // Review the AUTH01 entry gate and worker changes; unrelated production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "0e9408351fa96c6eb4b3aaf81411f3d5a618c5a535b1727198325cb6d277e35b",
+    "abfabdf4e36b75ddee617b71b37af18c0efa41eb48497da3d73754ecce46b499",
   "sw.js":
     "404273fa94dd330fff5c310ffe01f64bba23d6e3dbd2a0d8d55820f47ed813c6",
   "modules/adapter-interfaces.js":

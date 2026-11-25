@@ -3550,12 +3550,10 @@ document.addEventListener("today:app-authorized", () => {
     }
 
     showStartupManagerFailure();
-
     const worker = navigator.serviceWorker;
     if (typeof worker?.register === "function") {
       const registerFallbackWorker = () => {
-        worker
-          .register("./sw.js")
+        worker.register("./sw.js")
           .catch(error => {
             const reported = reportError(
               "today:service-worker-error",

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "purpose": "Source-aligned preparation catalog; not loaded by Today. Raw occurrences are evidence, not DOM bindings or complete UI coverage.",
   "sourceRef": "080a18e1c76f7d2057f17764e2b260d7075c430f",
-  "sourceSha256": "0526bba17ec617bed629773fa07797170bf9fa6619977ef3202974a0129692e1",
+  "sourceSha256": "abfabdf4e36b75ddee617b71b37af18c0efa41eb48497da3d73754ecce46b499",
   "sourceBranch": "task/t90-261101-po1-radio-mini",
   "completeEnglishRelease": false,
   "dictionaryModule": "modules/locales/core-tr.mjs",
