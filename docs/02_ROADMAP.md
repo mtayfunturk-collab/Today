@@ -93,7 +93,7 @@ Aşağıdaki eşikler pilot başlamadan gözden geçirilecek karar yardımcılar
 
 | Aşama | Kapsam | Kapı |
 |---|---|---|
-| AUTH01 | İsteğe bağlı cihaz içi PIN/parola kilidi, çevrimdışı açma, otomatik/manuel kilit ve desteklenen platform doğrulaması | [Fizibilite tamamlandı](TODAY-AUTH01-DESIGN.md). Uygulama ve kalıcı doğrulayıcı sözleşmesi onaya bağlı. |
+| AUTH01 | İsteğe bağlı cihaz içi PIN/parola kilidi, çevrimdışı açma, otomatik/manuel kilit ve desteklenen platform doğrulaması | [Fizibilite ve oturumluk ilk dilim](TODAY-AUTH01-DESIGN.md) hazır. Kalıcı doğrulayıcı, kurtarma ve güvenlik sınırı onaya bağlı. Biyometri sonraki AUTH01 dilimi. |
 | AUTH02 | Şifreli yerel kayıt, güvenli anahtar yönetimi, unutma/kurtarma, v5 yedek uyumu ve kayıpsız geçiş | AUTH01 oturum modeli ve T90-08 veri güveni kabulü. Ayrı ürün/veri onayı gerekir. |
 | AUTH03 | İsteğe bağlı hesap ve passkey, hesap olmadan çevrimdışı kullanım, Today Connect ve ileride cihazlar arası senkronizasyon | AUTH01, AUTH02 anahtar/kurtarma kararları ve Connect veri sınırı. Kullanıcının açık onayı olmadan harici kişisel veri aktarımı yok. |
 
