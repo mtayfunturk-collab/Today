@@ -1,5 +1,22 @@
 # Geri yükleme yazıcı kabulü — mevcut adayın sınırı
 
+## 25 Kasım 2026 — v5 kalıcı yazıcı envanteri ve eski sayfa kararı
+
+Taban taslak PR #47 / `b2e48b7` (bağımlılık: #46 → #47). Bu envanter, canlı kaynakta yüklenen dosyalar ve `setItem`/`removeItem`, IndexedDB `readwrite`/`onupgradeneeded` yolları üzerinden çıkarıldı. Yedek kapsamındaki 28 localStorage anahtarının hepsi bugün yazılan aktif kayıt değildir; eski/reserve anahtarları da arşivde korunur.
+
+| Yazıcı | Kalıcı hedef | Başlangıç veya kullanıcı eylemi |
+| --- | --- | --- |
+| `modules/storage.js` | `today_store_v2`, `today_store_v2_backup` | Gün kaydı, yedek kopyası; `loadStore()` bozuk/boş ana depoyu açılışta da yazabilir. |
+| `modules/state-manager.js` | `today_app_v10`, ardından `TodayStorage.saveDay()` | Eski durum kopyası; `load()` eksik/uyumsuz kopyayı açılışta oluşturabilir. `save()` birden çok gün kaydına yayılabilir. |
+| `modules/health-hub.js` | İki su, üç wellness, dört spor anahtarı | Manuel tercih ve kayıtlar; su anahtarı fonksiyon argümanıyla seçilir. |
+| `modules/notification-store.mjs` | `today_ai_delivery_v1` | Tercih/gözlem/teslim güncellemesi; boş durumda veya reset'te anahtarı kaldırabilir. |
+| `modules/plans-store.mjs`, `modules/places-store.mjs` | `today.plans.v1`, `today.places.v1` | Ekleme, düzenleme, durum ve silme bütün listeyi tek anahtara yeniden yazar. |
+| `modules/nutrition-storage.js` | IndexedDB `today_nutrition`: `records`, `metadata`, `migration_backups` | Yedi `readwrite` işlem yolu; ilk `openDatabase()` `onupgradeneeded` içinde store/index ve metadata oluşturabilir. |
+
+`index.html` güncel Core için `modules/storage.js` yükler. Kök `storage.js` aynı yazı kodunun eski kopyasıdır; güncel sayfa onu yüklemese de eski önbellek/sayfa riskinin envanterinden çıkarılamaz. `modules/backup-recovery.mjs` yalnız sentetik v1 prototipte `today_recovery_v1` günlüğü, hedef localStorage ve Nutrition veritabanına yazar; üretim başlangıcına bağlı değildir. `sw.js` uygulama kabuğunu CacheStorage'a yazar, kullanıcı veri yedeğinin hedefi değildir. Sky kaydı Core/State yolundan geçer; Odak, Koleksiyonlar, Alanlarım ve Radio favorileri için bugünkü kodda ayrı kalıcı yazıcı bulunmadı. Bu son cümle gelecekte yeni yazıcı eklendiğinde yeniden denetlenmelidir.
+
+**Eski sayfa karar sınırı:** Yeni sürümde bütün yukarıdaki yazılar ortak shared Web Lock ve güncel Worker/sürüm kabulüne bağlansa bile, daha önce açılmış JS bunu kullanmaz. Bugünkü `browserBarrier` görünür ikinci istemciyi reddeder ve yeni navigasyonu kilitler; 12 Kasım BFCache sondası gerçek geri dönüş üretmedi. `clients.matchAll`, `BroadcastChannel`, `pageshow` veya zorunlu yeniden yükleme tek başına eski sayfanın hiçbir zaman yazamayacağını burada kanıtlamaz. Bu nedenle aynı origin üzerinde üretim restore için eski/BFCache yazıcı dışlama kabulü hâlâ **FAIL/açık**tır. Kabul yöntemi desteklenen gerçek tarayıcılarda eski sayfanın geri dönüşü, Worker değişimi ve yazı yarışını gözleyip eski yazının reddedildiğini göstermelidir; yalnız yeni kodun davranışını test etmek yeterli değildir. Kanıt üretilemezse ayrı origin'e kullanıcı eylemli şifreli dosya taşıma seçeneği ürün/veri kararı olarak ayrıca tasarlanır. Bu dilim böyle bir taşıma, şema değişimi veya restore açılışı yapmaz.
+
 ## 25 Kasım 2026 — Web Lock yazıcı katılımı sınırı
 
 `task/today-writer-lock-advisory-probe` dalı, PR #46 başı `111b7c4` üzerine yalnız sentetik tarayıcı testi ve bu tasarım kaydını ekler. Ayrı geçici origin'de iki yedek sayfası açıldı. İlki gerçek `today:backup:v1:<scope>` exclusive Web Lock'unu tuttuğu sırada ikincisi geçici bir localStorage anahtarına doğrudan yazdı; ilk sayfa değeri okudu. Chromium hedefli kurtarma tarayıcı grubu **6/6 PASS**, birleşik platform **1532/1532 PASS**. Bu, Web Locks'un localStorage yazma işlemini kendiliğinden engellemediğini gösterir. Mevcut `browserBarrier` ikinci pencereyi reddeder; test onu atlayan bir BFCache kanıtı değildir ve üretim geri yükleme kabulü değildir.
