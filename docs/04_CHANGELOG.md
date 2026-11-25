@@ -1,3 +1,7 @@
+### 2026-11-25 — v5 kalıcı yazıcı envanteri
+
+Core, State, Health, bildirim, Planlar, Yerler ve Nutrition kalıcı yazı yolları ile açılıştaki örtük Core/State/IndexedDB yazıları kaynak koddan eşlendi. Kök `storage.js` eski sayfa riski, sentetik kurtarma günlüğü ve Service Worker kabuk önbelleği ayrıldı. Eski/BFCache sayfanın dışlanması kanıtlanmadığı için üretim restore kapalı kalır. Yalnız belge değişikliği; kod testi tekrarlanmadı.
+
 ### 2026-11-25 — Yazıcı Web Lock sınırının gerçek tarayıcı doğrulaması
 
 Geçici sentetik origin'de exclusive Web Lock tutulurken ikinci sayfanın doğrudan localStorage yazabildiği doğrulandı. Hedefli Chromium sentetik kurtarma tarayıcı grubu 6/6 ve birleşik platform 1532/1532 PASS. Bu test BFCache veya mevcut tek pencere bariyerinin atlatıldığı iddiası değildir. Ortak yazıcı katılımı ve eski sayfa dışlama gereği mevcut güvenlik belgesine işlendi; uygulama ve üretim restore değişmedi.
