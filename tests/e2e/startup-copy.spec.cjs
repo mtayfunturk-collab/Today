@@ -16,6 +16,8 @@ async function unchanged(page) {
 const url = () => `/runs/${randomBytes(12).toString('hex')}/index.html`;
 test('Missing startup manager and dictionary preserve Turkish fallback, records and real retry', async ({ page, context }) => {
   await seed(context);
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   const fail = route => route.abort('failed');
   await context.route('**/modules/startup-manager.js', fail);
   await context.route('**/modules/locales/core-tr.mjs', fail);
@@ -25,6 +27,7 @@ test('Missing startup manager and dictionary preserve Turkish fallback, records 
   await expect(surface.locator('h1')).toHaveText('Today başlatılamadı');
   await expect(surface.locator('p')).toHaveText('Başlangıç yöneticisi yüklenemedi. Kayıtların silinmedi. İnternet bağlantını kontrol edip yeniden dene.');
   await expect(surface).toBeFocused();
+  expect(pageErrors).toEqual([]);
   await unchanged(page);
   await context.unroute('**/modules/startup-manager.js', fail);
   await context.unroute('**/modules/locales/core-tr.mjs', fail);

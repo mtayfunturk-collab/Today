@@ -89,6 +89,14 @@ Aşağıdaki eşikler pilot başlamadan gözden geçirilecek karar yardımcılar
 - Ücretli dijital özellikler ancak değer doğrulandıktan sonra değerlendirilir; o gün geçerli mağaza ödeme/abonelik koşulları uygulanır. Gizlilik politikası, App Privacy/Data Safety beyanı gerçek ağ/SDK davranışıyla uyumlu olmalıdır.
 - Main'e doğrudan yazılmaz, otomatik merge/yayın yapılmaz. Mağaza gönderimi, imzalama/hesap bağlantısı ve geri dönüşü zor değişiklikler ayrı açık onay gerektirir.
 
+## Güvenlik yol haritası
+
+| Aşama | Kapsam | Kapı |
+|---|---|---|
+| AUTH01 | İsteğe bağlı cihaz içi PIN/parola kilidi, çevrimdışı açma, otomatik/manuel kilit ve desteklenen platform doğrulaması | [Kalıcı ilk dilim](TODAY-AUTH01-DESIGN.md) taslak #50’de. Fiziksel cihaz ve yayın kabulü açık. Biyometri sonraki AUTH01 dilimi. |
+| AUTH02 | Şifreli yerel kayıt, güvenli anahtar yönetimi, unutma/kurtarma, v5 yedek uyumu ve kayıpsız geçiş | AUTH01 oturum modeli ve T90-08 veri güveni kabulü. Ayrı ürün/veri onayı gerekir. |
+| AUTH03 | İsteğe bağlı hesap ve passkey, hesap olmadan çevrimdışı kullanım, Today Connect ve ileride cihazlar arası senkronizasyon | AUTH01, AUTH02 anahtar/kurtarma kararları ve Connect veri sınırı. Kullanıcının açık onayı olmadan harici kişisel veri aktarımı yok. |
+
 ## Sıradaki öncelik
 
 Önce NUT-018.1–018.3 kanıtları kapanır. Sonra önerilen ilk ürün işi, mevcut veriyle normal/yeniden/çevrimdışı açılışın ve tüm-modül yedek/geri yükleme kapsamının doğrulandığı, kurucunun günlük kullanım sürtünmelerini kaydettiği **NUT-019 modüller arası ürün kabul envanteri** olur. Temel kabul sorusu, yeniden seçilecek ürün vaadine göre kullanıcıyla belirlenecek. Beslenme/hareket tek odak olarak dayatılmaz. Güncel teknik dilimler ve gerçek bağlantı sınırları NUT-019.1 uygulama raporunda izlenir. Bu envanterden yalnız bir küçük kullanıcı akışı seçilip uygulanır; kullanıcı gözlemi olmadan geniş özellik paketi başlatılmaz.

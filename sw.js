@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-111";
+const VERSION = "today-v2-foundation-115";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -26,6 +26,11 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./backup.html",
+  "./modules/application-lock-entry.mjs",
+  "./modules/application-lock-device.mjs",
+  "./modules/application-lock-store.mjs",
+  "./modules/application-lock.mjs",
+  "./modules/application-lock-ui.mjs",
   "./modules/backup-export.mjs",
   "./modules/collections-contract.mjs",
   "./modules/backup-export-ui.mjs",
@@ -211,6 +216,18 @@ self.addEventListener("install", (event) => {
  * Bekleyen yeni sürümü yalnız uygulamadaki açık kullanıcı
  * onayı sonrasında etkinleştirir.
  */
+async function authEnrollmentClient(event) {
+  const scope = self.registration.scope;
+  const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+  const client = clients.length === 1 ? clients[0] : null;
+  const paths = [new URL(scope).pathname, new URL("index.html", scope).pathname];
+  const url = client && new URL(client.url);
+  event.ports?.[0]?.postMessage({ protocol: 1, scope,
+    navigationLock: typeof self.navigator?.locks?.request === "function", onlyClient: Boolean(client &&
+    client.id === event.source?.id && client.frameType === "top-level" &&
+    url.origin === self.location.origin && paths.includes(url.pathname)) });
+}
+
 function backupScope() { return self.registration?.scope; }
 async function backupClients(event) {
   const scope = backupScope();
@@ -242,6 +259,10 @@ async function backupClients(event) {
 }
 
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "TODAY_AUTH_ENROLL_CHECK") {
+    event.waitUntil(authEnrollmentClient(event).catch(() => event.ports?.[0]?.postMessage({ protocol: 0 })));
+    return;
+  }
   if (event.data?.type === "TODAY_BACKUP_CHECK") {
     event.waitUntil(backupClients(event).catch(() => event.ports?.[0]?.postMessage({ protocol: 0 })));
     return;

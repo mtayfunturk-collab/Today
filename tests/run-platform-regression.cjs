@@ -14,6 +14,8 @@ const TEST_GROUPS = Object.freeze([
       "tests/nutrition-contracts.test.cjs",
     count: 60
   },
+  { file: "tests/application-lock.test.mjs", count: 12 },
+  { file: "tests/application-lock-device.test.mjs", count: 6 },
   {
     file: "tests/backup-export-port.test.mjs",
     count: 23

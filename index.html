@@ -1849,6 +1849,11 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 </head>
 
 <body data-accent="on">
+  <section id="todayLock" aria-label="Today uygulama kilidi">
+    <p role="status">Today hazırlanıyor.</p>
+    <noscript>Today’i açmak için JavaScript gerekir.</noscript>
+  </section>
+  <div id="todayPrivate" hidden inert>
   <a class="skipLink" id="skipToContent" href="#appContent">Ana içeriğe geç</a>
 
   <div class="wrap">
@@ -2996,6 +3001,8 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
               <button class="btn" id="btnBackupLaunch" type="button" data-backup-launch>Tam yedek</button>
             </div>
 
+            <section id="todaySecuritySettings" class="field" aria-label="Güvenlik ve Gizlilik"></section>
+
             <section
               class="aiContextPanel"
               id="aiContextPanel"
@@ -3373,6 +3380,7 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
     </div>
   </div>
   
+</div>
 <script src="./modules/error-manager.js"></script>
 <script src="./modules/service-worker-manager.js"></script>
 <script src="./modules/storage.js"></script>
@@ -3424,7 +3432,7 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
 <script src="./modules/module-registry.js"></script>
 <script src="./modules/startup-manager.js"></script>
 <script>
-(() => {
+document.addEventListener("today:app-authorized", () => {
   "use strict";
 
   const errorManager = window.TodayErrors;
@@ -3541,34 +3549,23 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
       );
     }
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener(
-        "load",
-        () => {
-          navigator.serviceWorker
-            .register("./sw.js")
-            .catch(error => {
-              const reported = reportError(
-                "today:service-worker-error",
-                {
-                  scriptUrl: "./sw.js",
-                  errorName: error?.name
-                }
-              );
-
-              if (!reported) {
-                console.warn(
-                  "Today Service Worker kaydedilemedi.",
-                  error
-                );
-              }
-            });
-        },
-        { once: true }
-      );
+    showStartupManagerFailure();
+    const worker = navigator.serviceWorker;
+    if (typeof worker?.register === "function") {
+      const registerFallbackWorker = () => {
+        worker.register("./sw.js")
+          .catch(error => {
+            const reported = reportError(
+              "today:service-worker-error",
+              { scriptUrl: "./sw.js", errorName: error?.name }
+            );
+            if (!reported) console.warn("Today Service Worker kaydedilemedi.", error);
+          });
+      };
+      if (document.readyState === "complete") registerFallbackWorker();
+      else window.addEventListener("load", registerFallbackWorker, { once: true });
     }
 
-    showStartupManagerFailure();
     return;
   }
 
@@ -4632,8 +4629,11 @@ $("#btnModulesFromSettings").addEventListener("click", () => router.navigate("mo
      ========================= */
   const versionInfo = window.TodayVersion.getCurrentVersion();
 
-$("#buildTag").textContent =
-  `build: ${versionInfo.appVersion}`;
+  const buildTag = $("#buildTag");
+  // The optional dictionary can render before AUTH01 authorizes startup.
+  if (buildTag.textContent.trim() === "build: —") {
+    buildTag.textContent = `build: ${versionInfo.appVersion}`;
+  }
 
   // defaults: calendar acc kapalı, stats kapalı
   setAccordionState("#accStats", false);
@@ -4693,7 +4693,8 @@ $("#buildTag").textContent =
 
     showStartupManagerFailure();
   }
-})();
+}, { once: true });
 </script>
+<script type="module" src="./modules/application-lock-entry.mjs"></script>
 </body>
 </html>

@@ -55,11 +55,13 @@ export async function buildWeb() {
       await mkdir(path.dirname(destination), { recursive: true });
       await copyFile(path.join(APP_ROOT, name), destination);
     }
-    const indexPath = path.join(staging, 'index.html');
-    const index = await readFile(indexPath, 'utf8');
-    if (!index.includes('<head>')) throw new Error('Expected a head element in Today index');
-    // A blocking bootstrap precedes every existing application script and module.
-    await writeFile(indexPath, index.replace('<head>', '<head>\n  <script src="./native-bootstrap.js"></script>'));
+    // The main app and backup use the same native-aware authentication gate.
+    for (const name of ['index.html', 'backup.html']) {
+      const file = path.join(staging, name);
+      const html = await readFile(file, 'utf8');
+      if (!html.includes('<head>')) throw new Error(`Expected a head element in ${name}`);
+      await writeFile(file, html.replace('<head>', '<head>\n  <script src="./native-bootstrap.js"></script>'));
+    }
     const { build } = await import('esbuild');
     await build({
       entryPoints: [path.join(NATIVE_ROOT, 'src/bootstrap.mjs')],
@@ -73,6 +75,7 @@ export async function buildWeb() {
     });
     await copyFile(path.join(NATIVE_ROOT, 'public/privacypolicy.html'), path.join(staging, 'privacypolicy.html'));
     await copyFile(path.join(NATIVE_ROOT, 'node_modules/@capgo/capacitor-health/LICENSE'), path.join(staging, 'health-plugin-LICENSE.txt'));
+    await copyFile(path.join(NATIVE_ROOT, 'node_modules/@capgo/capacitor-native-biometric/LICENSE'), path.join(staging, 'biometric-plugin-LICENSE.txt'));
     const output = path.join(NATIVE_ROOT, 'www');
     await rm(output, { recursive: true, force: true });
     await rename(staging, output);

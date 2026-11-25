@@ -1,5 +1,33 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01 başlangıç hata ekranı
+
+Worker 114 uzak WebKit izinde Service Worker kaydı kullanılamayan bir API üzerinden çağrıldı ve zorunlu başlangıç hata ekranı çizilemedi. Worker 115 hata ekranını önce gösterir ve yalnız çağrılabilir kayıt API’sini kullanır. Mevcut WebKit senaryosu yakalanmamış çalışma zamanı hatasını da denetler. [Worker 114 CI](https://github.com/mtayfunturk-collab/Today/actions/runs/45684649534).
+
+## 25 Kasım 2026 — AUTH01-BIO
+
+Taslak PR #50’de onaylanan isteğe bağlı cihaz doğrulaması eklendi. Native iOS Face ID/Touch ID, native Android güçlü parmak izi ve uygun Windows tarayıcılarında cihaz bağlı Windows Hello akışı var. PIN, parola ve mevcut kurtarma korunur. Worker 114. Ürün sahibi iPhone Ana Ekran PWA’da PIN ve parola girişini doğruladı. Diğer fiziksel kontroller açık. [Fiziksel kabul kaydı](TODAY-AUTH01-DEVICE-ACCEPTANCE.md).
+
+## 25 Kasım 2026 — AUTH01 sonrası başlangıç etiketi
+
+CI 45617491449 iki motorda aynı build etiketi senaryosunda durdu. AUTH01, klasik başlangıcı IndexedDB kabulü sonrasına taşıdı; klasik varsayılan etiket sözlüğün önceden yazdığı biçimi eziyordu. Varsayılan etiket artık yalnız ilk yer tutucu için yazılır. Geç sözlük bağlaması, grafik yükleme metni ve yetkili sürüm kimliği korunur. Worker 113 çevrimdışı kabuğu yeniler. [Fiziksel iPhone kabulü](TODAY-AUTH01-DEVICE-ACCEPTANCE.md).
+
+## 25 Kasım 2026 — AUTH01 kalıcı cihaz kilidi
+
+Taslak #50’de onaylı IndexedDB v1, çevrimdışı PIN/parola, varsayılan beş dakika, kalıcı bekleme ve tek kullanımlık kurtarma ana ve yedek girişlerine bağlandı. Kimlik işlemleri ayrı cihaz kaydında kalır. v5 arşivi sentetik testte mevcut kapsamıyla açıldı. Birim 12/12, platform 1543/1543, hedefli Chromium ve WebKit 14/14’er, native birim 15/15 ve web paketi başarılı. Fiziksel kabul ve yayın onayı açık. [Uygulama kaydı](TODAY-AUTH01-DESIGN.md).
+
+## 25 Kasım 2026 — AUTH01 oturumluk kilit ve onay sözleşmesi
+
+PR #50 içinde RAM tabanlı PIN/parola, süre seçimi, arka plan, manuel kilit ve giriş bilgisini değiştirme arayüzü sentetik düzeneğe alındı. Hedefli birim 7/7, Chromium 2/2, platform 1538/1538; yerel WebKit için sistem kütüphaneleri eksik. Kalıcı saklama ve kurtarma [onay taslağında](TODAY-AUTH01-DESIGN.md); ürün girişleri, kişisel veri, şema ve v5 kodu değişmedi.
+
+## 25 Kasım 2026 — AUTH01 fizibilitesi ve güvenlik yol haritası
+
+Ürün sahibi onaylı cihaz içi uygulama kilidi fizibilitesi [tasarım belgesinde](TODAY-AUTH01-DESIGN.md) tamamlandı. PWA ve Capacitor matrisi, kurtarma, kilit yaşam döngüsü, kullanıcı arayüzü ve kabul kaydedildi. AUTH02 ve AUTH03 bağımlı aşamalar olarak plana eklendi. Taslak PR #50 üzerinden uygulama kararı bekleniyor.
+
+## 25 Kasım 2026 — AUTH01 tasarım kararı
+
+Biyometri/parola için [ürün kararı ve kabul koşulları](TODAY-AUTH01-DESIGN.md) belgelendi. Yerel ekran kilidi, cihaz içi şifreli veri alanı ve hesap/passkey seçenekleri ayrı değerlendirildi. Uygulama seçimi ürün sahibi onayında.
+
 ## 25 Kasım 2026 — Ana görev ve yayın uzlaştırması
 
 GOV-01: 4061839 üzerinden tek görev envanteri, onay/kabul sınırları ve yayın eşlemesi [merkezi kayda](TODAY-CURRENT-STATUS.md) alındı. Yayın geçmişindeki 32 taslak yeniden geliştirme kuyruğundan çıkarıldı. T90-08 altında iki tarihsel geri yükleme zinciri ilişkilendirildi. Uygulama ve veri dosyası yok; doğrulama belge farkı ve mevcut yayın kanıtı üzerinden.

@@ -17,7 +17,8 @@
     "@capacitor/core": "8.6.0",
     "@capacitor/ios": "8.6.0",
     "@capacitor/local-notifications": "8.3.1",
-    "@capgo/capacitor-health": "8.11.13"
+    "@capgo/capacitor-health": "8.11.13",
+    "@capgo/capacitor-native-biometric": "8.9.3"
   },
   "devDependencies": {
     "@capacitor/cli": "8.6.0",
