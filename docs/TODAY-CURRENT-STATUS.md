@@ -23,7 +23,7 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 | SP01–SP03 / P2 | Sesli giriş ve konuşmayı metne dönüştürme; geçmiş düzenlenebilir taslak/prototip kaydı, canlı entegrasyon doğrulanmadı | Core not akışı, izin/ret/iptal ve tarayıcıya göre yerel işleme kanıtı. Dış gönderim varsayılanı kapalı | Önizleme kapsamı tarihsel; yeni mikrofon/veri aktarımı ve platform kararı doğrulanmadan entegrasyon yok |
 | I18N01–06 / P2 | Türkçe bağlamalar ve dil resolver'ı mevcut; İngilizce ve manuel dil seçimi kısmi | Editoryal kabul, tüm yüzeylerin parametre/erişilebilirlik kapsamı, manuel tercih için kayıt/yarış/yedek kabulü | [Tasarım](T90-261101-PO1-I18N02-EN-BINDING-DESIGN.md); EN yayın ve kalıcı yazma yetkisi doğrulanmadı |
 | COR01 / P1 | 12 renk paleti ve açık/koyu/yüksek kontrast tema seçenekleri kaynakta | Mevcut renk kimlikleri ve tema davranışı korunur; güncel fiziksel kabul ACC-01 | Mevcut kapsam; [palet kaydı](T90-261101-PO1-COR01-PALETTE.md), 4061839 |
-| AUTH01 / P2 | Biyometri/parola, yerel profil ve kurtarma için tasarım | Önce platform, oturum, anahtar ve kurtarma kararları; fiziksel kabul ve veri etkisi uygulamadan önce | Tarihsel ana görev tasarım ister; uygulama onayı ve PR doğrulanmadı |
+| AUTH01 / P2 | Biyometri/parola karar taslağı tamamlandı, henüz yayımlanmadı | Ürün sahibi yerel ekran kilidi, şifreli veri alanı veya hesap hedefini seçer; sonra ilgili platform, oturum, anahtar ve kurtarma kabulü | Tasarım yetkisi [önceki görev kaydında](#hangi-aşamadayız); [karar taslağı](TODAY-AUTH01-DESIGN.md), uygulama onayı bekliyor |
 | NUT-019.2–3 / P3 | HealthKit/Health Connect saat ve native bildirim önizlemesi var; fiziksel kabul ertelendi | Ürün sahibinin cihazı, Mi Fitness aktarımı ve uygun iOS imza/üyelik yolu | Mevcut onaylı kod korunur; Apple Developer ertelemesi geçerli. [Cihaz planı](../native/DEVICE-VALIDATION.md) |
 | RAD-FAV / P2 | Radio favorileri ve Alanlarım tercihleri için yedek sözleşmesi mevcut; yazıcı kapalı | Fiziksel sentetik yedek kabulü ve onaylı iki anahtarın mevcut sözleşmesi | [#16](https://github.com/mtayfunturk-collab/Today/pull/16) ve [#17](https://github.com/mtayfunturk-collab/Today/pull/17) tarihsel, ayrı fiziksel kabul bekliyor |
 | RAD04 / P2 | Sanatçı/parça fizibilitesi tamam; ürün özelliği teknik engelde | İzinli belgeli yayıncı kaynağı, doğru istasyon eşleşmesi, CORS ve boş durum | [#15](https://github.com/mtayfunturk-collab/Today/pull/15) belge teslimi; sağlayıcı/aktarımı ayrıca onaylanır |
@@ -43,6 +43,12 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 - **Commit ve takip:** 4061839, [iş #6](https://github.com/mtayfunturk-collab/Today/issues/6); teşhis kaydı [taslak #49](https://github.com/mtayfunturk-collab/Today/pull/49) içinde. Ürün kodu değişmedi; mevcut yayın CI'ı tekrar edilmedi.
 - **Kalan kabul:** Windows 10'da URL, tarayıcı/sürüm ve açılış sonucu; indirilen sentetik v5 dosyasının yeniden açılması ve bütünlük kontrolü. iPhone Safari ve kurulu PWA'da aynı iki dosya işlemi ayrı kaydedilmeli. Yalnız sonuç veya sınırlı tanı kodu kaydedilir; parola, dosya ve kişisel veri paylaşılmaz. Eski iPhone güncelleme sorunu yeniden üretilmedikçe tarihsel kalır.
 - **Sıradaki uygun iş:** AUTH01 için mevcut tasarım yetkisiyle karar seçeneklerini ve kabul ölçütlerini belgele. Kimlik kodu, yeni depo veya sağlayıcı entegrasyonu ayrı ürün kararıdır.
+
+### Yürütme kaydı — AUTH01
+
+- **Tamamlanan dilim:** Yerel ekran kilidi, şifreli veri alanı ve hesap/passkey kararları belgelendi. Cihaz, oturum, parola/kurtarma ve veri kabulü [tasarımda](TODAY-AUTH01-DESIGN.md).
+- **Doğrulama:** Depo kapsamı ve mevcut iş kayıtları tarandı; aynı tasarım için açık PR veya referans ağaçta eşdeğer bir dosya bulunmadı. Belge incelemesi yapıldı; çalışma zamanı değişikliği ve test koşusu yok.
+- **Kalan karar:** Ürün sahibi koruma hedefini seçer. ACC-01 fiziksel kanıt, T90-08 veri güvenliği protokol kararı bekliyor. Bu bağımlılıklardan biri çözülürse ilgili onaylı görev kaldığı yerden ilerler.
 
 ## 24 Kasım 2026 — Yerler yerel kayıt ve v5 tam yedek (T90-261101-PO1-YER03)
 

@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01 tasarım kararı
+
+Biyometri/parola için [ürün kararı ve kabul koşulları](TODAY-AUTH01-DESIGN.md) belgelendi. Yerel ekran kilidi, cihaz içi şifreli veri alanı ve hesap/passkey seçenekleri ayrı değerlendirildi. Uygulama seçimi ürün sahibi onayında.
+
 ## 25 Kasım 2026 — Ana görev ve yayın uzlaştırması
 
 GOV-01: 4061839 üzerinden tek görev envanteri, onay/kabul sınırları ve yayın eşlemesi [merkezi kayda](TODAY-CURRENT-STATUS.md) alındı. Yayın geçmişindeki 32 taslak yeniden geliştirme kuyruğundan çıkarıldı. T90-08 altında iki tarihsel geri yükleme zinciri ilişkilendirildi. Uygulama ve veri dosyası yok; doğrulama belge farkı ve mevcut yayın kanıtı üzerinden.
