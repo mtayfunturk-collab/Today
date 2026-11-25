@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // Review the AUTH01 entry gate and worker changes; unrelated production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "0526bba17ec617bed629773fa07797170bf9fa6619977ef3202974a0129692e1",
+    "0e9408351fa96c6eb4b3aaf81411f3d5a618c5a535b1727198325cb6d277e35b",
   "sw.js":
-    "f75510b5b408d70d77816bf40648e3c0f15d47e31a3e7ec51c43fa4ee3345bfd",
+    "404273fa94dd330fff5c310ffe01f64bba23d6e3dbd2a0d8d55820f47ed813c6",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -1304,7 +1304,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-114 ve 155 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-115 ve 155 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1316,7 +1316,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-114"'
+        'const VERSION = "today-v2-foundation-115"'
       )
     );
     assert.ok(shellMatch);

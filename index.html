@@ -3549,9 +3549,12 @@ document.addEventListener("today:app-authorized", () => {
       );
     }
 
-    if ("serviceWorker" in navigator) {
+    showStartupManagerFailure();
+
+    const worker = navigator.serviceWorker;
+    if (typeof worker?.register === "function") {
       const registerFallbackWorker = () => {
-        navigator.serviceWorker
+        worker
           .register("./sw.js")
           .catch(error => {
             const reported = reportError(
@@ -3565,7 +3568,6 @@ document.addEventListener("today:app-authorized", () => {
       else window.addEventListener("load", registerFallbackWorker, { once: true });
     }
 
-    showStartupManagerFailure();
     return;
   }
 

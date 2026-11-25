@@ -53,6 +53,11 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 - **AUTH01-BIO / PR #50:** Native iOS Face ID/Touch ID, native Android güçlü parmak izi ve uygun Windows tarayıcısında cihaz bağlı WebAuthn yolu. iPhone ve Android web sürümünde PIN/parola ve kurtarma kullanılır. v5 arşiv kapsamı korunur. [Uygulama ve platform sınırları](TODAY-AUTH01-DESIGN.md).
 - **Sıradaki uygun iş:** Erişim korumalı Staging’de iPhone 15 Safari ve PWA kabulünün kalan adımları. Native ve Windows cihaz kabulü ayrı açık maddelerdir. Birleştirme ve canlı yayın ayrı onay gerektirir.
 
+### Yürütme kaydı — Worker 115 ve bağımsız Staging
+
+- Worker 114 CI 3/4. WebKit izinde başlangıç yöneticisi yüklenmediğinde, AUTH01 yetkilendirmesi belge yüklendikten sonra ulaşıyordu. Kullanılamayan Service Worker nesnesine kayıt çağrısı hata ekranını kesiyordu. Worker 115 hata ekranını önce gösterir ve kayıt API'sini çağrılabilirlik açısından denetler. [Worker 114 CI](https://github.com/mtayfunturk-collab/Today/actions/runs/45684649534).
+- Staging ana adresi ve güncel dağıtım adresi oturumsuz sekiz kontrolde Access’e yönlendi. Otomasyonun `main`e alınması ayrı altyapı değişikliğidir ve [taslak #51](https://github.com/mtayfunturk-collab/Today/pull/51) üzerinden onaylanır. Adayın dört CI işi ve Staging ortam onayı gerekir. iPhone fiziksel kabulünün kalan maddeleri açık.
+
 ### Yürütme kaydı — AUTH01 sonrası sözlük sırası
 
 - AUTH01 klasik başlangıcı ertelediğinde varsayılan sürüm etiketi sözlük etiketini ezebiliyordu. Varsayılan yazı ilk yer tutucu ile sınırlandı; Worker 113. [PR #50](https://github.com/mtayfunturk-collab/Today/pull/50).

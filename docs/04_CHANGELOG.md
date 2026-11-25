@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01 başlangıç hata ekranı
+
+Worker 114 uzak WebKit izinde Service Worker kaydı kullanılamayan bir API üzerinden çağrıldı ve zorunlu başlangıç hata ekranı çizilemedi. Worker 115 hata ekranını önce gösterir ve yalnız çağrılabilir kayıt API’sini kullanır. Mevcut WebKit senaryosu yakalanmamış çalışma zamanı hatasını da denetler. [Worker 114 CI](https://github.com/mtayfunturk-collab/Today/actions/runs/45684649534).
+
 ## 25 Kasım 2026 — AUTH01-BIO
 
 Taslak PR #50’de onaylanan isteğe bağlı cihaz doğrulaması eklendi. Native iOS Face ID/Touch ID, native Android güçlü parmak izi ve uygun Windows tarayıcılarında cihaz bağlı Windows Hello akışı var. PIN, parola ve mevcut kurtarma korunur. Worker 114. Ürün sahibi iPhone Ana Ekran PWA’da PIN ve parola girişini doğruladı. Diğer fiziksel kontroller açık. [Fiziksel kabul kaydı](TODAY-AUTH01-DEVICE-ACCEPTANCE.md).
