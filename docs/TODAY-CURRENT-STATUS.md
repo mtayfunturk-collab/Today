@@ -23,7 +23,9 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 | SP01–SP03 / P2 | Sesli giriş ve konuşmayı metne dönüştürme; geçmiş düzenlenebilir taslak/prototip kaydı, canlı entegrasyon doğrulanmadı | Core not akışı, izin/ret/iptal ve tarayıcıya göre yerel işleme kanıtı. Dış gönderim varsayılanı kapalı | Önizleme kapsamı tarihsel; yeni mikrofon/veri aktarımı ve platform kararı doğrulanmadan entegrasyon yok |
 | I18N01–06 / P2 | Türkçe bağlamalar ve dil resolver'ı mevcut; İngilizce ve manuel dil seçimi kısmi | Editoryal kabul, tüm yüzeylerin parametre/erişilebilirlik kapsamı, manuel tercih için kayıt/yarış/yedek kabulü | [Tasarım](T90-261101-PO1-I18N02-EN-BINDING-DESIGN.md); EN yayın ve kalıcı yazma yetkisi doğrulanmadı |
 | COR01 / P1 | 12 renk paleti ve açık/koyu/yüksek kontrast tema seçenekleri kaynakta | Mevcut renk kimlikleri ve tema davranışı korunur; güncel fiziksel kabul ACC-01 | Mevcut kapsam; [palet kaydı](T90-261101-PO1-COR01-PALETTE.md), 4061839 |
-| AUTH01 / P2 | Biyometri/parola karar taslağı tamamlandı, henüz yayımlanmadı | Ürün sahibi yerel ekran kilidi, şifreli veri alanı veya hesap hedefini seçer; sonra ilgili platform, oturum, anahtar ve kurtarma kabulü | Tasarım yetkisi [önceki görev kaydında](#hangi-aşamadayız); [karar taslağı](TODAY-AUTH01-DESIGN.md), [taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50), uygulama onayı bekliyor |
+| AUTH01 / P2 | Cihaz içi uygulama kilidi fizibilitesi tamamlandı | Platform matrisi, PIN/parola, biyometri adayları, kurtarma ve kabul ölçütleri belgelendi; önce ortak çevrimdışı kilit öneriliyor | Fizibilite onaylı; uygulama ve kalıcı doğrulayıcı sözleşmesi onay bekliyor. [Tasarım](TODAY-AUTH01-DESIGN.md), [taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50), yayımlanmadı |
+| AUTH02 / P3 | Şifreli yerel veri alanı, anahtar yönetimi ve kurtarma | AUTH01 oturum sınırı ve T90-08 veri bütünlüğü; v5 uyumu ve kayıpsız geçiş | Yol haritası, onay bekliyor; uygulama/PR/yayın yok |
+| AUTH03 / P3 | İsteğe bağlı hesap ve passkey, mevcut çevrimdışı kullanımın korunması | AUTH01, AUTH02 anahtar/kurtarma kararları ve Connect veri sınırı; harici aktarım açık onaya bağlı | Yol haritası, onay bekliyor; uygulama/PR/yayın yok |
 | NUT-019.2–3 / P3 | HealthKit/Health Connect saat ve native bildirim önizlemesi var; fiziksel kabul ertelendi | Ürün sahibinin cihazı, Mi Fitness aktarımı ve uygun iOS imza/üyelik yolu | Mevcut onaylı kod korunur; Apple Developer ertelemesi geçerli. [Cihaz planı](../native/DEVICE-VALIDATION.md) |
 | RAD-FAV / P2 | Radio favorileri ve Alanlarım tercihleri için yedek sözleşmesi mevcut; yazıcı kapalı | Fiziksel sentetik yedek kabulü ve onaylı iki anahtarın mevcut sözleşmesi | [#16](https://github.com/mtayfunturk-collab/Today/pull/16) ve [#17](https://github.com/mtayfunturk-collab/Today/pull/17) tarihsel, ayrı fiziksel kabul bekliyor |
 | RAD04 / P2 | Sanatçı/parça fizibilitesi tamam; ürün özelliği teknik engelde | İzinli belgeli yayıncı kaynağı, doğru istasyon eşleşmesi, CORS ve boş durum | [#15](https://github.com/mtayfunturk-collab/Today/pull/15) belge teslimi; sağlayıcı/aktarımı ayrıca onaylanır |
@@ -44,7 +46,13 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 - **Kalan kabul:** Windows 10'da URL, tarayıcı/sürüm ve açılış sonucu; indirilen sentetik v5 dosyasının yeniden açılması ve bütünlük kontrolü. iPhone Safari ve kurulu PWA'da aynı iki dosya işlemi ayrı kaydedilmeli. Yalnız sonuç veya sınırlı tanı kodu kaydedilir; parola, dosya ve kişisel veri paylaşılmaz. Eski iPhone güncelleme sorunu yeniden üretilmedikçe tarihsel kalır.
 - **Sıradaki uygun iş:** AUTH01 için mevcut tasarım yetkisiyle karar seçeneklerini ve kabul ölçütlerini belgele. Kimlik kodu, yeni depo veya sağlayıcı entegrasyonu ayrı ürün kararıdır.
 
-### Yürütme kaydı — AUTH01
+### Yürütme kaydı — AUTH01 fizibilitesi
+
+- **Tamamlanan:** Cihaz içi uygulama kilidi kapsamı teyit edildi. PWA ve Capacitor kaynaklarından entegrasyon noktaları, platform matrisi, unutma/kurtarma, arayüz ve kabul [tasarımda](TODAY-AUTH01-DESIGN.md) belgelendi.
+- **Doğrulama:** Kaynak ve resmi platform belgeleri incelendi. Fiziksel cihaz, kayıt ve çalışma zamanı testi yapılmadı. [Mevcut taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50) kullanıldı.
+- **Bekleyen karar:** İlk uygulama dilimi için ürün sahibi onayı. AUTH02 ve AUTH03 bağımlı yol haritası işleri. Fiziksel ACC-01 ve T90-08 ayrı kabul kayıtlarıyla sürer.
+
+### Yürütme kaydı — AUTH01 (önceki karar taslağı)
 
 - **Tamamlanan dilim:** Yerel ekran kilidi, şifreli veri alanı ve hesap/passkey kararları belgelendi. Cihaz, oturum, parola/kurtarma ve veri kabulü [tasarımda](TODAY-AUTH01-DESIGN.md).
 - **Commit ve takip:** Tasarım commit'i `2eda6dd`, [taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50).

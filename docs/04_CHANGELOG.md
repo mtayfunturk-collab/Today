@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01 fizibilitesi ve güvenlik yol haritası
+
+Ürün sahibi onaylı cihaz içi uygulama kilidi fizibilitesi [tasarım belgesinde](TODAY-AUTH01-DESIGN.md) tamamlandı. PWA ve Capacitor matrisi, kurtarma, kilit yaşam döngüsü, kullanıcı arayüzü ve kabul kaydedildi. AUTH02 ve AUTH03 bağımlı aşamalar olarak plana eklendi. Taslak PR #50 üzerinden uygulama kararı bekleniyor.
+
 ## 25 Kasım 2026 — AUTH01 tasarım kararı
 
 Biyometri/parola için [ürün kararı ve kabul koşulları](TODAY-AUTH01-DESIGN.md) belgelendi. Yerel ekran kilidi, cihaz içi şifreli veri alanı ve hesap/passkey seçenekleri ayrı değerlendirildi. Uygulama seçimi ürün sahibi onayında.
