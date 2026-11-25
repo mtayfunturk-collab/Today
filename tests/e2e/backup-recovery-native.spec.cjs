@@ -135,3 +135,27 @@ test('Exclusive backup barrier holds a new Today navigation until work releases 
   expect(['released','other-client']).toContain(result.value??result.error);
   await other.close();
 });
+
+test('An exclusive Web Lock alone cannot stop a legacy localStorage writer',async({page,context})=>{
+  const scope=randomBytes(12).toString('hex');
+  const key=`probe.writer-lock.${scope}`;
+  const lockName=`today:backup:v1:/runs/${scope}/`;
+  await page.goto(`/runs/${scope}/backup.html`);
+  const other=await context.newPage();
+  await other.goto(`/runs/${scope}/backup.html`);
+  await page.evaluate(lockName=>{
+    window.__releaseWriterProbe=null;
+    window.__writerProbeHeld=new Promise(resolve=>{window.__releaseWriterProbe=resolve;});
+    window.__writerProbeLock=navigator.locks.request(lockName,
+      {mode:'exclusive'},async()=>{window.__writerProbeEntered=true;await window.__writerProbeHeld;});
+  },lockName);
+  try {
+    await expect.poll(()=>page.evaluate(()=>window.__writerProbeEntered===true)).toBe(true);
+    await other.evaluate(key=>localStorage.setItem(key,'legacy-write-while-locked'),key);
+    expect(await page.evaluate(key=>localStorage.getItem(key),key)).toBe('legacy-write-while-locked');
+  } finally {
+    await page.evaluate(key=>{window.__releaseWriterProbe?.();localStorage.removeItem(key);},key);
+    await page.evaluate(()=>window.__writerProbeLock);
+    await other.close();
+  }
+});

@@ -1,3 +1,7 @@
+### 2026-11-25 — Yazıcı Web Lock sınırının gerçek tarayıcı doğrulaması
+
+Geçici sentetik origin'de exclusive Web Lock tutulurken ikinci sayfanın doğrudan localStorage yazabildiği doğrulandı. Hedefli Chromium sentetik kurtarma tarayıcı grubu 6/6 ve birleşik platform 1532/1532 PASS. Bu test BFCache veya mevcut tek pencere bariyerinin atlatıldığı iddiası değildir. Ortak yazıcı katılımı ve eski sayfa dışlama gereği mevcut güvenlik belgesine işlendi; uygulama ve üretim restore değişmedi.
+
 ### 2026-11-25 — Canlı v5 kurtarma sürüm kapısı ve yazıcı kapsamı
 
 Planlar ve Yerler kayıtları içeren şifreli v5 dosyasının yalnız v1 destekleyen, ürüne bağlı olmayan sentetik kurtarma prototipinde reddedildiği test edildi; hedef kayıt ve kurtarma günlüğü değişmiyor. Canlı kaynakta yeni iki yazıcı, geri yükleme yazıcı kabul belgesine eklendi. İlk uzak CI, eski şifreli yedek testinin rastgele metinde üç harflik `Oku` dizisini araması nedeniyle FAIL oldu. Beklenti ham düz metin kaydını denetleyecek şekilde düzeltildi. Hedefli kurtarma 39/39, yedek portu 23/23, otomasyon 8/8 ve birleşik platform 1532/1532 PASS; yeni uzak CI açık. Üretim restore kapalıdır. Ortak yazıcı kapısı, BFCache/Worker yarışı ve fiziksel kabul hâlâ açık.
