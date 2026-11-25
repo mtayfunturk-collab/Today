@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "purpose": "Source-aligned preparation catalog; not loaded by Today. Raw occurrences are evidence, not DOM bindings or complete UI coverage.",
   "sourceRef": "080a18e1c76f7d2057f17764e2b260d7075c430f",
-  "sourceSha256": "38e9c3d7441947967b925c924cc6ea5802dea92456776296fd159bc21612b2cd",
+  "sourceSha256": "0526bba17ec617bed629773fa07797170bf9fa6619977ef3202974a0129692e1",
   "sourceBranch": "task/t90-261101-po1-radio-mini",
   "completeEnglishRelease": false,
   "dictionaryModule": "modules/locales/core-tr.mjs",
@@ -73,15 +73,15 @@
             "lineText": "        errorCode: \"TODAY-STATE-001\","
           },
           {
-            "line": 4657,
+            "line": 4660,
             "lineText": "      \"TODAY-ROUTER-INIT\""
           },
           {
-            "line": 4670,
+            "line": 4673,
             "lineText": "      \"TODAY-MODULES-INIT\""
           },
           {
-            "line": 4679,
+            "line": 4682,
             "lineText": "        errorCode: \"TODAY-STARTUP-005\","
           }
         ]
@@ -2279,7 +2279,7 @@
             "lineText": "    // bugün: saatlik giriş sayıları (00-23)"
           },
           {
-            "line": 4640,
+            "line": 4643,
             "lineText": "  // home açılışında bugünün accent'ini hazırla"
           }
         ]

@@ -4629,8 +4629,11 @@ $("#btnModulesFromSettings").addEventListener("click", () => router.navigate("mo
      ========================= */
   const versionInfo = window.TodayVersion.getCurrentVersion();
 
-$("#buildTag").textContent =
-  `build: ${versionInfo.appVersion}`;
+  const buildTag = $("#buildTag");
+  // The optional dictionary can render before AUTH01 authorizes startup.
+  if (buildTag.textContent.trim() === "build: —") {
+    buildTag.textContent = `build: ${versionInfo.appVersion}`;
+  }
 
   // defaults: calendar acc kapalı, stats kapalı
   setAccordionState("#accStats", false);

@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01 sonrası başlangıç etiketi
+
+CI 45617491449 iki motorda aynı build etiketi senaryosunda durdu. AUTH01, klasik başlangıcı IndexedDB kabulü sonrasına taşıdı; klasik varsayılan etiket sözlüğün önceden yazdığı biçimi eziyordu. Varsayılan etiket artık yalnız ilk yer tutucu için yazılır. Geç sözlük bağlaması, grafik yükleme metni ve yetkili sürüm kimliği korunur. Worker 113 çevrimdışı kabuğu yeniler. [Fiziksel iPhone kabulü](TODAY-AUTH01-DEVICE-ACCEPTANCE.md).
+
 ## 25 Kasım 2026 — AUTH01 kalıcı cihaz kilidi
 
 Taslak #50’de onaylı IndexedDB v1, çevrimdışı PIN/parola, varsayılan beş dakika, kalıcı bekleme ve tek kullanımlık kurtarma ana ve yedek girişlerine bağlandı. Kimlik işlemleri ayrı cihaz kaydında kalır. v5 arşivi sentetik testte mevcut kapsamıyla açıldı. Birim 12/12, platform 1543/1543, hedefli Chromium ve WebKit 14/14’er, native birim 15/15 ve web paketi başarılı. Fiziksel kabul ve yayın onayı açık. [Uygulama kaydı](TODAY-AUTH01-DESIGN.md).

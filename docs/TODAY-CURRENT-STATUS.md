@@ -47,6 +47,11 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 - **Kalan kabul:** Windows 10'da URL, tarayıcı/sürüm ve açılış sonucu; indirilen sentetik v5 dosyasının yeniden açılması ve bütünlük kontrolü. iPhone Safari ve kurulu PWA'da aynı iki dosya işlemi ayrı kaydedilmeli. Yalnız sonuç veya sınırlı tanı kodu kaydedilir; parola, dosya ve kişisel veri paylaşılmaz. Eski iPhone güncelleme sorunu yeniden üretilmedikçe tarihsel kalır.
 - **Sıradaki uygun iş:** AUTH01 için mevcut tasarım yetkisiyle karar seçeneklerini ve kabul ölçütlerini belgele. Kimlik kodu, yeni depo veya sağlayıcı entegrasyonu ayrı ürün kararıdır.
 
+### Yürütme kaydı — AUTH01 sonrası sözlük sırası
+
+- AUTH01 klasik başlangıcı ertelediğinde varsayılan sürüm etiketi sözlük etiketini ezebiliyordu. Varsayılan yazı ilk yer tutucu ile sınırlandı; Worker 113. [PR #50](https://github.com/mtayfunturk-collab/Today/pull/50).
+- Canlıdan ayrı HTTPS adayı için [fiziksel Safari ve PWA kabulü](TODAY-AUTH01-DEVICE-ACCEPTANCE.md) hazır. Fiziksel kabul ve ayrı yayın kararı açık.
+
 ### Yürütme kaydı — AUTH01 kalıcı ilk dilim
 
 - **Tamamlanan:** Onaylı IndexedDB v1 cihaz kaydı, çevrimdışı PIN/parola, manuel/otomatik/arka plan kilidi, varsayılan 5 dakika, kalıcı bekleme, parola değiştirme ve atomik tek kullanımlık kurtarma. Ana uygulama ve doğrudan yedek sayfası aynı kilidi kullanır. Eski kişisel kayıt ve v5 biçimi korunur.
