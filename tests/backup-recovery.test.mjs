@@ -92,6 +92,22 @@ await check('v3 archive with Collections remains read-only and cannot enter the 
   assert.equal(f.writes.length,0);
   assert.deepEqual(await f.indexedDB.databases(),databases);
 });
+await check('v5 archive with Plans and Places cannot enter the synthetic v1 apply protocol',async()=>{
+  const v5Source=await fixture('v5-source');
+  v5Source.map.set('today.plans.v1',JSON.stringify({version:1,items:[{
+    id:'plan-1',title:'Oku',state:'next',createdAt:'2026-11-24T10:00:00.000Z',updatedAt:'2026-11-24T10:00:00.000Z'
+  }]}));
+  v5Source.map.set('today.places.v1',JSON.stringify({version:1,items:[{
+    id:'place-1',name:'Müze',city:'İstanbul',state:'want',createdAt:'2026-11-24T10:00:00.000Z',updatedAt:'2026-11-24T10:00:00.000Z'
+  }]}));
+  const v5=await createBackup({userConfirmed:true,password,confirmation:password,crypto,barrier:fn=>fn(),
+    capture:()=>captureSnapshot({storage:v5Source.storage,indexedDB:v5Source.indexedDB,contracts,crypto,source:origin,version:5})});
+  const f=await fixture(),before=await digest(f),databases=await f.indexedDB.databases();
+  await assert.rejects(f.controller().prepare({...args,file:v5.file}),e=>e.code==='unsupported-recovery-version');
+  assert.equal(await digest(f),before);
+  assert.equal(f.writes.length,0);
+  assert.deepEqual(await f.indexedDB.databases(),databases);
+});
 await check('construction and no-attempt startup guard do not initialize recovery storage',async()=>{
   const f=await fixture(),c=f.controller(),before=await f.indexedDB.databases();assert.equal((await c.guardStartup()).canStart,true);
   assert.deepEqual(await f.indexedDB.databases(),before);assert.equal(f.writes.length,0);

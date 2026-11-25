@@ -1,5 +1,11 @@
 # Geri yükleme yazıcı kabulü — mevcut adayın sınırı
 
+## 25 Kasım 2026 — canlı v5 kapsam farkı
+
+Canlı kaynak `release/today-backup-candidate-2a70ec9` / `4061839` artık Planlar (`modules/plans-store.mjs`, `today.plans.v1`) ve Yerler (`modules/places-store.mjs`, `today.places.v1`) yazıcılarını da içerir. Core (`modules/storage.js` ve kök kopyası), Health (`modules/health-hub.js`), durum yöneticisi (`modules/state-manager.js`), Nutrition (`modules/nutrition-storage.js`) ve bildirim tercih deposu (`modules/notification-store.mjs`) ile birlikte bu iki yazıcı da üretim geri yüklemesi için ortak durdurma/kabul sözleşmesinin kapsamına girer. Bu dosyalarda ortak bir yazıcı kapısı henüz yoktur. Mevcut `browserBarrier` yedek dışa aktarımı sırasında tek pencere ve Worker denetimi yapar; eski BFCache sayfasının veya yeni normal yazıcıların restore sırasında yazamayacağını kanıtlamaz. Önceki BFCache sondasının sonuç sınırı değişmedi.
+
+v5 dosyasında gerçek sentetik Planlar ve Yerler kayıtları varken ürüne bağlanmamış v1 kurtarma prototipinin dosyayı `unsupported-recovery-version` ile reddettiği hedefli test eklendi. Hedef localStorage ve IndexedDB değişmedi; kurtarma günlüğü oluşmadı. Bu yalnız yanlış sürümün prototipe girmesini önleyen bir regresyon kapısıdır, v5 geri yükleme kabulü değildir. Üretim için önce bütün normal yazıcıların ve eski sürüm/Worker dönüşlerinin aynı fail-closed protokole katılması, ardından çok sekme/BFCache/WebKit ve fiziksel iPhone kesinti kabulü gerekir. Üretim restore kapalı kalır; bunun etkinleştirilmesi ayrıca ürün sahibi onayı gerektirir.
+
 12 Kasım 2026, TSİ. Yerel `task/t90-261101-live-synthetic-recovery` dalı; taban `b57dbceb53eb6a9aacc3bde709b4de096b77e38f`. Bu belge üretimde geri yükleme açmaz ve depolama şeması değiştirmez.
 
 ## Mevcut yol
