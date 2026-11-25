@@ -1,13 +1,19 @@
-// Session-only AUTH01 controller. A page must explicitly supply a client UI.
-export const AUTO_LOCK_MINUTES = Object.freeze([0, 1, 5, 15, 30]);
+import { AUTH_KDF_ITERATIONS, AUTH_TIMEOUTS } from "./application-lock-store.mjs";
 
+export const AUTO_LOCK_MINUTES = AUTH_TIMEOUTS;
+export const DEFAULT_AUTO_LOCK_MINUTES = 5;
 const PIN = /^[0-9]{6,12}$/;
-const KDF_ITERATIONS = 600_000;
+const emptyAttempts = { count: 0, retryAt: 0 };
 const defaultClock = {
   now: () => performance.now(),
+  wall: () => Date.now(),
   schedule: (fn, ms) => setTimeout(fn, ms),
   cancel: timer => clearTimeout(timer)
 };
+const toHex = bytes => Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+const fromHex = value => Uint8Array.from(value.match(/../g), item => Number.parseInt(item, 16));
+const normalizeCode = code => typeof code === "string" && /^[a-f0-9\s-]{32,48}$/i.test(code)
+  ? code.toLowerCase().replace(/[\s-]/g, "") : "";
 
 function acceptable(type, value) {
   return typeof value === "string" && (type === "pin" ? PIN.test(value) :
@@ -19,39 +25,52 @@ async function derive(crypto, value, salt) {
   try {
     const key = await crypto.subtle.importKey("raw", input, "PBKDF2", false, ["deriveBits"]);
     const bits = await crypto.subtle.deriveBits({
-      name: "PBKDF2", hash: "SHA-256", salt, iterations: KDF_ITERATIONS
+      name: "PBKDF2", hash: "SHA-256", salt: fromHex(salt), iterations: AUTH_KDF_ITERATIONS
     }, key, 256);
-    return new Uint8Array(bits);
+    return toHex(new Uint8Array(bits));
   } finally {
     input.fill(0);
   }
 }
 
-function equalBytes(left, right) {
-  let difference = 0;
-  for (let i = 0; i < left.length; i++) difference |= left[i] ^ right[i];
-  return difference === 0;
+async function recoveryDigest(crypto, code, salt) {
+  const input = new TextEncoder().encode(`today-auth01-recovery-v1:${salt}:${code}`);
+  try {
+    return toHex(new Uint8Array(await crypto.subtle.digest("SHA-256", input)));
+  } finally {
+    input.fill(0);
+  }
 }
 
-export function createApplicationLock({ crypto = globalThis.crypto, clock = defaultClock } = {}) {
-  let verifier;
-  let locked = false;
-  let busy = false;
-  let generation = 0;
-  let failures = 0;
-  let retryAt = 0;
-  let minutes = 0;
-  let timer;
-  let deadline = 0;
+function equalDigest(left, right) {
+  let difference = 0;
+  for (let i = 0; i < right.length; i++) difference |= left.charCodeAt(i) ^ right.charCodeAt(i);
+  return left.length === right.length && difference === 0;
+}
+
+export function createApplicationLock({ store, crypto = globalThis.crypto, clock = defaultClock }) {
+  let record;
+  let mode = "loading", busy = false, generation = 0, timer, deadline = 0;
+  let retryDeadline = 0, retryKey;
+  let pendingCode;
   const observers = new Set();
+  const random = () => toHex(crypto.getRandomValues(new Uint8Array(16)));
+  const remaining = () => Math.max(0, retryDeadline - clock.now());
+
+  function updateRecord(value) {
+    record = value;
+    const { count, retryAt } = value?.attempts ?? emptyAttempts;
+    const key = count + ":" + retryAt;
+    if (key !== retryKey) {
+      retryKey = key;
+      retryDeadline = clock.now() + Math.min(60_000, Math.max(0, retryAt - clock.wall()));
+    }
+  }
 
   function snapshot() {
     return {
-      mode: !verifier ? "disabled" : locked ? "locked" : "unlocked",
-      type: verifier?.type,
-      minutes,
-      busy,
-      waitSeconds: Math.max(0, Math.ceil((retryAt - clock.now()) / 1000))
+      mode, busy, waitSeconds: Math.ceil(remaining() / 1000),
+      type: record?.credential.type, minutes: record?.timeoutMinutes ?? DEFAULT_AUTO_LOCK_MINUTES
     };
   }
 
@@ -64,31 +83,67 @@ export function createApplicationLock({ crypto = globalThis.crypto, clock = defa
     timer = undefined;
     deadline = 0;
     generation++;
-    if (!verifier || locked) return;
-    locked = true;
-    publish();
+    pendingCode = undefined;
+    if (mode === "unlocked") {
+      mode = "locked";
+      publish();
+    }
   }
 
   function activity() {
-    if (!verifier || locked || minutes === 0) return;
+    if (mode !== "unlocked" || !record.timeoutMinutes) return;
     if (deadline && clock.now() >= deadline) {
       lock();
       return;
     }
     clock.cancel(timer);
-    deadline = clock.now() + minutes * 60_000;
-    timer = clock.schedule(lock, minutes * 60_000);
+    const interval = record.timeoutMinutes * 60_000;
+    deadline = clock.now() + interval;
+    timer = clock.schedule(lock, interval);
+  }
+
+  function sync(value) {
+    if (!value && record) throw Error("auth-record-disappeared");
+    const changed = value?.revision !== record?.revision;
+    if (changed && mode === "unlocked") lock();
+    updateRecord(value);
+    if (!value) mode = "disabled";
+    else if (mode !== "unlocked") mode = "locked";
+  }
+
+  function failed() {
+    lock();
+    mode = "blocked";
+  }
+
+  async function refresh() {
+    if (busy) return;
+    busy = true;
+    publish();
+    try {
+      sync(await store.read());
+    } catch {
+      failed();
+    } finally {
+      busy = false;
+      publish();
+    }
   }
 
   async function perform(operation) {
     if (busy) return "busy";
-    if (clock.now() < retryAt) return "wait";
     const started = generation;
+    const startedMode = mode;
+    const current = () => generation === started && mode === startedMode;
     busy = true;
     publish();
     try {
-      return await operation(() => generation === started);
+      sync(await store.read());
+      if (!current()) return "interrupted";
+      if (remaining()) return "wait";
+      return await operation(current);
     } catch {
+      failed();
       return "unavailable";
     } finally {
       busy = false;
@@ -96,87 +151,125 @@ export function createApplicationLock({ crypto = globalThis.crypto, clock = defa
     }
   }
 
-  async function verify(value, stillCurrent) {
-    if (!acceptable(verifier.type, value)) return reject(stillCurrent);
-    const candidate = await derive(crypto, value, verifier.salt);
-    const matches = equalBytes(candidate, verifier.bytes);
-    candidate.fill(0);
-    if (!stillCurrent()) return "interrupted";
-    if (!matches) return reject(stillCurrent);
-    failures = 0;
-    retryAt = 0;
-    return "ok";
-  }
-
-  function reject(stillCurrent) {
-    if (!stillCurrent()) return "interrupted";
-    failures = Math.min(failures + 1, 7);
-    retryAt = clock.now() + Math.min(60_000, 2 ** (failures - 1) * 1000);
-    return "incorrect";
-  }
-
-  async function replace(type, value, stillCurrent) {
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const bytes = await derive(crypto, value, salt);
-    if (!stillCurrent()) {
-      bytes.fill(0);
+  async function commit(changes, current) {
+    if (!current()) return "interrupted";
+    const expected = record?.revision ?? null;
+    const applied = await store.commit(expected, {
+      ...record, ...changes, version: 1, revision: (expected ?? 0) + 1
+    });
+    if (!applied) {
+      sync(await store.read());
       return "interrupted";
     }
-    verifier?.bytes.fill(0);
-    verifier = { type, salt, bytes };
+    updateRecord(applied);
+    if (!current()) {
+      mode = "locked";
+      return "committed-locked";
+    }
     return "ok";
+  }
+
+  function reject(current) {
+    const count = Math.min(record.attempts.count + 1, 7);
+    const retryAt = clock.wall() + Math.min(60_000, 2 ** (count - 1) * 1000);
+    return commit({ attempts: { count, retryAt } }, current)
+      .then(result => result === "ok" ? "incorrect" : result === "committed-locked" ? "interrupted" : result);
+  }
+
+  async function matches(value) {
+    const { type, salt, digest } = record.credential;
+    return acceptable(type, value) && equalDigest(await derive(crypto, value, salt), digest);
+  }
+
+  async function credential(type, value) {
+    const salt = random();
+    return { type, kdf: "PBKDF2-SHA-256", iterations: AUTH_KDF_ITERATIONS, salt, digest: await derive(crypto, value, salt) };
+  }
+
+  async function issueCredential({ type, value, code }, current, previousCode) {
+    const salt = random();
+    const changes = {
+      credential: await credential(type, value),
+      recovery: { salt, digest: await recoveryDigest(crypto, code, salt) },
+      attempts: emptyAttempts, timeoutMinutes: record?.timeoutMinutes ?? DEFAULT_AUTO_LOCK_MINUTES
+    };
+    if (previousCode && code === previousCode) return "invalid-secret";
+    return commit(changes, current);
+  }
+
+  function validEntry({ type, value, confirmation }) {
+    return acceptable(type, value) && value === confirmation;
+  }
+
+  function enrollment(data, recovering) {
+    if (mode !== (recovering ? "locked" : "disabled")) return "invalid-state";
+    if (data.stored !== "on" || !validEntry(data) || !pendingCode || normalizeCode(data.code) !== pendingCode) return "invalid-secret";
+    const code = pendingCode;
+    pendingCode = undefined;
+    return perform(async current => {
+      let previousCode;
+      if (recovering) {
+        previousCode = normalizeCode(data.previousCode);
+        const { salt, digest } = record.recovery;
+        if (previousCode.length !== 32 ||
+            !equalDigest(await recoveryDigest(crypto, previousCode, salt), digest)) return reject(current);
+      }
+      const result = await issueCredential({ ...data, code }, current, previousCode);
+      if (result === "ok") {
+        mode = recovering ? "locked" : "unlocked";
+        activity();
+      }
+      return result;
+    });
   }
 
   return {
-    snapshot,
+    snapshot, refresh, lock, activity,
     subscribe(observer) {
       observers.add(observer);
       observer(snapshot());
       return () => observers.delete(observer);
     },
-    enable({ type, value, confirmation, autoLock = 0 }) {
-      if (verifier) return "invalid-state";
-      if (!acceptable(type, value) || value !== confirmation ||
-          !AUTO_LOCK_MINUTES.includes(autoLock)) return "invalid-secret";
-      return perform(async stillCurrent => {
-        const result = await replace(type, value, stillCurrent);
-        if (result === "ok") {
-          minutes = autoLock;
-          activity();
-        }
-        return result;
-      });
+    newRecoveryCode() {
+      if (busy || !["locked", "disabled"].includes(mode)) return "";
+      pendingCode = random();
+      return pendingCode.toUpperCase().match(/.{4}/g).join("-");
     },
+    discardRecoveryCode() { pendingCode = undefined; },
+    enable(data) { return enrollment(data, false); },
+    recover(data) { return enrollment(data, true); },
     unlock(value) {
-      if (!locked) return "invalid-state";
-      return perform(async stillCurrent => {
-        const result = await verify(value, stillCurrent);
+      if (mode !== "locked") return "invalid-state";
+      return perform(async current => {
+        if (!await matches(value)) return reject(current);
+        const result = await commit({ attempts: emptyAttempts }, current);
         if (result === "ok") {
-          locked = false;
+          mode = "unlocked";
           activity();
         }
-        return result;
+        return result === "committed-locked" ? "interrupted" : result;
       });
     },
-    change({ current, type, value, confirmation }) {
-      if (!verifier || locked) return "invalid-state";
-      if (!acceptable(type, value) || value !== confirmation) return "invalid-secret";
-      return perform(async stillCurrent => {
-        const result = await verify(current, stillCurrent);
-        return result === "ok" ? replace(type, value, stillCurrent) : result;
+    change(data) {
+      if (mode !== "unlocked") return "invalid-state";
+      if (!validEntry(data)) return "invalid-secret";
+      return perform(async current => {
+        if (!await matches(data.current)) return reject(current);
+        return commit({ credential: await credential(data.type, data.value), attempts: emptyAttempts }, current);
       });
     },
     setAutoLock(value) {
-      if (!verifier || locked || !AUTO_LOCK_MINUTES.includes(value)) return false;
-      clock.cancel(timer);
-      timer = undefined;
-      deadline = 0;
-      minutes = value;
-      activity();
-      publish();
-      return true;
-    },
-    activity,
-    lock
+      if (mode !== "unlocked" || !AUTH_TIMEOUTS.includes(value)) return "invalid-state";
+      return perform(async current => {
+        const result = await commit({ timeoutMinutes: value }, current);
+        if (result === "ok") {
+          clock.cancel(timer);
+          timer = undefined;
+          deadline = 0;
+          activity();
+        }
+        return result;
+      });
+    }
   };
 }

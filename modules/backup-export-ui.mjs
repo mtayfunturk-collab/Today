@@ -74,16 +74,20 @@ export function mountBackupExport({root=document,create=createBackup,capture=cap
  cancel.addEventListener('click',()=>{active?.abort();dispose();status.textContent=messages.cancelled;});
  const invalidate=()=>{if(busy)active?.abort();dispose();};
  form.addEventListener('input',invalidate);
- view.addEventListener('pagehide',()=>{invalidate();clearPasswords();});
+ const clearSession=()=>{invalidate();clearPasswords();$('#backupVerifyFile').value='';};
+ view.addEventListener('pagehide',clearSession);
+ view.addEventListener('today:application-lock',clearSession);
  view.document.addEventListener('visibilitychange',()=>{if(view.document.hidden&&busy)active?.abort();});
  $('#backupVerifyForm').addEventListener('submit',async event=>{
   event.preventDefault();if(busy)return;
   const input=$('#backupVerifyFile'),file=input.files?.[0];
   if(!file||file.size>50*1024*1024){status.textContent='Desteklenen boyutta bir Today yedek dosyası seç.';return;}
+  active=new view.AbortController();const signal=active.signal;
   busy=true;fields.disabled=true;let password=$('#backupVerifyPassword').value;
-  try{const result=await verify(await file.text(),password,{crypto:view.crypto});status.textContent=result.ok?'Dosya açıldı ve bütünlüğü doğrulandı. Bu kontrol geri yükleme yapmadı; geri yükleme kabulü henüz yok.':'Dosya açılamadı. Parolanı ve dosyanı kontrol et.';}
-  catch{status.textContent='Dosya okunamadı; mevcut kayıtların değiştirilmedi.';}
-  finally{password='';clearPasswords();input.value='';busy=false;fields.disabled=false;}
+  try{const text=await file.text();if(signal.aborted)return;
+   const result=await verify(text,password,{crypto:view.crypto});if(signal.aborted)return;status.textContent=result.ok?'Dosya açıldı ve bütünlüğü doğrulandı. Bu kontrol geri yükleme yapmadı; geri yükleme kabulü henüz yok.':'Dosya açılamadı. Parolanı ve dosyanı kontrol et.';}
+  catch{if(!signal.aborted)status.textContent='Dosya okunamadı; mevcut kayıtların değiştirilmedi.';}
+  finally{password='';clearPasswords();input.value='';busy=false;fields.disabled=false;active=null;}
  });
  return Object.freeze({dispose});
 }

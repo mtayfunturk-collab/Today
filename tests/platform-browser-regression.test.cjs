@@ -352,6 +352,10 @@ async function createRuntime({
     }
   );
 
+  // The classic harness models an unenrolled profile. Real-browser tests run the ESM gate.
+  window.document.getElementById("todayPrivate").hidden = false;
+  window.document.getElementById("todayLock").hidden = true;
+  window.document.dispatchEvent(new window.Event("today:app-authorized"));
   window.dispatchEvent(
     new window.Event("load")
   );

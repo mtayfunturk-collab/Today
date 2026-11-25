@@ -3,93 +3,134 @@ const { test, expect } = require("@playwright/test");
 
 const PIN = "581347";
 const PASSWORD = "Kumlu sahil 23";
+const rootPath = () => `/runs/${randomBytes(12).toString("hex")}/`;
+const authDb = "today-auth01-device";
+const openApp = async (page, root) => {
+  await page.goto(root + "index.html");
+  await expect(page.locator("body")).toHaveAttribute("data-route", "home");
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.evaluate(() => window.TodayRouter.navigate("settings", { moveFocus: false }));
+  return page.locator("#todaySecuritySettings");
+};
 
-async function openFixture(page, surface = "Core") {
-  const scope = randomBytes(12).toString("hex");
-  const url = `/runs/${scope}/${surface === "Tam yedek" ? "backup" : "index"}.html`;
-  await page.route(`**${url}`, route => route.fulfill({
-    contentType: "text/html",
-    body: `<!doctype html><html lang="tr"><meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      <style>body{margin:16px;background:#0b1220;color:#eef2ff;font:16px system-ui}</style>
-      <main id="private" hidden inert><h1>${surface}</h1><p>Sentetik kişisel içerik</p>
-        <section id="settings"></section></main>
-      <section id="lock" hidden></section>
-      <script type="module">
-        import {createApplicationLock} from "./modules/application-lock.mjs";
-        import {mountApplicationLock} from "./modules/application-lock-ui.mjs";
-        mountApplicationLock({session:createApplicationLock(),privateContent:document.querySelector("#private"),
-          settings:document.querySelector("#settings"),lockScreen:document.querySelector("#lock")});
-      </script>`
-  }));
-  await page.goto(url);
-  await expect(page.getByRole("heading", { name: surface })).toBeVisible();
+async function prepareCode(form, secret) {
+  await form.getByLabel("Yeni PIN veya parola", { exact: true }).fill(secret);
+  await form.getByLabel("Yeni PIN veya parolayı yinele").fill(secret);
+  await form.getByRole("button", { name: "Kurtarma kodu oluştur" }).click();
+  const code = await form.getByLabel("Yeni kurtarma kodu").textContent();
+  expect(code).toMatch(/^(?:[0-9A-F]{4}-){7}[0-9A-F]{4}$/);
+  await form.getByLabel("Kodu cihaz dışında sakladım").check();
+  return code;
 }
 
-async function enable(page) {
-  await page.getByLabel("Yeni PIN veya parola", { exact: true }).fill(PIN);
-  await page.getByLabel("Yeni PIN veya parolayı yinele").fill(PIN);
-  await page.getByRole("button", { name: "Kilidi etkinleştir" }).click();
-  await expect(page.getByText("Oturum kilidi etkin.")).toBeVisible();
+async function enroll(settings) {
+  const code = await prepareCode(settings, PIN);
+  await settings.getByRole("button", { name: "Kilidi etkinleştir" }).click();
+  await expect(settings.getByText("Uygulama kilidi etkin.")).toBeVisible();
+  return code;
 }
 
-async function unlock(page, value) {
-  await page.getByLabel("PIN veya parola", { exact: true }).fill(value);
-  await page.getByRole("button", { name: "Kilidi aç" }).click();
+async function unlock(page, secret) {
+  const gate = page.locator("#todayLock");
+  await gate.getByLabel("PIN veya parola", { exact: true }).fill(secret);
+  await gate.getByRole("button", { name: "Kilidi aç" }).click();
 }
 
-test("opt-in, manual lock, cooldown and credential change work offline in a narrow layout", async ({ page, context }) => {
+test("real app opts in, stays locked offline after reload and atomically replaces a lost PIN", async ({ page, context }) => {
   await page.setViewportSize({ width: 320, height: 640 });
-  await openFixture(page);
-  await context.setOffline(true);
-  await enable(page);
-  await expect(page.getByLabel("Otomatik kilitleme").locator("option"))
+  const settings = await openApp(page, rootPath());
+  expect(await page.evaluate(async db => (await indexedDB.databases()).some(item => item.name === db), authDb)).toBe(false);
+  await expect(settings.getByText("Cihazdaki verileri şifrelemez.", { exact: false })).toBeVisible();
+  const oldCode = await enroll(settings);
+  await expect(settings.getByLabel("Otomatik kilitleme")).toHaveValue("5");
+  await expect(settings.getByLabel("Otomatik kilitleme").locator("option"))
     .toHaveText(["Anında", "1 dakika", "5 dakika", "15 dakika", "30 dakika"]);
-  await page.getByLabel("Otomatik kilitleme").selectOption("5");
-  await page.getByRole("button", { name: "Şimdi kilitle" }).click();
+  await settings.getByLabel("Otomatik kilitleme").selectOption("15");
+  await expect(settings.getByText("Otomatik kilitleme güncellendi.")).toBeVisible();
+  await page.evaluate(() => localStorage.setItem("__authPersonalSentinel", "koru"));
+  const before = await page.evaluate(() => Object.entries(localStorage).sort());
+  await settings.getByRole("button", { name: "Şimdi kilitle" }).click();
   await expect(page.getByRole("heading", { name: "Today kilitli" })).toBeVisible();
-  await expect(page.getByText("Sentetik kişisel içerik")).toBeHidden();
-  await expect(page.getByLabel("PIN veya parola", { exact: true })).toBeFocused();
+  await expect(settings).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
-  await unlock(page, "000000");
-  await expect(page.getByText("Yeniden denemek için 1 saniye bekle.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Kilidi aç" })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Kilidi aç" })).toBeEnabled();
-  await unlock(page, PIN);
 
-  await page.getByLabel("Yöntem").selectOption("password");
-  await page.getByLabel("Mevcut PIN veya parola").fill(PIN);
-  await page.getByLabel("Yeni PIN veya parola", { exact: true }).fill(PASSWORD);
-  await page.getByLabel("Yeni PIN veya parolayı yinele").fill(PASSWORD);
-  await page.getByRole("button", { name: "PIN veya parolayı değiştir" }).click();
-  await expect(page.getByText("Yeni giriş bilgisi hazır.")).toBeVisible();
-  await page.getByRole("button", { name: "Şimdi kilitle" }).click();
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Today kilitli" })).toBeVisible();
+  expect(await page.evaluate(() => window.TodayStartup.getStatus().phase)).not.toBe("ready");
+  await unlock(page, "111111");
+  await expect(page.getByText(/Yeniden denemek için/)).toBeVisible();
+  await page.reload();
+  await expect(page.locator("#todayLock")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Kilidi aç" })).toBeEnabled();
+  await page.getByText("PIN’imi veya parolamı unuttum").click();
+  const recovery = page.locator("[data-recover]");
+  await recovery.getByLabel("Mevcut kurtarma kodu").fill(oldCode);
+  await recovery.getByLabel("Yeni yöntem").selectOption("password");
+  const newCode = await prepareCode(recovery, PASSWORD);
+  expect(newCode).not.toBe(oldCode);
+  await recovery.getByRole("button", { name: "Kurtarma koduyla PIN veya parolayı yenile" }).click();
+  await expect(page.getByText("Yeni PIN veya parolanla kilidi aç.")).toBeVisible();
+  expect(await page.evaluate(() => Object.entries(localStorage).sort())).toEqual(before);
+  await expect(page.locator("#todayPrivate")).toBeHidden();
   await unlock(page, PASSWORD);
-  await expect(page.getByRole("heading", { name: "Core" })).toBeVisible();
-  const stored = await page.evaluate(async () => ({
-    local: localStorage.length, session: sessionStorage.length,
-    databases: (await indexedDB.databases()).length
-  }));
-  expect(stored).toEqual({ local: 0, session: 0, databases: 0 });
+  await expect(page.locator("body")).toHaveAttribute("data-route", "home");
+  expect(await page.evaluate(() => localStorage.getItem("__authPersonalSentinel"))).toBe("koru");
+  await page.evaluate(() => window.TodayRouter.navigate("settings", { moveFocus: false }));
+  await expect(settings.getByLabel("Otomatik kilitleme")).toHaveValue("15");
 });
 
-test("hidden document and restored page keep a protected backup fixture locked", async ({ page }) => {
-  await openFixture(page, "Tam yedek");
-  await enable(page);
+test("direct backup is gated and the v5 archive keeps its normal format after unlock", async ({ page }) => {
+  const root = rootPath();
+  await enroll(await openApp(page, root));
+  await page.goto(root + "backup.html");
+  await expect(page.getByRole("heading", { name: "Tam yedek" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Today kilitli" })).toBeVisible();
+  await unlock(page, PIN);
+  await expect(page.getByRole("heading", { name: "Tam yedek" })).toBeVisible();
+  await page.locator("#backupConsent").check();
+  await page.locator("#backupPassword").fill("synthetic backup password");
+  await page.locator("#backupConfirmation").fill("synthetic backup password");
+  await page.getByRole("button", { name: "Yedek dosyasını hazırla" }).click();
+  await expect(page.locator("#backupDownload")).toBeVisible();
+  const archive = await page.locator("#backupDownload").evaluate(async anchor => {
+    const { readBackupForPreview } = await import("./modules/backup-export.mjs");
+    const text = await (await fetch(anchor.href)).text();
+    const payload = await readBackupForPreview(text, "synthetic backup password", {
+      contracts: window.TodayNutritionContracts
+    });
+    return { format: payload.format, count: payload.localStorageEntries.length,
+      databases: payload.databases.map(item => item.name) };
+  });
+  expect(archive).toEqual({ format: "today:full-backup:v5", count: 28, databases: ["today_nutrition"] });
+  await page.getByRole("button", { name: "Şimdi kilitle" }).click();
+  await expect(page.locator("#backupDownload")).toBeHidden();
+  await unlock(page, PIN);
+  await expect(page.getByRole("heading", { name: "Tam yedek" })).toBeVisible();
+  await expect(page.locator("#backupDownload")).toBeHidden();
+
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: true });
     document.dispatchEvent(new Event("visibilitychange"));
     delete document.hidden;
     document.dispatchEvent(new Event("visibilitychange"));
   });
-  await expect(page.getByRole("heading", { name: "Tam yedek" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Today kilitli" })).toBeVisible();
-  await page.getByText("PIN’imi veya parolamı unuttum").click();
-  await expect(page.getByText(/Kurtarma bu denemede/)).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Tam yedek" })).toHaveCount(0);
-
+  await expect(page.locator("#todayPrivate")).toBeHidden();
   await unlock(page, PIN);
   await expect(page.getByRole("heading", { name: "Tam yedek" })).toBeVisible();
   await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
-  await expect(page.getByRole("heading", { name: "Tam yedek" })).toHaveCount(0);
+  await expect(page.locator("#todayPrivate")).toBeHidden();
+});
+
+test("worker rejects enrollment while a second Today page is open", async ({ page, context }) => {
+  const root = rootPath();
+  const settings = await openApp(page, root);
+  const other = await context.newPage();
+  await other.goto(root + "index.html");
+  await prepareCode(settings, PIN);
+  await settings.getByRole("button", { name: "Kilidi etkinleştir" }).click();
+  await expect(settings.getByText(/Diğer Today sekmelerini kapat/)).toBeVisible();
+  expect(await page.evaluate(async db => (await indexedDB.databases()).some(item => item.name === db), authDb)).toBe(false);
+  await other.close();
+  await enroll(settings);
 });

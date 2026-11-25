@@ -39,7 +39,9 @@ export function mountRestorePreview({root=document,prepare=prepareRestorePreview
   let active=null,busy=false;
   const invalidate=()=>{active?.abort();status.textContent='';};
   form.addEventListener('input',invalidate);
-  view.addEventListener('pagehide',()=>{invalidate();password.value='';file.value='';consent.checked=false;});
+  const clearSession=()=>{invalidate();password.value='';file.value='';consent.checked=false;};
+  view.addEventListener('pagehide',clearSession);
+  view.addEventListener('today:application-lock',clearSession);
   form.addEventListener('submit',async event=>{
     event.preventDefault();if(busy)return;
     status.textContent='';

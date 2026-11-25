@@ -23,7 +23,7 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 | SP01–SP03 / P2 | Sesli giriş ve konuşmayı metne dönüştürme; geçmiş düzenlenebilir taslak/prototip kaydı, canlı entegrasyon doğrulanmadı | Core not akışı, izin/ret/iptal ve tarayıcıya göre yerel işleme kanıtı. Dış gönderim varsayılanı kapalı | Önizleme kapsamı tarihsel; yeni mikrofon/veri aktarımı ve platform kararı doğrulanmadan entegrasyon yok |
 | I18N01–06 / P2 | Türkçe bağlamalar ve dil resolver'ı mevcut; İngilizce ve manuel dil seçimi kısmi | Editoryal kabul, tüm yüzeylerin parametre/erişilebilirlik kapsamı, manuel tercih için kayıt/yarış/yedek kabulü | [Tasarım](T90-261101-PO1-I18N02-EN-BINDING-DESIGN.md); EN yayın ve kalıcı yazma yetkisi doğrulanmadı |
 | COR01 / P1 | 12 renk paleti ve açık/koyu/yüksek kontrast tema seçenekleri kaynakta | Mevcut renk kimlikleri ve tema davranışı korunur; güncel fiziksel kabul ACC-01 | Mevcut kapsam; [palet kaydı](T90-261101-PO1-COR01-PALETTE.md), 4061839 |
-| AUTH01 / P2 | Çevrimdışı PIN/parola, manuel/otomatik kilit, arka plan ve değiştirme akışı RAM tabanlı sentetik düzeneğe hazır | 0/1/5/15/30 dakika, artan bekleme, gizli kişisel UI; saklama, tek kullanımlık kurtarma, ana/yedek başlangıç entegrasyonu ve fiziksel kabul açık | İlk uygulama dilimi onaylı. [Kalıcı sözleşme ve kurtarma kararı](TODAY-AUTH01-DESIGN.md#25-kasım--kalıcı-saklama-ve-kurtarma-için-onay-kararı) bekliyor. [Taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50), yayımlanmadı |
+| AUTH01 / P2 | Çevrimdışı kalıcı PIN/parola, v1 doğrulayıcı, atomik kurtarma ve ana/yedek giriş kilidi taslakta | Varsayılan 5 dk, 0/1/5/15/30, v5 uyumu. Gerçek cihazda eski Worker/BFCache, yükseltme ve performans kabulü açık | Kapsam ve saklama sözleşmesi onaylı. [Taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50), yayın onayı bekliyor |
 | AUTH01-BIO / P2 | Face ID, Touch ID, parmak izi ve Windows Hello | AUTH01 kalıcı profil ve fiziksel kabulü; platform doğrulama ve izin şartları | AUTH01 sonraki dilimi. Mevcut [#50](https://github.com/mtayfunturk-collab/Today/pull/50) tasarımına bağlı; entegrasyon başlanmadı |
 | AUTH02 / P3 | Şifreli yerel veri alanı, anahtar yönetimi ve kurtarma | AUTH01 oturum sınırı ve T90-08 veri bütünlüğü; v5 uyumu ve kayıpsız geçiş | Yol haritası, onay bekliyor; uygulama/PR/yayın yok |
 | AUTH03 / P3 | İsteğe bağlı hesap ve passkey, mevcut çevrimdışı kullanımın korunması | AUTH01, AUTH02 anahtar/kurtarma kararları ve Connect veri sınırı; harici aktarım açık onaya bağlı | Yol haritası, onay bekliyor; uygulama/PR/yayın yok |
@@ -47,7 +47,13 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 - **Kalan kabul:** Windows 10'da URL, tarayıcı/sürüm ve açılış sonucu; indirilen sentetik v5 dosyasının yeniden açılması ve bütünlük kontrolü. iPhone Safari ve kurulu PWA'da aynı iki dosya işlemi ayrı kaydedilmeli. Yalnız sonuç veya sınırlı tanı kodu kaydedilir; parola, dosya ve kişisel veri paylaşılmaz. Eski iPhone güncelleme sorunu yeniden üretilmedikçe tarihsel kalır.
 - **Sıradaki uygun iş:** AUTH01 için mevcut tasarım yetkisiyle karar seçeneklerini ve kabul ölçütlerini belgele. Kimlik kodu, yeni depo veya sağlayıcı entegrasyonu ayrı ürün kararıdır.
 
-### Yürütme kaydı — AUTH01 ilk uygulama dilimi
+### Yürütme kaydı — AUTH01 kalıcı ilk dilim
+
+- **Tamamlanan:** Onaylı IndexedDB v1 cihaz kaydı, çevrimdışı PIN/parola, manuel/otomatik/arka plan kilidi, varsayılan 5 dakika, kalıcı bekleme, parola değiştirme ve atomik tek kullanımlık kurtarma. Ana uygulama ve doğrudan yedek sayfası aynı kilidi kullanır. Eski kişisel kayıt ve v5 biçimi korunur.
+- **Doğrulama:** Birim 12/12, birleşik platform 1543/1543, hedefli Chromium ve WebKit 14/14’er. Native varlık birim 15/15 ve web paketi başarılı. PBKDF2 600.000 bağımsız türetim ve masaüstü ölçümleri [AUTH01 belgesinde](TODAY-AUTH01-DESIGN.md).
+- **PR ve kalanlar:** Aynı [taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50). Fiziksel iPhone Safari ve kurulu PWA, Android/Windows, eski Worker ve BFCache, uygulama değiştirici, v5 fiziksel akış ve cihaz performansı bekliyor. Merge/yayın ayrı ürün sahibi onayı ister. AUTH01-BIO, AUTH02 ve AUTH03 kapsamı korunur.
+
+### Tarihsel yürütme kaydı — AUTH01 oturumluk dilim
 
 - **Tamamlanan:** Ürün girişi ve v5'ten ayrılmış oturumluk PIN/parola denetleyicisi ve arayüz. Manuel kilit, 0/1/5/15/30 dakika, dönüşte kilit, parola değiştirme, artan bekleme ve geç kalan doğrulamanın kilidi açmaması sentetik verilerle sınandı.
 - **Doğrulama:** Birim 7/7. Sistem Chromium 2/2, bunlar gerçek Core/yedek rotası veya fiziksel cihaz kabulü değil. Birleşik platform 1538/1538. Yerel WebKit eksik sistem kütüphaneleri nedeniyle çalıştırılmadı.

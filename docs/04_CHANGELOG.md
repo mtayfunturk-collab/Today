@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01 kalıcı cihaz kilidi
+
+Taslak #50’de onaylı IndexedDB v1, çevrimdışı PIN/parola, varsayılan beş dakika, kalıcı bekleme ve tek kullanımlık kurtarma ana ve yedek girişlerine bağlandı. Kimlik işlemleri ayrı cihaz kaydında kalır. v5 arşivi sentetik testte mevcut kapsamıyla açıldı. Birim 12/12, platform 1543/1543, hedefli Chromium ve WebKit 14/14’er, native birim 15/15 ve web paketi başarılı. Fiziksel kabul ve yayın onayı açık. [Uygulama kaydı](TODAY-AUTH01-DESIGN.md).
+
 ## 25 Kasım 2026 — AUTH01 oturumluk kilit ve onay sözleşmesi
 
 PR #50 içinde RAM tabanlı PIN/parola, süre seçimi, arka plan, manuel kilit ve giriş bilgisini değiştirme arayüzü sentetik düzeneğe alındı. Hedefli birim 7/7, Chromium 2/2, platform 1538/1538; yerel WebKit için sistem kütüphaneleri eksik. Kalıcı saklama ve kurtarma [onay taslağında](TODAY-AUTH01-DESIGN.md); ürün girişleri, kişisel veri, şema ve v5 kodu değişmedi.

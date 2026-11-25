@@ -10,12 +10,12 @@ const updatedHtml = fs.readFileSync(
   "utf8"
 );
 
-// Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
+// Review the AUTH01 entry gate and worker changes; unrelated production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "acfa581ce1173d5af630dfbaffea3cafb5c1e8e1b309c9983dbd0bc08c0018dd",
+    "38e9c3d7441947967b925c924cc6ea5802dea92456776296fd159bc21612b2cd",
   "sw.js":
-    "b2b582f51fb7b6edf29cd93f27df3b1fe76196d6bef13519d2d95fc3e5cac78c",
+    "ab9ffede84516dfbaa99c90f27ffe5127c5aefadc0dd2dc1b5879140b833f9f5",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -303,7 +303,10 @@ const expectedHtmlIds = [
   "statusModules",
   "statusPick",
   "summaryText",
-  "themeSelect"
+  "themeSelect",
+  "todayLock",
+  "todayPrivate",
+  "todaySecuritySettings"
 ];
 
 function sha256(path) {
@@ -406,14 +409,14 @@ test(
 );
 
 test(
-  "Güncel 241 HTML kimliği benzersiz",
+  "Güncel 244 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 241);
+    assert.equal(updatedIds.length, 244);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -518,7 +521,8 @@ test(
       "./modules/places-ui.mjs",
       "./modules/router.js",
       "./modules/module-registry.js",
-      "./modules/startup-manager.js"
+      "./modules/startup-manager.js",
+      "./modules/application-lock-entry.mjs"
     ]);
   }
 );
@@ -1300,7 +1304,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-111 ve 150 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-112 ve 154 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1312,7 +1316,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-111"'
+        'const VERSION = "today-v2-foundation-112"'
       )
     );
     assert.ok(shellMatch);
@@ -1322,7 +1326,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 150);
+    assert.equal(shellEntries.length, 154);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);

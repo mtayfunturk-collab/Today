@@ -107,5 +107,6 @@ export function mountRadioUI({root=document,directory=createLiveRadioDirectory()
 }
 if(typeof window!=='undefined'&&typeof document!=='undefined'){
  const boot=()=>{if(window.TodayStartup?.getStatus?.().phase==='ready'){mountRadioUI();mountRadioMiniPlayer();}};
+ window.addEventListener('today:application-lock',()=>getRadioPlayer().stop());
  window.addEventListener('today:startup-ready',boot);document.addEventListener('DOMContentLoaded',boot,{once:true});boot();
 }

@@ -1,14 +1,14 @@
-# AUTH01 — Cihaz içi uygulama kilidi fizibilitesi
+# AUTH01 — Cihaz içi uygulama kilidi
 
 25 Kasım 2026 · Today 2.23.3 / [4061839](https://github.com/mtayfunturk-collab/Today/commit/4061839) · [Mevcut taslak PR #50](https://github.com/mtayfunturk-collab/Today/pull/50)
 
-**Sonuç:** Cihaz içi PIN veya parola ile isteğe bağlı ekran kilidi PWA ve Capacitor için uygulanabilir. Ortak kilit akışı ile platforma özgü doğrulama bağdaştırıcıları önerilir. WebAuthn ve native biyometri koşullu seçeneklerdir. Bu inceleme kaynak koduna ve birincil platform belgelerine dayanır. Fiziksel cihaz, kimlik bilgisi kaydı, prototip ve çalışma zamanı kabulü kapsam dışındadır. Ürün sahibinin onayı fizibiliteyi kapsıyor. Aşağıdaki teknik yöntem uygulama onayına sunuluyor.
+**Sonuç:** Cihaz içi PIN veya parola ile isteğe bağlı ekran kilidi PWA ve Capacitor için uygulanabilir. Ortak kilit akışı ile platforma özgü doğrulama bağdaştırıcıları önerilir. WebAuthn ve native biyometri koşullu seçeneklerdir. İlk dilim, ürün sahibinin onayladığı kalıcı doğrulayıcı ve kurtarma sözleşmesi ile taslak #50’de uygulanır. Fiziksel cihaz, eski istemci ve yayın kabulü açık. Biyometri fizibilitesi, sonraki uygulama diliminde izlenir.
 
 ## Üç aşamalı güvenlik yol haritası
 
 | Aşama | Teslim ve bağımlılık |
 |---|---|
-| **AUTH01 — Cihaz içi uygulama kilidi** | Cihaz başına isteğe bağlı PIN/parola, manuel ve otomatik kilit, arka plandan dönüşte doğrulama, Güvenlik ve Gizlilik ekranı ve desteklenen cihazlarda platform doğrulaması. Fizibilite onaylı. Uygulama onayı açık. |
+| **AUTH01 — Cihaz içi uygulama kilidi** | Cihaz başına isteğe bağlı PIN/parola, manuel ve otomatik kilit, arka plandan dönüşte doğrulama, Güvenlik ve Gizlilik ekranı ve desteklenen cihazlarda platform doğrulaması. İlk dilim ve saklama sözleşmesi onaylı. Fiziksel kabul açık. |
 | **AUTH02 — Şifreli yerel veri alanı** | AUTH01 oturum sınırları ve T90-08 veri bütünlüğü kabulüne bağlı. Kayıt şifreleme, anahtar üretme/saklama/döndürme, unutulan parola/kurtarma, v5 yedek uyumu ve kesintide veri kaybını önleyen doğrulanabilir geçiş ayrı tasarlanır. Henüz onaylanmadı. |
 | **AUTH03 — Hesap ve Passkey altyapısı** | AUTH01 oturum modeline, AUTH02 anahtar/kurtarma kararlarına ve Today Connect veri sınırlarına bağlı. İsteğe bağlı hesap ve passkey, hesap açmadan çevrimdışı kullanım, açık onaya bağlı harici aktarım ve ileride cihazlar arası senkronizasyonla uyum. Henüz onaylanmadı. |
 
@@ -30,7 +30,7 @@
 
 Tablo platform adaylarını gösterir. Today cihaz desteği veya belirli biyometrik yöntemin seçildiği ancak fiziksel kabulden sonra ilan edilir. [W3C WebAuthn](https://www.w3.org/TR/webauthn-3/) · [Apple LocalAuthentication](https://developer.apple.com/documentation/localauthentication) · [Android BiometricPrompt](https://developer.android.com/identity/sign-in/biometric-auth) · [Microsoft Windows Hello ve passkey](https://learn.microsoft.com/en-us/windows/security/identity-protection/passkeys/)
 
-## Onaya sunulan teknik yöntem
+## Teknik yöntem ve sonraki aşama
 
 1. **Önce çevrimdışı PIN/parola temeli.** Varsayılan kapalı. Kullanıcı PIN ya da parola seçip iki kez doğrular. En az altı haneli PIN veya uzun parola önerilir. PIN düşük entropilidir. Her profil için rastgele salt ve sürümlü, maliyetli bir doğrulayıcı kullanılır. PWA için mevcut Web Crypto ile PBKDF2-HMAC-SHA-256 ilk adaydır. İş faktörü desteklenen cihazlarda ölçüm ve güvenlik incelemesiyle belirlenir. Denemeler artan süreyle bekletilir, normal yeniden açılışta sayaç devam eder. Düz metin, günlük, telemetri ve yedek içinde PIN/parola ya da kurtarma kodu yer almaz. Kalıcı doğrulayıcı/sayaç sözleşmesi ve saklama konumu ayrıca onaylanır. v5 dışa aktarıcısı kayıtsız Today anahtarlarını reddedebildiğinden, yeni saklama alanı için dışa aktarma, önizleme ve eski arşiv uyumluluğu tasarımda doğrulanır. [v5 kaynak denetimi](../modules/backup-export.mjs)
 2. **Kişisel içerikten önce kilit.** Beklenen durum `bilinmiyor → kilitli → açık` veya kilit özelliği kullanıcı tarafından etkinleştirilmemişse normal açılıştır. Bozuk/okunamayan yapılandırma, kilitli içeriği göstermeden hata yüzeyine gider. Kilitli iken ana router, kişisel DOM ve erişilebilirlik ağacı, kişisel bildirim içeriği, doğrudan yedek/önizleme, grafik ve medya başlıkları denetlenir. Hassas UI kilitlenirken gizlenir veya kaldırılır. Bekleyen notlar mevcut güvenli kayıt akışıyla ele alınır. Kaydetme hatası veriyi silmez ve kilit açılmadan özel hata ayrıntısı gösterilmez.
@@ -54,9 +54,9 @@ Tablo platform adaylarını gösterir. Today cihaz desteği veya belirli biyomet
 | Veri ve gizlilik | Doğrulayıcı dışındaki kimlik verisi yazılmaz. Önceki not, sağlık, Nutrition ve yedek verisi korunur. v5 dışa aktarma/önizleme, eski dosya ve hata akışları sentetik profilde geçer. Kilitli yüzey kişisel bildirim ve medya içeriğini açığa çıkarmaz. |
 | Platform kabulü | iPhone Safari ve kurulu PWA, Android Chrome/PWA, Windows tarayıcısı ve onaylanırsa imzalı iOS/Android native ayrı ölçülür. Donanım/OS/tarayıcı, uygulama biçimi ve commit kaydedilir. Otomasyon gerçek biyometri kanıtı yerine geçmez. |
 
-## 25 Kasım — Kalıcı saklama ve kurtarma için onay kararı
+## 25 Kasım — Onaylı kalıcı saklama ve kurtarma sözleşmesi
 
-İlk uygulama diliminde çevrimdışı PIN/parola, geçici oturum, arka plandan dönüş ve 0/1/5/15/30 dakika kuralları onaylandı. **Kalıcı doğrulayıcı, kurtarma ve yayına alınacak güvenlik sınırı bu bölümde öneri olarak sunuluyor.** Taslakta bu protokolü yazan ya da okuyan kod yok.
+Ürün sahibi ilk uygulama dilimini, kalıcı doğrulayıcı sözleşmesini, kurtarmayı ve bu güvenlik sınırını onayladı. İlk etkinleştirmede ön plandaki varsayılan hareketsizlik süresi 5 dakikadır. Aşağıdaki sözleşme taslak PR #50’de uygulanır. Fiziksel kabul ve ayrı yayın onayı geçerlidir.
 
 ### 1. Saklama sözleşmesi
 
@@ -68,10 +68,18 @@ Tablo platform adaylarını gösterir. Today cihaz desteği veya belirli biyomet
 
 ### 2. Parola/PIN kaybı
 
-Kurulumda kriptografik rastgele üretilen **en az 128 bitlik tek kullanımlık kurtarma kodu** bir kez gösterilir. Kullanıcı cihaz dışında sakladığını doğrular. Yalnız kodun ayrı salt ile türetilmiş özeti saklanır. Geçerli kod ve yeni PIN/parola birlikte doğrulandıktan sonra tek atomik işlem kodu tüketir, yeni kimliği yazar ve yeni kurtarma kodu oluşturur. Başarısız veya kesilen işlem önceki kimlik ve kodu geçerli bırakır. Diğer oturumlar kilitlenir. İlk dilimde biyometriyle kurtarma yoktur. Kod da kayıpsa kilitli kalınır. Destek, e-posta, boş giriş, yedek parolası veya “verileri sil ve yeniden başla” üzerinden doğrulamayı kaldıran uygulama komutu bulunmaz. Kişisel kayıtlar ve yedekler kurtarma akışı tarafından okunmaz, değiştirilmez veya silinmez.
+Kurulumda kriptografik rastgele üretilen **en az 128 bitlik tek kullanımlık kurtarma kodu** bir kez gösterilir. Kullanıcı cihaz dışında sakladığını doğrular. Yalnız kodun ayrı salt ile türetilmiş özeti saklanır. Geçerli kod ve yeni PIN/parola birlikte doğrulandıktan sonra tek atomik işlem kodu tüketir, yeni kimliği yazar ve yeni kurtarma kodu oluşturur. Atomik yazımdan önce duran işlem önceki kimlik ve kodu geçerli bırakır. Yazım tamamlandıktan sonra kilitlenen sayfa, yeni kimliğin kaydedildiğini bildirir ve yeniden giriş ister. Diğer oturumlar kilitlenir. İlk dilimde biyometriyle kurtarma yoktur. Kod da kayıpsa kilitli kalınır. Destek, e-posta, boş giriş, yedek parolası veya “verileri sil ve yeniden başla” üzerinden doğrulamayı kaldıran uygulama komutu bulunmaz. Kişisel kayıtlar ve yedekler kurtarma akışı tarafından okunmaz, değiştirilmez veya silinmez.
 
 ### 3. Güvenlik sınırı ve bağlama kabulü
 
 - Kullanıcı metni **“Uygulama kilidi kişisel ekranları gizler. Cihazdaki verileri şifrelemez.”** Tarayıcı profili/depolamasına doğrudan erişim, aynı origin’de çalışan başka kod, eski Service Worker veya eski istemci ve OS ekran görüntüsü uygulama kilidinin sınırları içindedir. Doğrulanamayan eski istemci/önbellek davranışında yayın kararı bekler. Yetkisiz hassas içerik sızıntısı testleri başlangıç, doğrudan yedek bağlantısı, BFCache, çok sekme, medya bilgisi ve uygulama değiştiriciyi kapsar.
 - **“Anında”** seçimi, arka plana geçişte sıfır beklemedir. Arka plandan dönüş tüm seçeneklerde yeniden doğrulama ister. 1/5/15/30 dakika ön plandaki hareketsizliği ölçer. Manuel kilit bekleyen doğrulamayı geçersiz kılar. Açık oturum bellekte tutulur ve başka sekmeye otomatik devredilmez.
-- Bu dalda ham veri, kalıcı durum veya v5 formatı değiştirilmedi. RAM içindeki doğrulayıcı ve arayüz yalnız sentetik tarayıcı düzeneğinde etkin. Ana uygulama ve yedek girişlerine entegrasyon için bu karar, kalıcı profil kabul testleri ve fiziksel cihaz doğrulaması gerekir. Face ID, Touch ID, parmak izi ve Windows Hello mevcut AUTH01’in sonraki dilimidir.
+- Ana uygulama ve ayrı yedek girişleri, görünür içeriği göstermeden önce aynı izolasyon kapısını kullanır. Cihazda özellik kapalıyken AUTH01 ilk okuması boş bir DB bırakmaz. Yeni PWA kurulumu için güncel kontrol eden Worker ve tek üst düzey Today sayfası gerekir. Worker navigasyonu ile ilk kayıt ortak Web Locks alanında koordine edilir. Diğer güncel sekmeler kilit bildirimi alır ve kendi kayıt revizyonunu okur. Kalıcı bekleme, açık oturumda monotonik saatle korunur. Uygulama tamamen kapanmışken değiştirilmiş sistem saati için güvenilir çevrimdışı zaman kaynağı yoktur. Face ID, Touch ID, parmak izi ve Windows Hello sonraki AUTH01 dilimidir.
+
+## İlk uygulama dilimi ve fiziksel kabul
+
+- IndexedDB v1, tek `lock/device` kaydı. Kimlik, sayaç ve kurtarma değişikliklerinde beklenen revizyon okuma-yazma işlemi içinde kontrol edilir. İki istemci aynı kurtarma kodunu denediğinde yalnız bir revizyon kaydedilir. Kod doğrulanınca yeni PIN/parola ve yeni kurtarma doğrulayıcısı birlikte yazılır; kurtarma formu kullanıcıyı yeni PIN/parola ile tekrar girişe yönlendirir.
+- İlk kez etkinleştirmede kullanıcı yeni kurtarma kodunu cihaz dışında sakladığını doğrular. Kodu ve PIN/parolayı kaybetme sınırı aynı ekranda gösterilir. Sahte ilk kurulum, destek sıfırlaması veya v5 parola eşlemesi yoktur.
+- Kurulum/yedekleme kişisel alanı ve var olan v5 kodlayıcı biçimini korur. Sentetik yedek çözülerek formatın v5, anahtar sayısının 28 ve tek veritabanının Nutrition olduğu doğrulandı.
+- PBKDF2-HMAC-SHA-256, 600.000 yineleme ve 32 bayt çıktı bağımsız türetici ile eşleşti. Linux masaüstünde beş ölçüm, bir ısınma hariç: Chromium medyan 154 ms/en yüksek 183 ms. Playwright WebKit medyan 128 ms/en yüksek 148 ms. İki ölçüm de 1.000 ms masaüstü deneme eşiğini karşıladı. Fiziksel iPhone Safari ve kurulu PWA, hedef Android/Windows ve izinli native adaylarda performans ile yaşam döngüsü ayrı ölçülür.
+- Fiziksel kabulde ilk kurulum, PIN/parola değiştirme, çevrimdışı yeniden açılış, bekleme, tek kullanımlı kurtarma, önceki sürümden yükseltme, eski Worker/BFCache ve v5 yedek doğrulanır. Özellikle eski bir dokümanın BFCache üzerinden geri gelmesi ile işletim sistemi uygulama değiştirici görüntüsü için desteklenen fiziksel yüzeylerde kanıt gerekir. Aynı origin depolama erişimi ve eski uygulama kopyaları AUTH01 ekran kilidinin güvenlik sınırıdır. Canlı yayın ayrı ürün sahibi kararına bağlıdır.
