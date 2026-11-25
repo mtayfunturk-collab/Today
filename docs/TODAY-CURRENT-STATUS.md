@@ -2,7 +2,7 @@
 
 ## 25 Kasım 2026 — Ana görev envanteri
 
-Canlı referans: Today **2.23.3**, [yayın dalı](../tree/release/today-backup-candidate-2a70ec9) / [4061839](https://github.com/mtayfunturk-collab/Today/commit/4061839). Uzlaştırma başlangıcında 50 dal ve 40 açık taslak PR vardı. [Yayın CI'ı](https://github.com/mtayfunturk-collab/Today/actions/runs/45560354005) 4/4 başarılı. Bu bölüm güncel kayıttır. Altındaki tarihli notlar uygulama geçmişidir.
+Canlı referans: Today **2.23.3**, [yayın dalı](https://github.com/mtayfunturk-collab/Today/tree/release/today-backup-candidate-2a70ec9) / [4061839](https://github.com/mtayfunturk-collab/Today/commit/4061839). Uzlaştırma başlangıcında 50 dal ve 40 açık taslak PR vardı. [Yayın CI'ı](https://github.com/mtayfunturk-collab/Today/actions/runs/45560354005) 4/4 başarılı. Bu bölüm güncel kayıttır. Altındaki tarihli notlar uygulama geçmişidir.
 
 [AGENTS.md](../AGENTS.md) yetki sınırları geçerli. Her görevde tek aktif dal/PR, kapsamı ve bağımlılıkları doğrulanmış iş sırası, commit/PR, kabul kanıtı ve yayın SHA'sı tutulur. Engelli işlem, engeli kaldıran yeni kanıt ya da karar olmadan tekrarlanmaz. Merge, main değişikliği, canlı yayın, kalıcı veri/şema değişikliği, yeni kişisel veri aktarımı ve üretim restore ayrı onaya bağlıdır. Dal silme, PR kapatma ve varsayılan dal değişikliği de ayrı karardır.
 
@@ -10,7 +10,7 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 
 | Kimlik / öncelik | Kapsam ve durum | Bağımlılık / kabul kriteri | Yetki, PR ve yayın |
 |---|---|---|---|
-| GOV-01 / P1 | Ana görev ve yayın uzlaştırması, belge teslimi | Açık PR başları yayın geçmişiyle eşleşir; mevcut kayıtlar korunur; belge farkı incelenir | 25 Kasım protokolü, dal `task/today-master-inventory`, yayın bekliyor |
+| GOV-01 / P1 | Ana görev ve yayın uzlaştırması, belge teslimi | Açık PR başları yayın geçmişiyle eşleşir; mevcut kayıtlar korunur; belge farkı incelenir | 25 Kasım protokolü, dal `task/today-master-inventory`, [taslak #49](https://github.com/mtayfunturk-collab/Today/pull/49), yayın bekliyor |
 | CORE-01 / P1 | Core, Health, Sky, Alanlarım ve ortak gezinme canlıda | Günlük kayıt, not, sağlık kayıtları ve Sky akışları korunur; bütün yüzeylerin fiziksel regresyonu ACC-01 | Mevcut kapsam; [#1](https://github.com/mtayfunturk-collab/Today/pull/1), [#42](https://github.com/mtayfunturk-collab/Today/pull/42), 4061839 |
 | RAD-01 / P1 | İzinli arama, oynatma ve ortak mini oynatıcı canlıda | Tek ses, ayrı dış yayın izni; iPhone Safari/PWA mini oynatıcı kabulü kayıtlı | Mevcut kapsam; [#2](https://github.com/mtayfunturk-collab/Today/pull/2), [#45](https://github.com/mtayfunturk-collab/Today/pull/45) |
 | AI-019.1 / P2 | İzinli cihaz içi kurallar ve 1/7/30/90 günlük gözlemler canlıda | Dayanak, belirsizlik ve açık onay; sağlayıcı ve yeni dış aktarım yok | Mevcut kapsam; [AI Engine](../Today-AI-Engine/README.md), 4061839 |
@@ -27,7 +27,7 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 | NUT-019.2–3 / P3 | HealthKit/Health Connect saat ve native bildirim önizlemesi var; fiziksel kabul ertelendi | Ürün sahibinin cihazı, Mi Fitness aktarımı ve uygun iOS imza/üyelik yolu | Mevcut onaylı kod korunur; Apple Developer ertelemesi geçerli. [Cihaz planı](../native/DEVICE-VALIDATION.md) |
 | RAD-FAV / P2 | Radio favorileri ve Alanlarım tercihleri için yedek sözleşmesi mevcut; yazıcı kapalı | Fiziksel sentetik yedek kabulü ve onaylı iki anahtarın mevcut sözleşmesi | [#16](https://github.com/mtayfunturk-collab/Today/pull/16) ve [#17](https://github.com/mtayfunturk-collab/Today/pull/17) tarihsel, ayrı fiziksel kabul bekliyor |
 | RAD04 / P2 | Sanatçı/parça fizibilitesi tamam; ürün özelliği teknik engelde | İzinli belgeli yayıncı kaynağı, doğru istasyon eşleşmesi, CORS ve boş durum | [#15](https://github.com/mtayfunturk-collab/Today/pull/15) belge teslimi; sağlayıcı/aktarımı ayrıca onaylanır |
-| Şehir sürüşü ve kokpit / P2 | Ürün sahibinin bu talimatta onaylı olduğunu belirttiği kapsam envantere alındı | Uygulama öncesi mevcut tasarım/varlık lisansları, senaryo, cihaz hedefi ve kabul ölçütü bulunmalı | GitHub'da uygulama kapsamı, dal/PR ve yayın doğrulanmadı; ürün düzeyindeki onay korunur |
+| CITY-01 / P2 | Ürün sahibinin bu talimatta onaylı olduğunu belirttiği kapsam envantere alındı | Uygulama öncesi mevcut tasarım/varlık lisansları, senaryo, cihaz hedefi ve kabul ölçütü bulunmalı | GitHub'da uygulama kapsamı, dal/PR ve yayın doğrulanmadı; ürün düzeyindeki onay korunur |
 | NUT-020 / P3 | Kontrollü PWA pilotu bekliyor | Günlük akış kararı/kişisel kullanım, cihaz kabulü, güvenli kurtarma | Pilot başlangıç kararı ve PR/yayın doğrulanmadı |
 | NUT-021 / P3 | Pazar doğrulaması için başlangıç kanıtı yok | Pilot çıktısı, tekrar kullanım ve değer, devam/daralt/değiştir kararı | [Faz 6](03_PHASES.md) planı |
 | NUT-022 / P3 | Mağaza dağıtımı için başlangıç kanıtı yok | Pilot/pazar kararı, imza, veri taşıma, kapalı test ve mağaza beyanları | [Faz 7](03_PHASES.md) planı, gönderim ayrı onay |
@@ -36,6 +36,13 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 
 - Aktif geliştirme kuyruğundan çıkarılan 32 açık tarihsel taslak: **#1–#4, #12–#37, #39, #40**. Kaynak başları 4061839 geçmişinde. Radio ve yedek tabanı [#5](https://github.com/mtayfunturk-collab/Today/pull/5), Core not düzeltmeleri [#38](https://github.com/mtayfunturk-collab/Today/pull/38) ve [#41](https://github.com/mtayfunturk-collab/Today/pull/41), ürün entegrasyonu [#42](https://github.com/mtayfunturk-collab/Today/pull/42), v5 ürün teslimi [#45](https://github.com/mtayfunturk-collab/Today/pull/45) ile izlenir. Ara sözleşme ve fizibiliteler kendi dar kapsamıyla tamamlandı.
 - T90-08: #11 gerçek Chromium BFCache dönüşünde eski yazıyı gözledi; ürün kabulü FAIL. #46 v5'in v1 prototipinde güvenle reddini, #47 normal ikinci sekmede Web Lock sınırını, #48 canlı v5 yazıcı envanterini kaydetti. Önceki CI/deneyler yeniden çalıştırılmaz. Güncel protokol kararı için [yazıcı kabul kaydı](https://github.com/mtayfunturk-collab/Today/blob/task/today-writer-inventory/docs/TODAY-LIVE-WRITER-ADMISSION.md) kullanılır.
+
+### Yürütme kaydı — ACC-01 / iş #6
+
+- **Tamamlanan dilim:** 4061839 ile canlı Pages arasında `index.html`, `sw.js`, `backup.html`, dışa aktarma UI, önizleme UI ve önizleme doğrulayıcısı için **6/6** Git blob özeti eşleşti. Kaynakta dosya bütünlük düğmesiyle kapsam önizleme düğmesi ayrı; kapsam önizlemesi açık salt okunur onay ister ve `applyAvailable:false` üretir. Bu bulgu fiziksel cihaz sonucu değildir.
+- **Commit ve takip:** 4061839, [iş #6](https://github.com/mtayfunturk-collab/Today/issues/6); teşhis kaydı [taslak #49](https://github.com/mtayfunturk-collab/Today/pull/49) içinde. Ürün kodu değişmedi; mevcut yayın CI'ı tekrar edilmedi.
+- **Kalan kabul:** Windows 10'da URL, tarayıcı/sürüm ve açılış sonucu; indirilen sentetik v5 dosyasının yeniden açılması ve bütünlük kontrolü. iPhone Safari ve kurulu PWA'da aynı iki dosya işlemi ayrı kaydedilmeli. Yalnız sonuç veya sınırlı tanı kodu kaydedilir; parola, dosya ve kişisel veri paylaşılmaz. Eski iPhone güncelleme sorunu yeniden üretilmedikçe tarihsel kalır.
+- **Sıradaki uygun iş:** AUTH01 için mevcut tasarım yetkisiyle karar seçeneklerini ve kabul ölçütlerini belgele. Kimlik kodu, yeni depo veya sağlayıcı entegrasyonu ayrı ürün kararıdır.
 
 ## 24 Kasım 2026 — Yerler yerel kayıt ve v5 tam yedek (T90-261101-PO1-YER03)
 
