@@ -20,7 +20,8 @@ export function previewFailureMessage(error){
 const MISSING_LABELS=Object.freeze({
   'today.areas.preferences.v1':'Alanlarım tercihleri',
   'today.radio.favorites.v1':'Radio favorileri',
-  'today.collections.v1':'Koleksiyonlar'
+  'today.collections.v1':'Koleksiyonlar',
+  'today.plans.v1':'Planlar'
 });
 export function describeMissingBackupFields(keys=[]){
   if(!keys.length)return '';

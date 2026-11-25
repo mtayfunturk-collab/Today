@@ -3,7 +3,7 @@ import { webcrypto } from 'node:crypto';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { IDBFactory } from 'fake-indexeddb';
-import { LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LOCAL_KEYS_V2, LOCAL_KEY_V3, FORMAT_V2, FORMAT_V3, STORES, captureSnapshot, createBackup, verifyBackupFile, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw } from '../modules/backup-export.mjs';
+import { LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LS_KEYS_V4, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, FORMAT_V2, FORMAT_V3, FORMAT_V4, STORES, captureSnapshot, createBackup, verifyBackupFile, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw, validatePlansRaw } from '../modules/backup-export.mjs';
 
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync('modules/nutrition-contracts.js', 'utf8'), context);
@@ -43,4 +43,26 @@ await test('v1 and v2 exporters refuse a Collections key rather than making an i
 await test('v3 captures the absent Collections key explicitly without changing v1 or v2 coverage',async()=>{const store=fixture({today_store_v2:core});const snapshot=await captureSnapshot({...options(store,new IDBFactory()),version:3});assert.equal(LS_KEYS_V3.length,26);assert.equal(snapshot.format,FORMAT_V3);assert.equal(snapshot.localStorageEntries.length,26);assert.deepEqual(snapshot.localStorageEntries.at(-1),{key:LOCAL_KEY_V3,present:false,rawValue:null});assert.equal(snapshot.manifest.length,27);assert.equal(store.writes,0);});
 await test('v3 encrypts a valid Collections snapshot and reads the same raw bytes',async()=>{const raw=JSON.stringify({version:1,boards:[{id:'b1',title:'Okuma',createdAt:'2026-11-23T10:00:00.000Z',updatedAt:'2026-11-23T10:00:00.000Z'}],items:[]}),store=fixture({today_store_v2:core,[LOCAL_KEY_V3]:raw}),password='synthetic passphrase 123',capture=()=>captureSnapshot({...options(store,new IDBFactory()),version:3});const out=await createBackup({userConfirmed:true,password,confirmation:password,barrier:fn=>fn(),capture,crypto:webcrypto});assert.equal(JSON.parse(out.file).envelopeVersion,3);assert(!out.file.includes('Okuma'));assert.equal((await verifyBackupFile(out.file,password,{crypto:webcrypto})).sections,27);assert.equal((await readBackupForPreview(out.file,password,{crypto:webcrypto,contracts})).localStorageEntries.at(-1).rawValue,raw);assert.equal(store.writes,0);});
 await test('v3 rejects malformed Collections data and an altered versioned envelope',async()=>{const store=fixture({today_store_v2:core,[LOCAL_KEY_V3]:'{"version":1,"boards":[],"items":[{"id":"orphan"}]}'});await assert.rejects(captureSnapshot({...options(store,new IDBFactory()),version:3}),e=>e.code==='invalid-source');const clean=fixture({today_store_v2:core}),password='synthetic passphrase 123',capture=()=>captureSnapshot({...options(clean,new IDBFactory()),version:3});const out=await createBackup({userConfirmed:true,password,confirmation:password,barrier:fn=>fn(),capture,crypto:webcrypto});for(const change of [f=>{f.envelopeVersion=2;},f=>{f.format=FORMAT_V2;},f=>{f.ciphertext='AAAA'+f.ciphertext.slice(4);}]){const file=JSON.parse(out.file);change(file);assert.equal((await verifyBackupFile(JSON.stringify(file),password,{crypto:webcrypto})).ok,false);}assert.equal(clean.writes,0);});
-console.log(`Backup Export Port: ${pass}/18 başarılı`);
+await test('v4 Planlar record validates exact local data and earlier archives reject the key',async()=>{
+ const item={id:'p1',title:'Oku',state:'next',createdAt:'2026-11-23T10:00:00.000Z',updatedAt:'2026-11-23T10:00:00.000Z'};
+ const raw=JSON.stringify({version:1,items:[item]});
+ assert.equal(LOCAL_KEY_V4,'today.plans.v1');assert.equal(validatePlansRaw(raw).items[0].title,'Oku');
+ for(const invalid of ['{"version":1,"version":1,"items":[]}',JSON.stringify({version:1,items:[{...item,notify:true}]}),' '.repeat(512*1024+1)])assert.throws(()=>validatePlansRaw(invalid),e=>e.code==='invalid-source');
+ const store=fixture({today_store_v2:core,[LOCAL_KEY_V4]:raw});for(const version of [1,2,3])await assert.rejects(captureSnapshot({...options(store,new IDBFactory()),version}),e=>e.code==='unregistered-data');assert.equal(store.writes,0);
+});
+await test('v4 includes an absent Planlar key and leaves v1-v3 layouts unchanged',async()=>{
+ const store=fixture({today_store_v2:core}),snapshot=await captureSnapshot({...options(store,new IDBFactory()),version:4});
+ assert.equal(LS_KEYS_V4.length,27);assert.deepEqual(LS_KEYS_V4.slice(0,-1),LS_KEYS_V3);assert.equal(snapshot.format,FORMAT_V4);
+ assert.deepEqual(snapshot.localStorageEntries.at(-1),{key:LOCAL_KEY_V4,present:false,rawValue:null});assert.equal(snapshot.manifest.length,28);assert.equal(store.writes,0);
+});
+await test('v4 encrypts Planlar bytes and rejects damaged headers or invalid records',async()=>{
+ const raw=JSON.stringify({version:1,items:[{id:'p1',title:'Oku',state:'next',createdAt:'2026-11-23T10:00:00.000Z',updatedAt:'2026-11-23T10:00:00.000Z'}]});
+ const store=fixture({today_store_v2:core,[LOCAL_KEY_V4]:raw}),password='synthetic passphrase 123',capture=()=>captureSnapshot({...options(store,new IDBFactory()),version:4});
+ const out=await createBackup({userConfirmed:true,password,confirmation:password,barrier:fn=>fn(),capture,crypto:webcrypto});
+ assert.equal(JSON.parse(out.file).envelopeVersion,4);assert(!out.file.includes('Oku'));assert.equal((await verifyBackupFile(out.file,password,{crypto:webcrypto})).sections,28);
+ assert.equal((await readBackupForPreview(out.file,password,{crypto:webcrypto,contracts})).localStorageEntries.at(-1).rawValue,raw);
+ for(const change of [f=>{f.envelopeVersion=3;},f=>{f.format=FORMAT_V3;},f=>{f.ciphertext='AAAA'+f.ciphertext.slice(4);}]){const file=JSON.parse(out.file);change(file);assert.equal((await verifyBackupFile(JSON.stringify(file),password,{crypto:webcrypto})).ok,false);}
+ const invalid=fixture({today_store_v2:core,[LOCAL_KEY_V4]:'{"version":1,"items":[{"id":"bad"}]}'});await assert.rejects(captureSnapshot({...options(invalid,new IDBFactory()),version:4}),e=>e.code==='invalid-source');
+ assert.equal(store.writes,0);
+});
+console.log(`Backup Export Port: ${pass}/21 başarılı`);

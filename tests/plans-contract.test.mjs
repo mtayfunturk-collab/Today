@@ -12,7 +12,8 @@ check('four explicit states have stable identifiers', () => {
 });
 check('valid item is a normalized immutable copy', () => {
   const result = validatePlanItem({ ...item, title: ' Oku ' });
-  assert.equal(result.title, 'Oku'); assert.equal(result.note, ''); assert.equal(result.dayKey, null);
+  assert.equal(result.title, 'Oku'); assert.equal(result.note, ''); assert.equal(Object.hasOwn(result, 'dayKey'), false);
+  assert.deepEqual(validatePlanItem(result), result);
   assert.ok(Object.isFrozen(result)); assert.equal(item.note, undefined);
 });
 check('one-day state requires a real calendar day', () => {

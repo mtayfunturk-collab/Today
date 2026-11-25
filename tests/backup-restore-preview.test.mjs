@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {webcrypto as crypto} from 'node:crypto';
 import {IDBFactory} from 'fake-indexeddb';
-import {LS_KEYS, LOCAL_KEYS_V2, LOCAL_KEY_V3, STORES, captureSnapshot, createBackup} from '../modules/backup-export.mjs';
+import {LS_KEYS, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, STORES, captureSnapshot, createBackup} from '../modules/backup-export.mjs';
 import {prepareRestorePreview, revalidateRestorePreview, discardRestorePreview} from '../modules/backup-restore-preview.mjs';
 import {previewFailureMessage} from '../modules/backup-restore-ui.mjs';
 
@@ -98,7 +98,7 @@ await check('wrong password reveals neither source detail nor target records',as
   const f=fixture();await assert.rejects(prepareRestorePreview(args(f,{password:'wrong'})),e=>e.code==='file-verification-failed'&&!e.message.includes('SOURCE_PRIVATE'));assert.equal(f.reads(),0);
 });
 await check('legacy v1 preview explicitly identifies all fields absent from its archive',async()=>{
-  const f=fixture();const preview=await prepareRestorePreview(args(f));assert.deepEqual(preview.missingFromBackup,[...LOCAL_KEYS_V2,LOCAL_KEY_V3]);assert.equal(preview.sections,24);assert.equal(preview.applyAvailable,false);discardRestorePreview(preview);
+  const f=fixture();const preview=await prepareRestorePreview(args(f));assert.deepEqual(preview.missingFromBackup,[...LOCAL_KEYS_V2,LOCAL_KEY_V3,LOCAL_KEY_V4]);assert.equal(preview.sections,24);assert.equal(preview.applyAvailable,false);discardRestorePreview(preview);
 });
 await check('v2 preview counts both new records without writing target data',async()=>{
   const areas=JSON.stringify({version:1,order:['core','health','sky','radio'],pinned:['radio'],hidden:[]});
@@ -108,7 +108,7 @@ await check('v2 preview counts both new records without writing target data',asy
   const archive=await createBackup({userConfirmed:true,password:pass,confirmation:pass,crypto,barrier:fn=>fn(),capture:captureFrom});
   const target=fixture(),captureTarget=()=>captureSnapshot({storage:target.storage,indexedDB:target.indexedDB,crypto,contracts,source,version:2});
   const preview=await prepareRestorePreview(args(target,{file:archive.file,capture:captureTarget}));
-  assert.deepEqual(preview.missingFromBackup,[LOCAL_KEY_V3]);assert.equal(preview.sections,26);assert.equal(preview.localStorage.added,2);
+  assert.deepEqual(preview.missingFromBackup,[LOCAL_KEY_V3,LOCAL_KEY_V4]);assert.equal(preview.sections,26);assert.equal(preview.localStorage.added,2);
   assert.equal(preview.applyAvailable,false);assert.equal(target.map.size,0);discardRestorePreview(preview);
 });
 await check('v3 preview includes Collections and makes its full coverage explicit',async()=>{
@@ -118,16 +118,27 @@ await check('v3 preview includes Collections and makes its full coverage explici
   const archive=await createBackup({userConfirmed:true,password:pass,confirmation:pass,crypto,barrier:fn=>fn(),capture:captureFrom});
   const target=fixture(),captureTarget=()=>captureSnapshot({storage:target.storage,indexedDB:target.indexedDB,crypto,contracts,source,version:3});
   const preview=await prepareRestorePreview(args(target,{file:archive.file,capture:captureTarget}));
-  assert.deepEqual(preview.missingFromBackup,[]);
+  assert.deepEqual(preview.missingFromBackup,[LOCAL_KEY_V4]);
   assert.equal(preview.sections,27);
   assert.equal(preview.localStorage.added,1);
   assert.equal(preview.applyAvailable,false);
   assert.equal(target.map.has(LOCAL_KEY_V3),false);
   discardRestorePreview(preview);
 });
+await check('v4 preview covers Planlar without changing target data',async()=>{
+  const raw=JSON.stringify({version:1,items:[{id:'p1',title:'Oku',state:'next',createdAt:AT,updatedAt:AT}]});
+  const from=fixture({[LOCAL_KEY_V4]:raw});
+  const captureFrom=()=>captureSnapshot({storage:from.storage,indexedDB:from.indexedDB,crypto,contracts,source,version:4});
+  const archive=await createBackup({userConfirmed:true,password:pass,confirmation:pass,crypto,barrier:fn=>fn(),capture:captureFrom});
+  const target=fixture(),captureTarget=()=>captureSnapshot({storage:target.storage,indexedDB:target.indexedDB,crypto,contracts,source,version:4});
+  const preview=await prepareRestorePreview(args(target,{file:archive.file,capture:captureTarget}));
+  assert.deepEqual(preview.missingFromBackup,[]);assert.equal(preview.sections,28);
+  assert.equal(preview.localStorage.added,1);assert.equal(preview.applyAvailable,false);
+  assert.equal(target.map.has(LOCAL_KEY_V4),false);discardRestorePreview(preview);
+});
 await check('missing-field copy names the exact v1 and v2 gaps without inventing v3 gaps',()=>{
-  assert.equal(describeMissingBackupFields([...LOCAL_KEYS_V2,LOCAL_KEY_V3]),' Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar.');
-  assert.equal(describeMissingBackupFields([LOCAL_KEY_V3]),' Bu dosyada bulunmayan alanlar: Koleksiyonlar.');
+  assert.equal(describeMissingBackupFields([...LOCAL_KEYS_V2,LOCAL_KEY_V3,LOCAL_KEY_V4]),' Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar, Planlar.');
+  assert.equal(describeMissingBackupFields([LOCAL_KEY_V3,LOCAL_KEY_V4]),' Bu dosyada bulunmayan alanlar: Koleksiyonlar, Planlar.');
   assert.equal(describeMissingBackupFields([]),'');
 });
 await check('damaged authenticated file is rejected before target access',async()=>{
