@@ -122,6 +122,12 @@ test('Settings launch enters isolated backup page and creates a verified synthet
   await page.locator('#btnStart').click();
   await page.locator('#note').fill('SENTETIK-YEDEK-NOTU');
   await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('today_store_v2')).days[TodayDay.todayKey()]?.note)).toBe('SENTETIK-YEDEK-NOTU');
+  await page.locator('#btnHomeFromPick').click();
+  await page.locator('#btnModulePlans').click();
+  await page.locator('#planTitle').fill('Sentetik yedek planı');
+  await page.locator('#planSave').click();
+  await page.locator('#btnPlansBack').click();
+  await page.locator('#btnCoreFromModules').click();
   await page.locator('#btnCalendar').click();
   await page.locator('#btnOpenSettings').click();
   await page.locator('#btnBackupLaunch').click();
@@ -135,18 +141,21 @@ test('Settings launch enters isolated backup page and creates a verified synthet
   const result=await page.evaluate(async()=>{
     const response=await fetch(document.querySelector('#backupDownload').href);
     const text=await response.text();
-    const {verifyBackupFile}=await import('./modules/backup-export.mjs');
-    return {raw:text.includes('SENTETIK-YEDEK-NOTU'),verified:await verifyBackupFile(text,'synthetic passphrase 123'),core:localStorage.getItem('today_store_v2')};
+    const {verifyBackupFile,readBackupForPreview}=await import('./modules/backup-export.mjs');
+    const payload=await readBackupForPreview(text,'synthetic passphrase 123',{contracts:TodayNutritionContracts});
+    return {raw:text.includes('SENTETIK-YEDEK-NOTU'),verified:await verifyBackupFile(text,'synthetic passphrase 123'),
+      plans:payload.localStorageEntries.find(entry=>entry.key==='today.plans.v1')?.rawValue,core:localStorage.getItem('today_store_v2')};
   });
   expect(result.raw).toBe(false);
-  expect(result.verified).toMatchObject({ok:true,sections:27,restoreValidated:false});
+  expect(result.verified).toMatchObject({ok:true,sections:28,restoreValidated:false});
+  expect(JSON.parse(result.plans).items[0].title).toBe('Sentetik yedek planı');
   expect(result.core).toContain('SENTETIK-YEDEK-NOTU');
   const preview=await page.evaluate(async()=>{
     const text=await (await fetch(document.querySelector('#backupDownload').href)).text();
     const {prepareRestorePreview,revalidateRestorePreview}=await import('./modules/backup-restore-preview.mjs');
     const {captureSnapshot}=await import('./modules/backup-export.mjs');
     const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,
-      crypto,version:3,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+      crypto,version:4,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
     const value=await prepareRestorePreview({userConfirmed:true,file:text,password:'synthetic passphrase 123',
       barrier:fn=>fn(),capture,contracts:TodayNutritionContracts,crypto});
     const unchanged=await revalidateRestorePreview(value);
