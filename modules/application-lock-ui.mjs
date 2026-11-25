@@ -69,6 +69,19 @@ const settingsMarkup = `
     <p>Arka plana geçince ekran her zaman kilitlenir. Dakika seçimi, açık ekrandaki hareketsizlik süresidir.</p>
     <button type="button" data-lock-now>Şimdi kilitle</button>
   </div>
+  <section data-device-settings hidden>
+    <h3 data-device-heading>Cihazla doğrulama</h3>
+    <p data-device-note></p>
+    <form data-device-prepare>
+      <label>Cihaz ayarı için PIN veya parola
+        <input name="secret" type="password" autocomplete="off" required maxlength="256">
+      </label>
+      <button type="submit">Mevcut giriş bilgimi doğrula</button>
+    </form>
+    <button data-device-enroll type="button" hidden>Cihaz doğrulamasını etkinleştir</button>
+    <button data-device-remove type="button" hidden>Cihaz doğrulamasını kaldır</button>
+    <p role="status" data-device-status></p>
+  </section>
   <p role="status" data-settings-status></p>`;
 
 const lockMarkup = `
@@ -79,6 +92,7 @@ const lockMarkup = `
     </label>
     <button type="submit">Kilidi aç</button>
   </form>
+  <button type="button" data-device-unlock hidden>Cihazla doğrula</button>
   <p role="status" data-lock-status></p>
   <details><summary>PIN’imi veya parolamı unuttum</summary>
     <form data-recover>
@@ -94,6 +108,7 @@ const lockMarkup = `
 const messages = {
   "invalid-secret": "6–12 rakamlı PIN veya en az 12 karakterli parola gir. İki giriş aynı olmalı.",
   incorrect: "PIN veya parola yanlış.",
+  "device-unverified": "Cihaz doğrulaması tamamlanmadı. PIN veya parolanı kullanabilirsin.",
   interrupted: "İşlem durduruldu. Yeniden dene.",
   unavailable: "Bu cihazda doğrulama şu anda kullanılamıyor.",
   "invalid-state": "Bu işlem şu anda kullanılamıyor.",
@@ -124,6 +139,12 @@ export function mountApplicationLock({ session, privateContent, settings, lockSc
     '<p role="status" data-unavailable hidden>Kilit durumu okunamadı. Sayfayı yeniden aç. Kayıtların silinmedi.</p>';
   const configure = bind(settings, "[data-lock-settings]");
   const unlock = bind(lockScreen, "[data-unlock]");
+  const deviceUnlock = bind(lockScreen, "[data-device-unlock]");
+  const deviceSettings = bind(settings, "[data-device-settings]");
+  const devicePrepare = bind(deviceSettings, "[data-device-prepare]");
+  const deviceEnroll = bind(deviceSettings, "[data-device-enroll]");
+  const deviceRemove = bind(deviceSettings, "[data-device-remove]");
+  const deviceStatus = bind(deviceSettings, "[data-device-status]");
   const recover = bind(lockScreen, "[data-recover]");
   const settingsStatus = bind(settings, "[data-settings-status]");
   const lockStatus = bind(lockScreen, "[data-lock-status]");
@@ -153,11 +174,12 @@ export function mountApplicationLock({ session, privateContent, settings, lockSc
       authorize();
     }
     if (state.mode !== lastMode) {
-      for (const form of [configure, unlock, recover]) {
+      for (const form of [configure, unlock, recover, devicePrepare]) {
         form?.reset();
         resetCode(form);
       }
       if (settingsStatus) settingsStatus.textContent = "";
+      if (deviceStatus) deviceStatus.textContent = "";
       lockStatus.textContent = "";
       if (!visible && allowed(lastMode)) view.dispatchEvent(new view.Event("today:application-lock"));
       if (state.mode === "locked" && !document.hidden) unlock.elements.secret.focus();
@@ -177,6 +199,20 @@ export function mountApplicationLock({ session, privateContent, settings, lockSc
       autoLock.disabled = state.busy || state.waitSeconds > 0;
     } else if (manual) manual.hidden = !enabled;
     unlock.elements.secret.inputMode = state.type === "pin" ? "numeric" : "text";
+    deviceUnlock.hidden = state.mode !== "locked" || !state.deviceReady || !state.deviceEnrolled;
+    deviceUnlock.disabled = state.busy || state.waitSeconds > 0;
+    deviceUnlock.textContent = state.deviceLabel ?? "Cihazla doğrula";
+    if (deviceSettings) {
+      deviceSettings.hidden = state.mode !== "unlocked" || !state.deviceReady;
+      bind(deviceSettings, "[data-device-heading]").textContent = state.deviceLabel ?? "Cihazla doğrulama";
+      bind(deviceSettings, "[data-device-note]").textContent =
+        state.deviceNote ?? "PIN, parola ve kurtarma seçeneklerin korunur.";
+      devicePrepare.hidden = state.deviceAuthorized;
+      bind(devicePrepare, "button").disabled = state.busy || state.waitSeconds > 0;
+      deviceEnroll.hidden = !state.deviceAuthorized || state.deviceEnrolled;
+      deviceRemove.hidden = !state.deviceAuthorized || !state.deviceEnrolled;
+      deviceEnroll.disabled = deviceRemove.disabled = state.busy || state.waitSeconds > 0;
+    }
     for (const form of [configure, unlock, recover]) {
       if (form) bind(form, 'button[type="submit"]').disabled = enrolling || state.busy || state.waitSeconds > 0;
     }
@@ -248,6 +284,30 @@ export function mountApplicationLock({ session, privateContent, settings, lockSc
     if (result === "ok") (manual ?? privateContent).focus();
     else report(lockStatus, result);
   });
+  on(deviceUnlock, "click", async () => {
+    const result = await session.unlockDevice();
+    if (result === "ok") (manual ?? privateContent).focus();
+    else report(lockStatus, result);
+  });
+  if (devicePrepare) {
+    on(devicePrepare, "submit", async event => {
+      event.preventDefault();
+      const pin = devicePrepare.elements.secret.value;
+      devicePrepare.reset();
+      const result = await session.prepareDevice(pin);
+      if (result === "ok") (deviceEnroll.hidden ? deviceRemove : deviceEnroll).focus();
+      report(deviceStatus, result, "Cihaz ayarını şimdi değiştirebilirsin.");
+    });
+    for (const [button, action, success] of [
+      [deviceEnroll, session.enrollDevice, "Cihaz doğrulaması etkin."],
+      [deviceRemove, session.removeDevice, "Cihaz doğrulaması kaldırıldı."]
+    ]) on(button, "click", async () => {
+      const result = await action();
+      render(session.snapshot());
+      if (result === "ok" || result === "committed-locked") changed();
+      report(result === "committed-locked" ? lockStatus : deviceStatus, result, success);
+    });
+  }
   on(recover, "submit", async event => {
     event.preventDefault();
     const data = Object.fromEntries(new view.FormData(recover));
@@ -273,7 +333,7 @@ export function mountApplicationLock({ session, privateContent, settings, lockSc
   });
   function suspend() {
     session.lock();
-    for (const form of [configure, unlock, recover]) {
+    for (const form of [configure, unlock, recover, devicePrepare]) {
       form?.reset();
       resetCode(form);
     }

@@ -1,5 +1,9 @@
 # AUTH01 — Fiziksel iPhone kabulü
 
+## Ürün sahibi sonucu
+
+Fiziksel iPhone’da Ana Ekrana kurulu Today AI Beta için **PIN ile giriş geçti** ve **parola ile giriş geçti**. Test commit’i ve cihaz modeli bildirilmedi. Safari, çevrimdışı yeniden açılış, arka plan/uygulama değiştirici, BFCache, yükseltme, süreler, bekleme, kurtarma kodu, v5 ve cihaz performansı için fiziksel kabul bekliyor.
+
 ## Kurulum
 
 1. PR #50’deki aday commit’i ve verilen özel HTTPS önizleme adresini doğrula. Adresin ana bilgisayarı canlı Today adresinden farklı olmalı.
@@ -25,3 +29,12 @@
 ## Yayın kapısı
 
 Önceki Worker’dan yükseltme aynı test origin’inde başlayıp tamamlanmalıdır. Adayı doğrudan açarak yapılan bu kontrol listesi tek başına yükseltme kanıtı sağlamaz. Gerçek cihazda eski sürümden geçiş, eski sekme, BFCache ve uygulama değiştirici sonucu ayrıca kayda geçer. Merge ve yayın için otomatik CI, fiziksel kabul ve ayrı ürün sahibi onayı gerekir.
+
+
+## AUTH01-BIO fiziksel kabulü
+
+1. iPhone 15 Safari’de ve Ana Ekran PWA’da Staging adayını sentetik verilerle aç. Ayarlar → Güvenlik ve Gizlilik ile kilit ekranında biyometri seçeneğinin görünmediğini doğrula. PIN ve parola girişini her bağlamda tekrar dene.
+2. Aynı Staging origin’inde Wi‑Fi ve hücresel veriyi kapat. Safari ve kurulu PWA’yı ayrı ayrı aç. Çevrimdışı PIN/parola, içerik perdesi, arka plandan dönüş ve hareketsizlik kilidini doğrula.
+3. İmzalı native iPhone 15 adayında Face ID’yi etkinleştir. Manuel kilit, uçak modu, arka plandan dönüş, otomatik kilit, iptal, PIN/parola alternatifi ve Face ID kaydı değişiminden sonra alternatif girişi dene. Touch ID destekli ayrı Apple cihazında aynı akışı tekrarla.
+4. Native Android’de güçlü parmak izi ile aynı akışı doğrula. Windows’ta destekli HTTPS tarayıcısında bu Windows cihazını seç, çevrimdışı Hello girişini ve PIN/parola alternatifini doğrula.
+5. Sürüm/commit, platform ve tarayıcı, her adımın sonucu ve hata belirtisini kaydet. PIN, parola, kurtarma kodu veya gerçek kişisel veri paylaşma.

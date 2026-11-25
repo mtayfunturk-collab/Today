@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { isPackagedPath, parseAppShell, NATIVE_ROOT } from '../scripts/build-web.mjs';
-import { narrowAndroidManifest, READ_PERMISSIONS, withAndroidMinimumSdk, withAndroidPrivateBackup, withHealthReadDescription, withInexactNotifications } from '../scripts/configure-platform.mjs';
+import { narrowAndroidManifest, READ_PERMISSIONS, withAndroidMinimumSdk, withAndroidPrivateBackup, withFaceIdDescription, withHealthReadDescription, withInexactNotifications } from '../scripts/configure-platform.mjs';
 import { verifyHealthPermissions, verifyNativePrivacy, verifyNotificationPermissions } from '../scripts/verify-android-permissions.mjs';
 
 const manifestWith = permissions => `<manifest xmlns:android="http://schemas.android.com/apk/res/android">${permissions.map(name => `<uses-permission android:name="${name}" />`).join('')}<application /></manifest>`;
@@ -87,6 +87,15 @@ test('iOS permission rationale is read-only, idempotent and preserves existing p
   assert.match(prepared, /<key>CFBundleName<\/key><string>Today<\/string>/);
   assert.doesNotMatch(prepared, /NSHealthUpdateUsageDescription/);
   assert.equal(withHealthReadDescription(prepared), prepared);
+});
+
+test('Face ID rationale is idempotent and preserves the existing health rationale', () => {
+  const source = '<?xml version="1.0"?><plist version="1.0"><dict></dict></plist>';
+  const existing = withHealthReadDescription(source);
+  const prepared = withFaceIdDescription(existing);
+  assert.match(prepared, /<key>NSFaceIDUsageDescription<\/key>/);
+  assert.match(prepared, /<key>NSHealthShareUsageDescription<\/key>/);
+  assert.equal(withFaceIdDescription(prepared), prepared);
 });
 
 test('Native preview loads bundled web assets without a remote server URL', async () => {

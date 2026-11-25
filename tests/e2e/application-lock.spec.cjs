@@ -42,6 +42,7 @@ test("real app opts in, stays locked offline after reload and atomically replace
   expect(await page.evaluate(async db => (await indexedDB.databases()).some(item => item.name === db), authDb)).toBe(false);
   await expect(settings.getByText("Cihazdaki verileri şifrelemez.", { exact: false })).toBeVisible();
   const oldCode = await enroll(settings);
+  await expect(settings.locator("[data-device-settings]")).toBeHidden();
   await expect(settings.getByLabel("Otomatik kilitleme")).toHaveValue("5");
   await expect(settings.getByLabel("Otomatik kilitleme").locator("option"))
     .toHaveText(["Anında", "1 dakika", "5 dakika", "15 dakika", "30 dakika"]);
@@ -133,4 +134,44 @@ test("worker rejects enrollment while a second Today page is open", async ({ pag
   expect(await page.evaluate(async db => (await indexedDB.databases()).some(item => item.name === db), authDb)).toBe(false);
   await other.close();
   await enroll(settings);
+});
+
+test("device-bound WebAuthn unlocks offline and re-locks after backgrounding", async ({ page, context, browserName }) => {
+  test.skip(browserName !== "chromium", "Virtual platform authenticator requires Chromium CDP");
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "userAgentData", { value: { platform: "Windows" } });
+  });
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("WebAuthn.enable");
+  await cdp.send("WebAuthn.addVirtualAuthenticator", { options: {
+    protocol: "ctap2", transport: "internal", hasUserVerification: true, isUserVerified: true,
+    automaticPresenceSimulation: true
+  } });
+
+  const root = new URL(rootPath(), "http://localhost:4173").href;
+  const settings = await openApp(page, root);
+  await enroll(settings);
+  await expect(settings.getByRole("heading", { name: "Windows Hello ile doğrula" })).toBeVisible();
+  await context.setOffline(true);
+  await settings.getByLabel("Cihaz ayarı için PIN veya parola").fill(PIN);
+  await settings.getByRole("button", { name: "Mevcut giriş bilgimi doğrula" }).click();
+  await settings.getByRole("button", { name: "Cihaz doğrulamasını etkinleştir" }).click();
+  await expect(settings.getByText("Cihaz doğrulaması etkin.")).toBeVisible();
+  await settings.getByRole("button", { name: "Şimdi kilitle" }).click();
+  const gate = page.locator("#todayLock");
+  const deviceUnlock = gate.getByRole("button", { name: "Windows Hello ile doğrula" });
+  await deviceUnlock.click();
+  await expect(gate).toBeHidden();
+  await expect(page.locator("#todayPrivate")).toBeVisible();
+
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    delete document.hidden;
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(page.locator("#todayPrivate")).toBeHidden();
+  await expect(deviceUnlock).toBeVisible();
+  await unlock(page, PIN);
+  await expect(gate).toBeHidden();
 });

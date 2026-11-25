@@ -83,3 +83,20 @@ Kurulumda kriptografik rastgele üretilen **en az 128 bitlik tek kullanımlık k
 - Kurulum/yedekleme kişisel alanı ve var olan v5 kodlayıcı biçimini korur. Sentetik yedek çözülerek formatın v5, anahtar sayısının 28 ve tek veritabanının Nutrition olduğu doğrulandı.
 - PBKDF2-HMAC-SHA-256, 600.000 yineleme ve 32 bayt çıktı bağımsız türetici ile eşleşti. Linux masaüstünde beş ölçüm, bir ısınma hariç: Chromium medyan 154 ms/en yüksek 183 ms. Playwright WebKit medyan 128 ms/en yüksek 148 ms. İki ölçüm de 1.000 ms masaüstü deneme eşiğini karşıladı. Fiziksel iPhone Safari ve kurulu PWA, hedef Android/Windows ve izinli native adaylarda performans ile yaşam döngüsü ayrı ölçülür.
 - Fiziksel kabulde ilk kurulum, PIN/parola değiştirme, çevrimdışı yeniden açılış, bekleme, tek kullanımlı kurtarma, önceki sürümden yükseltme, eski Worker/BFCache ve v5 yedek doğrulanır. Özellikle eski bir dokümanın BFCache üzerinden geri gelmesi ile işletim sistemi uygulama değiştirici görüntüsü için desteklenen fiziksel yüzeylerde kanıt gerekir. Aynı origin depolama erişimi ve eski uygulama kopyaları AUTH01 ekran kilidinin güvenlik sınırıdır. Canlı yayın ayrı ürün sahibi kararına bağlıdır.
+
+
+## AUTH01-BIO — onaylanan uygulama
+
+| Platform | Aday yolu | Sınır |
+| --- | --- | --- |
+| iPhone 15 Safari ve kurulu PWA, diğer iOS web | PIN/parola ve kurtarma | Uygulama iOS web’de cihaz bağlı ve eşitlenmeyen Face ID/Touch ID doğrulayıcısını seçip garanti edemez. Biyometri seçeneği gizlenir. |
+| Native iOS | Face ID ve Touch ID | iOS yerel doğrulaması ve güncel biyometri setine bağlı Keychain. Fiziksel test için imzalı native aday gerekir. |
+| Android Chrome ve kurulu PWA | PIN/parola ve kurtarma | PWA’da yerel ve eşitlenmeyen sağlayıcı seçimi garanti edilemez. Biyometri seçeneği gizlenir. |
+| Native Android | Güçlü parmak izi doğrulaması | Güçlü biyometri ve parmak izi desteği gerekir. Android Keystore ve BiometricPrompt kullanılır. |
+| Windows tarayıcısı veya aynı tarayıcıdan kurulu PWA | Uygun tarayıcıda Windows Hello | Kullanıcı bu Windows cihazını seçer. Windows seçimine göre doğrulama OS PIN’i veya biyometri olabilir. Eşitlenebilir WebAuthn kimlik bilgileri reddedilir. |
+
+Kayıt isteğe bağlıdır ve yeni PIN/parola doğrulaması ister. PIN/parola yenileme ve kurtarma, cihaz kaydını aynı IndexedDB işlemi içinde kaldırır. Biyometri iptali, cihaz izinleri veya tarayıcı desteği kaybedildiğinde PIN, parola ve kurtarma kullanılabilir. Arka plana geçiş doğrulamayı iptal eder ve ekranı kilitler. Cihaz doğrulaması bekleme süresini atlayamaz. Uygulama kilidi yerel kişisel verileri şifrelemez.
+
+WebAuthn cihaz özel anahtarını OS doğrulayıcısında bırakır. Today aynı origin’de tek kullanımlık rastgele challenge, origin, RP kimliği, kullanıcı doğrulaması, imza ve sayaç kontrolü yapar. IndexedDB yalnız kimlik, açık anahtar ve sayacı tutar. Native Keychain veya Keystore rastgele yerel kanıtı korur. IndexedDB’de yalnız takma ad ve SHA-256 özeti vardır. Ham biyometrik veri okunmaz veya kaydedilmez. Bu girdiler kişisel kayıtları ve v5 arşiv kapsamını değiştirmez. Today hesabı, ağ bağlantısı ve bulut eşitlemesi gerekmez.
+
+Kaynaklar [WebAuthn](https://www.w3.org/TR/webauthn-3/), [Windows passkey yönetimi](https://learn.microsoft.com/en-us/windows/security/identity-protection/passkeys/) ve [Android biyometrik doğrulama](https://developer.android.com/identity/sign-in/biometric-auth).

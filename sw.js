@@ -17,7 +17,7 @@
  * Uygulama kabuğunda (özellikle index.html) değişiklik yapıldığında
  * bu sürüm mutlaka artırılmalıdır.
  */
-const VERSION = "today-v2-foundation-113";
+const VERSION = "today-v2-foundation-114";
 const CACHE_NAME = `today-cache-${VERSION}`;
 const ACTIVATE_MESSAGE =
   "TODAY_ACTIVATE_UPDATE";
@@ -27,6 +27,7 @@ const APP_SHELL = [
   "./index.html",
   "./backup.html",
   "./modules/application-lock-entry.mjs",
+  "./modules/application-lock-device.mjs",
   "./modules/application-lock-store.mjs",
   "./modules/application-lock.mjs",
   "./modules/application-lock-ui.mjs",

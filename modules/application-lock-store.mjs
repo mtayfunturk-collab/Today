@@ -1,6 +1,9 @@
+import { validDeviceEnrollment } from "./application-lock-device.mjs";
+
 export const AUTH_DATABASE = "today-auth01-device";
 export const AUTH_STORE = "lock";
 const AUTH_KEY = "device";
+const BIO_KEY = "biometric";
 export const AUTH_KDF_ITERATIONS = 600_000;
 export const AUTH_TIMEOUTS = Object.freeze([0, 1, 5, 15, 30]);
 const hex = (value, size) => typeof value === "string" && value.length === size * 2 && /^[a-f0-9]+$/.test(value);
@@ -27,7 +30,7 @@ function validate(record) {
 }
 
 export function createApplicationLockStore(indexedDB) {
-  function access(next, expected) {
+  function access(next, expected, includeDevice = false, enrollment) {
     return new Promise((resolve, reject) => {
       const create = next && expected === null;
       const request = indexedDB.open(AUTH_DATABASE);
@@ -48,7 +51,9 @@ export function createApplicationLockStore(indexedDB) {
       request.onerror = () => {
         settled = true;
         clearTimeout(timer);
-        if (absent && !create && request.error?.name === "AbortError") resolve(null);
+        if (absent && !create && request.error?.name === "AbortError") {
+          resolve(includeDevice ? { record: null, device: null } : null);
+        }
         else reject(request.error);
       };
       request.onsuccess = () => {
@@ -75,10 +80,23 @@ export function createApplicationLockStore(indexedDB) {
         get.onsuccess = () => {
           try {
             const current = validate(get.result);
-            if (!next) result = current;
+            if (!next && includeDevice) {
+              const read = store.get(BIO_KEY);
+              read.onsuccess = () => {
+                const saved = read.result;
+                const value = saved?.salt === current.credential.salt && saved.version === 1
+                  && validDeviceEnrollment(saved.value) ? saved.value : null;
+                result = { record: current, device: value };
+              };
+            } else if (!next) result = current;
             else if (current.revision !== expected) result = null;
             else {
               store.put(validate(next), AUTH_KEY);
+              if (next.credential.salt !== current.credential.salt || enrollment === null) store.delete(BIO_KEY);
+              else if (enrollment !== undefined) {
+                if (!validDeviceEnrollment(enrollment)) throw Error("invalid-device-enrollment");
+                store.put({ version: 1, salt: current.credential.salt, value: enrollment }, BIO_KEY);
+              }
               result = next;
             }
           } catch (cause) {
@@ -92,10 +110,11 @@ export function createApplicationLockStore(indexedDB) {
 
   return {
     read: () => access(),
-    commit(expected, next) {
+    readWithDevice: () => access(undefined, undefined, true),
+    commit(expected, next, enrollment) {
       validate(next);
       if (next.revision !== (expected ?? 0) + 1) throw Error("invalid-auth-revision");
-      return access(next, expected);
+      return access(next, expected, false, enrollment);
     }
   };
 }

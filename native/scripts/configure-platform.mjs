@@ -81,15 +81,23 @@ function xmlText(value) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-export function withHealthReadDescription(xml) {
-  const key = 'NSHealthShareUsageDescription';
-  const value = 'Today, seçtiğin uyku, adım ve antrenman özetlerini cihazında gösterir; ayrıca seçip onaylarsan cihazında AI gözlemi hazırlamada kullanır. Sağlık verisi yazmaz.';
+function withUsageDescription(xml, key, value) {
   const entry = `<key>${key}</key>\n\t<string>${xmlText(value)}</string>`;
   if (xml.includes(`<key>${key}</key>`)) {
     return xml.replace(new RegExp(`<key>${key}</key>\\s*<string>[\\s\\S]*?</string>`), entry);
   }
   if (!xml.includes('</dict>')) throw new Error('Invalid generated Info.plist');
   return xml.replace('</dict>', `\t${entry}\n</dict>`);
+}
+
+export function withHealthReadDescription(xml) {
+  return withUsageDescription(xml, 'NSHealthShareUsageDescription',
+    'Today, seçtiğin uyku, adım ve antrenman özetlerini cihazında gösterir; ayrıca seçip onaylarsan cihazında AI gözlemi hazırlamada kullanır. Sağlık verisi yazmaz.');
+}
+
+export function withFaceIdDescription(xml) {
+  return withUsageDescription(xml, 'NSFaceIDUsageDescription',
+    'Face ID, seçtiğinde Today uygulama kilidini bu cihazda açmak için kullanılır.');
 }
 
 export async function configurePlatform(platform) {
@@ -108,7 +116,7 @@ export async function configurePlatform(platform) {
   } else if (platform === 'ios') {
     const plist = path.join(NATIVE_ROOT, 'ios/App/App/Info.plist');
     const project = path.join(NATIVE_ROOT, 'ios/App/App.xcodeproj/project.pbxproj');
-    await writeFile(plist, withHealthReadDescription(await readFile(plist, 'utf8')));
+    await writeFile(plist, withFaceIdDescription(withHealthReadDescription(await readFile(plist, 'utf8'))));
     await writeFile(path.join(NATIVE_ROOT, 'ios/App/App/App.entitlements'), `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict><key>com.apple.developer.healthkit</key><true/></dict></plist>\n`);
     let pbx = await readFile(project, 'utf8');
     if (!pbx.includes('CODE_SIGN_ENTITLEMENTS = App/App.entitlements;')) {

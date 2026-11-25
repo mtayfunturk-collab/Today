@@ -1,5 +1,6 @@
 import { createApplicationLock } from "./application-lock.mjs";
 import { createApplicationLockStore } from "./application-lock-store.mjs";
+import { createApplicationLockDevice } from "./application-lock-device.mjs";
 import { mountApplicationLock } from "./application-lock-ui.mjs";
 
 async function canEnroll(view) {
@@ -37,7 +38,7 @@ async function enroll(view, operation) {
 
 if (window === window.top) {
   mountApplicationLock({
-    session: createApplicationLock({ store: createApplicationLockStore(window.indexedDB) }),
+    session: createApplicationLock({ store: createApplicationLockStore(window.indexedDB), device: createApplicationLockDevice(window) }),
     privateContent: document.querySelector("#todayPrivate"),
     settings: document.querySelector("#todaySecuritySettings"),
     lockScreen: document.querySelector("#todayLock"),

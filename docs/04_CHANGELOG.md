@@ -1,5 +1,9 @@
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
+## 25 Kasım 2026 — AUTH01-BIO
+
+Taslak PR #50’de onaylanan isteğe bağlı cihaz doğrulaması eklendi. Native iOS Face ID/Touch ID, native Android güçlü parmak izi ve uygun Windows tarayıcılarında cihaz bağlı Windows Hello akışı var. PIN, parola ve mevcut kurtarma korunur. Worker 114. Ürün sahibi iPhone Ana Ekran PWA’da PIN ve parola girişini doğruladı. Diğer fiziksel kontroller açık. [Fiziksel kabul kaydı](TODAY-AUTH01-DEVICE-ACCEPTANCE.md).
+
 ## 25 Kasım 2026 — AUTH01 sonrası başlangıç etiketi
 
 CI 45617491449 iki motorda aynı build etiketi senaryosunda durdu. AUTH01, klasik başlangıcı IndexedDB kabulü sonrasına taşıdı; klasik varsayılan etiket sözlüğün önceden yazdığı biçimi eziyordu. Varsayılan etiket artık yalnız ilk yer tutucu için yazılır. Geç sözlük bağlaması, grafik yükleme metni ve yetkili sürüm kimliği korunur. Worker 113 çevrimdışı kabuğu yeniler. [Fiziksel iPhone kabulü](TODAY-AUTH01-DEVICE-ACCEPTANCE.md).

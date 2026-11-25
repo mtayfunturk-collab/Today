@@ -15,7 +15,7 @@ const expectedProductionHashes = {
   "index.html":
     "0526bba17ec617bed629773fa07797170bf9fa6619977ef3202974a0129692e1",
   "sw.js":
-    "8190eef0acb6e1c450d619e12e29dfadee22db446065f75325c709ffeb04ce9e",
+    "f75510b5b408d70d77816bf40648e3c0f15d47e31a3e7ec51c43fa4ee3345bfd",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -1304,7 +1304,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-113 ve 154 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-114 ve 155 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1316,7 +1316,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-113"'
+        'const VERSION = "today-v2-foundation-114"'
       )
     );
     assert.ok(shellMatch);
@@ -1326,7 +1326,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 154);
+    assert.equal(shellEntries.length, 155);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);
