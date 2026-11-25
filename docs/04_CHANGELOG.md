@@ -1,3 +1,7 @@
+### 2026-11-25 — Canlı v5 kurtarma sürüm kapısı ve yazıcı kapsamı
+
+Planlar ve Yerler kayıtları içeren şifreli v5 dosyasının yalnız v1 destekleyen, ürüne bağlı olmayan sentetik kurtarma prototipinde reddedildiği test edildi; hedef kayıt ve kurtarma günlüğü değişmiyor. Canlı kaynakta yeni iki yazıcı, geri yükleme yazıcı kabul belgesine eklendi. İlk uzak CI, eski şifreli yedek testinin rastgele metinde üç harflik `Oku` dizisini araması nedeniyle FAIL oldu. Beklenti ham düz metin kaydını denetleyecek şekilde düzeltildi. Hedefli kurtarma 39/39, yedek portu 23/23, otomasyon 8/8 ve birleşik platform 1532/1532 PASS; yeni uzak CI açık. Üretim restore kapalıdır. Ortak yazıcı kapısı, BFCache/Worker yarışı ve fiziksel kabul hâlâ açık.
+
 ### 2026-11-24 — Canlı kaynak için eksik yedek açılışı koruması adayı
 
 Ürün sahibinin onayıyla PR #38 `28d7763` olarak mevcut GitHub Pages kaynak dalında yayımlandı; canlı `foundation-105` dosyaları ve ayrı sentetik tarayıcı kabulü doğrulandı. Kullanıcı notun iPhone'da kaldığını bildirdi; Safari/kurulu PWA ayrımı henüz açıklanmadı. Bu yeni ayrı görev dalı, canlı dört modüllü kaynağa PR #40'ta doğrulanan dar korumayı uyarlar: Core notu kota/yazma hatasıyla bellekte kaldıysa uygulama içindeki Tam yedek açılışı durur ve dosyanın notu içermeyeceği söylenir. Önceki kayıt ve taslak korunur; anahtar/şema/restore değişmez. Kabuk `foundation-108`; yedek birim 41/41, Chromium yedek 7/7, platform 1448/1448, SW 38/38 ve statik 30/30 PASS. Uzak CI ve fiziksel kabul açık; bu koruma henüz canlıya alınmadı.
