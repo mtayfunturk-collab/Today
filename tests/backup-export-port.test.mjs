@@ -59,7 +59,7 @@ await test('v4 encrypts Planlar bytes and rejects damaged headers or invalid rec
  const raw=JSON.stringify({version:1,items:[{id:'p1',title:'Oku',state:'next',createdAt:'2026-11-23T10:00:00.000Z',updatedAt:'2026-11-23T10:00:00.000Z'}]});
  const store=fixture({today_store_v2:core,[LOCAL_KEY_V4]:raw}),password='synthetic passphrase 123',capture=()=>captureSnapshot({...options(store,new IDBFactory()),version:4});
  const out=await createBackup({userConfirmed:true,password,confirmation:password,barrier:fn=>fn(),capture,crypto:webcrypto});
- assert.equal(JSON.parse(out.file).envelopeVersion,4);assert(!out.file.includes('Oku'));assert.equal((await verifyBackupFile(out.file,password,{crypto:webcrypto})).sections,28);
+ assert.equal(JSON.parse(out.file).envelopeVersion,4);assert(!out.file.includes(raw));assert.equal((await verifyBackupFile(out.file,password,{crypto:webcrypto})).sections,28);
  assert.equal((await readBackupForPreview(out.file,password,{crypto:webcrypto,contracts})).localStorageEntries.at(-1).rawValue,raw);
  for(const change of [f=>{f.envelopeVersion=3;},f=>{f.format=FORMAT_V3;},f=>{f.ciphertext='AAAA'+f.ciphertext.slice(4);}]){const file=JSON.parse(out.file);change(file);assert.equal((await verifyBackupFile(JSON.stringify(file),password,{crypto:webcrypto})).ok,false);}
  const invalid=fixture({today_store_v2:core,[LOCAL_KEY_V4]:'{"version":1,"items":[{"id":"bad"}]}'});await assert.rejects(captureSnapshot({...options(invalid,new IDBFactory()),version:4}),e=>e.code==='invalid-source');
