@@ -3,7 +3,7 @@ import { webcrypto } from 'node:crypto';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { IDBFactory } from 'fake-indexeddb';
-import { LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LS_KEYS_V4, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, FORMAT_V2, FORMAT_V3, FORMAT_V4, STORES, captureSnapshot, createBackup, verifyBackupFile, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw, validatePlansRaw } from '../modules/backup-export.mjs';
+import { LS_KEYS, LS_KEYS_V2, LS_KEYS_V3, LS_KEYS_V4, LS_KEYS_V5, LOCAL_KEYS_V2, LOCAL_KEY_V3, LOCAL_KEY_V4, LOCAL_KEY_V5, FORMAT_V2, FORMAT_V3, FORMAT_V4, FORMAT_V5, STORES, captureSnapshot, createBackup, verifyBackupFile, readBackupForPreview, validateAreasPreferenceRaw, validateRadioFavoritesRaw, validateCollectionsRaw, validatePlansRaw, validatePlacesRaw } from '../modules/backup-export.mjs';
 
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync('modules/nutrition-contracts.js', 'utf8'), context);
@@ -65,4 +65,20 @@ await test('v4 encrypts Planlar bytes and rejects damaged headers or invalid rec
  const invalid=fixture({today_store_v2:core,[LOCAL_KEY_V4]:'{"version":1,"items":[{"id":"bad"}]}'});await assert.rejects(captureSnapshot({...options(invalid,new IDBFactory()),version:4}),e=>e.code==='invalid-source');
  assert.equal(store.writes,0);
 });
-console.log(`Backup Export Port: ${pass}/21 başarılı`);
+await test('v5 Yerler validates bounded local data and rejects older incomplete archives',async()=>{
+ const raw=JSON.stringify({version:1,items:[{id:'y1',name:'Müze',city:'İstanbul',state:'want',createdAt:'2026-11-24T10:00:00.000Z',updatedAt:'2026-11-24T10:00:00.000Z'}]});
+ assert.equal(LOCAL_KEY_V5,'today.places.v1');assert.equal(validatePlacesRaw(raw).items[0].name,'Müze');
+ for(const invalid of ['{"version":1,"items":[],"items":[]}',JSON.stringify({version:1,items:[{id:'bad'}]}),' '.repeat(512*1024+1)])assert.throws(()=>validatePlacesRaw(invalid),e=>e.code==='invalid-source');
+ const store=fixture({today_store_v2:core,[LOCAL_KEY_V5]:raw});for(const version of [1,2,3,4])await assert.rejects(captureSnapshot({...options(store,new IDBFactory()),version}),e=>e.code==='unregistered-data');assert.equal(store.writes,0);
+});
+await test('v5 encrypts Yerler and preserves exact source bytes without writing',async()=>{
+ const raw=JSON.stringify({version:1,items:[{id:'y1',name:'Müze',city:'İstanbul',url:'https://example.test/place',state:'want',createdAt:'2026-11-24T10:00:00.000Z',updatedAt:'2026-11-24T10:00:00.000Z'}]});
+ const store=fixture({today_store_v2:core,[LOCAL_KEY_V5]:raw}),password='synthetic passphrase 123',capture=()=>captureSnapshot({...options(store,new IDBFactory()),version:5});
+ const snapshot=await capture();assert.equal(LS_KEYS_V5.length,28);assert.deepEqual(LS_KEYS_V5.slice(0,-1),LS_KEYS_V4);assert.equal(snapshot.format,FORMAT_V5);assert.equal(snapshot.manifest.length,29);
+ const out=await createBackup({userConfirmed:true,password,confirmation:password,barrier:fn=>fn(),capture,crypto:webcrypto});
+ assert.equal(JSON.parse(out.file).envelopeVersion,5);assert(!out.file.includes('Müze'));assert.equal((await verifyBackupFile(out.file,password,{crypto:webcrypto})).sections,29);
+ assert.equal((await readBackupForPreview(out.file,password,{crypto:webcrypto,contracts})).localStorageEntries.at(-1).rawValue,raw);
+ const invalid=fixture({today_store_v2:core,[LOCAL_KEY_V5]:JSON.stringify({version:1,items:[{id:'y1',name:'Müze',city:'İstanbul',url:'javascript:alert(1)',state:'want',createdAt:'2026-11-24T10:00:00.000Z',updatedAt:'2026-11-24T10:00:00.000Z'}]})});
+ await assert.rejects(captureSnapshot({...options(invalid,new IDBFactory()),version:5}),e=>e.code==='invalid-source');assert.equal(store.writes,0);
+});
+console.log(`Backup Export Port: ${pass}/23 başarılı`);

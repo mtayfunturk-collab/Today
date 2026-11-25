@@ -108,6 +108,17 @@
     .placesStages section{min-width:0;padding:14px;border:1px solid rgba(255,255,255,.25);border-radius:18px;text-align:left;overflow-wrap:anywhere}
     .placesStages h2{margin:0 0 8px;font-size:1.1rem}
     .placesStages p{margin:0}
+    .placesForm{width:min(100%,560px);margin:16px auto;display:grid;gap:10px;text-align:left;min-width:0}
+    .placesForm label{display:grid;gap:5px;font-weight:600}
+    .placesForm input,.placesForm textarea,.placesForm select{width:100%;min-width:0;box-sizing:border-box;font:inherit;min-height:44px}
+    .placesForm textarea{min-height:76px;resize:vertical}
+    .placesFormActions,.placeItemActions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+    .placesFormActions button,.placeItemActions button,.placeItemActions select,.placeItemActions a{min-height:44px}
+    .placeList{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+    .placeItem{border-top:1px solid var(--stroke);padding-top:10px;min-width:0}
+    .placeItem strong,.placeItem p{overflow-wrap:anywhere}
+    .placeItemActions{justify-content:flex-start;margin-top:8px}
+    .placeItemActions select{width:auto;max-width:100%;font:inherit}
     .plansStages{width:min(100%,560px);margin:16px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:12px;min-width:0}
     .plansStages section{min-width:0;padding:14px;border:1px solid rgba(255,255,255,.25);border-radius:18px;text-align:left;overflow-wrap:anywhere}
     .plansStages h2{margin:0 0 8px;font-size:1.1rem}
@@ -1995,11 +2006,21 @@ html[data-theme="light"] #aiContextPanel select {color-scheme:light}
       <section class="inner" data-view="places" role="main" aria-labelledby="placesTitle" aria-hidden="true">
         <div class="topbar"><h1 class="title" id="placesTitle" data-view-title tabindex="-1">Today Yerler</h1><button class="back" id="btnPlacesBack" type="button">Alanlarım</button></div>
         <p class="sub">Yerleri kendi seçiminle takip et.</p>
+        <form class="placesForm" id="placesForm">
+          <label>Yer adı <input id="placeName" maxlength="120" required autocomplete="off" placeholder="Nereyi görmek istersin?"></label>
+          <label>Şehir <input id="placeCity" maxlength="120" required autocomplete="off" placeholder="Şehir"></label>
+          <label>Not (isteğe bağlı) <textarea id="placeNote" maxlength="2000"></textarea></label>
+          <label>Adres (isteğe bağlı) <input id="placeAddress" maxlength="300" autocomplete="off"></label>
+          <label>Bağlantı (isteğe bağlı) <input id="placeUrl" type="url" maxlength="2048" inputmode="url" placeholder="https://"></label>
+          <label>Durum <select id="placeState"><option value="want">Gitmek istiyorum</option><option value="visited">Gittim</option></select></label>
+          <div class="placesFormActions"><button id="placeSave" type="submit">Yer ekle</button><button id="placeCancel" type="button" hidden>Vazgeç</button></div>
+        </form>
+        <div class="status" id="placesStatus" role="status" aria-live="polite"></div>
         <div class="placesStages" aria-label="Yer durumları">
-          <section><h2>Gitmek istiyorum</h2><p>Görmek istediğin yerler burada görünecek.</p></section>
-          <section><h2>Gittim</h2><p>Ziyaret ettiğin yerler burada görünecek.</p></section>
+          <section><h2>Gitmek istiyorum</h2><ul class="placeList" id="placesWant"></ul></section>
+          <section><h2>Gittim</h2><ul class="placeList" id="placesVisited"></ul></section>
         </div>
-        <p class="mini">Yer kaydı henüz açık değil. Bu ekran veri kaydetmez; konumuna erişmez.</p>
+        <p class="mini">Yerler yalnız bu cihazda saklanır. Konumuna erişilmez; bağlantı ancak dokunduğunda açılır.</p>
       </section>
 
       <!-- TODAY CORE -->

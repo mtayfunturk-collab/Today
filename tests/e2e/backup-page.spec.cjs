@@ -127,6 +127,11 @@ test('Settings launch enters isolated backup page and creates a verified synthet
   await page.locator('#planTitle').fill('Sentetik yedek planı');
   await page.locator('#planSave').click();
   await page.locator('#btnPlansBack').click();
+  await page.locator('#btnModulePlaces').click();
+  await page.locator('#placeName').fill('Sentetik müze');
+  await page.locator('#placeCity').fill('İstanbul');
+  await page.locator('#placeSave').click();
+  await page.locator('#btnPlacesBack').click();
   await page.locator('#btnCoreFromModules').click();
   await page.locator('#btnCalendar').click();
   await page.locator('#btnOpenSettings').click();
@@ -144,18 +149,20 @@ test('Settings launch enters isolated backup page and creates a verified synthet
     const {verifyBackupFile,readBackupForPreview}=await import('./modules/backup-export.mjs');
     const payload=await readBackupForPreview(text,'synthetic passphrase 123',{contracts:TodayNutritionContracts});
     return {raw:text.includes('SENTETIK-YEDEK-NOTU'),verified:await verifyBackupFile(text,'synthetic passphrase 123'),
-      plans:payload.localStorageEntries.find(entry=>entry.key==='today.plans.v1')?.rawValue,core:localStorage.getItem('today_store_v2')};
+      plans:payload.localStorageEntries.find(entry=>entry.key==='today.plans.v1')?.rawValue,
+      places:payload.localStorageEntries.find(entry=>entry.key==='today.places.v1')?.rawValue,core:localStorage.getItem('today_store_v2')};
   });
   expect(result.raw).toBe(false);
-  expect(result.verified).toMatchObject({ok:true,sections:28,restoreValidated:false});
+  expect(result.verified).toMatchObject({ok:true,sections:29,restoreValidated:false});
   expect(JSON.parse(result.plans).items[0].title).toBe('Sentetik yedek planı');
+  expect(JSON.parse(result.places).items[0].name).toBe('Sentetik müze');
   expect(result.core).toContain('SENTETIK-YEDEK-NOTU');
   const preview=await page.evaluate(async()=>{
     const text=await (await fetch(document.querySelector('#backupDownload').href)).text();
     const {prepareRestorePreview,revalidateRestorePreview}=await import('./modules/backup-restore-preview.mjs');
     const {captureSnapshot}=await import('./modules/backup-export.mjs');
     const capture=()=>captureSnapshot({storage:localStorage,indexedDB,contracts:TodayNutritionContracts,
-      crypto,version:4,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
+      crypto,version:5,source:{appVersion:TodayVersion.getCurrentVersion().appVersion,origin:location.origin,runtime:'web'}});
     const value=await prepareRestorePreview({userConfirmed:true,file:text,password:'synthetic passphrase 123',
       barrier:fn=>fn(),capture,contracts:TodayNutritionContracts,crypto});
     const unchanged=await revalidateRestorePreview(value);
@@ -231,6 +238,6 @@ test('Legacy v1 file preview names preferences and favorites absent from the arc
   await page.locator('#restorePreviewPassword').fill('synthetic legacy password');
   await page.locator('#restorePreviewConsent').check();
   await page.getByRole('button',{name:'Kapsamı önizle'}).click();
-  await expect(page.locator('#restorePreviewStatus')).toContainText('Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar, Planlar.',{timeout:20000});
+  await expect(page.locator('#restorePreviewStatus')).toContainText('Bu dosyada bulunmayan alanlar: Alanlarım tercihleri, Radio favorileri, Koleksiyonlar, Planlar, Yerler.',{timeout:20000});
   await expect(page.locator('#restorePreviewStatus')).toContainText('Geri yükleme yapılmadı');
 });

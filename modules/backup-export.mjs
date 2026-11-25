@@ -2,6 +2,7 @@
 import {cleanState} from './notification-store.mjs';
 import {validateCollectionsSnapshot} from './collections-contract.mjs';
 import {validatePlansSnapshot} from './plans-contract.mjs';
+import {validatePlacesSnapshot} from './places-contract.mjs';
 // Pure bounded parser shared by restore-only validators. Export behavior is unchanged.
 export {parse as parseBackupJSON};
 export const LS_KEYS = Object.freeze([
@@ -17,6 +18,7 @@ export const FORMAT = 'today:full-backup:v1';
 export const FORMAT_V2 = 'today:full-backup:v2';
 export const FORMAT_V3 = 'today:full-backup:v3';
 export const FORMAT_V4 = 'today:full-backup:v4';
+export const FORMAT_V5 = 'today:full-backup:v5';
 // Approved future v2 records. These validators do not create or write either key.
 export const LOCAL_KEYS_V2 = Object.freeze(['today.areas.preferences.v1','today.radio.favorites.v1']);
 export const LS_KEYS_V2 = Object.freeze([...LS_KEYS,...LOCAL_KEYS_V2]);
@@ -25,9 +27,11 @@ export const LOCAL_KEY_V3 = 'today.collections.v1';
 export const LS_KEYS_V3 = Object.freeze([...LS_KEYS_V2,LOCAL_KEY_V3]);
 export const LOCAL_KEY_V4 = 'today.plans.v1';
 export const LS_KEYS_V4 = Object.freeze([...LS_KEYS_V3,LOCAL_KEY_V4]);
-const keysFor = version => version===4?LS_KEYS_V4:version===3?LS_KEYS_V3:version===2?LS_KEYS_V2:LS_KEYS;
-const formatFor = version => version===4?FORMAT_V4:version===3?FORMAT_V3:version===2?FORMAT_V2:FORMAT;
-const versionFor = format => format===FORMAT?1:format===FORMAT_V2?2:format===FORMAT_V3?3:format===FORMAT_V4?4:null;
+export const LOCAL_KEY_V5 = 'today.places.v1';
+export const LS_KEYS_V5 = Object.freeze([...LS_KEYS_V4,LOCAL_KEY_V5]);
+const keysFor = version => version===5?LS_KEYS_V5:version===4?LS_KEYS_V4:version===3?LS_KEYS_V3:version===2?LS_KEYS_V2:LS_KEYS;
+const formatFor = version => version===5?FORMAT_V5:version===4?FORMAT_V4:version===3?FORMAT_V3:version===2?FORMAT_V2:FORMAT;
+const versionFor = format => format===FORMAT?1:format===FORMAT_V2?2:format===FORMAT_V3?3:format===FORMAT_V4?4:format===FORMAT_V5?5:null;
 const AREA_IDS = Object.freeze(['core','health','sky','radio']);
 const RADIO_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PAYLOAD_MAX = 32*1024*1024, FILE_MAX = 50*1024*1024, ENTRY_MAX = 100000;
@@ -102,6 +106,10 @@ export function validatePlansRaw(raw){
   const value=localRecord(raw,512*1024);
   try{return validatePlansSnapshot(value);}catch{throw bad('invalid-source');}
 }
+export function validatePlacesRaw(raw){
+  const value=localRecord(raw,512*1024);
+  try{return validatePlacesSnapshot(value);}catch{throw bad('invalid-source');}
+}
 function rawEntries(storage,keys=LS_KEYS){
   if(!Number.isInteger(storage.length)||storage.length>10000)throw bad('data-limit');
   for(let i=0;i<storage.length;i++){const name=storage.key(i);if(typeof name!=='string')throw bad('storage-read-failed');if(/^today[._A-Z]/.test(name)&&!keys.includes(name))throw bad('unregistered-data');}
@@ -173,6 +181,7 @@ function validateSource(entries, databases, contracts){
     if(e.key===LOCAL_KEYS_V2[1])validateRadioFavoritesRaw(e.rawValue);
     if(e.key===LOCAL_KEY_V3)validateCollectionsRaw(e.rawValue);
     if(e.key===LOCAL_KEY_V4)validatePlansRaw(e.rawValue);
+    if(e.key===LOCAL_KEY_V5)validatePlacesRaw(e.rawValue);
   }
   const db=databases[0];if(!db.present)return;
   const stores=Object.fromEntries(db.stores.map(s=>[s.name,s.entries.map(e=>e.value)]));
@@ -193,7 +202,7 @@ async function manifestFor(payload,crypto){
 function supported(crypto){if(!crypto?.subtle||typeof crypto.getRandomValues!=='function')throw bad('crypto-unavailable');}
 export async function captureSnapshot({storage,indexedDB,contracts,crypto=globalThis.crypto,source,signal,version=1}={}){
   abort(signal);supported(crypto);
-  if(![1,2,3,4].includes(version))throw bad('unsupported-backup-version');
+  if(![1,2,3,4,5].includes(version))throw bad('unsupported-backup-version');
   const keys=keysFor(version);
   const before=rawEntries(storage,keys),database=await readNutrition(indexedDB,{signal});abort(signal);
   if(!same(before,rawEntries(storage,keys)))throw bad('source-changed');

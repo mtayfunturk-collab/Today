@@ -214,7 +214,7 @@ test(
 );
 
 test(
-  "Koşucu 46 platform grubunu ve test envanterinin tam kapsamını doğruluyor",
+  "Koşucu 47 platform grubunu ve test envanterinin tam kapsamını doğruluyor",
   () => {
     const files = [
       ...runner.matchAll(
@@ -224,7 +224,7 @@ test(
 
     assert.equal(
       files.length,
-      46
+      47
     );
     assert.equal(
       new Set(files).size,
@@ -259,7 +259,7 @@ test(
 );
 
 test(
-    "Koşucu Türkiye saat dilimi ve 1522 kontrollük güncel platform kapısını kilitliyor",
+    "Koşucu Türkiye saat dilimi ve 1531 kontrollük güncel platform kapısını kilitliyor",
   () => {
     assert.ok(
       runner.includes(
@@ -281,7 +281,7 @@ test(
           sum + value,
         0
       ),
-    1522
+    1531
     );
   }
 );

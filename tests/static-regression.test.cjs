@@ -13,9 +13,9 @@ const updatedHtml = fs.readFileSync(
 // Reviewed Alanlarım layout and shared navigation updates; other production hashes stay pinned.
 const expectedProductionHashes = {
   "index.html":
-    "4aa0bd0a02146583b8cf9094dd1b9f21ea389c364e20237a3616f14f0f9bf539",
+    "acfa581ce1173d5af630dfbaffea3cafb5c1e8e1b309c9983dbd0bc08c0018dd",
   "sw.js":
-    "4a05029a76b4f6118edda6912ec1d9c186953530b5e653f22559f049a6dbeeba",
+    "b2b582f51fb7b6edf29cd93f27df3b1fe76196d6bef13519d2d95fc3e5cac78c",
   "modules/adapter-interfaces.js":
     "af8ff0d53ef71fcc321f13bd30aecd4cb9f654789e6a1dd06e540bb676bdabe5",
   "modules/error-manager.js":
@@ -268,7 +268,19 @@ const expectedHtmlIds = [
   "note",
   "pickTitle",
   "pillDate",
+  "placeAddress",
+  "placeCancel",
+  "placeCity",
+  "placeName",
+  "placeNote",
+  "placeSave",
+  "placeState",
+  "placeUrl",
+  "placesForm",
+  "placesStatus",
   "placesTitle",
+  "placesVisited",
+  "placesWant",
   "planCancel",
   "planDay",
   "planDayRow",
@@ -394,14 +406,14 @@ test(
 );
 
 test(
-  "Güncel 229 HTML kimliği benzersiz",
+  "Güncel 241 HTML kimliği benzersiz",
   () => {
     const updatedIds = matches(
       updatedHtml,
       /\bid="([^"]+)"/g
     );
 
-    assert.equal(updatedIds.length, 229);
+    assert.equal(updatedIds.length, 241);
     assert.equal(
       new Set(updatedIds).size,
       updatedIds.length
@@ -1288,7 +1300,7 @@ test(
 );
 
 test(
-  "Service Worker foundation-110 ve 148 dosyalık kabuk kullanıyor",
+  "Service Worker foundation-111 ve 150 dosyalık kabuk kullanıyor",
   () => {
     const sw = fs.readFileSync(
       "sw.js",
@@ -1300,7 +1312,7 @@ test(
 
     assert.ok(
       sw.includes(
-        'const VERSION = "today-v2-foundation-110"'
+        'const VERSION = "today-v2-foundation-111"'
       )
     );
     assert.ok(shellMatch);
@@ -1310,7 +1322,7 @@ test(
       /"([^"]+)"/g
     );
 
-    assert.equal(shellEntries.length, 148);
+    assert.equal(shellEntries.length, 150);
     assert.equal(new Set(shellEntries).size, shellEntries.length);
     shellEntries.forEach(entry => {
       assert.ok(fs.existsSync(entry), `Eksik çevrimdışı kabuk dosyası: ${entry}`);
