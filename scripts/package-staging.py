@@ -22,6 +22,8 @@ HEADERS = """/*
   Cache-Control: no-cache
 /sw.js
   Cache-Control: no-cache
+/candidate.json
+  Cache-Control: no-cache
 """
 
 
