@@ -38,6 +38,8 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 
 ### 26 Kasım — Worker 115 Staging kaydı
 
+- **iPhone 15 Ana Ekran PWA çevrimdışı 2/2 geçti.** Arka plandan dönüşte kilit, iki kontrollü çevrimdışı yeniden açılışta kilit ekranı ve sentetik Core notu ürün sahibi tarafından doğrulandı. İlk uçak modu bulgusu tekrarlanmadı. Doğrudan Safari çevrimdışı kabulü, diğer fiziksel ölçütler ve yayın onayı açık. [PR #50 fiziksel kabul kaydı](https://github.com/mtayfunturk-collab/Today/pull/50).
+
 - **Uçtan uca doğrulama geçti.** Cloudflare servis kimliği, sabit ve yeni hash adreslerinde Access koruması ve yayımlanan `candidate.json` ile `sw.js` eşleşmesi otomatik doğrulandı. Aday `9a2f07d`, `foundation-115`. Fiziksel kabul kapıları açık. [Actions 45793793070](https://github.com/mtayfunturk-collab/Today/actions/runs/45793793070) · [Yeni Staging dağıtımı](https://b4d4ae3f.today-ai-staging.pages.dev/)
 
 - Aday `9a2f07d069fa29e99dbbb8d4a4e1e9793ed49f38`, `foundation-115`. Platform CI 4/4 başarılı. Ortam onayıyla ilk otomatik dağıtım başarılı. Sabit ve yeni hash adresinde 8/8 oturumsuz Access kontrolü geçti. Dağıtım paketinin özeti ve `candidate.json` kimliği eşleşti. İlk dağıtımda yayımlanan içerik teyidi açık kalmıştı. [Aday CI](https://github.com/mtayfunturk-collab/Today/actions/runs/45696680586) · [Dağıtım](https://github.com/mtayfunturk-collab/Today/actions/runs/45773111486) · [Staging](https://today-ai-staging.pages.dev/)
