@@ -1,6 +1,6 @@
 # Today — Ana talimata göre güncel durum
 
-## 25 Kasım 2026 — Ana görev envanteri
+## 26 Kasım 2026 — Ana görev envanteri
 
 Canlı referans: Today **2.23.3**, [yayın dalı](https://github.com/mtayfunturk-collab/Today/tree/release/today-backup-candidate-2a70ec9) / [4061839](https://github.com/mtayfunturk-collab/Today/commit/4061839). Uzlaştırma başlangıcında 50 dal ve 40 açık taslak PR vardı. [Yayın CI'ı](https://github.com/mtayfunturk-collab/Today/actions/runs/45560354005) 4/4 başarılı. Bu bölüm güncel kayıttır. Altındaki tarihli notlar uygulama geçmişidir.
 
@@ -10,7 +10,8 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 
 | Kimlik / öncelik | Kapsam ve durum | Bağımlılık / kabul kriteri | Yetki, PR ve yayın |
 |---|---|---|---|
-| GOV-01 / P1 | Ana görev ve yayın uzlaştırması, belge teslimi | Açık PR başları yayın geçmişiyle eşleşir; mevcut kayıtlar korunur; belge farkı incelenir | 25 Kasım protokolü, dal `task/today-master-inventory`, [taslak #49](https://github.com/mtayfunturk-collab/Today/pull/49), yayın bekliyor |
+| GOV-01 / P1 | Ana görev ve yayın uzlaştırması, belge teslimi | Açık PR başları yayın geçmişiyle eşleşir; mevcut kayıtlar korunur; belge farkı incelenir | 26 Kasım kontrollü otonomi protokolü, dal `task/today-master-inventory`, [taslak #49](https://github.com/mtayfunturk-collab/Today/pull/49), yayın bekliyor |
+| STG-01 / P1 | Dağıtım sonrası Staging doğrulaması | API ile yeni adres, Access kontrolleri, paket ile yayımlanan aday ve Worker eşleşmesi | [Taslak #52](https://github.com/mtayfunturk-collab/Today/pull/52); servis erişimi, main merge ve Staging dağıtımı ürün sahibi onayına bağlı |
 | CORE-01 / P1 | Core, Health, Sky, Alanlarım ve ortak gezinme canlıda | Günlük kayıt, not, sağlık kayıtları ve Sky akışları korunur; bütün yüzeylerin fiziksel regresyonu ACC-01 | Mevcut kapsam; [#1](https://github.com/mtayfunturk-collab/Today/pull/1), [#42](https://github.com/mtayfunturk-collab/Today/pull/42), 4061839 |
 | RAD-01 / P1 | İzinli arama, oynatma ve ortak mini oynatıcı canlıda | Tek ses, ayrı dış yayın izni; iPhone Safari/PWA mini oynatıcı kabulü kayıtlı | Mevcut kapsam; [#2](https://github.com/mtayfunturk-collab/Today/pull/2), [#45](https://github.com/mtayfunturk-collab/Today/pull/45) |
 | AI-019.1 / P2 | İzinli cihaz içi kurallar ve 1/7/30/90 günlük gözlemler canlıda | Dayanak, belirsizlik ve açık onay; sağlayıcı ve yeni dış aktarım yok | Mevcut kapsam; [AI Engine](../Today-AI-Engine/README.md), 4061839 |
@@ -23,7 +24,10 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 | SP01–SP03 / P2 | Sesli giriş ve konuşmayı metne dönüştürme; geçmiş düzenlenebilir taslak/prototip kaydı, canlı entegrasyon doğrulanmadı | Core not akışı, izin/ret/iptal ve tarayıcıya göre yerel işleme kanıtı. Dış gönderim varsayılanı kapalı | Önizleme kapsamı tarihsel; yeni mikrofon/veri aktarımı ve platform kararı doğrulanmadan entegrasyon yok |
 | I18N01–06 / P2 | Türkçe bağlamalar ve dil resolver'ı mevcut; İngilizce ve manuel dil seçimi kısmi | Editoryal kabul, tüm yüzeylerin parametre/erişilebilirlik kapsamı, manuel tercih için kayıt/yarış/yedek kabulü | [Tasarım](T90-261101-PO1-I18N02-EN-BINDING-DESIGN.md); EN yayın ve kalıcı yazma yetkisi doğrulanmadı |
 | COR01 / P1 | 12 renk paleti ve açık/koyu/yüksek kontrast tema seçenekleri kaynakta | Mevcut renk kimlikleri ve tema davranışı korunur; güncel fiziksel kabul ACC-01 | Mevcut kapsam; [palet kaydı](T90-261101-PO1-COR01-PALETTE.md), 4061839 |
-| AUTH01 / P2 | Biyometri/parola, yerel profil ve kurtarma için tasarım | Önce platform, oturum, anahtar ve kurtarma kararları; fiziksel kabul ve veri etkisi uygulamadan önce | Tarihsel ana görev tasarım ister; uygulama onayı ve PR doğrulanmadı |
+| AUTH01 / P2 | PIN/parola, tek kullanımlık kurtarma ve kilit yaşam döngüsü Worker 115 Staging’de | Kurulu iPhone PWA’da önceki PIN/parola kabulü bildirilmiş. Bu aday için Safari, PWA, v5, yükseltme, BFCache, arka plan, süreler, çevrimdışı kullanım ve kurtarma açık | [Taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50), fiziksel kabul ve yayın onayı açık |
+| AUTH01-BIO / P2 | Native Face ID/Touch ID ve Android güçlü parmak izi, destekli Windows’ta cihaz bağlı Windows Hello | iPhone 15 Safari/PWA'da PIN/parola ve biyometri seçeneği görünürlüğü; imzalı iOS, Android ve Windows fiziksel kabulü | [Taslak #50](https://github.com/mtayfunturk-collab/Today/pull/50), fiziksel kabul ve yayın onayı açık |
+| AUTH02 / P3 | Şifreli yerel veri alanı, anahtar yönetimi ve kurtarma | AUTH01 oturum sınırı, T90-08 veri bütünlüğü ve v5 uyumu | Yol haritası, uygulama onayı bekliyor |
+| AUTH03 / P3 | İsteğe bağlı hesap ve passkey | AUTH01 ve AUTH02, Connect veri sınırı ve çevrimdışı kullanım | Yol haritası, uygulama onayı ve harici aktarım kararı bekliyor |
 | NUT-019.2–3 / P3 | HealthKit/Health Connect saat ve native bildirim önizlemesi var; fiziksel kabul ertelendi | Ürün sahibinin cihazı, Mi Fitness aktarımı ve uygun iOS imza/üyelik yolu | Mevcut onaylı kod korunur; Apple Developer ertelemesi geçerli. [Cihaz planı](../native/DEVICE-VALIDATION.md) |
 | RAD-FAV / P2 | Radio favorileri ve Alanlarım tercihleri için yedek sözleşmesi mevcut; yazıcı kapalı | Fiziksel sentetik yedek kabulü ve onaylı iki anahtarın mevcut sözleşmesi | [#16](https://github.com/mtayfunturk-collab/Today/pull/16) ve [#17](https://github.com/mtayfunturk-collab/Today/pull/17) tarihsel, ayrı fiziksel kabul bekliyor |
 | RAD04 / P2 | Sanatçı/parça fizibilitesi tamam; ürün özelliği teknik engelde | İzinli belgeli yayıncı kaynağı, doğru istasyon eşleşmesi, CORS ve boş durum | [#15](https://github.com/mtayfunturk-collab/Today/pull/15) belge teslimi; sağlayıcı/aktarımı ayrıca onaylanır |
@@ -31,6 +35,12 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 | NUT-020 / P3 | Kontrollü PWA pilotu bekliyor | Günlük akış kararı/kişisel kullanım, cihaz kabulü, güvenli kurtarma | Pilot başlangıç kararı ve PR/yayın doğrulanmadı |
 | NUT-021 / P3 | Pazar doğrulaması için başlangıç kanıtı yok | Pilot çıktısı, tekrar kullanım ve değer, devam/daralt/değiştir kararı | [Faz 6](03_PHASES.md) planı |
 | NUT-022 / P3 | Mağaza dağıtımı için başlangıç kanıtı yok | Pilot/pazar kararı, imza, veri taşıma, kapalı test ve mağaza beyanları | [Faz 7](03_PHASES.md) planı, gönderim ayrı onay |
+
+### 26 Kasım — Worker 115 Staging kaydı
+
+- Aday `9a2f07d069fa29e99dbbb8d4a4e1e9793ed49f38`, `foundation-115`. Platform CI 4/4 başarılı. Ortam onayıyla ilk otomatik dağıtım başarılı. Sabit ve yeni hash adresinde 8/8 oturumsuz Access kontrolü geçti. Dağıtım paketinin özeti ve `candidate.json` kimliği eşleşti. Yayımlanan JSON'un servis kimliğiyle içerik teyidi açık. [Aday CI](https://github.com/mtayfunturk-collab/Today/actions/runs/45696680586) · [Dağıtım](https://github.com/mtayfunturk-collab/Today/actions/runs/45773111486) · [Staging](https://today-ai-staging.pages.dev/)
+- AUTH01 ve AUTH01-BIO cihaz kabulü ayrı kalır. Öncelik iPhone 15 Safari ve Ana Ekran PWA. Native iOS imza, Android ve Windows gerçek cihaz doğrulamaları ayrı izlenir. [Cihaz kabul listesi](https://github.com/mtayfunturk-collab/Today/blob/9a2f07d069fa29e99dbbb8d4a4e1e9793ed49f38/docs/TODAY-AUTH01-DEVICE-ACCEPTANCE.md)
+- Yeni Staging doğrulaması bağımsız [taslak #52](https://github.com/mtayfunturk-collab/Today/pull/52) altyapı işidir. ACC-01 [#6](https://github.com/mtayfunturk-collab/Today/issues/6) için yeni fiziksel sonuç kaydı yok. Üretim geri yükleme, veri şeması ve canlı Pages için önceki onay kapıları geçerlidir. Canlı referans `4061839`.
 
 ### PR ve yayın eşlemesi
 
@@ -42,7 +52,7 @@ P0 veri bütünlüğü, P1 güncel ürün kabulü, P2 bağımsız geliştirme/ta
 - **Tamamlanan dilim:** 4061839 ile canlı Pages arasında `index.html`, `sw.js`, `backup.html`, dışa aktarma UI, önizleme UI ve önizleme doğrulayıcısı için **6/6** Git blob özeti eşleşti. Kaynakta dosya bütünlük düğmesiyle kapsam önizleme düğmesi ayrı; kapsam önizlemesi açık salt okunur onay ister ve `applyAvailable:false` üretir. Bu bulgu fiziksel cihaz sonucu değildir.
 - **Commit ve takip:** 4061839, [iş #6](https://github.com/mtayfunturk-collab/Today/issues/6); teşhis kaydı [taslak #49](https://github.com/mtayfunturk-collab/Today/pull/49) içinde. Ürün kodu değişmedi; mevcut yayın CI'ı tekrar edilmedi.
 - **Kalan kabul:** Windows 10'da URL, tarayıcı/sürüm ve açılış sonucu; indirilen sentetik v5 dosyasının yeniden açılması ve bütünlük kontrolü. iPhone Safari ve kurulu PWA'da aynı iki dosya işlemi ayrı kaydedilmeli. Yalnız sonuç veya sınırlı tanı kodu kaydedilir; parola, dosya ve kişisel veri paylaşılmaz. Eski iPhone güncelleme sorunu yeniden üretilmedikçe tarihsel kalır.
-- **Sıradaki uygun iş:** AUTH01 için mevcut tasarım yetkisiyle karar seçeneklerini ve kabul ölçütlerini belgele. Kimlik kodu, yeni depo veya sağlayıcı entegrasyonu ayrı ürün kararıdır.
+- **25 Kasım tarihli sonraki adım:** AUTH01 tasarım ve kabul ölçütlerini belgele. Bu adımın güncel durumu ana envanterde yer alır.
 
 ## 24 Kasım 2026 — Yerler yerel kayıt ve v5 tam yedek (T90-261101-PO1-YER03)
 

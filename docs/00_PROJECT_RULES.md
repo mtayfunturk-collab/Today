@@ -17,6 +17,12 @@ These rules apply to all modules, repositories, documentation, and future contri
 
 ---
 
+# Controlled autonomous development
+
+Follow the active [AGENTS.md](../AGENTS.md) protocol for approved work. Use the existing task branch and pull request, run tests, and investigate CI failures within the approved scope. Record decisions, evidence, open risks and the next eligible task in the [current inventory](TODAY-CURRENT-STATUS.md).
+
+Staging approval, physical acceptance, new permissions, costs, security configuration, product scope, main merges and production releases retain their separate owner gates. Treat deployment, verified endpoint identity and physical acceptance as separate milestones.
+
 # Core Principles
 
 1. Analyze before coding.
