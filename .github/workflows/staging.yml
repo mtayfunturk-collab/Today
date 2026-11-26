@@ -7,6 +7,8 @@ on:
     paths:
       - ".github/workflows/staging.yml"
       - "scripts/package-staging.py"
+      - "scripts/verify-staging.py"
+      - "tests/staging-verification.test.py"
   workflow_dispatch:
     inputs:
       candidate_sha:
@@ -30,6 +32,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Verify the Staging checker with synthetic responses
+        run: python3 tests/staging-verification.test.py
       - name: Verify packaging against the known Worker 111 baseline
         run: python3 scripts/package-staging.py 4061839b4dfdba7c8493d9f80dc1ecb82256cbac staging/baseline
 
@@ -92,6 +96,9 @@ jobs:
       group: today-staging-deploy
       cancel-in-progress: false
     steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -99,65 +106,36 @@ jobs:
         with:
           name: staging-approved-candidate
           path: staging
-      - name: Check protected origins and prepare upload
-        env:
-          PREVIEW_URLS: ${{ vars.CLOUDFLARE_STAGING_PREVIEW_URLS }}
+      - name: Extract the approved candidate
         run: |
-          python3 - <<'PY'
+          python3 - <<'PYTHON'
           from pathlib import Path
-          from urllib.error import HTTPError
-          from urllib.request import build_opener, HTTPRedirectHandler
-          from urllib.parse import urlsplit
           from zipfile import ZipFile
-          import os, re
-
-          class NoRedirect(HTTPRedirectHandler):
-              def redirect_request(self, *args, **kwargs):
-                  return None
-
-          opener = build_opener(NoRedirect)
-          previews = os.environ.get("PREVIEW_URLS","").split()
-          if not previews or any(not re.fullmatch(
-                  r"https://[a-z0-9-]+\.today-ai-staging\.pages\.dev/?", url) for url in previews):
-              raise SystemExit("Configure verified Staging preview hostname URLs")
-          for origin in ["https://today-ai-staging.pages.dev", *previews]:
-              for route in ["/", "/index.html", "/sw.js", "/candidate.json"]:
-                  try:
-                      with opener.open(origin.rstrip("/") + route, timeout=15) as response:
-                          raise SystemExit(f"Staging origin unexpectedly returned {response.status}")
-                  except HTTPError as response:
-                      hostname = urlsplit(response.headers.get("Location", "")).hostname or ""
-                      if response.code not in {401,403} and not (
-                          response.code in {302,303,307,308} and hostname.endswith(".cloudflareaccess.com")
-                      ):
-                          raise SystemExit(f"Unexpected Staging access response: {response.code}")
           archive, = Path("staging").glob("*.zip")
           with ZipFile(archive) as source:
               source.extractall("staging/site")
-          PY
-      - name: Deploy only to the stable Today Staging project
+          PYTHON
+      - name: Check existing Staging and service access before upload
+        id: preflight
         env:
           CANDIDATE: ${{ inputs.candidate_sha }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
-        run: |
-          test -n "$CLOUDFLARE_ACCOUNT_ID" && test -n "$CLOUDFLARE_API_TOKEN"
-          branch="$(python3 - <<'PY'
-          import json, os, re
-          from urllib.request import Request, urlopen
-          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
-          if not re.fullmatch(r"[0-9a-f]{32}", account):
-              raise SystemExit("Invalid Cloudflare account ID")
-          headers={"Authorization":"Bearer "+os.environ["CLOUDFLARE_API_TOKEN"]}
-          url=f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/today-ai-staging"
-          with urlopen(Request(url,headers=headers),timeout=20) as response:
-              project=json.load(response)["result"]
-          if project["subdomain"] != "today-ai-staging.pages.dev":
-              raise SystemExit("Staging hostname does not match")
-          branch=project["production_branch"]
-          if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9/_.-]{0,127}",branch):
-              raise SystemExit("Invalid Staging project branch")
-          print(branch)
-          PY
-          )"
-          npx --yes wrangler@4.168.0 pages deploy staging/site --project-name=today-ai-staging --branch="$branch" --commit-hash="$CANDIDATE"
+          STAGING_ACCESS_CLIENT_ID: ${{ secrets.CLOUDFLARE_STAGING_ACCESS_CLIENT_ID }}
+          STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CLOUDFLARE_STAGING_ACCESS_CLIENT_SECRET }}
+        run: python3 scripts/verify-staging.py preflight --state staging/previous.json --site staging/site --commit "$CANDIDATE"
+      - name: Deploy only to the stable Today Staging project
+        env:
+          CANDIDATE: ${{ inputs.candidate_sha }}
+          BRANCH: ${{ steps.preflight.outputs.branch }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+        run: npx --yes wrangler@4.168.0 pages deploy staging/site --project-name=today-ai-staging --branch="$BRANCH" --commit-hash="$CANDIDATE"
+      - name: Verify deployed addresses and exact candidate bytes
+        env:
+          CANDIDATE: ${{ inputs.candidate_sha }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+          STAGING_ACCESS_CLIENT_ID: ${{ secrets.CLOUDFLARE_STAGING_ACCESS_CLIENT_ID }}
+          STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CLOUDFLARE_STAGING_ACCESS_CLIENT_SECRET }}
+        run: python3 scripts/verify-staging.py verify --state staging/previous.json --site staging/site --commit "$CANDIDATE"
