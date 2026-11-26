@@ -1,5 +1,15 @@
 # Today geliştirme kuralları
 
+## 26 Kasım 2026 — Kontrollü otonom geliştirme
+
+Ana envanterde onayı ve bağımlılıkları doğrulanmış görevleri sırayla yürüt. Bir görev için mevcut aktif dalı ve PR'yi kullan. Kodlama, test, başarısız CI kök neden analizi ve kapsam içi düzeltmeler bağımsız yürütülür. Görev tamamlanınca sıradaki uygun onaylı işe geç. Bir engel yalnız kendi bağımlı işlerini durdurur. Kök neden veya yeni kanıt olmadan aynı başarısız işlemi tekrarlama.
+
+Kullanıcı müdahalesi Staging ortam onayı, fiziksel cihaz testi, yeni yetki/maliyet/güvenlik ayarı, ürün kapsamı kararı, main merge, canlı yayın veya otonom giderilemeyen kritik engel için istenir. Aşağıdaki kişisel veri, kalıcı şema, harici paylaşım ve üretim geri yükleme sınırları geçerlidir. Fiziksel kabul veya yeni bir güvenlik değişikliği mevcut geliştirme onayından türetilmez.
+
+Staging'de dağıtım işi bittikten sonra sabit ve yeni adreste Access koruması ile yayımlanan aday SHA ve Worker sürümü doğrulanır. Uç nokta içeriği teyit edilmeden dağıtım tamamen doğrulanmış olarak raporlanmaz. Otomasyon yalnız Staging'e sınırlandırılmış servis kimliğini kullanır. Yeni servis erişimi ayrı güvenlik onayı gerektirir.
+
+Her teknik adımda ayrı bildirim yerine önemli kilometre taşlarında tamamlanan işleri, test sonuçlarını, açık riskleri, sonraki uygun görevi ve ürün sahibinden beklenen işlemleri kaydet. [Ana görev envanteri](docs/TODAY-CURRENT-STATUS.md) karar ve kabul kaydıdır.
+
 ## 22 Kasım 2026 çalışma yetkisi
 
 Ürün sahibinin kontrollü otonom geliştirme talimatı yürürlüktedir: onaylı kapsamda küçük, bağımsız görevler için ayrıca tetikleme beklenmez. Temiz görev dalı/worktree, test, belge, commit, push ve taslak PR oluşturulabilir. Merge, `main`e yazma, deploy/canlı yayın, GitHub koruma/secret/izin ayarı, ücretli işlem, mevcut veri/şema değişimi, yeni kişisel veri aktarımı, onaysız kimlik doğrulama ve üretim restore etkinleştirmesi ayrı ürün sahibi kararı gerektirir. Bir kapı yalnız bağımlı işi durdurur; güvenli bağımsız işe geçilir. Yeni ana görev kaydı `docs/TODAY-CURRENT-STATUS.md` içinde tutulur. Aşağıdaki önceki teknik kurallar ve tarihsel kayıtlar korunur; görev başına kullanıcı tetiklemesi bekleyen eski kayıtlar artık güncel yetki değildir.
